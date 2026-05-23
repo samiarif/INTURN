@@ -3,14 +3,12 @@ import { headers } from 'next/headers';
 import type { WebhookEvent } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { users } from '@/db/schema';
+import { requireEnv } from '@/lib/env';
 import { recordEvent } from '@/modules/events/service';
 import { eq } from 'drizzle-orm';
 
 export async function POST(req: Request) {
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-  if (!WEBHOOK_SECRET) {
-    throw new Error('Missing CLERK_WEBHOOK_SECRET');
-  }
+  const WEBHOOK_SECRET = requireEnv('CLERK_WEBHOOK_SECRET');
 
   const headerPayload = await headers();
   const svixId = headerPayload.get('svix-id');
