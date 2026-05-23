@@ -4,9 +4,7 @@ import { recordEvent } from '@/modules/events/service';
 import { eq } from 'drizzle-orm';
 import { isSelectableRole } from './types';
 
-type SelectRoleResult =
-  | { success: true; role: string }
-  | { success: false; error: string };
+type SelectRoleResult = { success: true; role: string } | { success: false; error: string };
 
 export async function selectRole(clerkId: string, role: string): Promise<SelectRoleResult> {
   if (!isSelectableRole(role)) {

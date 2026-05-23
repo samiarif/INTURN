@@ -69,8 +69,6 @@ describe('Clerk webhook handler', () => {
       metadata: { clerkId: 'clerk-1', provider: 'clerk-webhook' },
     });
 
-    expect(mockRecordEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'user.updated' }),
-    );
+    expect(mockRecordEvent).toHaveBeenCalledWith(expect.objectContaining({ type: 'user.updated' }));
   });
 });

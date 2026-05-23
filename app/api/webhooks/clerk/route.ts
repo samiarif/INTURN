@@ -40,9 +40,7 @@ export async function POST(req: Request) {
   switch (evt.type) {
     case 'user.created': {
       const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-      const primaryEmail = email_addresses.find(
-        (e) => e.id === evt.data.primary_email_address_id,
-      );
+      const primaryEmail = email_addresses.find((e) => e.id === evt.data.primary_email_address_id);
 
       const [user] = await db
         .insert(users)
@@ -67,9 +65,7 @@ export async function POST(req: Request) {
 
     case 'user.updated': {
       const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-      const primaryEmail = email_addresses.find(
-        (e) => e.id === evt.data.primary_email_address_id,
-      );
+      const primaryEmail = email_addresses.find((e) => e.id === evt.data.primary_email_address_id);
 
       const [user] = await db
         .update(users)
@@ -97,10 +93,7 @@ export async function POST(req: Request) {
 
     case 'user.deleted': {
       if (evt.data.id) {
-        const [user] = await db
-          .delete(users)
-          .where(eq(users.clerkId, evt.data.id))
-          .returning();
+        const [user] = await db.delete(users).where(eq(users.clerkId, evt.data.id)).returning();
 
         if (user) {
           await recordEvent({
