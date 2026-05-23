@@ -11,7 +11,7 @@ import {
   deliverables,
   events,
 } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 
 async function upsertUser(input: {
   clerkId: string;
@@ -190,106 +190,106 @@ export async function runSeed() {
       .returning();
   }
 
-  const existingTasks = await db
-    .select()
-    .from(tasks)
-    .where(eq(tasks.workspaceId, workspace.id))
-    .limit(1);
-  if (existingTasks.length === 0) {
-    const seedTasks = [
-      { title: 'Kickoff brief sign-off', tag: 'BA-001', status: 'done', priority: 'high', order: 1, dueDate: '2026-05-09' },
-      { title: 'Stakeholder interviews · 6 of 6', tag: 'BA-002', status: 'done', priority: 'medium', order: 2, dueDate: '2026-05-19' },
-      { title: 'Audit slide deck · v2', tag: 'BA-003', status: 'review', priority: 'high', order: 3, dueDate: '2026-05-22' },
-      { title: 'Visual exploration · moodboards', tag: 'BA-005', status: 'in-progress', priority: 'high', order: 4, dueDate: '2026-05-30' },
-      { title: 'Type pairings — 3 options', tag: 'BA-006', status: 'in-progress', priority: 'medium', order: 5, dueDate: '2026-05-30' },
-      { title: 'Logo refresh — round 1', tag: 'BA-007', status: 'todo', priority: 'medium', order: 6, dueDate: '2026-06-06' },
-    ] as const;
+  const seedTasksData = [
+    { title: 'Kickoff brief sign-off', tag: 'BA-001', status: 'done', priority: 'high', order: 1, dueDate: '2026-05-09' },
+    { title: 'Stakeholder interviews · 6 of 6', tag: 'BA-002', status: 'done', priority: 'medium', order: 2, dueDate: '2026-05-19' },
+    { title: 'Audit slide deck · v2', tag: 'BA-003', status: 'review', priority: 'high', order: 3, dueDate: '2026-05-22' },
+    { title: 'Visual exploration · moodboards', tag: 'BA-005', status: 'in-progress', priority: 'high', order: 4, dueDate: '2026-05-30' },
+    { title: 'Type pairings — 3 options', tag: 'BA-006', status: 'in-progress', priority: 'medium', order: 5, dueDate: '2026-05-30' },
+    { title: 'Logo refresh — round 1', tag: 'BA-007', status: 'todo', priority: 'medium', order: 6, dueDate: '2026-06-06' },
+  ] as const;
 
-    for (const t of seedTasks) {
-      await db.insert(tasks).values({
-        workspaceId: workspace.id,
-        tag: t.tag,
-        title: t.title,
-        status: t.status,
-        priority: t.priority,
-        order: t.order,
-        dueDate: t.dueDate,
-      });
-    }
+  // Wipe + re-insert tasks so they get the tag column populated and we get
+  // the IDs back for event targetIds.
+  await db.delete(tasks).where(eq(tasks.workspaceId, workspace.id));
+  const insertedTasks = await db
+    .insert(tasks)
+    .values(seedTasksData.map((t) => ({
+      workspaceId: workspace.id,
+      tag: t.tag,
+      title: t.title,
+      status: t.status,
+      priority: t.priority,
+      order: t.order,
+      dueDate: t.dueDate,
+    })))
+    .returning();
+  const taskByTag = new Map(insertedTasks.map((t) => [t.tag, t]));
+
+  const seedDelivsData = [
+    {
+      title: 'Brand audit · stakeholder findings',
+      status: 'submitted' as const,
+      feedback: 'Cleaned up stakeholder quotes, fixed numbering',
+    },
+    { title: 'Visual exploration · moodboards', status: 'draft' as const, feedback: null },
+    { title: 'Logo refresh — round 1', status: 'draft' as const, feedback: null },
+    { title: 'Design system library', status: 'draft' as const, feedback: null },
+    { title: 'Final handoff package', status: 'draft' as const, feedback: null },
+  ];
+
+  await db.delete(deliverables).where(eq(deliverables.workspaceId, workspace.id));
+  const insertedDelivs = await db
+    .insert(deliverables)
+    .values(seedDelivsData.map((d) => ({ ...d, workspaceId: workspace.id })))
+    .returning();
+  const auditDeliv = insertedDelivs.find((d) => d.title === 'Brand audit · stakeholder findings');
+  const moodboardTask = taskByTag.get('BA-005');
+  const typePairingsTask = taskByTag.get('BA-006');
+
+  // Wipe + re-insert events with correct targetIds.
+  const allTaskAndDelivIds = [
+    ...insertedTasks.map((t) => t.id),
+    ...insertedDelivs.map((d) => d.id),
+    workspace.id,
+  ];
+  if (allTaskAndDelivIds.length > 0) {
+    await db.delete(events).where(inArray(events.targetId, allTaskAndDelivIds));
   }
 
-  const existingDelivs = await db
-    .select()
-    .from(deliverables)
-    .where(eq(deliverables.workspaceId, workspace.id))
-    .limit(1);
-  if (existingDelivs.length === 0) {
-    const seedDelivs = [
-      {
-        title: 'Brand audit · stakeholder findings',
-        status: 'submitted' as const,
-        feedback: 'Cleaned up stakeholder quotes, fixed numbering',
-      },
-      { title: 'Visual exploration · moodboards', status: 'draft' as const, feedback: null },
-      { title: 'Logo refresh — round 1', status: 'draft' as const, feedback: null },
-      { title: 'Design system library', status: 'draft' as const, feedback: null },
-      { title: 'Final handoff package', status: 'draft' as const, feedback: null },
-    ];
-    for (const d of seedDelivs) {
-      await db.insert(deliverables).values({ ...d, workspaceId: workspace.id });
-    }
-  }
-
-  const existingEvents = await db
-    .select()
-    .from(events)
-    .where(eq(events.targetId, workspace.id))
-    .limit(1);
-  if (existingEvents.length === 0) {
-    const now = Date.now();
-    const hours = (h: number) => new Date(now - h * 3600_000);
-    await db.insert(events).values([
-      {
-        type: 'deliverable.submitted',
-        actorId: yasmine.id,
-        targetType: 'deliverable',
-        targetId: workspace.id,
-        metadata: { name: 'Brand audit · v2' },
-        createdAt: hours(2),
-      },
-      {
-        type: 'comment.added',
-        actorId: mehdi.id,
-        targetType: 'task',
-        targetId: workspace.id,
-        metadata: { task: 'Type pairings', text: 'Try a pair without the contrast serif' },
-        createdAt: hours(5),
-      },
-      {
-        type: 'task.moved',
-        actorId: yasmine.id,
-        targetType: 'task',
-        targetId: workspace.id,
-        metadata: { tag: 'BA-005', to: 'in-progress' },
-        createdAt: hours(28),
-      },
-      {
-        type: 'system.checkin.scheduled',
-        targetType: 'workspace',
-        targetId: workspace.id,
-        metadata: { for: '2026-05-30T14:00' },
-        createdAt: hours(30),
-      },
-      {
-        type: 'deliverable.revision.requested',
-        actorId: mehdi.id,
-        targetType: 'deliverable',
-        targetId: workspace.id,
-        metadata: { name: 'Brand audit · v1', note: 'Findings section needs a TL;DR' },
-        createdAt: hours(72),
-      },
-    ]);
-  }
+  const now = Date.now();
+  const hours = (h: number) => new Date(now - h * 3600_000);
+  await db.insert(events).values([
+    auditDeliv && {
+      type: 'deliverable.submitted',
+      actorId: yasmine.id,
+      targetType: 'deliverable',
+      targetId: auditDeliv.id,
+      metadata: { name: 'Brand audit · v2' },
+      createdAt: hours(2),
+    },
+    typePairingsTask && {
+      type: 'comment.added',
+      actorId: mehdi.id,
+      targetType: 'task',
+      targetId: typePairingsTask.id,
+      metadata: { task: 'Type pairings', text: 'Try a pair without the contrast serif' },
+      createdAt: hours(5),
+    },
+    moodboardTask && {
+      type: 'task.moved',
+      actorId: yasmine.id,
+      targetType: 'task',
+      targetId: moodboardTask.id,
+      metadata: { tag: 'BA-005', to: 'in-progress' },
+      createdAt: hours(28),
+    },
+    {
+      type: 'system.checkin.scheduled',
+      targetType: 'workspace',
+      targetId: workspace.id,
+      metadata: { for: '2026-05-30T14:00' },
+      createdAt: hours(30),
+    },
+    auditDeliv && {
+      type: 'deliverable.revision.requested',
+      actorId: mehdi.id,
+      targetType: 'deliverable',
+      targetId: auditDeliv.id,
+      metadata: { name: 'Brand audit · v1', note: 'Findings section needs a TL;DR' },
+      createdAt: hours(72),
+    },
+  ].filter((v): v is NonNullable<typeof v> => Boolean(v)));
 
   return {
     workspaceId: workspace.id,
