@@ -22,6 +22,70 @@
       "continue": "Continue"
     }
   },
+  "onboarding": {
+    "intern": {
+      "basics": {
+        "title": "Tell us about you",
+        "subtitle": "30 seconds. We use this to match you to the right internships.",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "university": "University",
+        "universityHelper": "Searchable list of 300+ Tunisian universities + grandes écoles.",
+        "yearOfStudy": "Year of study",
+        "fieldOfStudy": "Field",
+        "city": "City",
+        "cityHelper": "Sets default on-site filter. Doesn't block remote applications.",
+        "preferredLanguage": "Preferred language",
+        "preferredLanguageHelper": "This sets the app's language and the default for your applications.",
+        "continue": "Continue →",
+        "back": "← Back",
+        "step": "Basics"
+      },
+      "skills": {
+        "title": "Your skills",
+        "subtitle": "3 to 8 skills. Specific beats generic — \"React\" wins over \"frontend\".",
+        "skillsLabel": "Skills",
+        "rolesLabel": "What kind of role do you want?",
+        "rolesHelper": "Pick up to 3. We use these as the primary match.",
+        "cvLabel": "CV",
+        "optional": "optional",
+        "cvHelper": "PDF, max 5 MB · We'll read it and suggest more skills",
+        "skipCv": "Skip CV for now",
+        "linksLabel": "Portfolio & links",
+        "addLink": "+ Add another link",
+        "back": "← Back",
+        "finish": "Finish profile →",
+        "step": "Skills + CV"
+      },
+      "done": {
+        "title": "Profile complete",
+        "subtitle": "You're ready to apply. Browse internships and start building your record.",
+        "open": "Open dashboard →",
+        "step": "Done"
+      }
+    },
+    "company": {
+      "title": "About your company",
+      "subtitle": "What design partners and interns see. You can edit anything later.",
+      "logo": "Logo",
+      "optional": "Optional",
+      "name": "Company name",
+      "website": "Website",
+      "industry": "Industry",
+      "size": "Company size",
+      "country": "Country",
+      "city": "City",
+      "description": "Short description",
+      "descriptionHelper": "Shows on every public listing.",
+      "verificationTitle": "Verification is required before your first acceptance — not now.",
+      "verificationBody": "You can draft listings, browse profiles, and prepare your workspace. Posting publicly and accepting interns needs business registry docs.",
+      "rneLabel": "RNE / business registry",
+      "rneOptional": "do now (optional)",
+      "rneHelper": "PDF or image · Reviewed by our team in <24h",
+      "saveDraft": "Save as draft",
+      "continue": "Continue → Post first internship"
+    }
+  },
   "dashboard": {
     "welcome": "Welcome to inturn",
     "intern": {

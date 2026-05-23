@@ -10,16 +10,80 @@
   },
   "auth": {
     "signIn": "Se connecter",
-    "signUp": "Creer un compte",
-    "signOut": "Se deconnecter",
+    "signUp": "Créer un compte",
+    "signOut": "Se déconnecter",
     "roleSelection": {
-      "title": "Choisissez votre role",
+      "title": "Choisissez votre rôle",
       "subtitle": "Comment souhaitez-vous utiliser inturn ?",
       "intern": "Je suis stagiaire",
       "internDescription": "Je cherche des stages et veux construire mon parcours professionnel",
       "company": "Je suis une entreprise",
       "companyDescription": "Je veux publier des stages et recruter des talents",
       "continue": "Continuer"
+    }
+  },
+  "onboarding": {
+    "intern": {
+      "basics": {
+        "title": "Parlez-nous de vous",
+        "subtitle": "30 secondes. Nous l'utilisons pour vous proposer les bons stages.",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "university": "Université",
+        "universityHelper": "Liste de 300+ universités et grandes écoles tunisiennes.",
+        "yearOfStudy": "Année d'études",
+        "fieldOfStudy": "Filière",
+        "city": "Ville",
+        "cityHelper": "Détermine le filtre sur-site par défaut. Ne bloque pas les candidatures à distance.",
+        "preferredLanguage": "Langue préférée",
+        "preferredLanguageHelper": "Définit la langue de l'application et celle par défaut pour vos candidatures.",
+        "continue": "Continuer →",
+        "back": "← Retour",
+        "step": "Profil"
+      },
+      "skills": {
+        "title": "Vos compétences",
+        "subtitle": "3 à 8 compétences. Soyez précis — « React » plutôt que « frontend ».",
+        "skillsLabel": "Compétences",
+        "rolesLabel": "Quel type de rôle visez-vous ?",
+        "rolesHelper": "Choisissez-en jusqu'à 3. Nous nous en servons pour le matching principal.",
+        "cvLabel": "CV",
+        "optional": "optionnel",
+        "cvHelper": "PDF, max 5 Mo · Nous le lisons pour suggérer plus de compétences",
+        "skipCv": "Passer pour le moment",
+        "linksLabel": "Portfolio et liens",
+        "addLink": "+ Ajouter un lien",
+        "back": "← Retour",
+        "finish": "Terminer le profil →",
+        "step": "Compétences + CV"
+      },
+      "done": {
+        "title": "Profil complété",
+        "subtitle": "Vous êtes prêt(e) à postuler. Découvrez des stages et construisez votre parcours.",
+        "open": "Ouvrir le tableau de bord →",
+        "step": "Terminé"
+      }
+    },
+    "company": {
+      "title": "À propos de votre entreprise",
+      "subtitle": "Ce que les partenaires et les stagiaires verront. Tout est modifiable plus tard.",
+      "logo": "Logo",
+      "optional": "Optionnel",
+      "name": "Nom de l'entreprise",
+      "website": "Site web",
+      "industry": "Secteur",
+      "size": "Taille de l'entreprise",
+      "country": "Pays",
+      "city": "Ville",
+      "description": "Description courte",
+      "descriptionHelper": "Affichée sur chaque annonce publique.",
+      "verificationTitle": "La vérification est requise avant votre première acceptation — pas maintenant.",
+      "verificationBody": "Vous pouvez rédiger des annonces, consulter des profils et préparer votre espace. Publier et accepter des stagiaires nécessite vos documents RNE.",
+      "rneLabel": "RNE / registre du commerce",
+      "rneOptional": "à faire maintenant (optionnel)",
+      "rneHelper": "PDF ou image · Vérifié par notre équipe en <24h",
+      "saveDraft": "Enregistrer comme brouillon",
+      "continue": "Continuer → Publier la première annonce"
     }
   },
   "dashboard": {
@@ -36,6 +100,6 @@
   },
   "landing": {
     "title": "La plateforme de stages pour la Tunisie",
-    "subtitle": "Decouvrez des stages, construisez votre parcours, connectez-vous avec les entreprises"
+    "subtitle": "Découvrez des stages, construisez votre parcours, connectez-vous avec les entreprises"
   }
 }
