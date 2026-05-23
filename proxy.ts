@@ -9,6 +9,10 @@ const isPublicRoute = createRouteMatcher([
   '/(fr|en)',
   '/(fr|en)?/sign-in(.*)',
   '/(fr|en)?/sign-up(.*)',
+  '/(fr|en)?/marketplace(.*)',
+  // Internship detail is public; /apply sits under it and is gated separately
+  // by the page (requires complete intern profile).
+  '/(fr|en)?/internships/([^/]+)',
   '/api/webhooks(.*)',
 ]);
 
