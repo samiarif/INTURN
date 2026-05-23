@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inturn — 02 User Journeys</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="doc.css" />
+<link rel="stylesheet" href="02-user-journeys.css" />
+</head>
+<body>
+
+<div class="doc-topbar">
+  <div class="doc-topbar-inner">
+    <div class="doc-brand">
+      <img src="assets/inturn-logo.png" alt="Inturn" />
+      <span>/ Foundations</span>
+    </div>
+    <nav class="doc-topnav">
+      <a href="index.html">Index</a>
+      <a href="01-brand-foundations.html">01 Brand</a>
+      <a href="02-user-journeys.html" class="active">02 Journeys</a>
+      <a href="03-component-spec.html">03 Components</a>
+    </nav>
+  </div>
+</div>
+
+<main class="doc-page wide">
+
+  <div class="doc-eyebrow">Deliverable 02 of 03 &middot; v0.2</div>
+  <h1 class="doc-title">Four critical user journeys.</h1>
+  <p class="doc-deck">Every Phase&nbsp;1 screen lives on one of these four arcs. Each journey lists the screens, names the user's emotional state, flags the friction, and marks the exact moment the platform pays for itself. No mockups yet &mdash; just the path.</p>
+
+  <dl class="doc-meta">
+    <div><dt>Scope</dt><dd>Phase 1 (8&ndash;12 weeks)</dd></div>
+    <div><dt>Roles in scope</dt><dd>Intern &middot; Company</dd></div>
+    <div><dt>Deferred</dt><dd>University, Admin</dd></div>
+    <div><dt>Screens covered</dt><dd>~42 unique</dd></div>
+  </dl>
+
+  <!-- v0.2 update banner -->
+  <section style="margin-top: 32px; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 12px; padding: 18px 22px; display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center;">
+    <div style="width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, #2BD9C8 0%, #8F70FE 30%, #8F1FFE 60%, #E467FE 100%); display: flex; align-items: center; justify-content: center; color: #FFF; font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 13px;">P</div>
+    <div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #92400E; margin-bottom: 4px;">v0.2 update &middot; Projects layer</div>
+      <div style="font-size: 13.5px; color: #78350F; line-height: 1.55;">A <b>Project</b> now sits above Internships. One project ("Brand audit") can contain N internships ("Visual designer", "UX researcher"). One internship still spawns one workspace per accepted intern. J3 picks up new steps. <b>Look for PROJ</b> tags below.</div>
+    </div>
+    <a href="#proj-addendum" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 14px; background: #92400E; color: #FFF; border-radius: 6px; text-decoration: none;">See addendum &rarr;</a>
+  </section>
+
+  <!-- Legend -->
+  <section class="legend">
+    <div class="legend-item"><span class="lg-dot lg-screen"></span><b>Screen</b><span>A page or modal the user sees</span></div>
+    <div class="legend-item"><span class="lg-dot lg-decision"></span><b>Decision</b><span>Branch point in the flow</span></div>
+    <div class="legend-item"><span class="lg-dot lg-system"></span><b>System</b><span>Off-screen: email, event, AI</span></div>
+    <div class="legend-item"><span class="lg-dot lg-moment"></span><b>Moment of value</b><span>The instant the product pays off</span></div>
+    <div class="legend-item"><span class="lg-dot lg-friction"></span><b>Friction</b><span>Risk of drop-off / confusion</span></div>
+  </section>
+
+
+  <!-- =================== JOURNEY 1 — INTERN: SIGNUP → APPLY =================== -->
+  <section class="journey" id="j1">
+    <header class="journey-head">
+      <div class="jh-num">J1</div>
+      <div>
+        <div class="jh-role"><span class="role-chip role-intern">Intern</span><span class="jh-stage">Pre-acceptance</span></div>
+        <h2 class="jh-title">Signup &rarr; profile complete &rarr; discover &rarr; apply</h2>
+        <p class="jh-deck">From "I heard about Inturn from a classmate" to "I just applied with one click." The whole loop must take under 8 minutes the first time, under 90 seconds for every application after.</p>
+      </div>
+      <ul class="jh-stats">
+        <li><b>11</b><span>screens</span></li>
+        <li><b>3</b><span>friction risks</span></li>
+        <li><b>2</b><span>moments of value</span></li>
+        <li><b>&lt;8m</b><span>target time</span></li>
+      </ul>
+    </header>
+
+    <!-- Stage strip -->
+    <div class="stage-strip">
+      <div class="stage stage-discover"><span class="st-num">01</span><span class="st-name">Arrive</span></div>
+      <div class="stage"><span class="st-num">02</span><span class="st-name">Sign up</span></div>
+      <div class="stage"><span class="st-num">03</span><span class="st-name">Build profile</span></div>
+      <div class="stage"><span class="st-num">04</span><span class="st-name">Discover</span></div>
+      <div class="stage"><span class="st-num">05</span><span class="st-name">Apply</span></div>
+      <div class="stage stage-wait"><span class="st-num">06</span><span class="st-name">Wait &amp; track</span></div>
+    </div>
+
+    <!-- Emotion graph -->
+    <div class="emo">
+      <svg class="emo-svg" viewBox="0 0 1200 100" preserveAspectRatio="none">
+        <path d="M 0,50 C 60,40 120,30 200,30 C 280,35 320,20 400,18 C 480,20 540,52 620,60 C 700,55 750,32 840,25 C 920,28 980,55 1060,68 C 1120,72 1170,50 1200,42" fill="none" stroke="#8F1FFE" stroke-width="2" />
+        <path d="M 0,50 C 60,40 120,30 200,30 C 280,35 320,20 400,18 C 480,20 540,52 620,60 C 700,55 750,32 840,25 C 920,28 980,55 1060,68 C 1120,72 1170,50 1200,42 L 1200,100 L 0,100 Z" fill="url(#emoGrad1)" opacity="0.18" />
+        <defs>
+          <linearGradient id="emoGrad1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8F1FFE"/><stop offset="1" stop-color="#8F1FFE" stop-opacity="0"/></linearGradient>
+        </defs>
+      </svg>
+      <div class="emo-labels">
+        <span>Curious</span><span>Skeptical</span><span>Engaged</span><span>Overwhelmed</span><span>Excited</span><span>Anxious</span>
+      </div>
+      <div class="emo-yaxis"><span>↑ confident</span><span>↓ doubtful</span></div>
+    </div>
+
+    <!-- Flow -->
+    <div class="flow">
+
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">01</span><span class="step-tag">Marketing</span></div>
+        <h3 class="step-name">Landing page</h3>
+        <ul class="step-do">
+          <li>Hero + three pillars</li>
+          <li>"Browse internships" without login</li>
+        </ul>
+        <div class="step-emotion"><span>Curious</span></div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">02</span><span class="step-tag">Public</span></div>
+        <h3 class="step-name">Marketplace (browsing)</h3>
+        <ul class="step-do">
+          <li>Filter by sector, virtual, paid</li>
+          <li>Read one listing in full</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>Forces login to see company name on small companies (decoy field)</div>
+      </div>
+      <div class="step step-decision">
+        <div class="step-meta"><span class="step-num">03</span><span class="step-tag">Decision</span></div>
+        <h3 class="step-name">"Apply now"</h3>
+        <ul class="step-do">
+          <li>Triggers signup wall</li>
+        </ul>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">04</span><span class="step-tag">Auth</span></div>
+        <h3 class="step-name">Sign up &middot; intern</h3>
+        <ul class="step-do">
+          <li>Magic link or email/pass</li>
+          <li>Role pre-selected</li>
+        </ul>
+        <div class="step-emotion"><span>Skeptical</span></div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">05</span><span class="step-tag">Onboarding</span></div>
+        <h3 class="step-name">Profile &middot; basics</h3>
+        <ul class="step-do">
+          <li>Name, university, year</li>
+          <li>FR/EN language preference</li>
+        </ul>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">06</span><span class="step-tag">Onboarding</span></div>
+        <h3 class="step-name">Profile &middot; skills + goals</h3>
+        <ul class="step-do">
+          <li>Skill tags (chips, max 8)</li>
+          <li>What kind of role do you want?</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>Tag soup &mdash; suggest skills from CV upload + role chips</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">07</span><span class="step-tag">Onboarding</span></div>
+        <h3 class="step-name">Profile &middot; CV / portfolio</h3>
+        <ul class="step-do">
+          <li>Upload CV (optional)</li>
+          <li>Link Behance / GitHub</li>
+        </ul>
+        <div class="step-emotion"><span>Engaged</span></div>
+      </div>
+      <div class="step step-moment">
+        <div class="step-meta"><span class="step-num">08</span><span class="step-tag step-tag-glow">Value moment #1</span></div>
+        <h3 class="step-name">Profile complete &mdash; "Here are 7 internships matched to you"</h3>
+        <ul class="step-do">
+          <li>Personalised list, ranked</li>
+          <li>Score with explanation, not a black box</li>
+        </ul>
+        <div class="step-why">Why it matters: intern sees the platform <i>working for them</i> within 8 minutes of arriving.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">09</span><span class="step-tag">Marketplace</span></div>
+        <h3 class="step-name">Internship detail</h3>
+        <ul class="step-do">
+          <li>Scope, skills, deliverables, deadline</li>
+          <li>Public discussion thread (read)</li>
+        </ul>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">10</span><span class="step-tag">Apply</span></div>
+        <h3 class="step-name">Apply &middot; one-click + cover note</h3>
+        <ul class="step-do">
+          <li>Profile auto-attaches</li>
+          <li>Optional custom questions (company-defined)</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>Custom questions kill conversion &mdash; cap at 3, show progress</div>
+      </div>
+      <div class="step step-moment">
+        <div class="step-meta"><span class="step-num">11</span><span class="step-tag step-tag-glow">Value moment #2</span></div>
+        <h3 class="step-name">Application tracker &mdash; "Your application is in the company's inbox"</h3>
+        <ul class="step-do">
+          <li>Pipeline status visible</li>
+          <li>"Expected response by" date</li>
+        </ul>
+        <div class="step-why">Why it matters: ends the WhatsApp-style anxiety of "did they get it?"</div>
+      </div>
+
+    </div>
+
+    <!-- summary -->
+    <div class="journey-summary">
+      <div class="summary-col">
+        <h4 class="doc-h4">What we must nail</h4>
+        <ul class="bullets">
+          <li>Browsing without login &mdash; SEO + frictionless first taste</li>
+          <li>Skill capture in &lt;90s &mdash; reuse for every future application</li>
+          <li>Match explanation, not a score &mdash; humans-in-the-loop principle</li>
+          <li>"Expected response by" date sets the WhatsApp killer expectation</li>
+        </ul>
+      </div>
+      <div class="summary-col">
+        <h4 class="doc-h4">What we'll be tempted to add but should not</h4>
+        <ul class="bullets bullets-warn">
+          <li>Skill assessments at signup (defer to Phase 2)</li>
+          <li>Avatar / profile photo as required field</li>
+          <li>"Recommended internships" carousel before signup (clutter)</li>
+          <li>Company branding during apply &mdash; keep apply screen neutral</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =================== JOURNEY 2 — INTERN: ACCEPTED → FIRST TASK =================== -->
+  <section class="journey" id="j2">
+    <header class="journey-head">
+      <div class="jh-num">J2</div>
+      <div>
+        <div class="jh-role"><span class="role-chip role-intern">Intern</span><span class="jh-stage">Post-acceptance</span></div>
+        <h2 class="jh-title">Receive invite &rarr; enter workspace &rarr; complete first task</h2>
+        <p class="jh-deck">The 24 hours after acceptance is where the platform either replaces WhatsApp or loses to it. Goal: intern submits their first deliverable inside Inturn within 5 days &mdash; never opens WhatsApp with the supervisor.</p>
+      </div>
+      <ul class="jh-stats">
+        <li><b>9</b><span>screens</span></li>
+        <li><b>4</b><span>friction risks</span></li>
+        <li><b>2</b><span>moments of value</span></li>
+        <li><b>5d</b><span>to first deliverable</span></li>
+      </ul>
+    </header>
+
+    <div class="stage-strip">
+      <div class="stage stage-discover"><span class="st-num">01</span><span class="st-name">Accepted</span></div>
+      <div class="stage"><span class="st-num">02</span><span class="st-name">Land</span></div>
+      <div class="stage"><span class="st-num">03</span><span class="st-name">Orient</span></div>
+      <div class="stage"><span class="st-num">04</span><span class="st-name">First task</span></div>
+      <div class="stage"><span class="st-num">05</span><span class="st-name">Submit</span></div>
+      <div class="stage stage-wait"><span class="st-num">06</span><span class="st-name">Feedback loop</span></div>
+    </div>
+
+    <div class="emo">
+      <svg class="emo-svg" viewBox="0 0 1200 100" preserveAspectRatio="none">
+        <path d="M 0,15 C 80,18 140,38 220,55 C 290,68 360,72 440,55 C 520,40 580,30 660,30 C 740,32 800,40 880,42 C 960,45 1020,30 1100,22 C 1150,20 1180,28 1200,30" fill="none" stroke="#8F1FFE" stroke-width="2" />
+        <path d="M 0,15 C 80,18 140,38 220,55 C 290,68 360,72 440,55 C 520,40 580,30 660,30 C 740,32 800,40 880,42 C 960,45 1020,30 1100,22 C 1150,20 1180,28 1200,30 L 1200,100 L 0,100 Z" fill="url(#emoGrad2)" opacity="0.18" />
+        <defs><linearGradient id="emoGrad2" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8F1FFE"/><stop offset="1" stop-color="#8F1FFE" stop-opacity="0"/></linearGradient></defs>
+      </svg>
+      <div class="emo-labels">
+        <span>Elated</span><span>Hesitant</span><span>Confused</span><span>Focused</span><span>Productive</span><span>Confident</span>
+      </div>
+      <div class="emo-yaxis"><span>↑ confident</span><span>↓ doubtful</span></div>
+    </div>
+
+    <div class="flow">
+      <div class="step step-system">
+        <div class="step-meta"><span class="step-num">01</span><span class="step-tag">Email + WhatsApp</span></div>
+        <h3 class="step-name">Acceptance notification</h3>
+        <ul class="step-do">
+          <li>Email + WhatsApp ping (Twilio)</li>
+          <li>Magic link straight into workspace</li>
+        </ul>
+        <div class="step-emotion"><span>Elated</span></div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">02</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Workspace &middot; Overview tab</h3>
+        <ul class="step-do">
+          <li>"Welcome, Yasmine" + supervisor name + face</li>
+          <li>Internship brief, dates, on-site / virtual</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>Empty state for tabs &mdash; show what's coming, not "no data"</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">03</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Workspace &middot; Tasks tab</h3>
+        <ul class="step-do">
+          <li>First task seeded by supervisor or template</li>
+          <li>Empty if not &mdash; show "ask your supervisor"</li>
+        </ul>
+        <div class="step-emotion"><span>Hesitant</span></div>
+      </div>
+      <div class="step step-decision">
+        <div class="step-meta"><span class="step-num">04</span><span class="step-tag">Decision</span></div>
+        <h3 class="step-name">First task present?</h3>
+        <ul class="step-do">
+          <li>Yes &rarr; open it</li>
+          <li>No &rarr; nudge supervisor (in-app + email)</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>If no task on day 1, intern goes back to WhatsApp. Auto-create a "Read the brief" task as fallback.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">05</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Task detail</h3>
+        <ul class="step-do">
+          <li>Scope, expected output, deadline</li>
+          <li>Comments thread + "I'm stuck" button</li>
+        </ul>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">06</span><span class="step-tag">AI</span></div>
+        <h3 class="step-name">"I'm stuck" &middot; AI unblocker</h3>
+        <ul class="step-do">
+          <li>AI asks intern to articulate the block</li>
+          <li>Drafts a clear question for the supervisor</li>
+        </ul>
+        <div class="step-why">Sprint 6 feature. Defer if late &mdash; but the button must exist from day one.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">07</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Deliverables tab &middot; upload</h3>
+        <ul class="step-do">
+          <li>Drag-drop file (UploadThing)</li>
+          <li>Note: what changed, what's open</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>Mobile upload from phone gallery &mdash; test before Sprint 2 ships</div>
+      </div>
+      <div class="step step-moment">
+        <div class="step-meta"><span class="step-num">08</span><span class="step-tag step-tag-glow">Value moment #1</span></div>
+        <h3 class="step-name">First deliverable submitted &mdash; recorded, timestamped</h3>
+        <ul class="step-do">
+          <li>"Yasmine submitted v1 of Brand Audit" event</li>
+          <li>Supervisor pinged in their inbox</li>
+        </ul>
+        <div class="step-why">First row in the performance dataset. The moat starts here.</div>
+      </div>
+      <div class="step step-moment">
+        <div class="step-meta"><span class="step-num">09</span><span class="step-tag step-tag-glow">Value moment #2</span></div>
+        <h3 class="step-name">Weekly check-in &mdash; AI-drafted status report</h3>
+        <ul class="step-do">
+          <li>AI drafts from workspace activity</li>
+          <li>Intern edits, sends to supervisor + university (later)</li>
+        </ul>
+        <div class="step-why">Replaces the "what did you do this week?" WhatsApp text the supervisor used to send.</div>
+        <div class="step-friction"><b>Friction</b>If AI draft is wrong, intern loses trust permanently &mdash; ship behind a feature flag</div>
+      </div>
+    </div>
+
+    <div class="journey-summary">
+      <div class="summary-col">
+        <h4 class="doc-h4">What we must nail</h4>
+        <ul class="bullets">
+          <li>First task within 24h of acceptance &mdash; or auto-seed one</li>
+          <li>Mobile upload works from a Tunisian phone, on 4G, first try</li>
+          <li>Supervisor's face is visible everywhere &mdash; presence reduces WhatsApp drift</li>
+          <li>"I'm stuck" is on every task. Even before the AI behind it works.</li>
+        </ul>
+      </div>
+      <div class="summary-col">
+        <h4 class="doc-h4">Risks to track in week 1</h4>
+        <ul class="bullets bullets-warn">
+          <li>If acceptance &rarr; first task takes &gt;48h, intern reverts to WhatsApp</li>
+          <li>If supervisor doesn't open Inturn within 24h of accepting, the loop breaks at their end (see J3)</li>
+          <li>If French translation lags English by &gt;1 release, FR-only interns get a broken experience</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =================== JOURNEY 3 — COMPANY: SIGNUP → ACCEPT =================== -->
+  <section class="journey" id="j3">
+    <header class="journey-head">
+      <div class="jh-num">J3</div>
+      <div>
+        <div class="jh-role"><span class="role-chip role-company">Company</span><span class="jh-stage">Pre-acceptance</span></div>
+        <h2 class="jh-title">Signup &rarr; post first internship &rarr; review applications &rarr; accept candidate</h2>
+        <p class="jh-deck">The company side is concierge in Phase&nbsp;1 &mdash; the first 10 design partners are onboarded personally in under 15 min. Every screen here must work without a sales call, but assume a call happened.</p>
+      </div>
+      <ul class="jh-stats">
+        <li><b>13</b><span>screens</span></li>
+        <li><b>4</b><span>friction risks</span></li>
+        <li><b>2</b><span>moments of value</span></li>
+        <li><b>&lt;15m</b><span>signup to first post</span></li>
+      </ul>
+    </header>
+
+    <div class="stage-strip">
+      <div class="stage stage-discover"><span class="st-num">01</span><span class="st-name">Sign up</span></div>
+      <div class="stage"><span class="st-num">02</span><span class="st-name">Verify org</span></div>
+      <div class="stage"><span class="st-num">03</span><span class="st-name">Post listing</span></div>
+      <div class="stage"><span class="st-num">04</span><span class="st-name">Receive apps</span></div>
+      <div class="stage"><span class="st-num">05</span><span class="st-name">Compare</span></div>
+      <div class="stage stage-wait"><span class="st-num">06</span><span class="st-name">Accept</span></div>
+    </div>
+
+    <div class="emo">
+      <svg class="emo-svg" viewBox="0 0 1200 100" preserveAspectRatio="none">
+        <path d="M 0,35 C 80,28 140,22 220,28 C 290,40 360,68 440,72 C 520,55 580,40 660,38 C 740,42 800,52 880,48 C 960,40 1020,28 1100,22 C 1160,20 1180,25 1200,28" fill="none" stroke="#8F1FFE" stroke-width="2" />
+        <path d="M 0,35 C 80,28 140,22 220,28 C 290,40 360,68 440,72 C 520,55 580,40 660,38 C 740,42 800,52 880,48 C 960,40 1020,28 1100,22 C 1160,20 1180,25 1200,28 L 1200,100 L 0,100 Z" fill="url(#emoGrad3)" opacity="0.18" />
+        <defs><linearGradient id="emoGrad3" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8F1FFE"/><stop offset="1" stop-color="#8F1FFE" stop-opacity="0"/></linearGradient></defs>
+      </svg>
+      <div class="emo-labels">
+        <span>Cautious</span><span>Patient</span><span>Frustrated</span><span>Curious</span><span>Decisive</span><span>Relieved</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">01</span><span class="step-tag">Auth</span></div>
+        <h3 class="step-name">Sign up &middot; company</h3>
+        <ul class="step-do">
+          <li>Role pre-selected from invite link</li>
+          <li>Work email required (no gmail)</li>
+        </ul>
+        <div class="step-emotion"><span>Cautious</span></div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">02</span><span class="step-tag">Onboarding</span></div>
+        <h3 class="step-name">Org profile &middot; basics</h3>
+        <ul class="step-do">
+          <li>Company name, sector, size</li>
+          <li>RNE / registry # (Tunisia)</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>Don't make legal docs required at signup &mdash; ask at first acceptance instead</div>
+      </div>
+      <div class="step step-system">
+        <div class="step-meta"><span class="step-num">03</span><span class="step-tag">Admin</span></div>
+        <h3 class="step-name">Verification queue (Phase 1 manual)</h3>
+        <ul class="step-do">
+          <li>Goes to admin panel</li>
+          <li>Sam approves design partners in &lt;1h</li>
+        </ul>
+      </div>
+      <div class="step step-screen" style="border-color: #FDE68A; box-shadow: 0 0 0 1px #FDE68A;">
+        <div class="step-meta"><span class="step-num">04</span><span class="step-tag" style="background:#FFFBEB;color:#92400E;padding:2px 7px;border-radius:3px;font-weight:600;font-size:9.5px;letter-spacing:0.06em;">PROJ &middot; new</span></div>
+        <h3 class="step-name">Create project (Draft)</h3>
+        <ul class="step-do">
+          <li>Manual form, or AI-assisted flow (Sprint 6)</li>
+          <li>Name, brief, goals, duration, mode, supervisors</li>
+          <li>Saved as Draft &mdash; no public listing yet</li>
+        </ul>
+        <div class="step-why">Project is the container. Goes Live the moment its first internship is published. Auto-archives after 30d if no internship is added.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">05</span><span class="step-tag">Post</span></div>
+        <h3 class="step-name">Add first internship to project</h3>
+        <ul class="step-do">
+          <li>Title, role, duration, # interns</li>
+          <li>Hybrid default, virtual opt-in</li>
+          <li>Inherits project's dates &amp; mode (editable)</li>
+        </ul>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">06</span><span class="step-tag">Post</span></div>
+        <h3 class="step-name">Internship &middot; deliverables</h3>
+        <ul class="step-do">
+          <li>List 3&ndash;5 expected deliverables</li>
+          <li>Deadline per deliverable (optional)</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>Companies skip this. Make it required &mdash; this is the seed of the workspace.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">07</span><span class="step-tag">AI</span></div>
+        <h3 class="step-name">Task clarity check &middot; AI suggests rewrites</h3>
+        <ul class="step-do">
+          <li>"This task is vague &mdash; consider..."</li>
+          <li>Suggest, never auto-edit</li>
+        </ul>
+        <div class="step-why">Sprint 6 AI feature. The hidden moat &mdash; better-scoped tasks &rarr; better data.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">08</span><span class="step-tag">Post</span></div>
+        <h3 class="step-name">Post internship &middot; questions (optional)</h3>
+        <ul class="step-do">
+          <li>0&ndash;3 custom questions</li>
+          <li>Helper: warn if &gt;3 hurts conversion</li>
+        </ul>
+      </div>
+      <div class="step step-moment">
+        <div class="step-meta"><span class="step-num">09</span><span class="step-tag step-tag-glow">Value moment #1</span></div>
+        <h3 class="step-name">Listing live &mdash; shareable link, public</h3>
+        <ul class="step-do">
+          <li>"You're live. Share this on LinkedIn."</li>
+          <li>Side panel: first 24h benchmark (views, applications)</li>
+        </ul>
+        <div class="step-why">Companies feel velocity. Compare to 2&ndash;3 days on Tanitjobs.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">10</span><span class="step-tag">Inbox</span></div>
+        <h3 class="step-name">Applications inbox</h3>
+        <ul class="step-do">
+          <li>Filter by skills, university, date</li>
+          <li>Status pipeline: New &rarr; Reviewed &rarr; Shortlisted</li>
+        </ul>
+        <div class="step-emotion"><span>Frustrated</span></div>
+        <div class="step-friction"><b>Friction</b>If &lt;3 applications in week 1, send Sam an alert &mdash; intervene manually</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">11</span><span class="step-tag">Inbox</span></div>
+        <h3 class="step-name">Candidate detail</h3>
+        <ul class="step-do">
+          <li>Profile, CV, custom answers</li>
+          <li>Internal notes (other reviewers can see)</li>
+        </ul>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">12</span><span class="step-tag">Inbox</span></div>
+        <h3 class="step-name">Compare 4 candidates side-by-side</h3>
+        <ul class="step-do">
+          <li>Profile fields aligned in a grid</li>
+          <li>Side notes, scoring (private)</li>
+        </ul>
+        <div class="step-emotion"><span>Decisive</span></div>
+      </div>
+      <div class="step step-moment">
+        <div class="step-meta"><span class="step-num">13</span><span class="step-tag step-tag-glow">Value moment #2</span></div>
+        <h3 class="step-name">Accept candidate &mdash; workspace auto-spawns</h3>
+        <ul class="step-do">
+          <li>"Workspace created for Acme &times; Yasmine"</li>
+          <li>Brief, deliverables, dates pre-seeded</li>
+        </ul>
+        <div class="step-why">The transition is invisible. No "now go set up your workspace" step. The workspace just exists.</div>
+      </div>
+    </div>
+
+    <div class="journey-summary">
+      <div class="summary-col">
+        <h4 class="doc-h4">What we must nail</h4>
+        <ul class="bullets">
+          <li>The first 10 companies are hand-held &mdash; design for that. Don't optimise for self-serve.</li>
+          <li>Deliverables required at post-time &mdash; otherwise the workspace launches empty</li>
+          <li>Compare view caps at 4 &mdash; forcing decision, not infinite browsing</li>
+          <li>Accept &rarr; workspace must be one click. Zero setup screens between.</li>
+        </ul>
+      </div>
+      <div class="summary-col">
+        <h4 class="doc-h4">What &mdash; explicitly &mdash; we won't build yet</h4>
+        <ul class="bullets bullets-warn">
+          <li>Bulk import of candidates from LinkedIn (Phase 2)</li>
+          <li>Email-based candidate communication (force in-app)</li>
+          <li>Calendar integrations beyond "generate meet link"</li>
+          <li>Auto-scoring or auto-rejection of any kind &mdash; never</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =================== JOURNEY 4 — COMPANY: SUPERVISE → EVALUATE =================== -->
+  <section class="journey" id="j4">
+    <header class="journey-head">
+      <div class="jh-num">J4</div>
+      <div>
+        <div class="jh-role"><span class="role-chip role-company">Company</span><span class="jh-stage">Post-acceptance</span></div>
+        <h2 class="jh-title">Supervise workspace &rarr; review deliverables &rarr; end-of-internship evaluation</h2>
+        <p class="jh-deck">8&ndash;16 weeks of low-frequency, high-value moments. The whole arc is judged on one outcome: does the company post a second internship? (Phase 1 success metric.)</p>
+      </div>
+      <ul class="jh-stats">
+        <li><b>10</b><span>screens</span></li>
+        <li><b>3</b><span>friction risks</span></li>
+        <li><b>2</b><span>moments of value</span></li>
+        <li><b>30%+</b><span>virtual target</span></li>
+      </ul>
+    </header>
+
+    <div class="stage-strip">
+      <div class="stage stage-discover"><span class="st-num">01</span><span class="st-name">Kickoff</span></div>
+      <div class="stage"><span class="st-num">02</span><span class="st-name">Assign tasks</span></div>
+      <div class="stage"><span class="st-num">03</span><span class="st-name">Weekly review</span></div>
+      <div class="stage"><span class="st-num">04</span><span class="st-name">Review deliverable</span></div>
+      <div class="stage"><span class="st-num">05</span><span class="st-name">Evaluate</span></div>
+      <div class="stage stage-wait"><span class="st-num">06</span><span class="st-name">Second post</span></div>
+    </div>
+
+    <div class="emo">
+      <svg class="emo-svg" viewBox="0 0 1200 100" preserveAspectRatio="none">
+        <path d="M 0,28 C 80,30 140,42 220,55 C 290,60 360,42 440,38 C 520,40 580,55 660,58 C 740,55 800,38 880,32 C 960,30 1020,38 1100,32 C 1160,22 1180,18 1200,20" fill="none" stroke="#8F1FFE" stroke-width="2" />
+        <path d="M 0,28 C 80,30 140,42 220,55 C 290,60 360,42 440,38 C 520,40 580,55 660,58 C 740,55 800,38 880,32 C 960,30 1020,38 1100,32 C 1160,22 1180,18 1200,20 L 1200,100 L 0,100 Z" fill="url(#emoGrad4)" opacity="0.18" />
+        <defs><linearGradient id="emoGrad4" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8F1FFE"/><stop offset="1" stop-color="#8F1FFE" stop-opacity="0"/></linearGradient></defs>
+      </svg>
+      <div class="emo-labels">
+        <span>Engaged</span><span>Distracted</span><span>Surprised</span><span>Focused</span><span>Reflective</span><span>Convinced</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">01</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Workspace &middot; supervisor Overview</h3>
+        <ul class="step-do">
+          <li>Pre-seeded brief from listing</li>
+          <li>Intern profile + face above the fold</li>
+        </ul>
+        <div class="step-emotion"><span>Engaged</span></div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">02</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Assign first task</h3>
+        <ul class="step-do">
+          <li>Task templates by sector</li>
+          <li>AI clarity check before save</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>If supervisor doesn't open workspace in 24h, J2 breaks for the intern. Email + WhatsApp nudge.</div>
+      </div>
+      <div class="step step-system">
+        <div class="step-meta"><span class="step-num">03</span><span class="step-tag">Notification</span></div>
+        <h3 class="step-name">Weekly digest (Friday 5pm)</h3>
+        <ul class="step-do">
+          <li>What's done, what's open, what's stuck</li>
+          <li>Email + in-app, never WhatsApp by default</li>
+        </ul>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">04</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Comments thread &middot; ad-hoc</h3>
+        <ul class="step-do">
+          <li>@-mention intern, leave async feedback</li>
+          <li>Mark as "blocked" &rarr; surfaces on Overview</li>
+        </ul>
+        <div class="step-emotion"><span>Distracted</span></div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">05</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Deliverables review</h3>
+        <ul class="step-do">
+          <li>Versioned (v1, v2, &hellip;)</li>
+          <li>Approve / request changes / annotate</li>
+        </ul>
+      </div>
+      <div class="step step-moment">
+        <div class="step-meta"><span class="step-num">06</span><span class="step-tag step-tag-glow">Value moment #1</span></div>
+        <h3 class="step-name">Activity timeline &mdash; "Yasmine has shipped 7 of 9 deliverables on time"</h3>
+        <ul class="step-do">
+          <li>Sparkline + on-time rate</li>
+          <li>"Better than 78% of interns on platform" (when N is big enough)</li>
+        </ul>
+        <div class="step-why">The moat shows. The supervisor sees data they cannot get from WhatsApp.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">07</span><span class="step-tag">Workspace</span></div>
+        <h3 class="step-name">Schedule a check-in</h3>
+        <ul class="step-do">
+          <li>Generates Jitsi / Meet link</li>
+          <li>Adds to timeline tab</li>
+        </ul>
+        <div class="step-friction"><b>Friction</b>Timezone bugs are the #1 way virtual internships break. Test with Tunisia/EU pairings before Sprint 5.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">08</span><span class="step-tag">Eval</span></div>
+        <h3 class="step-name">End-of-internship rubric</h3>
+        <ul class="step-do">
+          <li>Structured: communication, output quality, autonomy, growth</li>
+          <li>1&ndash;5 scale + one-sentence narrative per axis</li>
+        </ul>
+        <div class="step-emotion"><span>Reflective</span></div>
+        <div class="step-friction"><b>Friction</b>Rubrics get skipped. Lock end-of-internship state behind rubric completion.</div>
+      </div>
+      <div class="step step-screen">
+        <div class="step-meta"><span class="step-num">09</span><span class="step-tag">Eval</span></div>
+        <h3 class="step-name">Intern self-reflection (intern fills)</h3>
+        <ul class="step-do">
+          <li>What I learned, what was hard</li>
+          <li>Optional, but high-completion in test pool</li>
+        </ul>
+      </div>
+      <div class="step step-moment">
+        <div class="step-meta"><span class="step-num">10</span><span class="step-tag step-tag-glow">Value moment #2</span></div>
+        <h3 class="step-name">Intern Record generated &mdash; PDF + shareable link</h3>
+        <ul class="step-do">
+          <li>Verified by platform, signed off by company</li>
+          <li>Company gets "post a second internship" prompt</li>
+        </ul>
+        <div class="step-why">The deliverable that follows the intern into their career. The product Sam can put on the homepage.</div>
+      </div>
+    </div>
+
+    <div class="journey-summary">
+      <div class="summary-col">
+        <h4 class="doc-h4">What we must nail</h4>
+        <ul class="bullets">
+          <li>Friday weekly digest &mdash; the heartbeat that prevents WhatsApp drift</li>
+          <li>Versioned deliverables. v1 / v2 / v3 lives forever in the record.</li>
+          <li>End-of-internship rubric is non-skippable, but feels like a celebration not a form</li>
+          <li>"Post second internship" CTA appears the day after the rubric is signed</li>
+        </ul>
+      </div>
+      <div class="summary-col">
+        <h4 class="doc-h4">Cross-journey dependencies</h4>
+        <ul class="bullets">
+          <li>J3 step 5 (deliverables at post-time) seeds J4 step 5 (review deliverables). If J3 5 is skipped, J4 collapses.</li>
+          <li>J2 step 8 (intern submits) and J4 step 5 (supervisor reviews) are <b>the same event</b> from two angles. Build them together.</li>
+          <li>The Intern Record (J4 step 10) is reused on the next J1 step 7 &mdash; intern's next profile gets stronger.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Summary -->
+  <section class="doc-section" id="screen-list">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 02.5</div>
+      <div>
+        <h2 class="doc-section-title">Screen list &middot; mapped to sprints
+          <span class="sub">Every screen in the four journeys, tagged with the Phase&nbsp;1 sprint it ships in. This is the build order. If a screen isn't here, it's not Phase&nbsp;1.</span>
+        </h2>
+      </div>
+    </header>
+
+    <table class="screen-table">
+      <thead><tr><th>Screen</th><th>Journey</th><th>Sprint</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Landing page (existing, polish)</td><td>J1</td><td><span class="sp sp1">S1</span></td><td>Reuse existing Figma design</td></tr>
+        <tr><td>Sign up (intern + company)</td><td>J1, J3</td><td><span class="sp sp1">S1</span></td><td>Magic link + email/pass, Clerk</td></tr>
+        <tr><td>Profile basics (intern)</td><td>J1</td><td><span class="sp sp1">S1</span></td><td>FR/EN switch from this screen</td></tr>
+        <tr><td>Profile skills + CV</td><td>J1</td><td><span class="sp sp1">S1</span></td><td>UploadThing for CV</td></tr>
+        <tr><td>Org profile (company)</td><td>J3</td><td><span class="sp sp1">S1</span></td><td>RNE optional at signup</td></tr>
+        <tr style="background:#FFFBEB;"><td><b>Create project (manual)</b> <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.06em;background:#92400E;color:#FFF;padding:1px 5px;border-radius:3px;">PROJ</span></td><td>J3</td><td><span class="sp sp3">S3</span></td><td>Multi-step. Goes Draft until first internship is added.</td></tr>
+        <tr style="background:#FFFBEB;"><td><b>Project Hub</b> <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.06em;background:#92400E;color:#FFF;padding:1px 5px;border-radius:3px;">PROJ</span></td><td>J4</td><td><span class="sp sp3">S3</span></td><td>Supervisor's roll-up across all workspaces in a project. Lands here before drilling into a single workspace.</td></tr>
+        <tr style="background:#FFFBEB;"><td><b>Project switcher</b> <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.06em;background:#92400E;color:#FFF;padding:1px 5px;border-radius:3px;">PROJ</span></td><td>J4</td><td><span class="sp sp2">S2</span></td><td>Sidebar grouping: Projects &rarr; Internships &rarr; Workspaces.</td></tr>
+        <tr><td>Workspace shell (6 tabs)</td><td>J2, J4</td><td><span class="sp sp2">S2</span></td><td>Role-aware, single data model</td></tr>
+        <tr><td>Workspace &middot; Overview</td><td>J2, J4</td><td><span class="sp sp2">S2</span></td><td>Empty states designed first</td></tr>
+        <tr><td>Workspace &middot; Tasks (board + detail)</td><td>J2, J4</td><td><span class="sp sp2">S2</span></td><td>Drag between columns generates event</td></tr>
+        <tr><td>Workspace &middot; Deliverables (upload + versions)</td><td>J2, J4</td><td><span class="sp sp2">S2</span></td><td>v1 / v2 / v3 forever</td></tr>
+        <tr><td>Workspace &middot; Timeline</td><td>J4</td><td><span class="sp sp2">S2</span></td><td>Event stream rendered</td></tr>
+        <tr><td>Workspace &middot; Activity</td><td>J4</td><td><span class="sp sp2">S2</span></td><td>Filterable feed</td></tr>
+        <tr><td>Workspace &middot; Comments</td><td>J2, J4</td><td><span class="sp sp2">S2</span></td><td>@-mention, "stuck" flag</td></tr>
+        <tr><td>Post internship (multi-step)</td><td>J3</td><td><span class="sp sp3">S3</span></td><td>Required deliverables in step 2</td></tr>        <tr><td>Listing detail (private, company view)</td><td>J3</td><td><span class="sp sp3">S3</span></td><td>Edit, pause, duplicate</td></tr>
+        <tr><td>Applications inbox</td><td>J3</td><td><span class="sp sp3">S3</span></td><td>Status pipeline + filters</td></tr>
+        <tr><td>Candidate detail + notes</td><td>J3</td><td><span class="sp sp3">S3</span></td><td>Internal notes visible to team</td></tr>
+        <tr><td>Compare candidates (up to 4)</td><td>J3</td><td><span class="sp sp3">S3</span></td><td>Side-by-side grid</td></tr>
+        <tr><td>Marketplace browse (public)</td><td>J1</td><td><span class="sp sp4">S4</span></td><td>No login, SEO-friendly</td></tr>
+        <tr><td>Listing detail (public, intern view)</td><td>J1</td><td><span class="sp sp4">S4</span></td><td>Discussion thread visible</td></tr>
+        <tr><td>Apply (one-click + cover + Q's)</td><td>J1</td><td><span class="sp sp4">S4</span></td><td>Profile auto-attaches</td></tr>
+        <tr><td>Application tracker</td><td>J1</td><td><span class="sp sp4">S4</span></td><td>"Expected response by" date</td></tr>
+        <tr><td>Weekly check-in form</td><td>J2</td><td><span class="sp sp5">S5</span></td><td>Pre-fills from activity</td></tr>
+        <tr><td>Schedule check-in (Meet link)</td><td>J4</td><td><span class="sp sp5">S5</span></td><td>Generates link, not video</td></tr>
+        <tr><td>Async task templates</td><td>J4</td><td><span class="sp sp5">S5</span></td><td>By sector, editable</td></tr>
+        <tr><td>"I'm stuck" + AI unblocker</td><td>J2</td><td><span class="sp sp6">S6</span></td><td>Behind flag at first</td></tr>
+        <tr><td>Task clarity AI suggestions</td><td>J3</td><td><span class="sp sp6">S6</span></td><td>Suggest only, never auto-edit</td></tr>
+        <tr><td>Weekly summary drafter (AI)</td><td>J2</td><td><span class="sp sp6">S6</span></td><td>Draft, intern edits, sends</td></tr>
+        <tr><td>End-of-internship rubric</td><td>J4</td><td><span class="sp sp6">S6</span></td><td>Non-skippable</td></tr>
+        <tr><td>Intern self-reflection</td><td>J4</td><td><span class="sp sp6">S6</span></td><td>Optional</td></tr>
+        <tr><td>Intern Record (PDF + share link)</td><td>J4</td><td><span class="sp sp6">S6</span></td><td>The artifact</td></tr>
+        <tr><td>Community feed v1</td><td>&mdash;</td><td><span class="sp sp6">S6</span></td><td>Inturn-published only</td></tr>
+        <tr><td>Notifications center (in-app)</td><td>All</td><td><span class="sp sp6">S6</span></td><td>Bell + drawer</td></tr>
+        <tr><td>Admin verification queue</td><td>J3</td><td><span class="sp sp6">S6</span></td><td>Internal use</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- =================== PROJECTS ADDENDUM =================== -->
+  <section class="doc-section" id="proj-addendum" style="margin-top: 64px;">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 02.6 &middot; v0.2</div>
+      <div>
+        <h2 class="doc-section-title">Projects model addendum
+          <span class="sub">Added 23 May 2026. A Project is a container above Internships. Most Phase&nbsp;1 companies will have one project with one internship &mdash; the model exists for the cases where they don't.</span>
+        </h2>
+      </div>
+    </header>
+
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: start;">
+      <div>
+        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 14px;">The hierarchy</h3>
+        <div style="background: var(--doc-paper); border: 1px solid var(--doc-rule); border-radius: 12px; padding: 22px 24px;">
+          <div style="display: grid; grid-template-columns: 200px 1fr; gap: 16px 20px; align-items: baseline;">
+            <div style="font-weight: 600; color: var(--doc-brand);">Project</div>
+            <div style="font-size: 13.5px; color: var(--doc-ink-2); line-height: 1.55;">A real piece of work the company is doing. <b>1 company has N projects.</b> Examples: <i>Brand audit &amp; system refresh</i>, <i>Q3 growth experiments</i>. Has goals, phases, milestones, supervisors.</div>
+
+            <div style="font-weight: 600; padding-left: 16px; position: relative; color: var(--doc-ink);"><span style="position:absolute;left:0;top:8px;width:8px;height:1px;background:var(--doc-ink-3);"></span>Internship</div>
+            <div style="font-size: 13.5px; color: var(--doc-ink-2); line-height: 1.55;">One role on the project, posted publicly. <b>1 project has N internships.</b> <i>"Visual designer &middot; Brand audit"</i>, <i>"UX researcher &middot; Brand audit"</i>. Has scope, skills, deliverables, its own application pipeline. Can have M intern slots.</div>
+
+            <div style="font-weight: 600; padding-left: 32px; position: relative; color: var(--doc-ink);"><span style="position:absolute;left:16px;top:8px;width:8px;height:1px;background:var(--doc-ink-3);"></span>Workspace</div>
+            <div style="font-size: 13.5px; color: var(--doc-ink-2); line-height: 1.55;">One accepted intern's working surface. <b>1 internship has M workspaces, one per accepted intern.</b> Six tabs unchanged. <b>Workspaces are separate</b> &mdash; each intern only sees theirs. Supervisor sees them rolled up at the Project Hub.</div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 18px; font-weight: 600; margin: 28px 0 14px;">State machine</h3>
+        <div style="background: var(--doc-paper); border: 1px solid var(--doc-rule); border-radius: 12px; padding: 22px 24px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--doc-ink-2); line-height: 1.8;">
+          <div>draft &nbsp;─[add internship]─▶&nbsp; active &nbsp;─[all internships closed]─▶&nbsp; archived</div>
+          <div>&nbsp; │</div>
+          <div>&nbsp; └─[30d no internship]─▶&nbsp; auto-archived</div>
+        </div>
+        <p class="doc-p" style="margin-top: 14px; font-size: 13px;"><b>Draft</b> projects are private &mdash; only their company sees them. They cannot have public listings, cannot accept interns. Auto-archive prevents a graveyard.</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: var(--doc-paper); border: 1px solid var(--doc-rule); border-radius: 12px; padding: 20px 22px;">
+          <h4 class="doc-h4">What this changes</h4>
+          <ul class="bullets" style="margin-top: 10px;">
+            <li><b>J3 step 4</b> &mdash; new step: Create project (Draft) before adding internships</li>
+            <li><b>J4 entry</b> &mdash; supervisor lands at <b>Project Hub</b> before drilling into a single workspace</li>
+            <li><b>Sidebar</b> &mdash; group by Projects &rarr; Internships &rarr; Workspaces (was: flat list of internships)</li>
+            <li><b>Schema</b> &mdash; add <code class="doc-inline">projects</code> table, <code class="doc-inline">internships.project_id</code> FK, <code class="doc-inline">events.project_id</code> for rollups</li>
+          </ul>
+        </div>
+
+        <div style="background: var(--doc-paper); border: 1px solid var(--doc-rule); border-radius: 12px; padding: 20px 22px;">
+          <h4 class="doc-h4">What this does NOT change</h4>
+          <ul class="bullets bullets-warn" style="margin-top: 10px;">
+            <li>Interns never see project structure on their side &mdash; they see their workspace, period</li>
+            <li>Workspaces remain separate per intern &mdash; no shared workspace, ever</li>
+            <li>The 6-tab workspace is unchanged</li>
+            <li>One intern can be in multiple workspaces (across companies) &mdash; aggregated in Phase 2 only</li>
+          </ul>
+        </div>
+
+        <div style="background: rgba(143,31,254,0.06); border: 1px solid rgba(143,31,254,0.18); border-radius: 12px; padding: 20px 22px;">
+          <h4 class="doc-h4" style="color: var(--doc-brand);">The AI flow lands here</h4>
+          <p class="doc-p" style="margin-top: 4px; font-size: 13.5px;">The AI-assisted Project creation (see <a href="06-ai-project-flow.html" style="color: var(--doc-brand);">deliverable 06</a>) is a power-user replacement for J3 step 4. Manual creation ships in Sprint 3; AI flow on top of the same schema in Sprint 6. No migration required.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="doc-footer">
+    <span>02 &middot; User Journeys &middot; v0.2</span>
+    <span><a href="01-brand-foundations.html" style="text-decoration:none; color: var(--doc-ink);">&larr; 01 Brand</a> &nbsp;&middot;&nbsp; <a href="03-component-spec.html" style="text-decoration:none; color: var(--doc-ink);">03 Components &rarr;</a></span>
+  </div>
+
+</main>
+
+</body>
+</html>

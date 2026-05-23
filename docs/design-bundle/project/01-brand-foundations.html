@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inturn — 01 Brand Foundations</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="doc.css" />
+<link rel="stylesheet" href="01-brand-foundations.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" />
+</head>
+<body>
+
+<div class="doc-topbar">
+  <div class="doc-topbar-inner">
+    <div class="doc-brand">
+      <img src="assets/inturn-logo.png" alt="Inturn" />
+      <span>/ Foundations</span>
+    </div>
+    <nav class="doc-topnav">
+      <a href="index.html">Index</a>
+      <a href="01-brand-foundations.html" class="active">01 Brand</a>
+      <a href="02-user-journeys.html">02 Journeys</a>
+      <a href="03-component-spec.html">03 Components</a>
+    </nav>
+  </div>
+</div>
+
+<main class="doc-page">
+
+  <div class="doc-eyebrow">Deliverable 01 of 03 &middot; decided</div>
+  <h1 class="doc-title">Brand foundations &amp; design tokens.</h1>
+  <p class="doc-deck">Three visual directions were proposed. <b>Direction B &middot; Workshop</b> is the chosen system. A and C are kept below as reference and reasoning trail &mdash; struck through, do not implement.</p>
+
+  <dl class="doc-meta">
+    <div><dt>Status</dt><dd>Decided &middot; 23 May 2026</dd></div>
+    <div><dt>Chosen direction</dt><dd>B &middot; Workshop</dd></div>
+    <div><dt>Locked</dt><dd>Wordmark, gradient, name</dd></div>
+    <div><dt>Output</dt><dd>CSS vars + Tailwind v4</dd></div>
+  </dl>
+
+  <!-- =================== DECISION BANNER =================== -->
+  <section class="decision-banner" id="decision">
+    <div class="db-stamp">
+      <span class="db-letter">B</span>
+      <span class="db-name">Workshop</span>
+    </div>
+    <div class="db-body">
+      <div class="db-eyebrow">Chosen direction &middot; system of record</div>
+      <h2 class="db-title">Workshop is the system. Paste these tokens, ignore A and C.</h2>
+      <p class="db-deck">Productivity tool feel. Pure white surfaces, cool slate neutrals, one strong purple. Geist Sans across the board. Pairs 1:1 with shadcn/ui defaults &mdash; fastest path to ship Phase 1.</p>
+      <div class="db-actions">
+        <a href="#dir-b" class="db-btn db-btn-primary">Read full direction &rarr;</a>
+        <a href="#dir-b-tokens" class="db-btn db-btn-ghost">Jump to tokens &darr;</a>
+      </div>
+    </div>
+    <ul class="db-meta">
+      <li><span>Primary</span><b style="display:inline-flex;align-items:center;gap:8px"><i style="display:inline-block;width:14px;height:14px;background:#7C3AED;border-radius:3px"></i>#7C3AED</b></li>
+      <li><span>Neutrals</span><b>Slate (cool)</b></li>
+      <li><span>Type</span><b>Geist + Geist Mono</b></li>
+      <li><span>Radius base</span><b>6 / 8 / 12</b></li>
+      <li><span>Shadows</span><b>Short, neutral</b></li>
+      <li><span>Paste into</span><b><code>app/globals.css</code></b></li>
+    </ul>
+  </section>
+
+  <!-- =================== LOGO =================== -->
+  <section class="doc-section" id="logo">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 01.1</div>
+      <div>
+        <h2 class="doc-section-title">Logo usage
+          <span class="sub">The wordmark and gradient star are the only brand elements that don't change between directions. The rest of the page is theming on top of these.</span>
+        </h2>
+      </div>
+    </header>
+
+    <div class="logo-grid">
+
+      <div class="logo-anatomy">
+        <h4 class="doc-h4">Anatomy</h4>
+        <div class="logo-anatomy-bx">
+          <img src="assets/inturn-logo.png" alt="Inturn wordmark" />
+          <div class="logo-anatomy-tags">
+            <span class="tag tag-a">Gradient mark<br/><b>cyan &rarr; violet &rarr; magenta</b></span>
+            <span class="tag tag-b">Wordmark<br/><b>"Inturn" custom</b></span>
+          </div>
+        </div>
+        <p class="doc-p" style="margin-top: 16px;">Wordmark + gradient star always lock-up together at standard sizes. Minimum size: <b>20px</b> tall on screen, <b>14mm</b> in print. Below that, use the standalone mark.</p>
+      </div>
+
+      <div class="logo-sizes">
+        <h4 class="doc-h4">Standard sizes</h4>
+        <div class="logo-size-row"><img src="assets/inturn-logo.png" style="height: 18px"/><span class="meta"><b>18px</b> &middot; favicon, dense nav</span></div>
+        <div class="logo-size-row"><img src="assets/inturn-logo.png" style="height: 24px"/><span class="meta"><b>24px</b> &middot; sidebar, app header</span></div>
+        <div class="logo-size-row"><img src="assets/inturn-logo.png" style="height: 32px"/><span class="meta"><b>32px</b> &middot; auth screens, modals</span></div>
+        <div class="logo-size-row"><img src="assets/inturn-logo.png" style="height: 48px"/><span class="meta"><b>48px</b> &middot; marketing hero, splash</span></div>
+      </div>
+
+      <div class="logo-clearspace">
+        <h4 class="doc-h4">Clear space</h4>
+        <div class="clearspace-bx">
+          <div class="clearspace-grid">
+            <span class="cs-h cs-h1"></span><span class="cs-h cs-h2"></span>
+            <span class="cs-v cs-v1"></span><span class="cs-v cs-v2"></span>
+            <img src="assets/inturn-logo.png" alt="Inturn"/>
+            <span class="cs-tag cs-tag-top">x</span>
+            <span class="cs-tag cs-tag-right">x</span>
+          </div>
+          <p class="doc-p" style="margin-top: 12px;">Minimum clear space on all sides equals the height of the gradient star <b>(x)</b>. Never crop, lock against an edge, or overlap with adjacent UI.</p>
+        </div>
+      </div>
+
+      <div class="logo-onbg">
+        <h4 class="doc-h4">On color &middot; what works</h4>
+        <div class="logo-onbg-grid">
+          <div class="onbg-tile" style="background:#FFFFFF"><img src="assets/inturn-logo.png"/><span>White &middot; default</span></div>
+          <div class="onbg-tile" style="background:#FAF8F6"><img src="assets/inturn-logo.png"/><span>Cream &middot; marketing</span></div>
+          <div class="onbg-tile" style="background:#0F0F14"><img src="assets/inturn-logo.png" style="filter: invert(1) hue-rotate(180deg)"/><span>Ink &middot; needs inverted wordmark</span></div>
+          <div class="onbg-tile gradient-bg"><img src="assets/inturn-logo.png" style="filter: invert(1)"/><span>Gradient &middot; only with white wordmark</span></div>
+        </div>
+      </div>
+
+      <div class="logo-donts">
+        <h4 class="doc-h4">Never</h4>
+        <div class="donts-grid">
+          <div class="dont"><div class="dont-art"><img src="assets/inturn-logo.png" style="filter: grayscale(1)"/></div><span>Don't desaturate the gradient star.</span></div>
+          <div class="dont"><div class="dont-art"><img src="assets/inturn-logo.png" style="transform: scaleY(1.5)"/></div><span>Don't stretch or skew.</span></div>
+          <div class="dont"><div class="dont-art"><img src="assets/inturn-logo.png" style="filter: hue-rotate(160deg)"/></div><span>Don't recolor the gradient.</span></div>
+          <div class="dont"><div class="dont-art" style="background:#F8E1F4"><img src="assets/inturn-logo.png"/></div><span>Don't place on low-contrast pinks/purples.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =================== DIRECTIONS INTRO =================== -->
+  <section class="doc-section" id="directions">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 01.2</div>
+      <div>
+        <h2 class="doc-section-title">Pick a direction &mdash; A, B, or C
+          <span class="sub">Three meaningfully different takes on the same brand. Each carries the violet-gradient star but tunes everything around it. Read all three, then commit. Token block at the end of each section is what Claude Code installs.</span>
+        </h2>
+      </div>
+    </header>
+
+    <div class="dir-compare">
+      <a href="#dir-a" class="dir-compare-card dir-a is-rejected"><span class="dc-stamp">Rejected</span><span class="dc-num">A</span><span class="dc-name">Studio</span><span class="dc-desc">Editorial &middot; warm &middot; brand-forward</span></a>
+      <a href="#dir-b" class="dir-compare-card dir-b is-chosen"><span class="dc-stamp">Chosen</span><span class="dc-num">B</span><span class="dc-name">Workshop</span><span class="dc-desc">Productivity tool &middot; dense &middot; clean</span></a>
+      <a href="#dir-c" class="dir-compare-card dir-c is-rejected"><span class="dc-stamp">Rejected</span><span class="dc-num">C</span><span class="dc-name">Atlas</span><span class="dc-desc">Confident &middot; bold &middot; opinionated</span></a>
+    </div>
+  </section>
+
+
+  <!-- =================== DIRECTION A — STUDIO (REJECTED) =================== -->
+  <section class="doc-section dir dir-a-scope is-rejected" id="dir-a">
+    <div class="reject-banner"><b>Rejected &middot; reference only</b> &nbsp; Do not implement. Kept for reasoning trail.</div>
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ A &middot; Studio</div>
+      <div>
+        <h2 class="doc-section-title">A &middot; Studio
+          <span class="sub">Cream paper, deep ink, serif headlines. Reads more like a thoughtful publication than a SaaS dashboard. Best when the marketplace storytelling matters as much as the workspace tool.</span>
+        </h2>
+      </div>
+    </header>
+
+    <div class="dir-hero">
+      <div class="dir-hero-mood">
+        <div class="dir-hero-eyebrow">For companies</div>
+        <h3 class="dir-hero-headline">Find talent. <em>Shape</em> growth. Prove impact.</h3>
+        <p class="dir-hero-body">A platform where structured work happens natively &mdash; not in WhatsApp threads. Run interns through real briefs, not coffee chats.</p>
+        <div class="dir-hero-cta">
+          <button class="btn-primary">Post an internship</button>
+          <button class="btn-ghost">Watch the demo</button>
+        </div>
+      </div>
+      <ul class="dir-hero-meta">
+        <li><span>Feel</span><b>Editorial, generous, considered</b></li>
+        <li><span>Reference</span><b>Pitch &middot; Mercury &middot; Editorial New</b></li>
+        <li><span>Strength</span><b>Pulls in design partners on first impression</b></li>
+        <li><span>Risk</span><b>Slower scan in dense workspace screens</b></li>
+      </ul>
+    </div>
+
+    <div class="dir-grid">
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Primary</h4>
+        <div class="ramp">
+          <span class="swatch" style="background:#F5EEFF"><i>50</i><b>#F5EEFF</b></span>
+          <span class="swatch" style="background:#E4CFFF"><i>100</i><b>#E4CFFF</b></span>
+          <span class="swatch" style="background:#C7A2FF"><i>200</i><b>#C7A2FF</b></span>
+          <span class="swatch" style="background:#A875FF"><i>300</i><b>#A875FF</b></span>
+          <span class="swatch dark" style="background:#8F1FFE"><i>400</i><b>#8F1FFE</b></span>
+          <span class="swatch dark" style="background:#7A12E4"><i>500</i><b>#7A12E4</b></span>
+          <span class="swatch dark" style="background:#5B0CAB"><i>600</i><b>#5B0CAB</b></span>
+          <span class="swatch dark" style="background:#3B0772"><i>700</i><b>#3B0772</b></span>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Secondary &middot; gradient accent</h4>
+        <div class="grad-row">
+          <div class="grad" style="background: linear-gradient(120deg, #2BD9C8 0%, #8F70FE 30%, #8F1FFE 60%, #E467FE 100%)"></div>
+          <div class="grad-stops">
+            <span><i style="background:#2BD9C8"></i>#2BD9C8</span>
+            <span><i style="background:#8F70FE"></i>#8F70FE</span>
+            <span><i style="background:#8F1FFE"></i>#8F1FFE</span>
+            <span><i style="background:#E467FE"></i>#E467FE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Neutrals &middot; warm</h4>
+        <div class="ramp">
+          <span class="swatch" style="background:#FAF8F6"><i>50</i><b>#FAF8F6</b></span>
+          <span class="swatch" style="background:#F1ECE5"><i>100</i><b>#F1ECE5</b></span>
+          <span class="swatch" style="background:#DED8D1"><i>200</i><b>#DED8D1</b></span>
+          <span class="swatch" style="background:#B3ACA3"><i>300</i><b>#B3ACA3</b></span>
+          <span class="swatch dark" style="background:#7C7669"><i>500</i><b>#7C7669</b></span>
+          <span class="swatch dark" style="background:#4A4438"><i>700</i><b>#4A4438</b></span>
+          <span class="swatch dark" style="background:#1B1812"><i>900</i><b>#1B1812</b></span>
+          <span class="swatch dark" style="background:#0A0907"><i>950</i><b>#0A0907</b></span>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Semantic</h4>
+        <div class="sem-row">
+          <div class="sem"><span class="dot" style="background:#15803D"></span><b>Success</b><code>#15803D</code><span>Accepted, on-time, verified</span></div>
+          <div class="sem"><span class="dot" style="background:#C97B1A"></span><b>Warning</b><code>#C97B1A</code><span>Deadline near, needs review</span></div>
+          <div class="sem"><span class="dot" style="background:#B91C1C"></span><b>Danger</b><code>#B91C1C</code><span>Rejected, overdue, blocked</span></div>
+          <div class="sem"><span class="dot" style="background:#0369A1"></span><b>Info</b><code>#0369A1</code><span>Tip, neutral notification</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block dir-block-wide">
+        <h4 class="doc-h4">Typography &middot; Instrument Serif (display) + Inter (body)</h4>
+        <div class="type-scale">
+          <div class="type-row"><span class="t-label">display-xl &middot; 72</span><span class="t-sample" style="font-family:'Instrument Serif',serif; font-weight:400; font-size:72px; line-height:0.95; letter-spacing:-0.02em">Real work, recorded.</span></div>
+          <div class="type-row"><span class="t-label">display-lg &middot; 56</span><span class="t-sample" style="font-family:'Instrument Serif',serif; font-weight:400; font-size:56px; line-height:1; letter-spacing:-0.02em">The internship hub.</span></div>
+          <div class="type-row"><span class="t-label">display-md &middot; 40</span><span class="t-sample" style="font-family:'Instrument Serif',serif; font-weight:400; font-size:40px; line-height:1.05; letter-spacing:-0.015em">Where students grow into professionals.</span></div>
+          <div class="type-row"><span class="t-label">h1 &middot; 28</span><span class="t-sample" style="font-family:'Inter',sans-serif; font-weight:600; font-size:28px; line-height:1.2; letter-spacing:-0.015em">Workspace &middot; Acme &times; Yasmine</span></div>
+          <div class="type-row"><span class="t-label">h2 &middot; 22</span><span class="t-sample" style="font-family:'Inter',sans-serif; font-weight:600; font-size:22px; line-height:1.25; letter-spacing:-0.01em">Week 3 deliverables</span></div>
+          <div class="type-row"><span class="t-label">h3 &middot; 18</span><span class="t-sample" style="font-family:'Inter',sans-serif; font-weight:600; font-size:18px; line-height:1.3">Brand audit &middot; due Friday</span></div>
+          <div class="type-row"><span class="t-label">body &middot; 15</span><span class="t-sample" style="font-family:'Inter',sans-serif; font-weight:400; font-size:15px; line-height:1.55">A platform where structured async work happens natively. Tasks, deliverables, weekly check-ins, performance signals.</span></div>
+          <div class="type-row"><span class="t-label">body-sm &middot; 13</span><span class="t-sample" style="font-family:'Inter',sans-serif; font-weight:400; font-size:13px; line-height:1.5; color:#7C7669">Captions, helper text, table cells under load.</span></div>
+          <div class="type-row"><span class="t-label">mono &middot; 12</span><span class="t-sample" style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:12px; letter-spacing:0.04em; text-transform:uppercase">APP-2451 &middot; SHORTLISTED &middot; due jun 14</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Spacing &middot; 4px base, 8px rhythm</h4>
+        <div class="space-vis">
+          <div class="space-row"><span class="s-bar" style="width:4px"></span><b>1</b><span class="s-tok">4px</span><span class="s-use">hairline gap, icon-text</span></div>
+          <div class="space-row"><span class="s-bar" style="width:8px"></span><b>2</b><span class="s-tok">8px</span><span class="s-use">tight, list items</span></div>
+          <div class="space-row"><span class="s-bar" style="width:12px"></span><b>3</b><span class="s-tok">12px</span><span class="s-use">form fields, chip padding</span></div>
+          <div class="space-row"><span class="s-bar" style="width:16px"></span><b>4</b><span class="s-tok">16px</span><span class="s-use">base &middot; card padding-y</span></div>
+          <div class="space-row"><span class="s-bar" style="width:24px"></span><b>6</b><span class="s-tok">24px</span><span class="s-use">card padding-x, section gap</span></div>
+          <div class="space-row"><span class="s-bar" style="width:32px"></span><b>8</b><span class="s-tok">32px</span><span class="s-use">grid gutter</span></div>
+          <div class="space-row"><span class="s-bar" style="width:48px"></span><b>12</b><span class="s-tok">48px</span><span class="s-use">section blocks</span></div>
+          <div class="space-row"><span class="s-bar" style="width:80px"></span><b>20</b><span class="s-tok">80px</span><span class="s-use">page top padding</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Radius</h4>
+        <div class="rad-row">
+          <div class="rad-tile"><div class="rad-art" style="border-radius:4px"></div><b>sm &middot; 4</b><span>chips, tags</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:8px"></div><b>md &middot; 8</b><span>buttons, inputs</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:12px"></div><b>lg &middot; 12</b><span>cards, dropdowns</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:16px"></div><b>xl &middot; 16</b><span>modals, hero blocks</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:999px"></div><b>full</b><span>avatar, pill, switch</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Shadows &middot; long &amp; warm</h4>
+        <div class="sh-row">
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 1px 2px rgba(74,68,56,0.06)"></div><b>xs</b><span>0 1 2 / 0.06</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 2px 8px -2px rgba(74,68,56,0.10)"></div><b>sm</b><span>0 2 8 / 0.10</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 8px 24px -8px rgba(74,68,56,0.15)"></div><b>md</b><span>0 8 24 / 0.15</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 18px 40px -16px rgba(74,68,56,0.20)"></div><b>lg</b><span>0 18 40 / 0.20</span></div>
+        </div>
+      </div>
+    </div>
+
+    <details class="token-block" open>
+      <summary><span class="tb-chev"></span><span class="tb-label">Tokens &middot; <code>app/globals.css</code></span><span class="tb-act">Paste into codebase</span></summary>
+<pre class="doc-code"><span class="c-com">/* Inturn / Direction A — Studio
+   Paste into app/globals.css. Tailwind v4 reads these via @theme inline. */</span>
+<span class="c-sel">:root</span> {
+  <span class="c-com">/* Brand */</span>
+  <span class="c-key">--brand-50</span>: <span class="c-val">#F5EEFF</span>;
+  <span class="c-key">--brand-100</span>: <span class="c-val">#E4CFFF</span>;
+  <span class="c-key">--brand-200</span>: <span class="c-val">#C7A2FF</span>;
+  <span class="c-key">--brand-300</span>: <span class="c-val">#A875FF</span>;
+  <span class="c-key">--brand-400</span>: <span class="c-val">#8F1FFE</span>;
+  <span class="c-key">--brand-500</span>: <span class="c-val">#7A12E4</span>;
+  <span class="c-key">--brand-600</span>: <span class="c-val">#5B0CAB</span>;
+  <span class="c-key">--brand-700</span>: <span class="c-val">#3B0772</span>;
+  <span class="c-key">--brand-gradient</span>: <span class="c-val">linear-gradient(120deg,#2BD9C8 0%,#8F70FE 30%,#8F1FFE 60%,#E467FE 100%)</span>;
+
+  <span class="c-com">/* Warm neutrals */</span>
+  <span class="c-key">--bg</span>: <span class="c-val">#FAF8F6</span>;       <span class="c-com">/* page */</span>
+  <span class="c-key">--surface</span>: <span class="c-val">#FFFFFF</span>;  <span class="c-com">/* cards */</span>
+  <span class="c-key">--surface-muted</span>: <span class="c-val">#F1ECE5</span>;
+  <span class="c-key">--border</span>: <span class="c-val">#DED8D1</span>;
+  <span class="c-key">--border-strong</span>: <span class="c-val">#B3ACA3</span>;
+  <span class="c-key">--ink</span>: <span class="c-val">#1B1812</span>;       <span class="c-com">/* primary text */</span>
+  <span class="c-key">--ink-2</span>: <span class="c-val">#4A4438</span>;     <span class="c-com">/* body */</span>
+  <span class="c-key">--ink-3</span>: <span class="c-val">#7C7669</span>;     <span class="c-com">/* muted */</span>
+
+  <span class="c-com">/* Semantic */</span>
+  <span class="c-key">--success</span>: <span class="c-val">#15803D</span>;
+  <span class="c-key">--warning</span>: <span class="c-val">#C97B1A</span>;
+  <span class="c-key">--danger</span>: <span class="c-val">#B91C1C</span>;
+  <span class="c-key">--info</span>: <span class="c-val">#0369A1</span>;
+
+  <span class="c-com">/* Type — load Instrument Serif + Inter from next/font */</span>
+  <span class="c-key">--font-display</span>: <span class="c-val">"Instrument Serif", ui-serif, Georgia, serif</span>;
+  <span class="c-key">--font-sans</span>: <span class="c-val">"Inter", ui-sans-serif, system-ui, sans-serif</span>;
+  <span class="c-key">--font-mono</span>: <span class="c-val">"JetBrains Mono", ui-monospace, monospace</span>;
+
+  <span class="c-com">/* Radius */</span>
+  <span class="c-key">--radius-sm</span>: <span class="c-val">4px</span>;
+  <span class="c-key">--radius-md</span>: <span class="c-val">8px</span>;
+  <span class="c-key">--radius-lg</span>: <span class="c-val">12px</span>;
+  <span class="c-key">--radius-xl</span>: <span class="c-val">16px</span>;
+  <span class="c-key">--radius-full</span>: <span class="c-val">9999px</span>;
+
+  <span class="c-com">/* Shadows */</span>
+  <span class="c-key">--shadow-xs</span>: <span class="c-val">0 1px 2px 0 rgba(74,68,56,0.06)</span>;
+  <span class="c-key">--shadow-sm</span>: <span class="c-val">0 2px 8px -2px rgba(74,68,56,0.10)</span>;
+  <span class="c-key">--shadow-md</span>: <span class="c-val">0 8px 24px -8px rgba(74,68,56,0.15)</span>;
+  <span class="c-key">--shadow-lg</span>: <span class="c-val">0 18px 40px -16px rgba(74,68,56,0.20)</span>;
+}
+
+<span class="c-com">/* Tailwind v4 — tailwind.config.ts has @theme inline that aliases these */</span>
+<span class="c-sel">@theme inline</span> {
+  <span class="c-key">--color-bg</span>: <span class="c-val">var(--bg)</span>;
+  <span class="c-key">--color-surface</span>: <span class="c-val">var(--surface)</span>;
+  <span class="c-key">--color-brand</span>: <span class="c-val">var(--brand-400)</span>;
+  <span class="c-key">--color-ink</span>: <span class="c-val">var(--ink)</span>;
+  <span class="c-key">--font-display</span>: <span class="c-val">var(--font-display)</span>;
+  <span class="c-key">--font-sans</span>: <span class="c-val">var(--font-sans)</span>;
+}
+</pre>
+    </details>
+  </section>
+
+
+  <!-- =================== DIRECTION B — WORKSHOP (CHOSEN) =================== -->
+  <section class="doc-section dir dir-b-scope is-chosen" id="dir-b">
+    <div class="chosen-banner"><b>Chosen &middot; system of record</b> &nbsp; This is the only direction Claude Code reads.</div>
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ B &middot; Workshop</div>
+      <div>
+        <h2 class="doc-section-title">B &middot; Workshop
+          <span class="sub">Pure white surfaces, cool slate neutrals, one strong purple. Optimised for the workspace &mdash; data-dense, scan-fast, no editorial drag. Closest in spirit to Linear / Notion / Things.</span>
+        </h2>
+      </div>
+    </header>
+
+    <div class="dir-hero">
+      <div class="dir-hero-mood">
+        <div class="dir-hero-eyebrow">Workspace &middot; this week</div>
+        <h3 class="dir-hero-headline">Brand audit due Friday. Three deliverables open.</h3>
+        <p class="dir-hero-body">Yasmine moved 2 tasks to Review. Acme has 14 minutes of unread activity. Everything is logged, nothing is in WhatsApp.</p>
+        <div class="dir-hero-cta">
+          <button class="btn-primary">Open workspace</button>
+          <button class="btn-ghost">Today's tasks</button>
+        </div>
+      </div>
+      <ul class="dir-hero-meta">
+        <li><span>Feel</span><b>Quiet, capable, fast to scan</b></li>
+        <li><span>Reference</span><b>Linear &middot; Notion &middot; Things</b></li>
+        <li><span>Strength</span><b>Workspace screens stay legible under load</b></li>
+        <li><span>Risk</span><b>Marketing site reads as &quot;just another SaaS&quot;</b></li>
+      </ul>
+    </div>
+
+    <div class="dir-grid">
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Primary</h4>
+        <div class="ramp">
+          <span class="swatch" style="background:#F3EEFF"><i>50</i><b>#F3EEFF</b></span>
+          <span class="swatch" style="background:#DDCCFF"><i>100</i><b>#DDCCFF</b></span>
+          <span class="swatch" style="background:#BDA0FF"><i>200</i><b>#BDA0FF</b></span>
+          <span class="swatch dark" style="background:#9970FF"><i>300</i><b>#9970FF</b></span>
+          <span class="swatch dark" style="background:#7C3AED"><i>500</i><b>#7C3AED</b></span>
+          <span class="swatch dark" style="background:#6D28D9"><i>600</i><b>#6D28D9</b></span>
+          <span class="swatch dark" style="background:#5B21B6"><i>700</i><b>#5B21B6</b></span>
+          <span class="swatch dark" style="background:#3B1486"><i>800</i><b>#3B1486</b></span>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Secondary &middot; reserved for emphasis</h4>
+        <div class="ramp">
+          <span class="swatch" style="background:#ECFEFF"><i>50</i><b>#ECFEFF</b></span>
+          <span class="swatch" style="background:#A5F3FC"><i>200</i><b>#A5F3FC</b></span>
+          <span class="swatch dark" style="background:#06B6D4"><i>500</i><b>#06B6D4</b></span>
+          <span class="swatch dark" style="background:#0E7490"><i>700</i><b>#0E7490</b></span>
+        </div>
+        <p class="doc-p" style="margin-top:10px; font-size:13px;">Cyan is a moat-builder accent &mdash; verified records, performance signals, "data working for you" moments. Never on chrome.</p>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Neutrals &middot; cool slate</h4>
+        <div class="ramp">
+          <span class="swatch" style="background:#FFFFFF; border:1px solid #E2E8F0"><i>0</i><b>#FFFFFF</b></span>
+          <span class="swatch" style="background:#F8FAFC"><i>50</i><b>#F8FAFC</b></span>
+          <span class="swatch" style="background:#F1F5F9"><i>100</i><b>#F1F5F9</b></span>
+          <span class="swatch" style="background:#E2E8F0"><i>200</i><b>#E2E8F0</b></span>
+          <span class="swatch" style="background:#94A3B8"><i>400</i><b>#94A3B8</b></span>
+          <span class="swatch dark" style="background:#475569"><i>600</i><b>#475569</b></span>
+          <span class="swatch dark" style="background:#1E293B"><i>800</i><b>#1E293B</b></span>
+          <span class="swatch dark" style="background:#0F172A"><i>900</i><b>#0F172A</b></span>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Semantic</h4>
+        <div class="sem-row">
+          <div class="sem"><span class="dot" style="background:#16A34A"></span><b>Success</b><code>#16A34A</code><span>Accepted, on-time, verified</span></div>
+          <div class="sem"><span class="dot" style="background:#EA580C"></span><b>Warning</b><code>#EA580C</code><span>Deadline near, needs review</span></div>
+          <div class="sem"><span class="dot" style="background:#DC2626"></span><b>Danger</b><code>#DC2626</code><span>Rejected, overdue, blocked</span></div>
+          <div class="sem"><span class="dot" style="background:#0284C7"></span><b>Info</b><code>#0284C7</code><span>Tip, neutral notification</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block dir-block-wide">
+        <h4 class="doc-h4">Typography &middot; Geist Sans across the board</h4>
+        <div class="type-scale">
+          <div class="type-row"><span class="t-label">display-lg &middot; 56</span><span class="t-sample" style="font-family:'Geist',sans-serif; font-weight:600; font-size:56px; line-height:1; letter-spacing:-0.03em">One platform. One profile.</span></div>
+          <div class="type-row"><span class="t-label">display-md &middot; 40</span><span class="t-sample" style="font-family:'Geist',sans-serif; font-weight:600; font-size:40px; line-height:1.05; letter-spacing:-0.025em">Real work, recorded.</span></div>
+          <div class="type-row"><span class="t-label">h1 &middot; 28</span><span class="t-sample" style="font-family:'Geist',sans-serif; font-weight:600; font-size:28px; line-height:1.2; letter-spacing:-0.015em">Workspace &middot; Acme &times; Yasmine</span></div>
+          <div class="type-row"><span class="t-label">h2 &middot; 20</span><span class="t-sample" style="font-family:'Geist',sans-serif; font-weight:600; font-size:20px; line-height:1.25; letter-spacing:-0.01em">Week 3 deliverables</span></div>
+          <div class="type-row"><span class="t-label">h3 &middot; 16</span><span class="t-sample" style="font-family:'Geist',sans-serif; font-weight:600; font-size:16px; line-height:1.3">Brand audit &middot; due Friday</span></div>
+          <div class="type-row"><span class="t-label">body &middot; 14</span><span class="t-sample" style="font-family:'Geist',sans-serif; font-weight:400; font-size:14px; line-height:1.55">A platform where structured async work happens natively. Tasks, deliverables, weekly check-ins, performance signals.</span></div>
+          <div class="type-row"><span class="t-label">body-sm &middot; 13</span><span class="t-sample" style="font-family:'Geist',sans-serif; font-weight:400; font-size:13px; line-height:1.5; color:#475569">Captions, helper text, table cells under load.</span></div>
+          <div class="type-row"><span class="t-label">mono &middot; 12</span><span class="t-sample" style="font-family:'Geist Mono',monospace; font-weight:500; font-size:12px; letter-spacing:0">APP-2451 · SHORTLISTED · due jun 14</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Spacing &middot; 4px base, tighter rhythm</h4>
+        <div class="space-vis">
+          <div class="space-row"><span class="s-bar" style="width:2px"></span><b>0.5</b><span class="s-tok">2px</span><span class="s-use">borders, hairlines</span></div>
+          <div class="space-row"><span class="s-bar" style="width:4px"></span><b>1</b><span class="s-tok">4px</span><span class="s-use">icon nudge</span></div>
+          <div class="space-row"><span class="s-bar" style="width:8px"></span><b>2</b><span class="s-tok">8px</span><span class="s-use">tight, table cells</span></div>
+          <div class="space-row"><span class="s-bar" style="width:12px"></span><b>3</b><span class="s-tok">12px</span><span class="s-use">input padding-y</span></div>
+          <div class="space-row"><span class="s-bar" style="width:16px"></span><b>4</b><span class="s-tok">16px</span><span class="s-use">base &middot; card padding</span></div>
+          <div class="space-row"><span class="s-bar" style="width:24px"></span><b>6</b><span class="s-tok">24px</span><span class="s-use">section header gap</span></div>
+          <div class="space-row"><span class="s-bar" style="width:40px"></span><b>10</b><span class="s-tok">40px</span><span class="s-use">page section</span></div>
+          <div class="space-row"><span class="s-bar" style="width:64px"></span><b>16</b><span class="s-tok">64px</span><span class="s-use">page top padding</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Radius &middot; tight, consistent</h4>
+        <div class="rad-row">
+          <div class="rad-tile"><div class="rad-art" style="border-radius:2px"></div><b>sm &middot; 2</b><span>tags, badges</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:6px"></div><b>md &middot; 6</b><span>buttons, inputs</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:8px"></div><b>lg &middot; 8</b><span>cards</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:12px"></div><b>xl &middot; 12</b><span>modals</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:999px"></div><b>full</b><span>avatar, pill</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Shadows &middot; short, neutral</h4>
+        <div class="sh-row">
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 1px 2px rgba(15,23,42,0.05)"></div><b>xs</b><span>0 1 2 / 0.05</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04)"></div><b>sm</b><span>shadcn-default</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 4px 12px -2px rgba(15,23,42,0.10)"></div><b>md</b><span>dropdowns</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 12px 32px -10px rgba(15,23,42,0.18)"></div><b>lg</b><span>dialogs</span></div>
+        </div>
+      </div>
+    </div>
+
+    <details class="token-block is-chosen" id="dir-b-tokens" open>
+      <summary><span class="tb-chev"></span><span class="tb-label">Tokens &middot; <code>app/globals.css</code> &middot; <b>chosen</b></span><span class="tb-act">Copy &amp; paste</span></summary>
+<pre class="doc-code"><span class="c-com">/* Inturn / Direction B — Workshop
+   Paste into app/globals.css. Pairs with shadcn/ui default theme structure. */</span>
+<span class="c-sel">:root</span> {
+  <span class="c-com">/* Brand */</span>
+  <span class="c-key">--brand-50</span>: <span class="c-val">#F3EEFF</span>;
+  <span class="c-key">--brand-100</span>: <span class="c-val">#DDCCFF</span>;
+  <span class="c-key">--brand-200</span>: <span class="c-val">#BDA0FF</span>;
+  <span class="c-key">--brand-300</span>: <span class="c-val">#9970FF</span>;
+  <span class="c-key">--brand-500</span>: <span class="c-val">#7C3AED</span>;
+  <span class="c-key">--brand-600</span>: <span class="c-val">#6D28D9</span>;
+  <span class="c-key">--brand-700</span>: <span class="c-val">#5B21B6</span>;
+  <span class="c-key">--brand-800</span>: <span class="c-val">#3B1486</span>;
+  <span class="c-key">--brand-gradient</span>: <span class="c-val">linear-gradient(120deg,#2BD9C8 0%,#8F70FE 30%,#8F1FFE 60%,#E467FE 100%)</span>;
+
+  <span class="c-com">/* Cyan — emphasis only */</span>
+  <span class="c-key">--accent-500</span>: <span class="c-val">#06B6D4</span>;
+  <span class="c-key">--accent-700</span>: <span class="c-val">#0E7490</span>;
+
+  <span class="c-com">/* Cool neutrals (slate) */</span>
+  <span class="c-key">--bg</span>: <span class="c-val">#F8FAFC</span>;
+  <span class="c-key">--surface</span>: <span class="c-val">#FFFFFF</span>;
+  <span class="c-key">--surface-muted</span>: <span class="c-val">#F1F5F9</span>;
+  <span class="c-key">--border</span>: <span class="c-val">#E2E8F0</span>;
+  <span class="c-key">--border-strong</span>: <span class="c-val">#94A3B8</span>;
+  <span class="c-key">--ink</span>: <span class="c-val">#0F172A</span>;
+  <span class="c-key">--ink-2</span>: <span class="c-val">#334155</span>;
+  <span class="c-key">--ink-3</span>: <span class="c-val">#64748B</span>;
+
+  <span class="c-com">/* Semantic */</span>
+  <span class="c-key">--success</span>: <span class="c-val">#16A34A</span>;
+  <span class="c-key">--warning</span>: <span class="c-val">#EA580C</span>;
+  <span class="c-key">--danger</span>: <span class="c-val">#DC2626</span>;
+  <span class="c-key">--info</span>: <span class="c-val">#0284C7</span>;
+
+  <span class="c-com">/* Type — load Geist + Geist Mono from next/font */</span>
+  <span class="c-key">--font-display</span>: <span class="c-val">"Geist", ui-sans-serif, system-ui, sans-serif</span>;
+  <span class="c-key">--font-sans</span>: <span class="c-val">"Geist", ui-sans-serif, system-ui, sans-serif</span>;
+  <span class="c-key">--font-mono</span>: <span class="c-val">"Geist Mono", ui-monospace, monospace</span>;
+
+  <span class="c-com">/* Radius */</span>
+  <span class="c-key">--radius-sm</span>: <span class="c-val">2px</span>;
+  <span class="c-key">--radius-md</span>: <span class="c-val">6px</span>;
+  <span class="c-key">--radius-lg</span>: <span class="c-val">8px</span>;
+  <span class="c-key">--radius-xl</span>: <span class="c-val">12px</span>;
+  <span class="c-key">--radius-full</span>: <span class="c-val">9999px</span>;
+
+  <span class="c-com">/* Shadows — short, neutral */</span>
+  <span class="c-key">--shadow-xs</span>: <span class="c-val">0 1px 2px 0 rgba(15,23,42,0.05)</span>;
+  <span class="c-key">--shadow-sm</span>: <span class="c-val">0 1px 3px 0 rgba(15,23,42,0.08), 0 1px 2px 0 rgba(15,23,42,0.04)</span>;
+  <span class="c-key">--shadow-md</span>: <span class="c-val">0 4px 12px -2px rgba(15,23,42,0.10)</span>;
+  <span class="c-key">--shadow-lg</span>: <span class="c-val">0 12px 32px -10px rgba(15,23,42,0.18)</span>;
+}
+</pre>
+    </details>
+  </section>
+
+
+  <!-- =================== DIRECTION C — ATLAS (REJECTED) =================== -->
+  <section class="doc-section dir dir-c-scope is-rejected" id="dir-c">
+    <div class="reject-banner"><b>Rejected &middot; reference only</b> &nbsp; Do not implement. Kept for reasoning trail.</div>
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ C &middot; Atlas</div>
+      <div>
+        <h2 class="doc-section-title">C &middot; Atlas
+          <span class="sub">Confident, opinionated, immediately recognizable. Big display type with optical sizes, a lime/electric accent, layered borders instead of shadows. Best if Inturn needs to look distinctive from day one &mdash; Hi&nbsp;Interns can't copy it in six months.</span>
+        </h2>
+      </div>
+    </header>
+
+    <div class="dir-hero">
+      <div class="dir-hero-mood">
+        <div class="dir-hero-eyebrow">From Tunisia &middot; built for early talent</div>
+        <h3 class="dir-hero-headline">Real work. Verified.<br/><em>Compoundable.</em></h3>
+        <p class="dir-hero-body">Every task moved. Every deliverable shipped. Every check&#8209;in logged. A track record that follows the intern, not the company.</p>
+        <div class="dir-hero-cta">
+          <button class="btn-primary">Start a profile</button>
+          <button class="btn-ghost">For companies &rarr;</button>
+        </div>
+      </div>
+      <ul class="dir-hero-meta">
+        <li><span>Feel</span><b>Bold, distinctive, brand-led</b></li>
+        <li><span>Reference</span><b>Linear early &middot; Vercel &middot; Cash App</b></li>
+        <li><span>Strength</span><b>Defensible visual identity &mdash; the moat shows</b></li>
+        <li><span>Risk</span><b>Higher tolerance needed from conservative companies</b></li>
+      </ul>
+    </div>
+
+    <div class="dir-grid">
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Primary &middot; same violet, more saturated</h4>
+        <div class="ramp">
+          <span class="swatch" style="background:#F6EBFF"><i>50</i><b>#F6EBFF</b></span>
+          <span class="swatch" style="background:#E5C8FF"><i>100</i><b>#E5C8FF</b></span>
+          <span class="swatch" style="background:#C892FF"><i>200</i><b>#C892FF</b></span>
+          <span class="swatch dark" style="background:#A152FF"><i>300</i><b>#A152FF</b></span>
+          <span class="swatch dark" style="background:#8F1FFE"><i>400</i><b>#8F1FFE</b></span>
+          <span class="swatch dark" style="background:#6E0BD3"><i>500</i><b>#6E0BD3</b></span>
+          <span class="swatch dark" style="background:#4A0794"><i>600</i><b>#4A0794</b></span>
+          <span class="swatch dark" style="background:#28004F"><i>700</i><b>#28004F</b></span>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Accent &middot; lime / electric, sparing</h4>
+        <div class="ramp">
+          <span class="swatch" style="background:#F4FFC9"><i>50</i><b>#F4FFC9</b></span>
+          <span class="swatch" style="background:#E4FF7A"><i>200</i><b>#E4FF7A</b></span>
+          <span class="swatch" style="background:#DDFF55"><i>400</i><b>#DDFF55</b></span>
+          <span class="swatch dark" style="background:#A6CF14"><i>600</i><b>#A6CF14</b></span>
+        </div>
+        <p class="doc-p" style="margin-top:10px; font-size:13px;">Lime is reserved for high-signal moments: <i>internship matched</i>, <i>application accepted</i>, <i>record verified</i>. Never on chrome, never &gt;5% of a screen.</p>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Neutrals &middot; true black, paper</h4>
+        <div class="ramp">
+          <span class="swatch" style="background:#FFFFFF; border:1px solid #E5E5E5"><i>0</i><b>#FFFFFF</b></span>
+          <span class="swatch" style="background:#F7F6F4"><i>50</i><b>#F7F6F4</b></span>
+          <span class="swatch" style="background:#EAE7E2"><i>100</i><b>#EAE7E2</b></span>
+          <span class="swatch" style="background:#D2CFC8"><i>200</i><b>#D2CFC8</b></span>
+          <span class="swatch dark" style="background:#6E6B66"><i>500</i><b>#6E6B66</b></span>
+          <span class="swatch dark" style="background:#2A2825"><i>800</i><b>#2A2825</b></span>
+          <span class="swatch dark" style="background:#0A0A0F"><i>900</i><b>#0A0A0F</b></span>
+          <span class="swatch dark" style="background:#000000"><i>ink</i><b>#000000</b></span>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Colors / Semantic</h4>
+        <div class="sem-row">
+          <div class="sem"><span class="dot" style="background:#15803D"></span><b>Success</b><code>#15803D</code><span>Or lime accent for milestone wins</span></div>
+          <div class="sem"><span class="dot" style="background:#D97706"></span><b>Warning</b><code>#D97706</code><span>Deadline near, needs review</span></div>
+          <div class="sem"><span class="dot" style="background:#DC2626"></span><b>Danger</b><code>#DC2626</code><span>Rejected, overdue, blocked</span></div>
+          <div class="sem"><span class="dot" style="background:#1D4ED8"></span><b>Info</b><code>#1D4ED8</code><span>Tip, neutral notification</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block dir-block-wide">
+        <h4 class="doc-h4">Typography &middot; Bricolage Grotesque (display) + Inter (body)</h4>
+        <div class="type-scale">
+          <div class="type-row"><span class="t-label">display-xl &middot; 84</span><span class="t-sample" style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:84px; line-height:0.92; letter-spacing:-0.045em; font-variation-settings:'opsz' 84">Real work. Verified.</span></div>
+          <div class="type-row"><span class="t-label">display-lg &middot; 56</span><span class="t-sample" style="font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:56px; line-height:0.95; letter-spacing:-0.035em; font-variation-settings:'opsz' 56">The internship hub.</span></div>
+          <div class="type-row"><span class="t-label">display-md &middot; 40</span><span class="t-sample" style="font-family:'Bricolage Grotesque',sans-serif; font-weight:600; font-size:40px; line-height:1; letter-spacing:-0.025em; font-variation-settings:'opsz' 40">Where students grow.</span></div>
+          <div class="type-row"><span class="t-label">h1 &middot; 28</span><span class="t-sample" style="font-family:'Bricolage Grotesque',sans-serif; font-weight:600; font-size:28px; line-height:1.15; letter-spacing:-0.02em">Workspace &middot; Acme &times; Yasmine</span></div>
+          <div class="type-row"><span class="t-label">h2 &middot; 22</span><span class="t-sample" style="font-family:'Bricolage Grotesque',sans-serif; font-weight:600; font-size:22px; line-height:1.2; letter-spacing:-0.015em">Week 3 deliverables</span></div>
+          <div class="type-row"><span class="t-label">h3 &middot; 17</span><span class="t-sample" style="font-family:'Bricolage Grotesque',sans-serif; font-weight:600; font-size:17px; line-height:1.3">Brand audit &middot; due Friday</span></div>
+          <div class="type-row"><span class="t-label">body &middot; 15</span><span class="t-sample" style="font-family:'Inter',sans-serif; font-weight:400; font-size:15px; line-height:1.55">A platform where structured async work happens natively. Tasks, deliverables, weekly check-ins, performance signals.</span></div>
+          <div class="type-row"><span class="t-label">body-sm &middot; 13</span><span class="t-sample" style="font-family:'Inter',sans-serif; font-weight:400; font-size:13px; line-height:1.5; color:#6E6B66">Captions, helper text, table cells under load.</span></div>
+          <div class="type-row"><span class="t-label">mono &middot; 12</span><span class="t-sample" style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:12px; letter-spacing:0.06em; text-transform:uppercase">APP-2451 / SHORTLISTED / DUE JUN 14</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Spacing &middot; 8px base, generous</h4>
+        <div class="space-vis">
+          <div class="space-row"><span class="s-bar" style="width:4px"></span><b>0.5</b><span class="s-tok">4px</span><span class="s-use">icon nudge</span></div>
+          <div class="space-row"><span class="s-bar" style="width:8px"></span><b>1</b><span class="s-tok">8px</span><span class="s-use">tight, list items</span></div>
+          <div class="space-row"><span class="s-bar" style="width:16px"></span><b>2</b><span class="s-tok">16px</span><span class="s-use">base, card padding</span></div>
+          <div class="space-row"><span class="s-bar" style="width:24px"></span><b>3</b><span class="s-tok">24px</span><span class="s-use">section gap</span></div>
+          <div class="space-row"><span class="s-bar" style="width:32px"></span><b>4</b><span class="s-tok">32px</span><span class="s-use">page module gap</span></div>
+          <div class="space-row"><span class="s-bar" style="width:56px"></span><b>7</b><span class="s-tok">56px</span><span class="s-use">block gap</span></div>
+          <div class="space-row"><span class="s-bar" style="width:96px"></span><b>12</b><span class="s-tok">96px</span><span class="s-use">page section</span></div>
+          <div class="space-row"><span class="s-bar" style="width:144px"></span><b>18</b><span class="s-tok">144px</span><span class="s-use">marketing rhythm</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Radius &middot; one size, mostly</h4>
+        <div class="rad-row">
+          <div class="rad-tile"><div class="rad-art" style="border-radius:0"></div><b>none</b><span>tables, dividers</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:6px"></div><b>sm &middot; 6</b><span>chips, tags</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:10px"></div><b>md &middot; 10</b><span>buttons, inputs, cards</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:20px"></div><b>lg &middot; 20</b><span>hero blocks, modals</span></div>
+          <div class="rad-tile"><div class="rad-art" style="border-radius:999px"></div><b>full</b><span>avatar, pill</span></div>
+        </div>
+      </div>
+
+      <div class="dir-block">
+        <h4 class="doc-h4">Shadows &middot; borders do the work</h4>
+        <div class="sh-row">
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: inset 0 0 0 1px #EAE7E2"></div><b>border</b><span>default, replaces xs/sm</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: inset 0 0 0 1px #0A0A0F"></div><b>border-strong</b><span>focus, selected</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 8px 0 -2px #EAE7E2, inset 0 0 0 1px #0A0A0F"></div><b>stack</b><span>cards on cards</span></div>
+          <div class="sh-tile"><div class="sh-art" style="box-shadow: 0 24px 48px -16px rgba(10,10,15,0.25)"></div><b>overlay</b><span>dialog only</span></div>
+        </div>
+      </div>
+    </div>
+
+    <details class="token-block" open>
+      <summary><span class="tb-chev"></span><span class="tb-label">Tokens &middot; <code>app/globals.css</code></span><span class="tb-act">Paste into codebase</span></summary>
+<pre class="doc-code"><span class="c-com">/* Inturn / Direction C — Atlas
+   Paste into app/globals.css. Use a stronger base radius and skip most shadows. */</span>
+<span class="c-sel">:root</span> {
+  <span class="c-com">/* Brand */</span>
+  <span class="c-key">--brand-50</span>: <span class="c-val">#F6EBFF</span>;
+  <span class="c-key">--brand-100</span>: <span class="c-val">#E5C8FF</span>;
+  <span class="c-key">--brand-200</span>: <span class="c-val">#C892FF</span>;
+  <span class="c-key">--brand-300</span>: <span class="c-val">#A152FF</span>;
+  <span class="c-key">--brand-400</span>: <span class="c-val">#8F1FFE</span>;
+  <span class="c-key">--brand-500</span>: <span class="c-val">#6E0BD3</span>;
+  <span class="c-key">--brand-600</span>: <span class="c-val">#4A0794</span>;
+  <span class="c-key">--brand-700</span>: <span class="c-val">#28004F</span>;
+  <span class="c-key">--brand-gradient</span>: <span class="c-val">linear-gradient(120deg,#2BD9C8 0%,#8F70FE 30%,#8F1FFE 60%,#E467FE 100%)</span>;
+
+  <span class="c-com">/* Lime — reserved for high-signal */</span>
+  <span class="c-key">--accent-200</span>: <span class="c-val">#E4FF7A</span>;
+  <span class="c-key">--accent-400</span>: <span class="c-val">#DDFF55</span>;
+  <span class="c-key">--accent-600</span>: <span class="c-val">#A6CF14</span>;
+
+  <span class="c-com">/* Neutrals */</span>
+  <span class="c-key">--bg</span>: <span class="c-val">#F7F6F4</span>;
+  <span class="c-key">--surface</span>: <span class="c-val">#FFFFFF</span>;
+  <span class="c-key">--surface-muted</span>: <span class="c-val">#EAE7E2</span>;
+  <span class="c-key">--border</span>: <span class="c-val">#EAE7E2</span>;
+  <span class="c-key">--border-strong</span>: <span class="c-val">#0A0A0F</span>;
+  <span class="c-key">--ink</span>: <span class="c-val">#0A0A0F</span>;
+  <span class="c-key">--ink-2</span>: <span class="c-val">#2A2825</span>;
+  <span class="c-key">--ink-3</span>: <span class="c-val">#6E6B66</span>;
+
+  <span class="c-com">/* Semantic */</span>
+  <span class="c-key">--success</span>: <span class="c-val">#15803D</span>;
+  <span class="c-key">--warning</span>: <span class="c-val">#D97706</span>;
+  <span class="c-key">--danger</span>: <span class="c-val">#DC2626</span>;
+  <span class="c-key">--info</span>: <span class="c-val">#1D4ED8</span>;
+
+  <span class="c-com">/* Type — load Bricolage Grotesque + Inter from next/font */</span>
+  <span class="c-key">--font-display</span>: <span class="c-val">"Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif</span>;
+  <span class="c-key">--font-sans</span>: <span class="c-val">"Inter", ui-sans-serif, system-ui, sans-serif</span>;
+  <span class="c-key">--font-mono</span>: <span class="c-val">"JetBrains Mono", ui-monospace, monospace</span>;
+
+  <span class="c-com">/* Radius — one base, mostly */</span>
+  <span class="c-key">--radius-sm</span>: <span class="c-val">6px</span>;
+  <span class="c-key">--radius-md</span>: <span class="c-val">10px</span>;
+  <span class="c-key">--radius-lg</span>: <span class="c-val">10px</span>;
+  <span class="c-key">--radius-xl</span>: <span class="c-val">20px</span>;
+  <span class="c-key">--radius-full</span>: <span class="c-val">9999px</span>;
+
+  <span class="c-com">/* Shadows — borders first */</span>
+  <span class="c-key">--shadow-border</span>: <span class="c-val">inset 0 0 0 1px var(--border)</span>;
+  <span class="c-key">--shadow-ink</span>: <span class="c-val">inset 0 0 0 1px var(--border-strong)</span>;
+  <span class="c-key">--shadow-stack</span>: <span class="c-val">0 8px 0 -2px var(--border), inset 0 0 0 1px var(--border-strong)</span>;
+  <span class="c-key">--shadow-overlay</span>: <span class="c-val">0 24px 48px -16px rgba(10,10,15,0.25)</span>;
+}
+</pre>
+    </details>
+  </section>
+
+
+  <!-- =================== DECISION =================== -->
+  <section class="doc-section" id="decide">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 01.3</div>
+      <div>
+        <h2 class="doc-section-title">Why B won
+          <span class="sub">Decision recorded 23 May 2026. The table below is preserved as the reasoning trail &mdash; row by row, here's how Workshop scored against the alternatives.</span>
+        </h2>
+      </div>
+    </header>
+
+    <table class="decide-table">
+      <thead>
+        <tr><th>Pick&hellip;</th><th>A &middot; Studio</th><th>B &middot; Workshop</th><th>C &middot; Atlas</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>If the marketing site needs to <b>charm design partners</b> on first impression</td><td><span class="chip good">Best</span></td><td><span class="chip muted">OK</span></td><td><span class="chip good">Strong</span></td></tr>
+        <tr><td>If the workspace needs to <b>scan fast under load</b></td><td><span class="chip muted">OK</span></td><td><span class="chip good">Best</span></td><td><span class="chip muted">OK</span></td></tr>
+        <tr><td>If you want to look <b>distinctive from Hi&nbsp;Interns</b> immediately</td><td><span class="chip good">Strong</span></td><td><span class="chip muted">Weakest</span></td><td><span class="chip good">Best</span></td></tr>
+        <tr><td>If you'll be <b>iterating fast</b> with limited design hours</td><td><span class="chip muted">OK</span></td><td><span class="chip good">Best</span> (shadcn-native)</td><td><span class="chip warn">Costlier</span></td></tr>
+        <tr><td>If your <b>French copy</b> needs to read naturally (longer words)</td><td><span class="chip good">Best</span> (serif handles it)</td><td><span class="chip good">Good</span></td><td><span class="chip muted">Tight</span> at display sizes</td></tr>
+        <tr><td>If <b>universities &amp; institutions</b> are your near-term buyers</td><td><span class="chip good">Best</span> (trust)</td><td><span class="chip good">Good</span></td><td><span class="chip warn">Reads young</span></td></tr>
+      </tbody>
+    </table>
+
+    <p class="doc-p" style="margin-top: 32px; max-width: 760px;"><b>Decided.</b> Workshop is the system. The existing Studio-flavored landing page stays as is &mdash; it does the brand-impression work at the top of funnel. The chosen direction governs everything behind signup. Bring violet in deliberately at moments of value: match score chip, application-accepted toast, the Intern Record artifact.</p>
+  </section>
+
+  <div class="doc-footer">
+    <span>01 &middot; Brand foundations &middot; v0.1</span>
+    <span>Next &rarr; <a href="02-user-journeys.html" style="text-decoration:none; color: var(--doc-ink);">02 User Journeys</a></span>
+  </div>
+
+</main>
+
+</body>
+</html>

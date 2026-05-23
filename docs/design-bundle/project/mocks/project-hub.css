@@ -1,0 +1,409 @@
+/* Project Hub — supervisor's roll-up screen.
+   Reuses every token + chrome from workspace.css; only the Hub-specific
+   pieces live here (phase strip, internship roster row, team cluster). */
+
+/* ------------------------------------------------------------------
+   Project brief — bigger, with goals list + phase strip embedded.
+   ------------------------------------------------------------------ */
+.ws .ph-brief {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 28px;
+  align-items: start;
+  padding: 24px 26px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+}
+.ws .ph-brief::before {
+  content: "";
+  position: absolute; top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(143,31,254,0.10), transparent 70%);
+  pointer-events: none;
+}
+
+.ws .ph-brief-eyebrow {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+.ws .ph-brief-eyebrow .sep { color: var(--ink-4); margin: 0 6px; }
+.ws .ph-brief-title {
+  font-size: 28px; font-weight: 600; letter-spacing: -0.025em;
+  color: var(--ink);
+  text-wrap: balance;
+  margin-bottom: 10px;
+}
+.ws .ph-brief-desc {
+  font-size: 14px; color: var(--ink-2); line-height: 1.55;
+  max-width: 56ch;
+  margin-bottom: 14px;
+}
+
+.ws .ph-goals {
+  list-style: none;
+  padding: 0; margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ws .ph-goals li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.ws .ph-goals li::before {
+  content: ""; position: absolute; left: 0; top: 8px;
+  width: 12px; height: 1px;
+  background: var(--brand);
+}
+.ws .ph-goals li b { color: var(--ink); font-weight: 500; }
+
+.ws .ph-brief-meta {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  font-size: 12.5px; color: var(--ink-2);
+  margin-top: 2px;
+}
+.ws .ph-brief-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.ws .ph-brief-meta b { color: var(--ink); font-weight: 500; }
+.ws .ph-brief-meta .pip { width: 4px; height: 4px; border-radius: 99px; background: var(--ink-4); }
+
+/* The team cluster on the right side of the brief */
+.ws .ph-brief-team { position: relative; z-index: 1; }
+.ws .ph-brief-team h6 {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.ws .ph-brief-team-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+.ws .ph-brief-team-row:last-child { border-bottom: 0; }
+.ws .ph-brief-team-row .meta { flex: 1; min-width: 0; }
+.ws .ph-brief-team-row .name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.ws .ph-brief-team-row .role { font-size: 11.5px; color: var(--ink-3); }
+
+/* ------------------------------------------------------------------
+   Phase strip
+   Four phases laid out as a horizontal track with the active one
+   highlighted. Lives in its own card.
+   ------------------------------------------------------------------ */
+.ws .ph-phases {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative;
+  margin-top: 16px;
+}
+.ws .ph-phases::before {
+  content: "";
+  position: absolute;
+  top: 14px; left: 12px; right: 12px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 999px;
+  z-index: 0;
+}
+.ws .ph-phases::after {
+  /* progress overlay — colored portion */
+  content: "";
+  position: absolute;
+  top: 14px; left: 12px;
+  height: 2px;
+  width: calc(25% + 12px); /* through phase 1, into phase 2 a touch */
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  border-radius: 999px;
+  z-index: 0;
+}
+
+.ws .ph-phase {
+  position: relative;
+  z-index: 1;
+  padding-top: 36px;
+  text-align: left;
+  padding-right: 18px;
+}
+.ws .ph-phase .pip {
+  position: absolute;
+  top: 6px; left: 0;
+  width: 16px; height: 16px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: 0 0 0 4px var(--surface);
+}
+.ws .ph-phase.done .pip {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+.ws .ph-phase.done .pip::after {
+  content: "";
+  position: absolute;
+  left: 3px; top: 0;
+  width: 4px; height: 8px;
+  border-right: 2px solid #FFF; border-bottom: 2px solid #FFF;
+  transform: rotate(45deg);
+}
+.ws .ph-phase.now .pip {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 7px var(--accent-50);
+}
+.ws .ph-phase.now .pip::after {
+  content: "";
+  position: absolute;
+  left: 3px; top: 3px;
+  width: 6px; height: 6px;
+  border-radius: 99px;
+  background: var(--accent);
+}
+.ws .ph-phase .num {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 2px;
+}
+.ws .ph-phase.now .num { color: var(--accent); }
+.ws .ph-phase.done .num { color: var(--brand); }
+.ws .ph-phase .name {
+  font-size: 13.5px; font-weight: 500; color: var(--ink);
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+}
+.ws .ph-phase.upcoming .name { color: var(--ink-2); }
+.ws .ph-phase .wks {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px; color: var(--ink-3);
+  letter-spacing: 0.02em;
+}
+
+/* ------------------------------------------------------------------
+   Internships card
+   Each row: role + intern avatar + workspace progress + open link.
+   ------------------------------------------------------------------ */
+.ws .ph-intern-list {
+  display: flex; flex-direction: column;
+  margin: -8px -4px;
+}
+.ws .ph-intern {
+  display: grid;
+  grid-template-columns: 40px 1fr 180px 200px auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 8px;
+  border-radius: var(--radius);
+  border-bottom: 1px solid var(--border);
+}
+.ws .ph-intern:last-child { border-bottom: 0; }
+.ws .ph-intern:hover { background: var(--surface-muted); }
+
+.ws .ph-intern-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--brand-50);
+  border: 1px solid var(--brand-100);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 600;
+  color: var(--brand-600);
+  letter-spacing: 0.02em;
+}
+.ws .ph-intern-role {
+  min-width: 0;
+}
+.ws .ph-intern-role .role-name {
+  font-size: 14px; font-weight: 500; color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.ws .ph-intern-role .role-meta {
+  font-size: 11.5px; color: var(--ink-3);
+  margin-top: 2px;
+  font-family: 'Geist Mono', monospace; letter-spacing: 0.02em;
+}
+
+.ws .ph-intern-person {
+  display: flex; align-items: center; gap: 10px;
+  min-width: 0;
+}
+.ws .ph-intern-person .who { min-width: 0; }
+.ws .ph-intern-person .pn {
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ws .ph-intern-person .pm {
+  font-size: 11.5px; color: var(--ink-3);
+}
+
+/* compact progress block — tasks/deliverables count */
+.ws .ph-intern-prog {
+  display: flex; align-items: center; gap: 14px;
+}
+.ws .ph-intern-prog .col {
+  display: flex; flex-direction: column;
+  gap: 2px;
+}
+.ws .ph-intern-prog .label {
+  font-family: 'Geist Mono', monospace; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-4);
+}
+.ws .ph-intern-prog .value {
+  font-size: 13px; font-weight: 500; color: var(--ink);
+}
+.ws .ph-intern-prog .value small { color: var(--ink-3); font-weight: 400; font-size: 11px; }
+
+.ws .ph-intern-open {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px; font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ws .ph-intern-open:hover { background: var(--surface-muted); border-color: var(--border-strong); }
+.ws .ph-intern-open .arrow {
+  width: 12px; height: 1px; background: currentColor; position: relative;
+}
+.ws .ph-intern-open .arrow::after {
+  content: ""; position: absolute; right: 0; top: -2.5px;
+  width: 5px; height: 5px;
+  border-right: 1.5px solid currentColor; border-top: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+/* Empty-state row for an open slot in an internship */
+.ws .ph-intern.empty {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent 0,
+    transparent 8px,
+    rgba(15,23,42,0.025) 8px,
+    rgba(15,23,42,0.025) 16px
+  );
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  margin-top: 8px;
+}
+.ws .ph-intern.empty .ph-intern-icon {
+  background: var(--surface-muted);
+  border-color: var(--border);
+  color: var(--ink-4);
+}
+.ws .ph-intern.empty .pn { color: var(--ink-3); font-weight: 400; font-style: italic; }
+
+/* Add-internship row */
+.ws .ph-add-intern {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--ink-3);
+  cursor: pointer;
+  background: transparent;
+  width: 100%;
+}
+.ws .ph-add-intern:hover { background: var(--surface-muted); color: var(--ink-2); }
+.ws .ph-add-intern .plus {
+  width: 16px; height: 16px; border-radius: 4px;
+  background: var(--surface-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink-2); font-size: 13px; line-height: 1;
+}
+
+/* ------------------------------------------------------------------
+   Right rail — supervisor cluster + KPIs project-level
+   ------------------------------------------------------------------ */
+.ws .ph-team-card { padding: 16px 18px; }
+.ws .ph-team-card h4 {
+  font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.ws .ph-team-list {
+  display: flex; flex-direction: column;
+  gap: 12px;
+}
+.ws .ph-team-member {
+  display: grid; grid-template-columns: 32px 1fr auto; gap: 10px;
+  align-items: center;
+}
+.ws .ph-team-member .nm { font-size: 13px; color: var(--ink); font-weight: 500; }
+.ws .ph-team-member .rl { font-size: 11.5px; color: var(--ink-3); margin-top: 1px; }
+.ws .ph-team-member .ld {
+  font-family: 'Geist Mono', monospace; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 3px;
+  background: var(--brand-50); color: var(--brand-600);
+}
+
+/* Activity tag chip identifying which workspace it came from */
+.ws-act-text .ws-source {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 1px 6px;
+  background: var(--surface-muted);
+  color: var(--ink-2);
+  border-radius: 99px;
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  letter-spacing: 0.02em;
+  margin: 0 2px;
+}
+.ws-act-text .ws-source::before {
+  content: "";
+  width: 5px; height: 5px;
+  border-radius: 99px;
+  background: var(--success);
+}
+
+/* Filter chips at the head of the activity feed */
+.ws .ph-feed-filter {
+  display: inline-flex; gap: 6px;
+  margin-left: auto;
+}
+.ws .ph-feed-filter .chip {
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  color: var(--ink-3);
+  background: var(--surface);
+  cursor: pointer;
+}
+.ws .ph-feed-filter .chip.active {
+  background: var(--ink);
+  color: #FFF;
+  border-color: var(--ink);
+}
+
+/* When the project sidebar item itself is active (we're at the Hub,
+   not inside a workspace) — re-use the brand-50 pill treatment. */
+.ws-side-project.active {
+  background: var(--brand-50);
+  color: var(--brand-600);
+  border-radius: var(--radius);
+  font-weight: 600;
+}
+.ws-side-project.active .ico-proj {
+  background: var(--brand);
+  color: #FFF;
+  border-color: var(--brand);
+}
+.ws-side-project.active .chev {
+  border-color: var(--brand-600);
+}

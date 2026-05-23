@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inturn — Foundations Package</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="doc.css" />
+<style>
+  .index-hero {
+    padding: 88px var(--doc-pad) 56px;
+    max-width: var(--doc-max);
+    margin: 0 auto;
+  }
+  .index-grid {
+    max-width: var(--doc-max);
+    margin: 0 auto;
+    padding: 0 var(--doc-pad) 120px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+  }
+  .index-grid .deliv { grid-column: span 2; }
+  @media (max-width: 1100px) {
+    .index-grid { grid-template-columns: repeat(2, 1fr); }
+    .index-grid .deliv { grid-column: span 1; }
+  }
+  @media (max-width: 700px) {
+    .index-grid { grid-template-columns: 1fr; }
+    .index-grid .deliv { grid-column: 1; }
+  }
+
+  .deliv {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--doc-paper);
+    border: 1px solid var(--doc-rule);
+    border-radius: 18px;
+    padding: 28px 28px 32px;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    position: relative;
+    min-height: 380px;
+    display: flex; flex-direction: column;
+  }
+  .deliv:hover {
+    border-color: var(--doc-ink);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px -28px rgba(15,15,20,0.25);
+  }
+  .deliv-num {
+    font-family: var(--mono);
+    font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--doc-ink-3);
+  }
+  .deliv-title {
+    margin-top: 26px;
+    font-size: 26px; font-weight: 600; letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .deliv-deck {
+    margin-top: 14px;
+    font-size: 14.5px; color: var(--doc-ink-2);
+    text-wrap: pretty;
+  }
+  .deliv-bullets {
+    margin-top: 22px;
+    padding: 0;
+    list-style: none;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .deliv-bullets li {
+    font-size: 13px; color: var(--doc-ink-2);
+    padding-left: 18px; position: relative;
+  }
+  .deliv-bullets li::before {
+    content: ""; position: absolute; left: 0; top: 8px;
+    width: 8px; height: 1px; background: var(--doc-ink-3);
+  }
+  .deliv-cta {
+    margin-top: auto;
+    padding-top: 28px;
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--doc-ink);
+  }
+  .deliv-cta .arrow {
+    display: inline-block;
+    width: 22px; height: 1px; background: var(--doc-ink); position: relative;
+    transition: width .2s;
+  }
+  .deliv-cta .arrow::after {
+    content: ""; position: absolute; right: 0; top: -3px;
+    width: 7px; height: 7px; border-right: 1px solid var(--doc-ink); border-top: 1px solid var(--doc-ink);
+    transform: rotate(45deg);
+  }
+  .deliv:hover .deliv-cta .arrow { width: 34px; }
+
+  .deliv-status {
+    position: absolute; top: 24px; right: 24px;
+  }
+
+  .deliv.is-decided { border-color: #7C3AED; }
+  .deliv.is-decided:hover { border-color: #7C3AED; box-shadow: 0 18px 40px -28px rgba(124,58,237,0.45); }
+  .decided-tag {
+    background: #15803D; color: #FFFFFF;
+    padding: 2px 8px; border-radius: 4px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+    margin-left: 4px;
+  }
+  .deliv-bullets li s { color: var(--doc-ink-3); }
+  .deliv-bullets li b { color: var(--doc-ink); font-weight: 600; }
+
+  .deliv.is-01 .stamp {
+    position: absolute; top: 28px; right: 28px;
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #2BD9C8 0%, #8F70FE 30%, #8F1FFE 60%, #E467FE 100%);
+    border-radius: 50%;
+    filter: blur(0px);
+  }
+  .deliv.is-02 .stamp {
+    position: absolute; top: 28px; right: 28px;
+    width: 64px; height: 36px;
+  }
+  .deliv.is-02 .stamp::before, .deliv.is-02 .stamp::after {
+    content: ""; position: absolute; top: 14px; height: 8px; border-radius: 4px;
+  }
+  .deliv.is-02 .stamp::before { left: 0; width: 22px; background: var(--doc-brand); }
+  .deliv.is-02 .stamp::after { left: 28px; width: 36px; background: var(--doc-rule); }
+  .deliv.is-03 .stamp {
+    position: absolute; top: 28px; right: 28px;
+    width: 40px; height: 40px;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 4px;
+  }
+  .deliv.is-03 .stamp i {
+    display: block; background: var(--doc-rule); border-radius: 4px;
+  }
+  .deliv.is-03 .stamp i:nth-child(1) { background: var(--doc-brand); }
+
+  .deliv.is-04 .stamp {
+    position: absolute; top: 28px; right: 28px;
+    width: 64px; height: 40px;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 3px;
+  }
+  .deliv.is-04 .stamp i {
+    display: block; background: transparent;
+    border: 1px dashed var(--doc-ink-3); border-radius: 3px;
+  }
+  .deliv.is-04 .stamp i:nth-child(1) { border-color: var(--doc-brand); border-style: solid; }
+
+  .deliv.is-05 .stamp {
+    position: absolute; top: 28px; right: 28px;
+    width: 48px; height: 32px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #F3EEFF 100%);
+    border: 1px solid #7C3AED;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .deliv.is-05 .stamp::before {
+    content: ""; position: absolute;
+    left: 4px; top: 4px; width: 8px; height: 24px;
+    background: #7C3AED; border-radius: 2px;
+  }
+  .deliv.is-05 .stamp::after {
+    content: ""; position: absolute;
+    right: 4px; top: 4px; width: 28px; height: 6px;
+    background: #DDD6FE; border-radius: 2px;
+    box-shadow: 0 8px 0 #E2E8F0, 0 16px 0 #E2E8F0;
+  }
+
+  .deliv.is-06 .stamp {
+    position: absolute; top: 28px; right: 28px;
+    width: 44px; height: 44px;
+    background: #0A0A0F;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .deliv.is-06 .stamp::before {
+    content: "\2726";
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #2BD9C8 0%, #8F70FE 30%, #8F1FFE 60%, #E467FE 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 24px;
+  }
+
+  /* About strip */
+  .about {
+    max-width: var(--doc-max);
+    margin: 0 auto;
+    padding: 64px var(--doc-pad) 120px;
+    display: grid; grid-template-columns: 2fr 3fr; gap: 64px;
+    border-top: 1px solid var(--doc-rule);
+  }
+  @media (max-width: 980px) { .about { grid-template-columns: 1fr; gap: 24px; } }
+  .about h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .about p { color: var(--doc-ink-2); margin-top: 12px; max-width: 56ch; }
+  .about ul { margin-top: 18px; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .about li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline; }
+  .about li .n { font-family: var(--mono); font-size: 11px; color: var(--doc-ink-3); letter-spacing: 0.08em; }
+  .about li b { font-weight: 600; }
+  .about li span { color: var(--doc-ink-2); font-size: 14px; }
+
+  /* Hero meta */
+  .index-meta { color: var(--doc-ink-3); font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 14px; }
+  .index-meta b { color: var(--doc-ink-2); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="doc-topbar">
+  <div class="doc-topbar-inner">
+    <div class="doc-brand">
+      <img src="assets/inturn-logo.png" alt="Inturn" />
+      <span>/ Foundations</span>
+    </div>
+    <div class="doc-crumb"><b>Pre-build package</b> · 23 May 2026</div>
+  </div>
+</div>
+
+<section class="index-hero">
+  <div class="doc-eyebrow">Pre-build deliverables · v0.4 · Projects layer added</div>
+  <h1 class="doc-title">Foundations package for Inturn.<br/>Six documents. One handoff.</h1>
+  <p class="doc-deck">Everything Claude Code needs before the first screen ships. Brand tokens to paste, journeys to build against, components to scaffold, wireframes to lay out &mdash; in that order.</p>
+  <div class="index-meta">For: <b>Sam (CEO/COO) &amp; Claude Code</b> &nbsp;·&nbsp; Phase 1 · weeks 1&ndash;12 &nbsp;·&nbsp; Three pillars: <b>Marketplace · Virtual Internships · Community</b></div>
+</section>
+
+<section class="index-grid">
+
+  <a class="deliv is-01 is-decided" href="01-brand-foundations.html">
+    <span class="stamp"></span>
+    <div class="deliv-num">01 &middot; Foundations &middot; <span class="decided-tag">Decided &middot; B</span></div>
+    <h2 class="deliv-title">Brand foundations &amp; design tokens</h2>
+    <p class="deliv-deck"><b>Chosen: B &middot; Workshop.</b> Productivity-tool feel, slate neutrals, one strong purple, Geist Sans. Paste the token block into <code class="doc-inline">app/globals.css</code> and ship.</p>
+    <ul class="deliv-bullets">
+      <li><s>Direction A &middot; Studio</s> &mdash; rejected, kept for reference</li>
+      <li><b>Direction B &middot; Workshop</b> &mdash; the system</li>
+      <li><s>Direction C &middot; Atlas</s> &mdash; rejected, kept for reference</li>
+      <li>Logo usage rules &middot; clear-space, on-color, don'ts</li>
+    </ul>
+    <div class="deliv-cta">Open document <span class="arrow"></span></div>
+  </a>
+
+  <a class="deliv is-02" href="02-user-journeys.html">
+    <span class="stamp"></span>
+    <div class="deliv-num">02 &middot; Flows</div>
+    <h2 class="deliv-title">Four critical user journeys</h2>
+    <p class="deliv-deck">Screen list, emotional state, friction, and the exact moment of value &mdash; for both sides of the marketplace, pre- and post-acceptance. <b>v0.2 adds the Projects layer.</b></p>
+    <ul class="deliv-bullets">
+      <li>Intern &middot; signup &rarr; discover &rarr; apply</li>
+      <li>Intern &middot; accepted &rarr; workspace &rarr; first task</li>
+      <li>Company &middot; signup &rarr; post &rarr; review &rarr; accept</li>
+      <li>Company &middot; supervise &rarr; review &rarr; evaluate</li>
+    </ul>
+    <div class="deliv-cta">Open document <span class="arrow"></span></div>
+  </a>
+
+  <a class="deliv is-03" href="03-component-spec.html">
+    <span class="stamp"><i></i><i></i><i></i><i></i></span>
+    <div class="deliv-num">03 &middot; Primitives</div>
+    <h2 class="deliv-title">Component spec &amp; shadcn map</h2>
+    <p class="deliv-deck">Every UI primitive Phase&nbsp;1 needs, in build order. Each row tells Claude Code which shadcn primitive to install &mdash; or why we need a custom one. <b>v0.2 adds 10 Projects + AI primitives.</b></p>
+    <ul class="deliv-bullets">
+      <li>Forms, navigation, data display, feedback</li>
+      <li>Workspace primitives: task card, deliverable, activity</li>
+      <li>Sprint mapping &middot; what ships in which week</li>
+      <li>Custom components with rationale</li>
+    </ul>
+    <div class="deliv-cta">Open document <span class="arrow"></span></div>
+  </a>
+
+  <a class="deliv is-04" href="04-sprint-1-wireframes.html">
+    <span class="stamp"><i></i><i></i><i></i><i></i></span>
+    <div class="deliv-num">04 &middot; Sprint 1 &middot; <span class="decided-tag" style="background:#2563EB">Wireframes</span></div>
+    <h2 class="deliv-title">Auth &amp; profile flow wireframes</h2>
+    <p class="deliv-deck">Low-fi layouts for the five screens that ship weeks 1&ndash;2. Annotated, role-aware, ready for Claude Code to translate into Workshop-themed JSX.</p>
+    <ul class="deliv-bullets">
+      <li>01 &middot; Signup &mdash; intern + company</li>
+      <li>02 &middot; Profile basics (intern, 30s budget)</li>
+      <li>03 &middot; Skills + CV (chip input, upload)</li>
+      <li>04 &middot; Org profile (company, verification deferred)</li>
+      <li>05 &middot; Landing page polish notes &middot; surgical only</li>
+    </ul>
+    <div class="deliv-cta">Open canvas <span class="arrow"></span></div>
+  </a>
+
+  <a class="deliv is-05" href="05-workspace-overview.html">
+    <span class="stamp"></span>
+    <div class="deliv-num">05 &middot; Sprint 2 &middot; <span class="decided-tag" style="background:#7C3AED">Mock</span></div>
+    <h2 class="deliv-title">Workspace overview + Project Hub + Tasks</h2>
+    <p class="deliv-deck">The anchor screens of Sprint&nbsp;2 plus the Hub the supervisor lands on first. Five artboards in one canvas: project roll-up, intern workspace, supervisor workspace, and the Tasks board for both roles &mdash; same shell, same data, three depths.</p>
+    <ul class="deliv-bullets">
+      <li><b>Project Hub</b> &middot; brief, phases, internships, rollup feed</li>
+      <li>Workspace &middot; <b>Overview</b> intern + supervisor</li>
+      <li>Workspace &middot; <b>Tasks</b> intern + supervisor (kanban)</li>
+      <li>Sidebar, top bar, right rail all locked</li>
+      <li>&ldquo;Needs review&rdquo; treatment &middot; supervisor-only</li>
+    </ul>
+    <div class="deliv-cta">Open canvas <span class="arrow"></span></div>
+  </a>
+
+  <a class="deliv is-06" href="06-ai-project-flow.html">
+    <span class="stamp"></span>
+    <div class="deliv-num">06 &middot; Sprint 6 &middot; <span class="decided-tag" style="background:#0A0A0F">AI flow</span></div>
+    <h2 class="deliv-title">AI-assisted Project creation</h2>
+    <p class="deliv-deck">Pitch &rarr; clarify &rarr; structure &rarr; phases &rarr; roles &rarr; publish. Conversation shape for the moat feature &mdash; AI drafts, company edits, human-in-the-loop at every step.</p>
+    <ul class="deliv-bullets">
+      <li>01 &middot; Pitch &mdash; paragraph, doc, or link</li>
+      <li>02 &middot; Clarify &mdash; 5 questions in chat</li>
+      <li>03 &middot; Structure &mdash; editable project draft</li>
+      <li>04 &middot; Phases &mdash; timeline + deliverables</li>
+      <li>05 &middot; Roles &mdash; recommended intern hires</li>
+    </ul>
+    <div class="deliv-cta">Open canvas <span class="arrow"></span></div>
+  </a>
+
+</section>
+
+<section class="about">
+  <div>
+    <h2>How to use this package</h2>
+    <p>Hand each document to Claude Code in order. Foundations defines the visual language, journeys define the build order at the screen level, and the component spec defines what to scaffold.</p>
+  </div>
+  <div>
+    <ul>
+      <li><span class="n">01</span><span><b>Pick one direction</b> from Foundations. Paste the token block into <code class="doc-inline">app/globals.css</code> and <code class="doc-inline">tailwind.config.ts</code>. This is the only one of the three that needs a decision from you.</span></li>
+      <li><span class="n">02</span><span><b>Use journeys as the sprint backlog frame.</b> The screen list maps to Sprints 1&ndash;4. Friction points become Linear/Notion tasks for week 1.</span></li>
+      <li><span class="n">03</span><span><b>Install components in priority order.</b> Sprint 1 needs the &ldquo;Foundation tier&rdquo; only. Don't pre-build workspace primitives until Sprint 2.</span></li>
+      <li><span class="n">04</span><span><b>This package is not the design.</b> Mockups come after a direction is picked. These docs unblock parallel work &mdash; tokens, schema, components &mdash; while visuals are still in motion.</span></li>
+    </ul>
+  </div>
+</section>
+
+<div class="doc-footer" style="max-width: var(--doc-max); margin: 0 auto; padding: 24px var(--doc-pad);">
+  <span>Inturn &middot; pre-build foundations &middot; v0.1</span>
+  <span>23 May 2026 &middot; Tunisia first, then Morocco</span>
+</div>
+
+</body>
+</html>

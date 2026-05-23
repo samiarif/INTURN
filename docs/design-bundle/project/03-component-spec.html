@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inturn — 03 Component Spec</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="doc.css" />
+<link rel="stylesheet" href="03-component-spec.css" />
+</head>
+<body>
+
+<div class="doc-topbar">
+  <div class="doc-topbar-inner">
+    <div class="doc-brand">
+      <img src="assets/inturn-logo.png" alt="Inturn" />
+      <span>/ Foundations</span>
+    </div>
+    <nav class="doc-topnav">
+      <a href="index.html">Index</a>
+      <a href="01-brand-foundations.html">01 Brand</a>
+      <a href="02-user-journeys.html">02 Journeys</a>
+      <a href="03-component-spec.html" class="active">03 Components</a>
+    </nav>
+  </div>
+</div>
+
+<main class="doc-page wide">
+
+  <div class="doc-eyebrow">Deliverable 03 of 03 &middot; v0.2</div>
+  <h1 class="doc-title">Component spec &amp; shadcn map.</h1>
+  <p class="doc-deck">Every UI primitive Phase&nbsp;1 needs, in build order. Each row tells Claude Code which shadcn/ui primitive to install &mdash; or names a custom one and explains why we need it. <b>v0.2 adds Projects + AI primitives</b> (section 03.7) for the new Projects model.</p>
+
+  <dl class="doc-meta">
+    <div><dt>Foundation tier</dt><dd>15 components &middot; S1</dd></div>
+    <div><dt>Total Phase&nbsp;1</dt><dd>62 components</dd></div>
+    <div><dt>shadcn/ui coverage</dt><dd>~58% (36 / 62)</dd></div>
+    <div><dt>Custom needed</dt><dd>26 (workspace + projects + AI)</dd></div>
+  </dl>
+
+
+  <!-- =================== INSTALL =================== -->
+  <section class="doc-section" id="install">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.1</div>
+      <div>
+        <h2 class="doc-section-title">Sprint 1 install
+          <span class="sub">The "foundation tier" only. Don't add anything else before Sprint 2 &mdash; everything below this block has a clear sprint tag.</span>
+        </h2>
+      </div>
+    </header>
+
+<pre class="doc-code"><span class="c-com"># Sprint 1 — foundation. Install in this order so dependencies resolve.</span>
+<span class="c-sel">pnpm</span> dlx shadcn@latest init
+<span class="c-sel">pnpm</span> dlx shadcn@latest add \
+  button input label textarea form \
+  card separator skeleton sonner \
+  avatar badge tooltip dropdown-menu \
+  dialog sheet
+
+<span class="c-com"># Add custom primitives we keep local (not from shadcn registry)</span>
+<span class="c-sel">touch</span> components/ui/{logo,brand-mark,gradient-text,kbd,empty-state}.tsx
+
+<span class="c-com"># Tokens — paste the picked direction's :root block from 01 into:</span>
+<span class="c-sel">app</span>/globals.css
+</pre>
+
+  </section>
+
+
+  <!-- =================== LAYOUT =================== -->
+  <section class="doc-section" id="forms">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.2</div>
+      <div>
+        <h2 class="doc-section-title">Forms &amp; input
+          <span class="sub">Every screen in J1 and J3 lives or dies on these. Build them once, validate them on the profile flow, reuse forever.</span>
+        </h2>
+      </div>
+    </header>
+
+    <table class="comp-table">
+      <colgroup>
+        <col class="c-prio"/><col class="c-name"/><col class="c-use"/><col class="c-src"/><col class="c-sprint"/><col class="c-note"/>
+      </colgroup>
+      <thead>
+        <tr><th>#</th><th>Component</th><th>Used for</th><th>Source</th><th>Sprint</th><th>Note</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="prio prio-1">01</span></td><td><b>Button</b></td><td>Every CTA. Primary / secondary / ghost / destructive variants.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">button</code></td><td><span class="sp sp1">S1</span></td><td>Add <code class="doc-inline">size="xs"</code> for table actions</td></tr>
+        <tr><td><span class="prio prio-1">02</span></td><td><b>Input</b></td><td>Email, name, single-line text everywhere.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">input</code></td><td><span class="sp sp1">S1</span></td><td>Add inline error state from <code class="doc-inline">Form</code></td></tr>
+        <tr><td><span class="prio prio-1">03</span></td><td><b>Textarea</b></td><td>Cover note, task description, comments, notes.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">textarea</code></td><td><span class="sp sp1">S1</span></td><td>Auto-grow wrapper for comments</td></tr>
+        <tr><td><span class="prio prio-1">04</span></td><td><b>Label + Form</b></td><td>react-hook-form + zod plumbing. Inputs without Form aren't validated.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">form</code></td><td><span class="sp sp1">S1</span></td><td>FR/EN error strings via next-intl</td></tr>
+        <tr><td><span class="prio prio-1">05</span></td><td><b>Select</b></td><td>University, sector, duration, language.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">select</code></td><td><span class="sp sp1">S1</span></td><td>Use for &lt;15 options. Above that, use Combobox.</td></tr>
+        <tr><td><span class="prio prio-2">06</span></td><td><b>Combobox</b></td><td>University picker (300+), skills, candidate filter.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">command</code> + <code class="doc-inline">popover</code></td><td><span class="sp sp1">S1</span></td><td>shadcn ships pattern in docs, not as a primitive</td></tr>
+        <tr><td><span class="prio prio-2">07</span></td><td><b>Multi-select chip input</b></td><td>Skill tags on intern profile (max 8), filters on inbox.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp1">S1</span></td><td><b>Custom because</b> shadcn has no first-class multi-select; build on Command + Badge</td></tr>
+        <tr><td><span class="prio prio-2">08</span></td><td><b>Checkbox</b></td><td>Custom Q's, settings, &quot;I agree&quot;.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">checkbox</code></td><td><span class="sp sp1">S1</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-2">09</span></td><td><b>Radio group</b></td><td>Single-choice custom Q's, on-site vs virtual.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">radio-group</code></td><td><span class="sp sp3">S3</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-2">10</span></td><td><b>Switch</b></td><td>Settings, virtual opt-in, &quot;paid / unpaid&quot;.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">switch</code></td><td><span class="sp sp3">S3</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-2">11</span></td><td><b>Date picker</b></td><td>Application deadline, check-in scheduling.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">calendar</code> + <code class="doc-inline">popover</code></td><td><span class="sp sp3">S3</span></td><td>Locale-aware (FR weekstart Monday)</td></tr>
+        <tr><td><span class="prio prio-2">12</span></td><td><b>Date range picker</b></td><td>Internship dates (start &mdash; end).</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">calendar mode=&quot;range&quot;</code></td><td><span class="sp sp3">S3</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-2">13</span></td><td><b>File upload</b></td><td>CV, portfolio, deliverables. Drag-drop, mobile-friendly.</td><td><span class="src src-custom">custom</span> over <code class="doc-inline">UploadThing</code></td><td><span class="sp sp1">S1</span></td><td><b>Custom because</b> shadcn has no upload primitive; wrap UT button with our drop UI + versioning</td></tr>
+        <tr><td><span class="prio prio-3">14</span></td><td><b>Slider</b></td><td>Rubric 1&ndash;5 axes (eval).</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">slider</code></td><td><span class="sp sp6">S6</span></td><td>Snap to 5 stops, show labels</td></tr>
+        <tr><td><span class="prio prio-3">15</span></td><td><b>Step indicator</b></td><td>Multi-step "post internship", profile wizard.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp3">S3</span></td><td><b>Custom because</b> shadcn has none. Keep tiny: dots + labels.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- =================== NAVIGATION =================== -->
+  <section class="doc-section" id="nav">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.3</div>
+      <div>
+        <h2 class="doc-section-title">Navigation
+          <span class="sub">Role-aware sidebar drives the whole app. The shadcn Sidebar block is excellent &mdash; use it. Don't hand-roll.</span>
+        </h2>
+      </div>
+    </header>
+
+    <table class="comp-table">
+      <colgroup><col class="c-prio"/><col class="c-name"/><col class="c-use"/><col class="c-src"/><col class="c-sprint"/><col class="c-note"/></colgroup>
+      <thead><tr><th>#</th><th>Component</th><th>Used for</th><th>Source</th><th>Sprint</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><span class="prio prio-1">16</span></td><td><b>Sidebar</b></td><td>Primary nav. Different items per role.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">sidebar</code></td><td><span class="sp sp1">S1</span></td><td>Use built-in collapsible behavior. Switch sections by role (intern / company / admin)</td></tr>
+        <tr><td><span class="prio prio-1">17</span></td><td><b>Top bar</b></td><td>Workspace switcher, search, notifications, avatar menu.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp1">S1</span></td><td><b>Custom because</b> shadcn ships parts only. Compose with DropdownMenu + Avatar + Command.</td></tr>
+        <tr><td><span class="prio prio-1">18</span></td><td><b>Breadcrumbs</b></td><td>Workspace &middot; tab routing. Critical when nested 3+ deep.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">breadcrumb</code></td><td><span class="sp sp2">S2</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-1">19</span></td><td><b>Tabs</b></td><td>The six workspace tabs. Inbox filters. Profile sections.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">tabs</code></td><td><span class="sp sp2">S2</span></td><td>Underline variant for workspace, pill variant for filters</td></tr>
+        <tr><td><span class="prio prio-2">20</span></td><td><b>Command palette (&#8984;K)</b></td><td>Jump to workspace, task, candidate.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">command</code></td><td><span class="sp sp6">S6</span></td><td>Defer until enough surface area exists</td></tr>
+        <tr><td><span class="prio prio-2">21</span></td><td><b>Dropdown menu</b></td><td>"More" on rows, profile menu, status changers.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">dropdown-menu</code></td><td><span class="sp sp1">S1</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-2">22</span></td><td><b>Pagination</b></td><td>Marketplace listings, applications inbox.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">pagination</code></td><td><span class="sp sp4">S4</span></td><td>Cursor-based on large tables, page on small</td></tr>
+        <tr><td><span class="prio prio-3">23</span></td><td><b>Language switcher (FR / EN)</b></td><td>Top bar, footer, signup.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp1">S1</span></td><td><b>Custom because</b> wraps next-intl locale switch. Keep dead-simple: two letters, segmented control.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- =================== DATA DISPLAY =================== -->
+  <section class="doc-section" id="data">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.4</div>
+      <div>
+        <h2 class="doc-section-title">Data display
+          <span class="sub">Where Inturn earns its moat &mdash; rendering performance data, activity streams, and the long tail of "I want to scan this." Build for density first, beauty second.</span>
+        </h2>
+      </div>
+    </header>
+
+    <table class="comp-table">
+      <colgroup><col class="c-prio"/><col class="c-name"/><col class="c-use"/><col class="c-src"/><col class="c-sprint"/><col class="c-note"/></colgroup>
+      <thead><tr><th>#</th><th>Component</th><th>Used for</th><th>Source</th><th>Sprint</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><span class="prio prio-1">24</span></td><td><b>Card</b></td><td>Listings, dashboard widgets, profile blocks.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">card</code></td><td><span class="sp sp1">S1</span></td><td>Three variants: <code class="doc-inline">default</code>, <code class="doc-inline">flat</code>, <code class="doc-inline">interactive</code></td></tr>
+        <tr><td><span class="prio prio-1">25</span></td><td><b>Data table</b></td><td>Applications inbox, listings management, admin queue.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">table</code> + <code class="doc-inline">@tanstack/react-table</code></td><td><span class="sp sp3">S3</span></td><td>shadcn ships the table; tanstack does sort/filter/select</td></tr>
+        <tr><td><span class="prio prio-1">26</span></td><td><b>Empty state</b></td><td>Empty inbox, no tasks, no applications, no activity.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp1">S1</span></td><td><b>Custom because</b> the brief calls out emotional empty states &mdash; "what's coming," not "no data." Make this a named primitive day&nbsp;1.</td></tr>
+        <tr><td><span class="prio prio-1">27</span></td><td><b>Loading state &middot; Skeleton</b></td><td>Every list, every card, every table.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">skeleton</code></td><td><span class="sp sp1">S1</span></td><td>Match the shape of the content, not a generic rectangle</td></tr>
+        <tr><td><span class="prio prio-1">28</span></td><td><b>Avatar</b></td><td>Intern face, supervisor face, company logo.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">avatar</code></td><td><span class="sp sp1">S1</span></td><td>Initials fallback uses brand-50 background</td></tr>
+        <tr><td><span class="prio prio-1">29</span></td><td><b>Avatar group</b></td><td>"3 reviewing", workspace members.</td><td><span class="src src-shadcn">shadcn</span> from Avatar (stacked)</td><td><span class="sp sp3">S3</span></td><td>Cap at 4 + "+N"</td></tr>
+        <tr><td><span class="prio prio-1">30</span></td><td><b>Badge</b></td><td>"New", "Verified", "Virtual", counters.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">badge</code></td><td><span class="sp sp1">S1</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-2">31</span></td><td><b>Status pill</b></td><td>Pipeline: New &middot; Reviewed &middot; Shortlisted &middot; Interview &middot; Accepted &middot; Rejected.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp3">S3</span></td><td><b>Custom because</b> Badge has no status semantics. Define color per status in tokens.</td></tr>
+        <tr><td><span class="prio prio-2">32</span></td><td><b>Tooltip</b></td><td>Icon-only buttons, score explanations, definitions.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">tooltip</code></td><td><span class="sp sp1">S1</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-2">33</span></td><td><b>Progress</b></td><td>Profile completion, internship progress, deliverable ratio.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">progress</code></td><td><span class="sp sp2">S2</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-3">34</span></td><td><b>KBD</b></td><td>Display keyboard shortcuts in command palette + UI.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td>Tiny utility. 8 lines.</td></tr>
+        <tr><td><span class="prio prio-3">35</span></td><td><b>Sparkline</b></td><td>On-time delivery rate, activity trend on workspace.</td><td><span class="src src-custom">custom</span> over <code class="doc-inline">recharts</code></td><td><span class="sp sp4">S4</span></td><td><b>Custom because</b> the "performance moat" UI lives here. shadcn has chart primitives; we need a tighter variant.</td></tr>
+        <tr><td><span class="prio prio-3">36</span></td><td><b>Match score chip</b></td><td>"82% match — why?" with explanation popover.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp4">S4</span></td><td><b>Custom because</b> humans-in-the-loop principle: the score is never silent. Always paired with rationale.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- =================== FEEDBACK =================== -->
+  <section class="doc-section" id="feedback">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.5</div>
+      <div>
+        <h2 class="doc-section-title">Feedback &amp; overlays
+          <span class="sub">shadcn covers this set 1:1. Pick variants early &mdash; don't ship a Dialog and a Drawer doing the same job on different screens.</span>
+        </h2>
+      </div>
+    </header>
+
+    <table class="comp-table">
+      <colgroup><col class="c-prio"/><col class="c-name"/><col class="c-use"/><col class="c-src"/><col class="c-sprint"/><col class="c-note"/></colgroup>
+      <thead><tr><th>#</th><th>Component</th><th>Used for</th><th>Source</th><th>Sprint</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><span class="prio prio-1">37</span></td><td><b>Toast</b></td><td>"Application sent", "Saved", non-blocking confirmations.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">sonner</code></td><td><span class="sp sp1">S1</span></td><td>Use Sonner (newer). Skip the legacy Toast.</td></tr>
+        <tr><td><span class="prio prio-1">38</span></td><td><b>Alert</b></td><td>Inline page-level warnings ("Verification pending"), info banners.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">alert</code></td><td><span class="sp sp1">S1</span></td><td>Variants: <code class="doc-inline">info</code> / <code class="doc-inline">warn</code> / <code class="doc-inline">danger</code> / <code class="doc-inline">success</code></td></tr>
+        <tr><td><span class="prio prio-1">39</span></td><td><b>Dialog</b></td><td>Confirm accept, delete, "are you sure".</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">dialog</code> + <code class="doc-inline">alert-dialog</code></td><td><span class="sp sp1">S1</span></td><td>Use <code class="doc-inline">alert-dialog</code> for destructive only</td></tr>
+        <tr><td><span class="prio prio-1">40</span></td><td><b>Sheet / Drawer</b></td><td>Candidate quick-view, task detail on mobile, filters.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">sheet</code></td><td><span class="sp sp2">S2</span></td><td>Right-side desktop, bottom mobile</td></tr>
+        <tr><td><span class="prio prio-2">41</span></td><td><b>Popover</b></td><td>Quick edit, score explanation, filter panels.</td><td><span class="src src-shadcn">shadcn</span> <code class="doc-inline">popover</code></td><td><span class="sp sp2">S2</span></td><td>&mdash;</td></tr>
+        <tr><td><span class="prio prio-2">42</span></td><td><b>Confirmation flow</b></td><td>Accept candidate (irreversible workspace spawn).</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp3">S3</span></td><td><b>Custom because</b> needs a typed-confirmation pattern ("type the intern's name to accept") for high-stakes actions</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- =================== WORKSPACE PRIMITIVES =================== -->
+  <section class="doc-section" id="workspace">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.6</div>
+      <div>
+        <h2 class="doc-section-title">Workspace primitives <span class="badge-custom">all custom</span>
+          <span class="sub">This is where Inturn lives or dies. None of these exist in shadcn. They're the surface of the data moat &mdash; build them with the same care as the schema.</span>
+        </h2>
+      </div>
+    </header>
+
+    <table class="comp-table">
+      <colgroup><col class="c-prio"/><col class="c-name"/><col class="c-use"/><col class="c-src"/><col class="c-sprint"/><col class="c-note"/></colgroup>
+      <thead><tr><th>#</th><th>Component</th><th>Used for</th><th>Source</th><th>Sprint</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><span class="prio prio-1">43</span></td><td><b>Task card</b></td><td>Kanban board cell. The atom of work.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp2">S2</span></td><td><b>Custom because</b> wraps Card + Status pill + Avatar + due date. Dragging emits an <code class="doc-inline">event</code> row (moat).</td></tr>
+        <tr><td><span class="prio prio-1">44</span></td><td><b>Task detail panel</b></td><td>Opens from card. Scope, deliverables, comments, "I'm stuck".</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp2">S2</span></td><td>Renders in Sheet on mobile, side panel on desktop</td></tr>
+        <tr><td><span class="prio prio-1">45</span></td><td><b>Deliverable upload row</b></td><td>One row per deliverable. Drag-drop + version chips + "submit v2".</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp2">S2</span></td><td>Versioning is non-negotiable. v1 / v2 / v3 forever.</td></tr>
+        <tr><td><span class="prio prio-1">46</span></td><td><b>Activity item</b></td><td>One row in the event stream. "Yasmine moved Brand Audit to Review."</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp2">S2</span></td><td>Renders any event type. Icon + actor + verb + object + timestamp.</td></tr>
+        <tr><td><span class="prio prio-1">47</span></td><td><b>Comment thread</b></td><td>Threaded conversation on a task. @-mention, "mark as blocked".</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp2">S2</span></td><td>Build on Textarea + Avatar. Don't reach for a chat library.</td></tr>
+        <tr><td><span class="prio prio-2">48</span></td><td><b>Candidate compare grid</b></td><td>Up to 4 candidates, aligned attributes, side-by-side.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp3">S3</span></td><td>CSS Grid + sticky first column. No library.</td></tr>
+        <tr><td><span class="prio prio-2">49</span></td><td><b>Weekly digest card</b></td><td>Email-shaped UI rendered in Friday digest email + in-app.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp5">S5</span></td><td>Shared between Resend email template and in-app view</td></tr>
+        <tr><td><span class="prio prio-2">50</span></td><td><b>Rubric row</b></td><td>One axis of the evaluation. Slider + narrative textarea.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td>Slider snapped 1&ndash;5 + 200&ndash;char field</td></tr>
+        <tr><td><span class="prio prio-2">51</span></td><td><b>Intern record card</b></td><td>The shareable artifact. Renders in PDF and as a public page.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td>Print stylesheet matters. Test the PDF on day 1.</td></tr>
+        <tr><td><span class="prio prio-3">52</span></td><td><b>Discussion thread (public)</b></td><td>Q&amp;A on a public internship listing.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td>Subset of Comment thread &mdash; no @-mention, requires login to post</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- =================== PROJECTS & AI PRIMITIVES (v0.2) =================== -->
+  <section class="doc-section" id="projects-ai">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.7 &middot; v0.2</div>
+      <div>
+        <h2 class="doc-section-title">Projects &amp; AI primitives <span class="badge-custom">all custom</span>
+          <span class="sub">Added with the Projects layer (see <a href="02-user-journeys.html#proj-addendum" style="color: var(--doc-brand);">journeys 02.6</a>). Projects ship in Sprint&nbsp;3 with a manual form; the AI flow lands in Sprint&nbsp;6 on top of the same schema. None of these exist in shadcn &mdash; all custom.</span>
+        </h2>
+      </div>
+    </header>
+
+    <table class="comp-table">
+      <colgroup><col class="c-prio"/><col class="c-name"/><col class="c-use"/><col class="c-src"/><col class="c-sprint"/><col class="c-note"/></colgroup>
+      <thead><tr><th>#</th><th>Component</th><th>Used for</th><th>Source</th><th>Sprint</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><span class="prio prio-1">53</span></td><td><b>Project card</b></td><td>Lists in admin, sidebar, supervisor dashboards. Status pill (draft / active / archived) + intern count + dates.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp3">S3</span></td><td><b>Custom because</b> wraps Card + Status pill + Avatar group. Most-used Projects atom &mdash; build first.</td></tr>
+        <tr><td><span class="prio prio-1">54</span></td><td><b>Project Hub layout</b></td><td>Supervisor's roll-up screen: aggregates all internships + workspaces under one project. Lands here before drilling into a workspace.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp3">S3</span></td><td><b>Custom because</b> this is a net-new screen. Composition: brief header + internship cards grid + cross-workspace activity feed + project-level performance signals.</td></tr>
+        <tr><td><span class="prio prio-1">55</span></td><td><b>Sidebar &middot; nested project tree</b></td><td>Replaces flat "Active internships" list. Projects &rarr; Internships &rarr; Workspaces, expandable.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp2">S2</span></td><td><b>Custom because</b> shadcn Sidebar is flat. Build collapsible tree on top of <code class="doc-inline">sidebar-group</code>. Persist expand-state to localStorage.</td></tr>
+        <tr><td><span class="prio prio-2">56</span></td><td><b>Cross-workspace activity rollup</b></td><td>Project Hub feed: events from <b>all</b> workspaces under the project, filterable.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp3">S3</span></td><td>Reuses Activity Item (#46), adds project_id filter. The supervisor's daily scan surface.</td></tr>
+        <tr><td><span class="prio prio-2">57</span></td><td><b>Draft project banner</b></td><td>Big yellow strip across the top of a Draft project: <i>"This project goes live the moment you publish your first internship."</i></td><td><span class="src src-custom">custom</span></td><td><span class="sp sp3">S3</span></td><td>Also handles the 30-day auto-archive countdown &mdash; nudges before the project disappears.</td></tr>
+        <tr><td><span class="prio prio-1">58</span></td><td><b>AI Pitch input</b></td><td>Step 1 of AI flow: large textarea + doc upload + link paste. The conversation starter.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td><b>Custom because</b> Textarea + UploadThing + URL parser composed with a "we'll never share this" privacy footer. One-time component.</td></tr>
+        <tr><td><span class="prio prio-1">59</span></td><td><b>AI Clarifier chat</b></td><td>Step 2 of AI flow: conversational layout, AI bubbles with inline answer chips. Question-by-question, skippable.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td><b>Custom because</b> a real chat surface &mdash; AI message + option chips + skip. Don't pull in a chat library. Build on Card + Radio.</td></tr>
+        <tr><td><span class="prio prio-1">60</span></td><td><b>AI Suggestion card</b></td><td>Step 3&ndash;5: any AI-generated structure (project shell, phases, roles) wrapped with confidence + edit + regenerate.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td><b>Custom because</b> humans-in-the-loop principle: every AI output ships paired with confidence tag, inline-edit, and explicit regenerate. This component <i>is</i> the rule.</td></tr>
+        <tr><td><span class="prio prio-2">61</span></td><td><b>Confidence meter</b></td><td>Bar + percentage with cohort source: <i>"Based on 0 similar projects on Inturn"</i> &rarr; <i>"Based on 47 similar projects"</i>.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td>Renders next to every AI suggestion. Honesty is the feature: when cohort is small, say so loudly.</td></tr>
+        <tr><td><span class="prio prio-2">62</span></td><td><b>Role recommendation card</b></td><td>Step 5 of AI flow: per-role title, scope, skills, weeks, paid, count, include/exclude toggle.</td><td><span class="src src-custom">custom</span></td><td><span class="sp sp6">S6</span></td><td><b>Custom because</b> this is THE moat surface. Becomes a draft Internship listing when published. Edit-anywhere, no auto-publish.</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 20px; padding: 14px 18px; background: rgba(143,31,254,0.05); border: 1px solid rgba(143,31,254,0.18); border-radius: 10px; font-size: 13px; color: var(--doc-ink-2); line-height: 1.55;">
+      <b style="color: var(--doc-brand);">Build order discipline</b> &mdash; #53, #54, #55, #57 ship in Sprint 3 with the manual project form. #56 follows. The AI block (#58&ndash;#62) is feature-flagged for Sprint 6. <b>Don't build AI components in Sprint 3</b> &mdash; the schema is the dependency, not the UI.
+    </div>
+  </section>
+
+
+  <!-- =================== TOKENS / VARIANTS PRINCIPLES =================== -->
+  <section class="doc-section" id="principles">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.8</div>
+      <div>
+        <h2 class="doc-section-title">Build rules for Claude Code
+          <span class="sub">Apply these to every primitive. Tightening these now saves a refactor in Sprint 5.</span>
+        </h2>
+      </div>
+    </header>
+
+    <div class="principles">
+      <div class="principle">
+        <div class="p-num">01</div>
+        <h3 class="p-title">Variants follow the token scale, not arbitrary hex.</h3>
+        <p>Buttons accept <code class="doc-inline">variant</code>, <code class="doc-inline">size</code>, <code class="doc-inline">tone</code>. Never accept <code class="doc-inline">color</code> as a prop. Every color resolves to a CSS variable from the picked direction (see Brand 01).</p>
+      </div>
+      <div class="principle">
+        <div class="p-num">02</div>
+        <h3 class="p-title">Role-aware UI, one component.</h3>
+        <p>A <code class="doc-inline">TaskCard</code> rendered for an intern and a supervisor is the same component reading the same row. The difference is the action menu and the framing copy &mdash; not two components.</p>
+      </div>
+      <div class="principle">
+        <div class="p-num">03</div>
+        <h3 class="p-title">Every mutation logs an event.</h3>
+        <p>Drag a task to "Review" &rarr; insert into <code class="doc-inline">events</code> with actor, verb, object, before, after. The performance moat is built one event at a time. If a component changes state without writing an event, the dataset is corrupt.</p>
+      </div>
+      <div class="principle">
+        <div class="p-num">04</div>
+        <h3 class="p-title">FR + EN from the first commit.</h3>
+        <p>No string lives in JSX. Every label, error, button comes from <code class="doc-inline">useTranslations()</code>. Test FR pages in CI before merging Sprint 1.</p>
+      </div>
+      <div class="principle">
+        <div class="p-num">05</div>
+        <h3 class="p-title">Empty states are designed, not generic.</h3>
+        <p>"No applications yet" tells the company what to do next ("share your listing") and shows the first&#8209;24h benchmark from the platform. Empty is a moment to teach, not a void.</p>
+      </div>
+      <div class="principle">
+        <div class="p-num">06</div>
+        <h3 class="p-title">Mobile is responsive web, not a separate build.</h3>
+        <p>Until 5k users, no native apps. Every component must scan on a 360px Tunisian Android. Test the Deliverable upload row on real 4G before Sprint 2 ships.</p>
+      </div>
+      <div class="principle">
+        <div class="p-num">07</div>
+        <h3 class="p-title">AI is a suggestion layer, never a side effect.</h3>
+        <p>Task clarity AI, intern unblocker, weekly summary &mdash; all surface a draft. The user must click to accept. No background mutations.</p>
+      </div>
+      <div class="principle">
+        <div class="p-num">08</div>
+        <h3 class="p-title">Performance is a feature.</h3>
+        <p>Skeleton on every list. No layout shift. Workspace under 2s on cold load. Defer Recharts until Sprint 4 &mdash; don't pull it into the foundation bundle.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Summary by sprint -->
+  <section class="doc-section" id="sprint-roll">
+    <header class="doc-section-head">
+      <div class="doc-section-num">/ 03.9</div>
+      <div>
+        <h2 class="doc-section-title">Roll-up by sprint
+          <span class="sub">Components ready by the end of each sprint, assuming foundation tier shipped in Sprint 1.</span>
+        </h2>
+      </div>
+    </header>
+
+    <div class="roll-grid">
+      <div class="roll-card">
+        <div class="rc-head"><span class="sp sp1">S1</span><b>Foundation</b><span class="rc-count">15</span></div>
+        <p>Auth + profiles + landing polish. Button, Input, Form, Label, Select, Textarea, Combobox, Multi-select chip, Checkbox, Card, Skeleton, Empty state, Avatar, Badge, File upload.</p>
+      </div>
+      <div class="roll-card">
+        <div class="rc-head"><span class="sp sp2">S2</span><b>The Workspace</b><span class="rc-count">12</span></div>
+        <p>Workspace shell. Sidebar (nested project tree), Tabs, Breadcrumb, Sheet, Popover, Progress, Task card, Task detail, Deliverable upload row, Activity item, Comment thread.</p>
+      </div>
+      <div class="roll-card">
+        <div class="rc-head"><span class="sp sp3">S3</span><b>Company &amp; Projects</b><span class="rc-count">14</span></div>
+        <p>Manual project create, Project Hub, post listing, inbox, compare. Radio group, Switch, Date picker, Date range, Step indicator, Data table, Avatar group, Status pill, Confirmation flow, Candidate compare grid, <b>Project card</b>, <b>Project Hub layout</b>, <b>Cross-workspace activity rollup</b>, <b>Draft project banner</b>.</p>
+      </div>
+      <div class="roll-card">
+        <div class="rc-head"><span class="sp sp4">S4</span><b>Marketplace</b><span class="rc-count">3</span></div>
+        <p>Public browse + apply. Pagination, Sparkline, Match score chip.</p>
+      </div>
+      <div class="roll-card">
+        <div class="rc-head"><span class="sp sp5">S5</span><b>Virtual layer</b><span class="rc-count">1</span></div>
+        <p>Weekly digest card &mdash; shared with Resend email template.</p>
+      </div>
+      <div class="roll-card">
+        <div class="rc-head"><span class="sp sp6">S6</span><b>Polish + AI + Community</b><span class="rc-count">12</span></div>
+        <p>Slider, Command palette, KBD, Rubric row, Intern record card, Discussion thread, Toast/Alert/Dialog handlers wired to in-app + email. <b>AI Pitch input</b>, <b>AI Clarifier chat</b>, <b>AI Suggestion card</b>, <b>Confidence meter</b>, <b>Role recommendation card</b> &mdash; the moat block.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="doc-footer">
+    <span>03 &middot; Component spec &middot; v0.2</span>
+    <span><a href="02-user-journeys.html" style="text-decoration:none; color: var(--doc-ink);">&larr; 02 Journeys</a> &nbsp;&middot;&nbsp; <a href="index.html" style="text-decoration:none; color: var(--doc-ink);">Back to index</a></span>
+  </div>
+
+</main>
+
+</body>
+</html>
