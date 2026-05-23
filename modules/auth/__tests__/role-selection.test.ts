@@ -1,41 +1,30 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const {
-  mockReturning,
-  mockWhere,
-  mockSet,
-  mockValues,
-  mockInsert,
-  mockUpdate,
-  mockSelectWhere,
-  mockFrom,
-  mockSelect,
-  mockRecordEvent,
-} = vi.hoisted(() => {
-  const mockReturning = vi.fn();
-  const mockWhere = vi.fn(() => ({ returning: mockReturning }));
-  const mockSet = vi.fn(() => ({ where: mockWhere }));
-  const mockValues = vi.fn(() => ({ returning: mockReturning }));
-  const mockInsert = vi.fn(() => ({ values: mockValues }));
-  const mockUpdate = vi.fn(() => ({ set: mockSet }));
-  const mockSelectWhere = vi.fn();
-  const mockFrom = vi.fn(() => ({ where: mockSelectWhere }));
-  const mockSelect = vi.fn(() => ({ from: mockFrom }));
-  const mockRecordEvent = vi.fn().mockResolvedValue({});
-  return {
-    mockReturning,
-    mockWhere,
-    mockSet,
-    mockValues,
-    mockInsert,
-    mockUpdate,
-    mockSelectWhere,
-    mockFrom,
-    mockSelect,
-    mockRecordEvent,
-  };
-});
+const { mockReturning, mockInsert, mockUpdate, mockSelectWhere, mockSelect, mockRecordEvent } =
+  vi.hoisted(() => {
+    const mockReturning = vi.fn();
+    const mockWhere = vi.fn(() => ({ returning: mockReturning }));
+    const mockSet = vi.fn(() => ({ where: mockWhere }));
+    const mockValues = vi.fn(() => ({ returning: mockReturning }));
+    const mockInsert = vi.fn(() => ({ values: mockValues }));
+    const mockUpdate = vi.fn(() => ({ set: mockSet }));
+    const mockSelectWhere = vi.fn();
+    const mockFrom = vi.fn(() => ({ where: mockSelectWhere }));
+    const mockSelect = vi.fn(() => ({ from: mockFrom }));
+    const mockRecordEvent = vi.fn().mockResolvedValue({});
+    return {
+      mockReturning,
+      mockWhere,
+      mockSet,
+      mockValues,
+      mockInsert,
+      mockUpdate,
+      mockSelectWhere,
+      mockFrom,
+      mockSelect,
+      mockRecordEvent,
+    };
+  });
 
 vi.mock('@/db', () => ({
   db: {
