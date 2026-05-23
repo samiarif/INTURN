@@ -2,6 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { assertOurBlobUrl } from '@/lib/blob';
 import { getUserByClerkId } from './queries';
 import { createOrUpdateBasics, createOrUpdateSkills } from './service';
 import { profileBasicsSchema, profileSkillsSchema } from './validators';
@@ -39,10 +40,14 @@ export async function saveProfileSkillsAction(formData: FormData) {
   const portfolioLinks = JSON.parse(String(formData.get('portfolioLinks') ?? '[]'));
   const cvUrl = formData.get('cvUrl');
 
+  // Trust boundary: only accept blob URLs from our store
+  const cvUrlStr = typeof cvUrl === 'string' && cvUrl ? cvUrl : undefined;
+  assertOurBlobUrl(cvUrlStr, 'cvUrl');
+
   const parsed = profileSkillsSchema.parse({
     skills,
     roles,
-    cvUrl: typeof cvUrl === 'string' && cvUrl ? cvUrl : undefined,
+    cvUrl: cvUrlStr,
     portfolioLinks,
   });
 

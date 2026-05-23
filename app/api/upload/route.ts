@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { requireEnv } from '@/lib/env';
@@ -12,6 +12,13 @@ function isKind(value: string | null): value is Kind {
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
+const ALLOWED_ROLES_BY_KIND: Record<Kind, ReadonlyArray<'intern' | 'company' | 'admin'>> = {
+  cv: ['intern', 'admin'],
+  logo: ['company', 'admin'],
+  registry: ['company', 'admin'],
+  deliverable: ['intern', 'company', 'admin'],
+};
+
 export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) {
@@ -22,6 +29,13 @@ export async function POST(req: Request) {
   const kind = searchParams.get('kind');
   if (!isKind(kind)) {
     return NextResponse.json({ error: 'Invalid kind' }, { status: 400 });
+  }
+
+  const clerk = await clerkClient();
+  const clerkUser = await clerk.users.getUser(userId);
+  const role = clerkUser.publicMetadata.role as 'intern' | 'company' | 'admin' | undefined;
+  if (!role || !ALLOWED_ROLES_BY_KIND[kind].includes(role)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   const formData = await req.formData();
