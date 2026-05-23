@@ -20,6 +20,13 @@ export const EVENT_TYPES = [
   'deliverable.revision.requested',
   'system.checkin.scheduled',
   'stuck.signaled',
+  'internship.created',
+  'internship.published',
+  'internship.closed',
+  'application.created',
+  'application.status.changed',
+  'application.accepted',
+  'organization.verification.changed',
 ] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number];
