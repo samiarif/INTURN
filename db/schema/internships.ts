@@ -1,11 +1,13 @@
 import { pgTable, text, timestamp, uuid, integer, boolean, jsonb, date } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
+import { projects } from './projects';
 
 export const internships = pgTable('internships', {
   id: uuid('id').defaultRandom().primaryKey(),
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
+  projectId: uuid('project_id').references(() => projects.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   description: text('description'),
   sector: text('sector'),

@@ -19,6 +19,16 @@ export const profiles = pgTable('profiles', {
   linkedinUrl: text('linkedin_url'),
   portfolioUrl: text('portfolio_url'),
   resumeUrl: text('resume_url'),
+  yearOfStudy: text('year_of_study'),
+  city: text('city'),
+  roles: jsonb('roles').$type<string[]>().default([]),
+  portfolioLinks: jsonb('portfolio_links')
+    .$type<Array<{ platform: string; url: string }>>()
+    .default([]),
+  preferredLanguage: text('preferred_language', { enum: ['fr', 'en'] }),
+  profileStep: text('profile_step', { enum: ['none', 'basics-done', 'complete'] })
+    .default('none')
+    .notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

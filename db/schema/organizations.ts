@@ -13,8 +13,16 @@ export const organizations = pgTable('organizations', {
   description: text('description'),
   website: text('website'),
   location: text('location'),
+  country: text('country'),
+  city: text('city'),
   logoUrl: text('logo_url'),
+  rneUrl: text('rne_url'),
   verified: boolean('verified').default(false).notNull(),
+  verificationStatus: text('verification_status', {
+    enum: ['draft', 'pending', 'verified', 'suspended'],
+  })
+    .default('draft')
+    .notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
