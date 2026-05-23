@@ -1,0 +1,134 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import type { Application, Internship, User, Profile } from '@/db/schema';
+
+const STATUS_OPTIONS: Array<{ value: 'all' | Application['status']; label: string }> = [
+  { value: 'all', label: 'All' },
+  { value: 'new', label: 'New' },
+  { value: 'reviewed', label: 'Reviewed' },
+  { value: 'shortlisted', label: 'Shortlisted' },
+  { value: 'interview', label: 'Interview' },
+  { value: 'accepted', label: 'Accepted' },
+  { value: 'rejected', label: 'Rejected' },
+];
+
+const STATUS_STYLE: Record<string, string> = {
+  new: 'bg-[#EFF6FF] text-[#1D4ED8]',
+  reviewed: 'bg-[var(--surface-muted)] text-[var(--ink-2)]',
+  shortlisted: 'bg-[var(--brand-50)] text-[var(--brand-600)]',
+  interview: 'bg-[#FFFBEB] text-[#92400E]',
+  accepted: 'bg-[#ECFDF5] text-[#15803D]',
+  rejected: 'bg-[#FEF2F2] text-[#B91C1C]',
+};
+
+type Row = {
+  application: Application;
+  internship: Internship;
+  applicant: User;
+  profile: Profile | null;
+};
+
+export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: string }) {
+  const [statusFilter, setStatusFilter] = useState<'all' | Application['status']>('all');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const filtered = statusFilter === 'all' ? rows : rows.filter((r) => r.application.status === statusFilter);
+
+  function toggleSelect(id: string) {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else if (next.size < 4) next.add(id);
+    setSelected(next);
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="inline-flex items-center gap-1 flex-wrap">
+          {STATUS_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setStatusFilter(opt.value)}
+              className={
+                statusFilter === opt.value
+                  ? 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--ink)] text-white'
+                  : 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
+              }
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        {selected.size >= 2 && (
+          <Link
+            href={`/company/projects/${projectId}/applications/compare?ids=${Array.from(selected).join(',')}`}
+            className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+          >
+            Compare {selected.size} →
+          </Link>
+        )}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
+          No applications match.
+        </div>
+      ) : (
+        <div className="border border-[var(--border-color)] rounded-md overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-[var(--surface-muted)] text-left">
+              <tr>
+                <th className="px-4 py-2 w-8"></th>
+                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">Applicant</th>
+                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">Internship</th>
+                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">Applied</th>
+                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">Status</th>
+                <th className="px-4 py-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((r) => (
+                <tr key={r.application.id} className="border-t border-[var(--border-color)]">
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(r.application.id)}
+                      disabled={!selected.has(r.application.id) && selected.size >= 4}
+                      onChange={() => toggleSelect(r.application.id)}
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="font-medium">{r.applicant.firstName} {r.applicant.lastName}</div>
+                    <div className="text-[12px] text-[var(--ink-3)]">
+                      {r.profile?.university ?? ''} · {r.profile?.yearOfStudy ?? ''}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">{r.internship.title}</td>
+                  <td className="px-4 py-3 font-mono text-[12px] text-[var(--ink-3)]">
+                    {new Date(r.application.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[r.application.status ?? 'new']}`}>
+                      {r.application.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Link
+                      href={`/company/projects/${projectId}/applications/${r.application.id}`}
+                      className="text-[var(--brand-600)] hover:text-[var(--brand-700)] text-sm"
+                    >
+                      Open →
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
