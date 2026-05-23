@@ -13,14 +13,14 @@ function formatDateRange(start: Date | null, end: Date | null): string {
 
 export function WorkspaceMHead({
   data,
-  role,
+  view,
 }: {
   data: WorkspaceOverviewData;
-  role: 'intern' | 'supervisor';
+  view: 'intern' | 'supervisor';
 }) {
   const intern = data.intern;
   const title =
-    role === 'intern'
+    view === 'intern'
       ? `Welcome back, ${intern?.firstName ?? ''}`
       : `${intern?.firstName ?? ''} ${intern?.lastName ?? ''} · ${data.internship?.title?.split('—')[0]?.trim() ?? ''}`;
 
@@ -42,7 +42,7 @@ export function WorkspaceMHead({
           </span>
         )}
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          {role === 'intern' ? (
+          {view === 'intern' ? (
             <>
               <button className="ws-btn ghost tiny">Weekly check-in →</button>
               <button className="ws-btn brand tiny">
@@ -62,8 +62,8 @@ export function WorkspaceMHead({
       <WorkspaceTabBar
         tasksCount={taskCount}
         deliverablesCount={deliverableCount}
-        activityNew={role === 'supervisor' ? 3 : undefined}
-        commentsNew={role === 'supervisor' ? 1 : undefined}
+        activityNew={view === 'supervisor' ? 3 : undefined}
+        commentsNew={view === 'supervisor' ? 1 : undefined}
       />
     </div>
   );

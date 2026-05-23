@@ -46,15 +46,14 @@ export default async function Page({
     notFound();
   }
 
-  const sidebar =
-    role === 'intern'
-      ? await getInternSidebarData(data.workspace.internId)
-      : await getSupervisorSidebarData(data.organization?.ownerId ?? user.id);
+  // Intern route always shows intern sidebar (admin viewing this route is
+  // "looking through the intern's eyes"); supervisor sidebar is on /company/...
+  const sidebar = await getInternSidebarData(data.workspace.internId);
 
   return (
     <WorkspaceOverview
       data={data}
-      role="intern"
+      view="intern"
       sidebar={sidebar}
       viewer={{
         initials: `${data.intern?.firstName?.[0] ?? ''}${data.intern?.lastName?.[0] ?? ''}`,

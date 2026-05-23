@@ -11,11 +11,11 @@ import { RailSupervisor } from './rail-supervisor';
 import { StuckPill } from './stuck-pill';
 import { computeWeekOfTotal } from '../queries';
 import type { WorkspaceOverviewData } from '../queries';
-import type { SidebarData, WorkspaceViewerRole } from '../types';
+import type { SidebarData, WorkspaceView } from '../types';
 
-function buildCrumbs(data: WorkspaceOverviewData, role: WorkspaceViewerRole): Crumb[] {
+function buildCrumbs(data: WorkspaceOverviewData, view: WorkspaceView): Crumb[] {
   const projectOrInternship = data.project?.name ?? data.internship?.title ?? '—';
-  if (role === 'intern') {
+  if (view === 'intern') {
     return [
       { label: 'My workspaces' },
       { label: `${data.organization?.name ?? '—'} · ${projectOrInternship}` },
@@ -40,42 +40,42 @@ function buildModeChip(data: WorkspaceOverviewData): { label: string } {
 
 export function WorkspaceOverview({
   data,
-  role,
+  view,
   sidebar,
   viewer,
 }: {
   data: WorkspaceOverviewData;
-  role: WorkspaceViewerRole;
+  view: WorkspaceView;
   sidebar: SidebarData;
   viewer: { initials: string; name: string; subtitle: string };
 }) {
   return (
     <div className="ws-shell ws" style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <WorkspaceTopBar
-        role={role}
+        view={view}
         viewerInitials={viewer.initials}
-        crumbs={buildCrumbs(data, role)}
+        crumbs={buildCrumbs(data, view)}
         modeChip={buildModeChip(data)}
       />
       <div className="ws-body">
         <WorkspaceSidebar data={sidebar} viewer={viewer} />
         <main className="ws-main">
-          <WorkspaceMHead data={data} role={role} />
+          <WorkspaceMHead data={data} view={view} />
           <div className="ws-content">
             <div className="ws-col-main">
-              <BriefCard data={data} role={role} />
-              <StatTiles data={data} role={role} />
-              <TaskList tasks={data.tasks} role={role} />
+              <BriefCard data={data} view={view} />
+              <StatTiles data={data} view={view} />
+              <TaskList tasks={data.tasks} view={view} />
               <DeliverablesMini deliverables={data.deliverables} />
               <ActivityFeed events={data.events} />
             </div>
             <div className="ws-col-side">
-              {role === 'intern' ? <RailIntern /> : <RailSupervisor />}
+              {view === 'intern' ? <RailIntern /> : <RailSupervisor />}
             </div>
           </div>
         </main>
       </div>
-      {role === 'intern' && <StuckPill />}
+      {view === 'intern' && <StuckPill />}
     </div>
   );
 }

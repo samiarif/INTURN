@@ -36,15 +36,15 @@ function extractTag(task: Task): string {
 
 export function TaskList({
   tasks,
-  role,
+  view,
 }: {
   tasks: Task[];
-  role: 'intern' | 'supervisor';
+  view: 'intern' | 'supervisor';
 }) {
   return (
     <div className="ws-card">
       <div className="ws-card-head">
-        <h3>{role === 'intern' ? "This week's tasks" : 'Tasks · this week'}</h3>
+        <h3>{view === 'intern' ? "This week's tasks" : 'Tasks · this week'}</h3>
         <a className="ws-link">See all {tasks.length} →</a>
       </div>
       <div className="ws-tasks">

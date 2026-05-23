@@ -3,10 +3,10 @@ import { computeDaysRemaining } from '../queries';
 
 export function StatTiles({
   data,
-  role,
+  view,
 }: {
   data: WorkspaceOverviewData;
-  role: 'intern' | 'supervisor';
+  view: 'intern' | 'supervisor';
 }) {
   const tasks = data.tasks;
   const openTasks = tasks.filter((t) => t.status !== 'done').length;
@@ -40,7 +40,7 @@ export function StatTiles({
           <small>of {deliverables.length} submitted</small>
         </div>
         <div className="ws-stat-foot good">
-          {role === 'intern' ? '✓ Latest submitted · v2' : '✓ Pending review'}
+          {view === 'intern' ? '✓ Latest submitted · v2' : '✓ Pending review'}
         </div>
       </div>
       <div className="ws-stat">
@@ -56,14 +56,14 @@ export function StatTiles({
         </div>
       </div>
       <div className="ws-stat">
-        <div className="ws-stat-label">{role === 'intern' ? 'Hours this week' : 'Activity score'}</div>
+        <div className="ws-stat-label">{view === 'intern' ? 'Hours this week' : 'Activity score'}</div>
         <div className="ws-stat-value">
-          <b>{role === 'intern' ? '18.5' : '92'}</b>
-          <small>{role === 'intern' ? 'hrs' : '/ 100'}</small>
+          <b>{view === 'intern' ? '18.5' : '92'}</b>
+          <small>{view === 'intern' ? 'hrs' : '/ 100'}</small>
         </div>
         <div className="ws-stat-foot good">
           <span className="arrow-up">↗</span>{' '}
-          {role === 'intern' ? '+2.5 vs last wk' : 'Above the floor of 70'}
+          {view === 'intern' ? '+2.5 vs last wk' : 'Above the floor of 70'}
         </div>
       </div>
     </div>

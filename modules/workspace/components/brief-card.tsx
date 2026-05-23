@@ -2,10 +2,10 @@ import type { WorkspaceOverviewData } from '../queries';
 
 export function BriefCard({
   data,
-  role,
+  view,
 }: {
   data: WorkspaceOverviewData;
-  role: 'intern' | 'supervisor';
+  view: 'intern' | 'supervisor';
 }) {
   const internship = data.internship;
   const project = data.project;
@@ -54,7 +54,7 @@ export function BriefCard({
         </div>
       </div>
       <div className="ws-brief-people">
-        {role === 'intern'
+        {view === 'intern'
           ? supervisor && (
               <>
                 <div className="ws-brief-person">

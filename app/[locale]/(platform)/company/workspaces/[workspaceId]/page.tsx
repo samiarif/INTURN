@@ -53,7 +53,7 @@ export default async function Page({
   return (
     <WorkspaceOverview
       data={data}
-      role="supervisor"
+      view="supervisor"
       sidebar={sidebar}
       viewer={{
         initials: supervisor

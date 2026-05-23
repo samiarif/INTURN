@@ -3,12 +3,12 @@ import { cn } from '@/lib/utils';
 export type Crumb = { label: string; bold?: boolean };
 
 export function WorkspaceTopBar({
-  role,
+  view,
   viewerInitials,
   crumbs,
   modeChip,
 }: {
-  role: 'intern' | 'supervisor';
+  view: 'intern' | 'supervisor';
   viewerInitials: string;
   crumbs: Crumb[];
   modeChip?: { label: string };
@@ -46,7 +46,7 @@ export function WorkspaceTopBar({
         <button className="ws-tb-icon" aria-label="Help">
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600 }}>?</span>
         </button>
-        <span className={cn('ws-tb-avatar', role === 'supervisor' && 'company')}>
+        <span className={cn('ws-tb-avatar', view === 'supervisor' && 'company')}>
           {viewerInitials}
         </span>
       </div>

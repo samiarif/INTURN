@@ -1,8 +1,21 @@
-export type WorkspaceViewerRole = 'intern' | 'supervisor';
+export type UserRole = 'intern' | 'company' | 'admin';
+
+export type WorkspaceRoute = 'intern' | 'company';
+
+/**
+ * UI variant for the workspace screen — determined by the route, not the viewer's
+ * role. Admins follow whichever route they hit (/intern/workspaces → intern view,
+ * /company/workspaces → supervisor view).
+ */
+export type WorkspaceView = 'intern' | 'supervisor';
+
+export function viewFromRoute(route: WorkspaceRoute): WorkspaceView {
+  return route === 'company' ? 'supervisor' : 'intern';
+}
 
 export type WorkspaceViewer = {
   userId: string;
-  role: 'intern' | 'company' | 'admin';
+  role: UserRole;
   supervisorOf: string[];
 };
 
