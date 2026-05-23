@@ -1,12 +1,6 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
-import { db } from '@/db';
-import { organizations } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import {
-  getWorkspaceOverview,
-  getSupervisorSidebarData,
-} from '@/modules/workspace/queries';
+import { getWorkspaceOverview, getSupervisorSidebarData } from '@/modules/workspace/queries';
 import { canViewWorkspace } from '@/modules/workspace/service';
 import { getUserByClerkId } from '@/modules/profiles/queries';
 import { WorkspaceOverview } from '@/modules/workspace/components/workspace-overview';
@@ -30,18 +24,7 @@ export default async function Page({
   const data = await getWorkspaceOverview(workspaceId);
   if (!data) notFound();
 
-  const supervisorOrgs =
-    role === 'company'
-      ? await db.select().from(organizations).where(eq(organizations.ownerId, user.id))
-      : [];
-
-  if (
-    !canViewWorkspace(data.workspace, {
-      userId: user.id,
-      role,
-      supervisorOf: supervisorOrgs.map((o) => o.id),
-    })
-  ) {
+  if (!canViewWorkspace(data.workspace, data.project, { userId: user.id, role })) {
     notFound();
   }
 

@@ -2,13 +2,29 @@ import { db } from '@/db';
 import { workspaces, applications, internships } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
-import type { Workspace } from '@/db/schema';
-import type { WorkspaceViewer } from './types';
+import type { Workspace, Project } from '@/db/schema';
+import type { UserRole } from './types';
 
-export function canViewWorkspace(workspace: Workspace, viewer: WorkspaceViewer): boolean {
+/**
+ * Project-scoped workspace visibility.
+ *
+ * - Admin: always.
+ * - Intern: owns the workspace (workspace.internId === viewer.userId).
+ * - Company role: must be in project.supervisorIds. Falls back to NOT visible
+ *   if the project has no supervisorIds (deny by default — Sprint 2 seeds
+ *   that set org-owner-as-supervisor must populate supervisorIds via the seed
+ *   update).
+ */
+export function canViewWorkspace(
+  workspace: Workspace,
+  project: Project | null,
+  viewer: { userId: string; role: UserRole },
+): boolean {
   if (viewer.role === 'admin') return true;
   if (viewer.role === 'intern') return workspace.internId === viewer.userId;
-  if (viewer.role === 'company') return viewer.supervisorOf.includes(workspace.organizationId);
+  if (viewer.role === 'company') {
+    return Boolean(project?.supervisorIds?.includes(viewer.userId));
+  }
   return false;
 }
 

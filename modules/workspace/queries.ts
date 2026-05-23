@@ -10,7 +10,7 @@ import {
   profiles,
   projects,
 } from '@/db/schema';
-import { desc, eq, inArray } from 'drizzle-orm';
+import { desc, eq, inArray, sql, or } from 'drizzle-orm';
 import type { SidebarData } from './types';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -146,18 +146,26 @@ export async function getInternSidebarData(internUserId: string): Promise<Sideba
 }
 
 export async function getSupervisorSidebarData(supervisorUserId: string): Promise<SidebarData> {
-  const orgs = await db
-    .select()
-    .from(organizations)
-    .where(eq(organizations.ownerId, supervisorUserId));
-
-  const orgIds = orgs.map((o) => o.id);
-  if (orgIds.length === 0) return { role: 'supervisor', activeProjects: [] };
-
-  const allProjects = await db
+  // Query 1: projects where viewer is in supervisorIds (JSONB containment)
+  // OR projects whose org is owned by viewer (legacy fallback for orgs created
+  // before the supervisorIds plumbing landed).
+  const supervisedProjects = await db
     .select()
     .from(projects)
-    .where(inArray(projects.organizationId, orgIds));
+    .leftJoin(organizations, eq(organizations.id, projects.organizationId))
+    .where(
+      or(
+        sql`${projects.supervisorIds} @> ${JSON.stringify([supervisorUserId])}::jsonb`,
+        eq(organizations.ownerId, supervisorUserId),
+      ),
+    );
+
+  if (supervisedProjects.length === 0) {
+    return { role: 'supervisor', activeProjects: [] };
+  }
+
+  const allProjects = supervisedProjects.map((row) => row.projects);
+  const orgIds = [...new Set(allProjects.map((p) => p.organizationId))];
   const allInternships = await db
     .select()
     .from(internships)
