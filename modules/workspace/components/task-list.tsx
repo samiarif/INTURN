@@ -29,11 +29,6 @@ function formatDue(task: Task): { label: string; urgent?: boolean } {
   return { label: `Due ${due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` };
 }
 
-function extractTag(task: Task): string {
-  const match = task.description?.match(/External tag:\s*(\S+)/);
-  return match?.[1] ?? '';
-}
-
 export function TaskList({
   tasks,
   view,
@@ -50,7 +45,6 @@ export function TaskList({
       <div className="ws-tasks">
         {tasks.map((t) => {
           const due = formatDue(t);
-          const tag = extractTag(t);
           const statusKey = t.status ?? 'todo';
           return (
             <div
@@ -59,7 +53,7 @@ export function TaskList({
             >
               <span className="check" />
               <span className="ws-task-name">{t.title}</span>
-              <span className="ws-task-tag">{tag}</span>
+              <span className="ws-task-tag">{t.tag ?? ''}</span>
               <span className={`pill ${STATUS_PILL_CLASS[statusKey] ?? 'pill-todo'}`}>
                 <span className="dot" />
                 {STATUS_LABELS[statusKey] ?? statusKey}

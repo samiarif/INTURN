@@ -208,8 +208,8 @@ export async function runSeed() {
     for (const t of seedTasks) {
       await db.insert(tasks).values({
         workspaceId: workspace.id,
+        tag: t.tag,
         title: t.title,
-        description: `External tag: ${t.tag}`,
         status: t.status,
         priority: t.priority,
         order: t.order,

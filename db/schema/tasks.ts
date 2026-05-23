@@ -6,6 +6,7 @@ export const tasks = pgTable('tasks', {
   workspaceId: uuid('workspace_id')
     .notNull()
     .references(() => workspaces.id, { onDelete: 'cascade' }),
+  tag: text('tag'),
   title: text('title').notNull(),
   description: text('description'),
   status: text('status', { enum: ['todo', 'in-progress', 'review', 'done'] }).default('todo'),
