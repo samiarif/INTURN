@@ -1,5 +1,7 @@
 import type { Event } from '@/db/schema';
 
+export type ActorLookup = Map<string, { firstName: string | null; lastName: string | null }>;
+
 const BULLET_BY_TYPE: Record<string, string> = {
   'deliverable.submitted': 'deliv',
   'deliverable.revision.requested': 'deliv',
@@ -20,33 +22,41 @@ function timeAgo(date: Date): string {
   return `${days}d ago`;
 }
 
-function describe(event: Event): React.ReactNode {
+function actorName(actorId: string | null, actors: ActorLookup): string {
+  if (!actorId) return 'Someone';
+  const a = actors.get(actorId);
+  if (!a) return 'Someone';
+  return a.firstName ?? a.lastName ?? 'Someone';
+}
+
+function describe(event: Event, actors: ActorLookup): React.ReactNode {
   const meta = (event.metadata ?? {}) as Record<string, unknown>;
+  const who = actorName(event.actorId, actors);
   switch (event.type) {
     case 'deliverable.submitted':
       return (
         <>
-          <b>Yasmine</b> submitted <b>{String(meta.name ?? 'a deliverable')}</b>
+          <b>{who}</b> submitted <b>{String(meta.name ?? 'a deliverable')}</b>
         </>
       );
     case 'deliverable.revision.requested':
       return (
         <>
-          <b>Mehdi</b> requested changes on <b>{String(meta.name ?? 'a deliverable')}</b>
+          <b>{who}</b> requested changes on <b>{String(meta.name ?? 'a deliverable')}</b>
           {meta.note ? ` — "${String(meta.note)}"` : ''}
         </>
       );
     case 'comment.added':
       return (
         <>
-          <b>Mehdi</b> commented on <b>{String(meta.task ?? 'a task')}</b>
+          <b>{who}</b> commented on <b>{String(meta.task ?? 'a task')}</b>
           {meta.text ? ` — "${String(meta.text)}"` : ''}
         </>
       );
     case 'task.moved':
       return (
         <>
-          <b>Yasmine</b> moved <span className="tag">{String(meta.tag ?? '')}</span> to{' '}
+          <b>{who}</b> moved <span className="tag">{String(meta.tag ?? '')}</span> to{' '}
           <b>{String(meta.to ?? '')}</b>
         </>
       );
@@ -61,7 +71,7 @@ function describe(event: Event): React.ReactNode {
   }
 }
 
-export function ActivityFeed({ events }: { events: Event[] }) {
+export function ActivityFeed({ events, actors }: { events: Event[]; actors: ActorLookup }) {
   return (
     <div className="ws-card">
       <div className="ws-card-head">
@@ -76,7 +86,7 @@ export function ActivityFeed({ events }: { events: Event[] }) {
               <span className={`ws-act-bullet ${bullet}`}>
                 <i />
               </span>
-              <span className="ws-act-text">{describe(e)}</span>
+              <span className="ws-act-text">{describe(e, actors)}</span>
               <span className="ws-act-time">{timeAgo(new Date(e.createdAt))}</span>
             </div>
           );

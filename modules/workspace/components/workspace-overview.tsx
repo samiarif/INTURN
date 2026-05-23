@@ -5,7 +5,7 @@ import { BriefCard } from './brief-card';
 import { StatTiles } from './stat-tiles';
 import { TaskList } from './task-list';
 import { DeliverablesMini } from './deliverables-mini';
-import { ActivityFeed } from './activity-feed';
+import { ActivityFeed, type ActorLookup } from './activity-feed';
 import { RailIntern } from './rail-intern';
 import { RailSupervisor } from './rail-supervisor';
 import { StuckPill } from './stuck-pill';
@@ -28,6 +28,13 @@ function buildCrumbs(data: WorkspaceOverviewData, view: WorkspaceView): Crumb[] 
     { label: data.intern?.firstName ?? '—' },
     { label: 'Overview', bold: true },
   ];
+}
+
+function buildActorLookup(data: WorkspaceOverviewData): ActorLookup {
+  const map: ActorLookup = new Map();
+  if (data.intern) map.set(data.intern.id, data.intern);
+  for (const s of data.supervisors) map.set(s.id, s);
+  return map;
 }
 
 function buildModeChip(data: WorkspaceOverviewData): { label: string } {
@@ -67,7 +74,7 @@ export function WorkspaceOverview({
               <StatTiles data={data} view={view} />
               <TaskList tasks={data.tasks} view={view} />
               <DeliverablesMini deliverables={data.deliverables} />
-              <ActivityFeed events={data.events} />
+              <ActivityFeed events={data.events} actors={buildActorLookup(data)} />
             </div>
             <div className="ws-col-side">
               {view === 'intern' ? <RailIntern /> : <RailSupervisor />}
