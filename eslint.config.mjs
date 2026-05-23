@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    // Read-only Claude Design bundle — vendored as reference, not project code
+    'docs/design-bundle/**',
   ]),
   {
     rules: {
