@@ -49,6 +49,16 @@ export async function POST(req: Request) {
           lastName: last_name,
           imageUrl: image_url,
         })
+        .onConflictDoUpdate({
+          target: users.clerkId,
+          set: {
+            email: primaryEmail?.email_address ?? '',
+            firstName: first_name,
+            lastName: last_name,
+            imageUrl: image_url,
+            updatedAt: new Date(),
+          },
+        })
         .returning();
 
       await recordEvent({
