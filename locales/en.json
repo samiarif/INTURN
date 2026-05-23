@@ -1,0 +1,41 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "signOut": "Sign out",
+    "roleSelection": {
+      "title": "Choose your role",
+      "subtitle": "How do you want to use inturn?",
+      "intern": "I'm an intern",
+      "internDescription": "I'm looking for internships and want to build my professional track record",
+      "company": "I'm a company",
+      "companyDescription": "I want to post internships and recruit talent",
+      "continue": "Continue"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome to inturn",
+    "intern": {
+      "title": "Intern Dashboard"
+    },
+    "company": {
+      "title": "Company Dashboard"
+    },
+    "admin": {
+      "title": "Admin Dashboard"
+    }
+  },
+  "landing": {
+    "title": "The internship platform for Tunisia",
+    "subtitle": "Discover internships, build your track record, connect with companies"
+  }
+}

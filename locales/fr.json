@@ -1,0 +1,41 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Soumettre"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signUp": "Creer un compte",
+    "signOut": "Se deconnecter",
+    "roleSelection": {
+      "title": "Choisissez votre role",
+      "subtitle": "Comment souhaitez-vous utiliser inturn ?",
+      "intern": "Je suis stagiaire",
+      "internDescription": "Je cherche des stages et veux construire mon parcours professionnel",
+      "company": "Je suis une entreprise",
+      "companyDescription": "Je veux publier des stages et recruter des talents",
+      "continue": "Continuer"
+    }
+  },
+  "dashboard": {
+    "welcome": "Bienvenue sur inturn",
+    "intern": {
+      "title": "Tableau de bord stagiaire"
+    },
+    "company": {
+      "title": "Tableau de bord entreprise"
+    },
+    "admin": {
+      "title": "Tableau de bord administrateur"
+    }
+  },
+  "landing": {
+    "title": "La plateforme de stages pour la Tunisie",
+    "subtitle": "Decouvrez des stages, construisez votre parcours, connectez-vous avec les entreprises"
+  }
+}
