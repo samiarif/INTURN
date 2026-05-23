@@ -2,3 +2,8 @@ export { users, type User, type NewUser } from './users';
 export { profiles, type Profile, type NewProfile } from './profiles';
 export { organizations, type Organization, type NewOrganization } from './organizations';
 export { events, type Event, type NewEvent } from './events';
+export { internships, type Internship, type NewInternship } from './internships';
+export { applications, type Application, type NewApplication } from './applications';
+export { workspaces, type Workspace, type NewWorkspace } from './workspaces';
+export { tasks, type Task, type NewTask } from './tasks';
+export { deliverables, type Deliverable, type NewDeliverable } from './deliverables';
