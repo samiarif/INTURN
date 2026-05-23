@@ -39,71 +39,70 @@ export async function getWorkspaceOverview(workspaceId: string) {
     .limit(1);
   if (!workspace) return null;
 
-  const [internship] = await db
-    .select()
-    .from(internships)
-    .where(eq(internships.id, workspace.internshipId))
-    .limit(1);
-
-  const [organization] = await db
-    .select()
-    .from(organizations)
-    .where(eq(organizations.id, workspace.organizationId))
-    .limit(1);
-
-  const [intern] = await db.select().from(users).where(eq(users.id, workspace.internId)).limit(1);
-  const [internProfile] = await db
-    .select()
-    .from(profiles)
-    .where(eq(profiles.userId, workspace.internId))
-    .limit(1);
-
-  let project = null;
-  if (internship?.projectId) {
-    const [p] = await db
+  // First parallel batch: everything that depends only on workspace FKs.
+  const [
+    [internship],
+    [organization],
+    [intern],
+    [internProfile],
+    workspaceTasks,
+    workspaceDeliverables,
+  ] = await Promise.all([
+    db.select().from(internships).where(eq(internships.id, workspace.internshipId)).limit(1),
+    db.select().from(organizations).where(eq(organizations.id, workspace.organizationId)).limit(1),
+    db.select().from(users).where(eq(users.id, workspace.internId)).limit(1),
+    db.select().from(profiles).where(eq(profiles.userId, workspace.internId)).limit(1),
+    db
       .select()
-      .from(projects)
-      .where(eq(projects.id, internship.projectId))
-      .limit(1);
-    project = p ?? null;
-  }
+      .from(tasks)
+      .where(eq(tasks.workspaceId, workspaceId))
+      .orderBy(tasks.order)
+      .limit(20),
+    db.select().from(deliverables).where(eq(deliverables.workspaceId, workspaceId)).limit(10),
+  ]);
 
-  const supervisorIds = project?.supervisorIds ?? [];
-  const supervisorUserIds =
-    supervisorIds.length > 0
-      ? supervisorIds
-      : ([organization?.ownerId].filter(Boolean) as string[]);
-  const supervisors =
-    supervisorUserIds.length > 0
-      ? await db.select().from(users).where(inArray(users.id, supervisorUserIds))
-      : [];
-
-  const workspaceTasks = await db
-    .select()
-    .from(tasks)
-    .where(eq(tasks.workspaceId, workspaceId))
-    .orderBy(tasks.order)
-    .limit(20);
-
-  const workspaceDeliverables = await db
-    .select()
-    .from(deliverables)
-    .where(eq(deliverables.workspaceId, workspaceId))
-    .limit(10);
-
-  const taskIds = workspaceTasks.map((t) => t.id);
-  const deliverableIds = workspaceDeliverables.map((d) => d.id);
-  const targetIds = [workspaceId, ...taskIds, ...deliverableIds];
-
-  const recentEvents =
-    targetIds.length > 0
-      ? await db
+  // Second batch: depends on internship + organization.
+  const [project, supervisors, recentEvents] = await Promise.all([
+    internship?.projectId
+      ? db
           .select()
-          .from(events)
-          .where(inArray(events.targetId, targetIds))
-          .orderBy(desc(events.createdAt))
-          .limit(10)
-      : [];
+          .from(projects)
+          .where(eq(projects.id, internship.projectId))
+          .limit(1)
+          .then((rows) => rows[0] ?? null)
+      : Promise.resolve(null),
+    (async () => {
+      // We don't know supervisorIds until project resolves, but most workspaces have
+      // small org owners — load owner concurrently, then merge in project supervisors.
+      const ownerId = organization?.ownerId;
+      if (!ownerId) return [];
+      return db.select().from(users).where(eq(users.id, ownerId));
+    })(),
+    (async () => {
+      const taskIds = workspaceTasks.map((t) => t.id);
+      const deliverableIds = workspaceDeliverables.map((d) => d.id);
+      const targetIds = [workspaceId, ...taskIds, ...deliverableIds];
+      if (targetIds.length === 0) return [];
+      return db
+        .select()
+        .from(events)
+        .where(inArray(events.targetId, targetIds))
+        .orderBy(desc(events.createdAt))
+        .limit(10);
+    })(),
+  ]);
+
+  // Final pass: merge project.supervisorIds into supervisors list if they differ
+  // from the org owner.
+  let mergedSupervisors = supervisors;
+  if (project?.supervisorIds && project.supervisorIds.length > 0) {
+    const known = new Set(supervisors.map((s) => s.id));
+    const missing = project.supervisorIds.filter((id) => !known.has(id));
+    if (missing.length > 0) {
+      const extras = await db.select().from(users).where(inArray(users.id, missing));
+      mergedSupervisors = [...supervisors, ...extras];
+    }
+  }
 
   return {
     workspace,
@@ -112,7 +111,7 @@ export async function getWorkspaceOverview(workspaceId: string) {
     project,
     intern,
     internProfile,
-    supervisors,
+    supervisors: mergedSupervisors,
     tasks: workspaceTasks,
     deliverables: workspaceDeliverables,
     events: recentEvents,
