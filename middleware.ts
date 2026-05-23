@@ -16,6 +16,9 @@ export default clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
+  if (req.nextUrl.pathname.startsWith('/api')) {
+    return;
+  }
   return handleI18nRouting(req);
 });
 
