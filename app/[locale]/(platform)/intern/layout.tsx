@@ -13,7 +13,7 @@ export default async function InternLayout({ children }: { children: React.React
   const user = await clerk.users.getUser(userId);
   const role = user.publicMetadata.role as string | undefined;
 
-  if (role !== 'intern') {
+  if (role !== 'intern' && role !== 'admin') {
     redirect(`/${role}/dashboard`);
     return null;
   }
