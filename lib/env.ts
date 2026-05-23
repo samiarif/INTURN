@@ -2,7 +2,8 @@ type RequiredEnvKey =
   | 'DATABASE_URL'
   | 'CLERK_SECRET_KEY'
   | 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'
-  | 'CLERK_WEBHOOK_SECRET';
+  | 'CLERK_WEBHOOK_SECRET'
+  | 'BLOB_READ_WRITE_TOKEN';
 
 export function requireEnv(name: RequiredEnvKey): string {
   const value = process.env[name];
