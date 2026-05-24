@@ -1450,3 +1450,478 @@
   }
 }
 
+/* ==========================================================================
+ * Deliverables master/detail — Sprint B
+ * Lifted from docs/design-bundle/.../mocks/deliverables.css with token names
+ * already aligned to the workshop palette (var(--brand), var(--ink), etc.).
+ * Only the pieces that the new WorkspaceDeliverablesPage actually renders
+ * live here.
+ * ========================================================================== */
+
+/* Two-col master/detail */
+.ws .dv-layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* ────────── Left rail: deliverable list ────────── */
+.ws .dv-list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  display: flex; flex-direction: column;
+  gap: 2px;
+  position: sticky; top: 0;
+}
+.ws .dv-list-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 8px 10px;
+}
+.ws .dv-list-head h3 {
+  font-size: 12px; font-weight: 600;
+  color: var(--ink-3);
+  font-family: 'Geist Mono', monospace;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.ws .dv-list-head .total {
+  margin-left: auto;
+  font-family: 'Geist Mono', monospace; font-size: 11px;
+  color: var(--ink-4);
+}
+.ws .dv-li {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+.ws .dv-li:hover { background: var(--surface-muted); }
+.ws .dv-li.selected {
+  background: var(--brand-50);
+  box-shadow: inset 2px 0 0 var(--brand);
+}
+.ws .dv-li.selected .dv-li-num { background: var(--brand); color: #FFF; }
+.ws .dv-li-num {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 600;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+.ws .dv-li.done .dv-li-num {
+  background: #ECFDF5; border-color: #A7F3D0;
+  color: #166534;
+}
+.ws .dv-li-body { min-width: 0; }
+.ws .dv-li-name {
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  letter-spacing: -0.005em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ws .dv-li-meta {
+  font-size: 11px; color: var(--ink-3);
+  font-family: 'Geist Mono', monospace;
+  letter-spacing: 0.02em;
+  margin-top: 2px;
+}
+.ws .dv-li-status {
+  width: 10px; height: 10px;
+  border-radius: 99px;
+  background: var(--ink-4);
+}
+.ws .dv-li-status.review { background: var(--brand); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18); }
+.ws .dv-li-status.done   { background: var(--success); }
+.ws .dv-li-status.late   { background: var(--danger); }
+.ws .dv-li-status.todo   { background: var(--ink-4); opacity: 0.4; }
+
+/* Progress mini-bar in the rail footer */
+.ws .dv-list-foot {
+  margin: 8px 8px 4px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.ws .dv-list-foot .label {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.ws .dv-list-foot .bar {
+  height: 4px; background: var(--surface-muted);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.ws .dv-list-foot .bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+}
+
+/* ────────── Right detail pane ────────── */
+.ws .dv-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex; flex-direction: column;
+  min-width: 0;
+}
+.ws .dv-detail-head {
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.ws .dv-detail-eyebrow {
+  font-family: 'Geist Mono', monospace; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+.ws .dv-detail-eyebrow .sep { color: var(--ink-4); margin: 0 6px; }
+.ws .dv-detail-title-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  flex-wrap: wrap;
+}
+.ws .dv-detail-title {
+  font-size: 22px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--ink);
+  text-wrap: balance;
+  margin: 0;
+}
+.ws .dv-detail-actions {
+  margin-left: auto;
+  display: flex; gap: 8px;
+}
+.ws .dv-detail-meta {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  font-size: 12.5px; color: var(--ink-2);
+  margin-top: 10px;
+}
+.ws .dv-detail-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.ws .dv-detail-meta b { color: var(--ink); font-weight: 500; }
+.ws .dv-detail-meta .pip { width: 4px; height: 4px; border-radius: 99px; background: var(--ink-4); }
+
+/* Sub-tabs (informational; non-routing on this page yet) */
+.ws .dv-detail-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.ws .dv-detail-tab {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--ink-3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 500;
+  cursor: default;
+}
+.ws .dv-detail-tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+.ws .dv-detail-tab .count {
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  padding: 1px 5px; border-radius: 3px;
+  background: var(--surface-muted); color: var(--ink-3);
+}
+
+/* ────────── Version stack ────────── */
+.ws .dv-body {
+  padding: 20px 24px 24px;
+  display: flex; flex-direction: column;
+  gap: 16px;
+}
+.ws .dv-review-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #FAF5FF, #FFFFFF);
+  border: 1px solid var(--brand-100);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.06);
+  flex-wrap: wrap;
+}
+.ws .dv-review-bar .who { display: flex; flex-direction: column; min-width: 0; }
+.ws .dv-review-bar .who .title { font-size: 13px; font-weight: 500; color: var(--ink); }
+.ws .dv-review-bar .who .sub {
+  font-size: 11.5px; color: var(--ink-3);
+  max-width: 460px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ws .dv-review-bar .actions { margin-left: auto; display: flex; gap: 8px; }
+.ws .dv-btn-approve {
+  background: var(--brand); color: #FFF;
+  border: 1px solid var(--brand); border-radius: var(--radius);
+  padding: 6px 14px; font-size: 12.5px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer;
+}
+.ws .dv-btn-approve:disabled { opacity: 0.6; cursor: not-allowed; }
+.ws .dv-btn-approve .check {
+  width: 12px; height: 12px;
+  position: relative;
+}
+.ws .dv-btn-approve .check::after {
+  content: ""; position: absolute;
+  left: 1px; top: 0;
+  width: 5px; height: 9px;
+  border-right: 1.7px solid #FFF; border-bottom: 1.7px solid #FFF;
+  transform: rotate(45deg);
+}
+.ws .dv-btn-changes {
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 6px 14px; font-size: 12.5px; font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+.ws .dv-btn-changes:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Upload zone — intern only */
+.ws .dv-upload {
+  border: 1.5px dashed var(--border-strong);
+  background: var(--surface-muted);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+}
+.ws .dv-upload:hover { border-color: var(--brand); }
+.ws .dv-upload .icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--brand-50); border: 1px solid var(--brand-100);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--brand);
+  font-size: 18px; line-height: 1;
+}
+.ws .dv-upload .text { flex: 1; min-width: 0; }
+.ws .dv-upload .text .title { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+.ws .dv-upload .text .sub { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+.ws .dv-upload .pill {
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  letter-spacing: 0.04em;
+  background: var(--surface);
+  color: var(--ink-2);
+  padding: 3px 8px; border-radius: 999px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+/* A single version block */
+.ws .dv-version {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+.ws .dv-version.active {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1.5px var(--brand);
+}
+.ws .dv-version-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--surface);
+}
+.ws .dv-version.active .dv-version-head { background: var(--brand-50); }
+.ws .dv-version-num {
+  font-family: 'Geist Mono', monospace;
+  font-size: 16px; font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.ws .dv-version.active .dv-version-num {
+  background: var(--brand); color: #FFF; border-color: var(--brand);
+}
+.ws .dv-version.approved .dv-version-num {
+  background: #ECFDF5; color: #166534; border-color: #A7F3D0;
+}
+.ws .dv-version.changes .dv-version-num {
+  background: var(--surface); color: var(--ink-3);
+}
+.ws .dv-version-by { min-width: 0; }
+.ws .dv-version-by .who { font-size: 13px; font-weight: 500; color: var(--ink); }
+.ws .dv-version-by .when {
+  font-family: 'Geist Mono', monospace; font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+.ws .dv-version-body {
+  padding: 14px 18px 16px;
+  display: flex; flex-direction: column; gap: 14px;
+  border-top: 1px solid var(--border);
+}
+.ws .dv-version-note {
+  background: var(--surface-muted);
+  border-left: 3px solid var(--ink-4);
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+  border-radius: var(--radius-sm);
+}
+.ws .dv-version.changes .dv-version-note {
+  background: #FFFBEB;
+  border-left-color: var(--warning);
+  color: #78350F;
+}
+.ws .dv-version-note b { color: var(--ink); font-weight: 500; }
+.ws .dv-version.changes .dv-version-note b { color: #92400E; }
+
+/* Files list inside a version */
+.ws .dv-files {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.ws .dv-file {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+}
+.ws .dv-file:last-child { border-bottom: 0; }
+.ws .dv-file:hover { background: var(--surface-muted); }
+.ws .dv-file-icon {
+  width: 32px; height: 36px;
+  border-radius: 4px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Geist Mono', monospace; font-size: 9.5px; font-weight: 600;
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+  position: relative;
+}
+.ws .dv-file-icon::after {
+  content: "";
+  position: absolute; top: 0; right: 0;
+  width: 8px; height: 8px;
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-muted);
+}
+.ws .dv-file-icon.pdf   { background: #FEF2F2; border-color: #FECACA; color: #B91C1C; }
+.ws .dv-file-icon.pdf::after { background: #FEF2F2; }
+.ws .dv-file-icon.fig   { background: #ECFEFF; border-color: #A5F3FC; color: #0E7490; }
+.ws .dv-file-icon.fig::after { background: #ECFEFF; }
+.ws .dv-file-icon.md    { background: #F5F3FF; border-color: #DDD6FE; color: var(--brand-600); }
+.ws .dv-file-icon.md::after { background: #F5F3FF; }
+.ws .dv-file-name { font-weight: 500; color: var(--ink); word-break: break-all; }
+.ws .dv-file-meta {
+  font-size: 11.5px; color: var(--ink-3); margin-top: 1px;
+  font-family: 'Geist Mono', monospace; letter-spacing: 0.02em;
+}
+.ws .dv-file-size {
+  font-family: 'Geist Mono', monospace; font-size: 11.5px; color: var(--ink-3);
+}
+.ws .dv-file-act {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  font-size: 11.5px; color: var(--ink-2);
+  cursor: pointer;
+  text-decoration: none;
+}
+.ws .dv-file-act:hover { background: var(--surface-muted); }
+
+/* Reviewer feedback embedded inside a version */
+.ws .dv-review {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+}
+.ws .dv-review.approved {
+  background: #ECFDF5;
+  border-color: #A7F3D0;
+}
+.ws .dv-review-head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; font-weight: 500;
+  color: #78350F;
+  flex-wrap: wrap;
+}
+.ws .dv-review.approved .dv-review-head { color: #166534; }
+.ws .dv-review-head .pill {
+  font-family: 'Geist Mono', monospace; font-size: 9.5px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 1px 6px;
+  background: var(--warning); color: #FFF;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.ws .dv-review.approved .dv-review-head .pill {
+  background: var(--success);
+}
+.ws .dv-review-text {
+  font-size: 13px; color: var(--ink-2); line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* Version status pill (also used in the detail head) */
+.ws .dv-version-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px; font-weight: 500;
+  border: 1px solid transparent;
+}
+.ws .dv-version-pill .dot { width: 6px; height: 6px; border-radius: 99px; background: currentColor; opacity: 0.7; }
+.ws .dv-version-pill.review { background: var(--brand-50); color: var(--brand-600); border-color: var(--brand-100); }
+.ws .dv-version-pill.approved { background: #ECFDF5; color: #166534; border-color: #A7F3D0; }
+.ws .dv-version-pill.changes { background: #FFFBEB; color: #92400E; border-color: #FDE68A; }
+.ws .dv-version-pill.draft { background: var(--surface-muted); color: var(--ink-3); border-color: var(--border); }
+
+/* "Waiting for reviewer" badge under an intern's in-review version */
+.ws .dv-waiting {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--brand-50);
+  border: 1px solid var(--brand-100);
+  border-radius: var(--radius);
+  font-size: 12.5px; color: var(--brand-600);
+}
+.ws .dv-waiting .dot { width: 8px; height: 8px; border-radius: 99px; background: var(--brand); }
+
+/* Empty state for the rail when no deliverables exist */
+.ws .dv-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+/* ────────── Responsive: stack the layout below 1024px ────────── */
+@media (max-width: 1024px) {
+  .ws .dv-layout { grid-template-columns: 1fr; }
+  .ws .dv-list { position: static; }
+}
+
