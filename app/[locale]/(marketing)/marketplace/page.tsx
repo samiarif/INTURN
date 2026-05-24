@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { listPublishedInternships, listMarketplaceSectors } from '@/modules/internships/queries';
 import { InternshipCard } from '@/components/marketplace/internship-card';
+import { getSession } from '@/modules/auth/session';
+import { getBookmarkedSet } from '@/modules/bookmarks/queries';
 
 const PAID_OPTIONS = [
   { value: 'all', label: 'All' },
@@ -62,7 +64,7 @@ export default async function Page({
   const page = Math.max(1, Number(params.page ?? '1') || 1);
   const pageSize = 20;
 
-  const [results, sectors] = await Promise.all([
+  const [results, sectors, session] = await Promise.all([
     listPublishedInternships({
       search,
       paid,
@@ -75,9 +77,20 @@ export default async function Page({
       offset: (page - 1) * pageSize,
     }),
     listMarketplaceSectors(),
+    getSession(),
   ]);
   const hasNext = results.length > pageSize;
   const rows = results.slice(0, pageSize);
+
+  // Decorate cards with bookmark state — only for signed-in interns.
+  // For everyone else the card renders without the heart.
+  const bookmarkedSet =
+    session?.role === 'intern'
+      ? await getBookmarkedSet(
+          session.user.id,
+          rows.map((r) => r.internship.id),
+        )
+      : null;
 
   function buildHref(overrides: Partial<Search>): string {
     const sp = new URLSearchParams();
@@ -185,7 +198,12 @@ export default async function Page({
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
           {rows.map(({ internship, organization }) => (
-            <InternshipCard key={internship.id} internship={internship} organization={organization} />
+            <InternshipCard
+              key={internship.id}
+              internship={internship}
+              organization={organization}
+              bookmarked={bookmarkedSet ? bookmarkedSet.has(internship.id) : undefined}
+            />
           ))}
         </div>
       )}

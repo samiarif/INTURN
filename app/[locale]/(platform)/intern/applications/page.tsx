@@ -23,6 +23,17 @@ export default async function Page() {
 
   return (
     <div className="max-w-3xl mx-auto p-8">
+      <nav className="flex items-center gap-4 text-sm mb-6 border-b border-[var(--border-color)]">
+        <span className="px-3 py-2 border-b-2 border-[var(--brand-500)] text-[var(--ink)] font-medium">
+          Applications
+        </span>
+        <Link
+          href="/intern/saved"
+          className="px-3 py-2 text-[var(--ink-3)] hover:text-[var(--ink)]"
+        >
+          Saved
+        </Link>
+      </nav>
       <h1 className="text-2xl font-semibold tracking-tight mb-2">My applications</h1>
       <p className="text-[14px] text-[var(--ink-3)] mb-8">
         {rows.length === 0 ? 'No applications yet.' : `${rows.length} application${rows.length === 1 ? '' : 's'}`}

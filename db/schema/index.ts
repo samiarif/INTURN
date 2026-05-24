@@ -9,3 +9,8 @@ export { workspaces, type Workspace, type NewWorkspace } from './workspaces';
 export { tasks, type Task, type NewTask } from './tasks';
 export { deliverables, type Deliverable, type NewDeliverable } from './deliverables';
 export { comments, type Comment, type NewComment } from './comments';
+export {
+  internshipBookmarks,
+  type InternshipBookmark,
+  type NewInternshipBookmark,
+} from './internship-bookmarks';
