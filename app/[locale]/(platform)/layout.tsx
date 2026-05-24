@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
+import { PlatformHeader } from '@/components/platform-header';
 
 export default async function PlatformLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -15,7 +16,8 @@ export default async function PlatformLayout({ children }: { children: React.Rea
       >
         {t('skipToContent')}
       </a>
-      {children}
+      <PlatformHeader role={session.role} />
+      <main id="main-content">{children}</main>
     </>
   );
 }

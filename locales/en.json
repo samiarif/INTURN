@@ -4,6 +4,13 @@
     "switchToDark": "Switch to dark mode",
     "switchToLight": "Switch to light mode"
   },
+  "platformNav": {
+    "dashboard": "Dashboard",
+    "applications": "Applications",
+    "saved": "Saved",
+    "browse": "Browse",
+    "verifications": "Verifications"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

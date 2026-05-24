@@ -4,6 +4,13 @@
     "switchToDark": "Passer en mode sombre",
     "switchToLight": "Passer en mode clair"
   },
+  "platformNav": {
+    "dashboard": "Tableau de bord",
+    "applications": "Candidatures",
+    "saved": "Enregistrés",
+    "browse": "Parcourir",
+    "verifications": "Vérifications"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Une erreur est survenue",
