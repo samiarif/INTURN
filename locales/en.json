@@ -276,7 +276,79 @@
   },
   "applications": {
     "tabActive": "Applications",
-    "tabSaved": "Saved"
+    "tabSaved": "Saved",
+    "title": "My applications",
+    "subtitleNone": "No applications yet.",
+    "subtitleCount": "{n, plural, one {# application} other {# applications}}",
+    "countLabel": "TOTAL",
+    "emptyHeading": "Start applying",
+    "emptyBody": "Browse internships and apply with one click.",
+    "browseCta": "Browse internships →",
+    "appliedOn": "Applied {date}",
+    "status": {
+      "new": "New",
+      "reviewed": "Reviewed",
+      "shortlisted": "Shortlisted",
+      "interview": "Interview",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    }
+  },
+  "card": {
+    "durationWeeks": "{n, plural, one {# week} other {# weeks}}",
+    "deadlineToday": "Closes today",
+    "deadlineInDays": "{n, plural, one {Closes in #d} other {Closes in #d}}",
+    "closed": "Closed",
+    "rolling": "Open · rolling"
+  },
+  "dash": {
+    "intern": {
+      "eyebrowSolo": "{date}",
+      "eyebrowWithCity": "{date} · {city}",
+      "greetingMorning": "Good morning",
+      "greetingAfternoon": "Good afternoon",
+      "greetingEvening": "Good evening",
+      "subtitle": "Your workspaces, applications, and matched internships — at a glance.",
+      "statsApplications": "Applications",
+      "statsBookmarks": "Saved",
+      "statsWorkspaces": "Workspaces",
+      "statsActive": "active",
+      "statsItems": "items",
+      "workspacesTitle": "My active workspaces",
+      "workspacesEmpty": "No active workspaces yet. Apply to internships and once a company accepts you, your workspace opens automatically.",
+      "workspacesActive": "Active",
+      "workspacesDone": "Done",
+      "recentApplicationsTitle": "Recent applications",
+      "seeAll": "See all {n} →",
+      "applicationsEmpty": "No applications yet. Find an internship below and apply.",
+      "recommendedTitle": "Recommended for you",
+      "browseAll": "Browse all →",
+      "recommendedEmpty": "No internships match yet — check back as new ones get posted."
+    },
+    "company": {
+      "eyebrowSolo": "{date} · {org}",
+      "greetingMorning": "Good morning",
+      "greetingAfternoon": "Good afternoon",
+      "greetingEvening": "Good evening",
+      "subtitleVerified": "Your projects, internships, and applications.",
+      "subtitlePending": "You can draft projects and internships while we verify your business.",
+      "statsProjects": "Projects",
+      "statsApps": "Applications",
+      "statsInterns": "Active interns",
+      "statsRunning": "running",
+      "statsThisWeek": "this week",
+      "statsOnboard": "onboard",
+      "verifyHeading": "Verification pending",
+      "verifyBody": "You can create draft projects and post draft internships now. Once an admin marks your organization as verified, your internships become visible on the marketplace and you can accept candidates.",
+      "projectsTitle": "Projects",
+      "newProject": "+ New project",
+      "newProjectHelp": "Verify your organization first",
+      "projectsEmptyHeading": "No projects yet",
+      "projectsEmptyVerified": "Create your first project to start posting internships.",
+      "projectsEmptyPending": "Once verified, create a project to post internships.",
+      "projectInternships": "{n, plural, one {# internship} other {# internships}}",
+      "projectApps": "{n, plural, one {# application} other {# applications}}"
+    }
   },
   "errors": {
     "root": {

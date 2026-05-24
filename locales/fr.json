@@ -276,7 +276,79 @@
   },
   "applications": {
     "tabActive": "Candidatures",
-    "tabSaved": "Enregistrés"
+    "tabSaved": "Enregistrés",
+    "title": "Mes candidatures",
+    "subtitleNone": "Aucune candidature pour le moment.",
+    "subtitleCount": "{n, plural, one {# candidature} other {# candidatures}}",
+    "countLabel": "TOTAL",
+    "emptyHeading": "Lancez vos candidatures",
+    "emptyBody": "Parcourez les stages et postulez en un clic.",
+    "browseCta": "Parcourir les stages →",
+    "appliedOn": "Postulé le {date}",
+    "status": {
+      "new": "Nouveau",
+      "reviewed": "Lu",
+      "shortlisted": "Présélectionné",
+      "interview": "Entretien",
+      "accepted": "Accepté",
+      "rejected": "Refusé"
+    }
+  },
+  "card": {
+    "durationWeeks": "{n, plural, one {# semaine} other {# semaines}}",
+    "deadlineToday": "Clôture aujourd'hui",
+    "deadlineInDays": "{n, plural, one {Clôture dans #j} other {Clôture dans #j}}",
+    "closed": "Clôturé",
+    "rolling": "Ouvert · au fil de l'eau"
+  },
+  "dash": {
+    "intern": {
+      "eyebrowSolo": "{date}",
+      "eyebrowWithCity": "{date} · {city}",
+      "greetingMorning": "Bonjour",
+      "greetingAfternoon": "Bon après-midi",
+      "greetingEvening": "Bonsoir",
+      "subtitle": "Vos workspaces, candidatures et stages recommandés — d'un coup d'œil.",
+      "statsApplications": "Candidatures",
+      "statsBookmarks": "Enregistrés",
+      "statsWorkspaces": "Workspaces",
+      "statsActive": "actifs",
+      "statsItems": "éléments",
+      "workspacesTitle": "Mes workspaces actifs",
+      "workspacesEmpty": "Aucun workspace actif. Postulez à des stages — dès qu'une entreprise vous accepte, votre workspace s'ouvre automatiquement.",
+      "workspacesActive": "Actif",
+      "workspacesDone": "Terminé",
+      "recentApplicationsTitle": "Candidatures récentes",
+      "seeAll": "Voir les {n} →",
+      "applicationsEmpty": "Aucune candidature. Trouvez un stage ci-dessous et postulez.",
+      "recommendedTitle": "Recommandés pour vous",
+      "browseAll": "Tout parcourir →",
+      "recommendedEmpty": "Aucun stage ne correspond pour l'instant — revenez bientôt."
+    },
+    "company": {
+      "eyebrowSolo": "{date} · {org}",
+      "greetingMorning": "Bonjour",
+      "greetingAfternoon": "Bon après-midi",
+      "greetingEvening": "Bonsoir",
+      "subtitleVerified": "Vos projets, stages et candidatures.",
+      "subtitlePending": "Vous pouvez rédiger des projets et des annonces en brouillon le temps de la vérification.",
+      "statsProjects": "Projets",
+      "statsApps": "Candidatures",
+      "statsInterns": "Stagiaires actifs",
+      "statsRunning": "en cours",
+      "statsThisWeek": "cette semaine",
+      "statsOnboard": "à bord",
+      "verifyHeading": "Vérification en cours",
+      "verifyBody": "Vous pouvez créer des projets et publier des annonces en brouillon dès maintenant. Une fois votre organisation vérifiée par un administrateur, vos stages deviennent visibles sur la marketplace et vous pouvez accepter des candidats.",
+      "projectsTitle": "Projets",
+      "newProject": "+ Nouveau projet",
+      "newProjectHelp": "Vérifiez d'abord votre organisation",
+      "projectsEmptyHeading": "Aucun projet",
+      "projectsEmptyVerified": "Créez votre premier projet pour publier des annonces.",
+      "projectsEmptyPending": "Une fois vérifié(e), créez un projet pour publier des annonces.",
+      "projectInternships": "{n, plural, one {# stage} other {# stages}}",
+      "projectApps": "{n, plural, one {# candidature} other {# candidatures}}"
+    }
   },
   "errors": {
     "root": {
