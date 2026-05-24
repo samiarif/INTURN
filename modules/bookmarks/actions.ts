@@ -44,7 +44,7 @@ export async function toggleBookmarkAction(internshipId: string): Promise<Toggle
           eq(internshipBookmarks.internshipId, internshipId),
         ),
       );
-    revalidatePath('/intern/saved');
+    revalidateAfterToggle();
     return { bookmarked: false };
   }
 
@@ -52,6 +52,12 @@ export async function toggleBookmarkAction(internshipId: string): Promise<Toggle
     internId: session.user.id,
     internshipId,
   });
-  revalidatePath('/intern/saved');
+  revalidateAfterToggle();
   return { bookmarked: true };
+}
+
+function revalidateAfterToggle() {
+  revalidatePath('/intern/saved');
+  // Heart state lives on marketplace cards too — keep them in sync.
+  revalidatePath('/marketplace');
 }
