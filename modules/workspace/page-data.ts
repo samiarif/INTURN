@@ -7,8 +7,43 @@ import {
   getSupervisorSidebarData,
   type WorkspaceOverviewData,
 } from './queries';
-import type { SidebarData, WorkspaceView } from './types';
+import { db } from '@/db';
+import {
+  workspaces,
+  internships,
+  projects,
+  organizations,
+  users,
+  profiles,
+  tasks,
+  deliverables,
+} from '@/db/schema';
+import { eq, count } from 'drizzle-orm';
+import type { SidebarData, WorkspaceView, UserRole } from './types';
 import type { Session } from '@/modules/auth/session';
+
+export type WorkspaceShell = {
+  session: Session;
+  workspaceId: string;
+  view: WorkspaceView;
+  sidebar: SidebarData;
+  basePath: string;
+  viewer: { initials: string; name: string; subtitle: string };
+  shell: {
+    workspaceId: string;
+    organizationName: string;
+    projectOrInternshipLabel: string;
+    internFirstName: string | null;
+    internLastName: string | null;
+    internshipTitle: string;
+    locationType: string;
+    durationWeeks: number;
+    startDate: Date | null;
+    endDate: Date | null;
+    taskCount: number;
+    deliverableCount: number;
+  };
+};
 
 export type WorkspacePageData = {
   session: Session;
@@ -20,12 +55,187 @@ export type WorkspacePageData = {
 };
 
 /**
- * Shared loader for every workspace tab page.
+ * Shell loader: session + authz + sidebar + just-enough-workspace-metadata to
+ * paint topbar + MHead + sidebar. The heavy `getWorkspaceOverview` runs
+ * separately via `loadWorkspaceData`, so the body can stream while the shell
+ * is already on screen.
  *
- * Replaces ~40 lines of duplicated auth + workspace + sidebar logic that was
- * copy-pasted across 9 page.tsx files. Calls getSession (React-cached) so the
- * auth chain runs at most once per render even if other components also call
- * it. Loads the sidebar in parallel with the workspace overview where possible.
+ * Cost target: one indexed workspace join + two SELECT COUNT(*) (both on
+ * workspace_id, both indexed) + one sidebar query, all in parallel. ~3-4
+ * fast roundtrips total before the shell is paintable.
+ */
+export async function loadWorkspaceShell(
+  workspaceId: string,
+  view: WorkspaceView,
+): Promise<WorkspaceShell> {
+  const session = await getSession();
+  if (!session) redirect('/sign-in');
+
+  const shellRowPromise = db
+    .select({
+      workspaceId: workspaces.id,
+      internshipId: workspaces.internshipId,
+      organizationId: workspaces.organizationId,
+      projectId: internships.projectId,
+      internId: workspaces.internId,
+      startDate: workspaces.startDate,
+      endDate: workspaces.endDate,
+      orgName: organizations.name,
+      orgOwnerId: organizations.ownerId,
+      projectName: projects.name,
+      internshipTitle: internships.title,
+      locationType: internships.locationType,
+      duration: internships.duration,
+      supervisorIds: projects.supervisorIds,
+      internFirstName: users.firstName,
+      internLastName: users.lastName,
+      internUniversity: profiles.university,
+      internYear: profiles.yearOfStudy,
+    })
+    .from(workspaces)
+    .innerJoin(internships, eq(internships.id, workspaces.internshipId))
+    .innerJoin(organizations, eq(organizations.id, workspaces.organizationId))
+    .leftJoin(projects, eq(projects.id, internships.projectId))
+    .innerJoin(users, eq(users.id, workspaces.internId))
+    .leftJoin(profiles, eq(profiles.userId, workspaces.internId))
+    .where(eq(workspaces.id, workspaceId))
+    .limit(1)
+    .then((rows) => rows[0]);
+
+  const taskCountPromise = db
+    .select({ value: count() })
+    .from(tasks)
+    .where(eq(tasks.workspaceId, workspaceId))
+    .then((rows) => rows[0]?.value ?? 0);
+
+  const deliverableCountPromise = db
+    .select({ value: count() })
+    .from(deliverables)
+    .where(eq(deliverables.workspaceId, workspaceId))
+    .then((rows) => rows[0]?.value ?? 0);
+
+  // Sidebar pulls from viewer identity, not the current workspace — so we can
+  // kick it off in parallel with everything else.
+  const sidebarSeedPromise: Promise<SidebarData> =
+    view === 'intern'
+      ? getInternSidebarData(session.user.id)
+      : getSupervisorSidebarData(session.user.id);
+
+  const [row, taskCount, deliverableCount, sidebarSeed] = await Promise.all([
+    shellRowPromise,
+    taskCountPromise,
+    deliverableCountPromise,
+    sidebarSeedPromise,
+  ]);
+
+  if (!row) notFound();
+
+  // canViewWorkspace only inspects internId + supervisorIds, so a minimal
+  // shape is enough here.
+  const minimalWorkspace = {
+    id: row.workspaceId,
+    internId: row.internId,
+    internshipId: row.internshipId,
+    organizationId: row.organizationId,
+    status: 'active',
+    startDate: row.startDate,
+    endDate: row.endDate,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as Parameters<typeof canViewWorkspace>[0];
+  const minimalProject = row.projectId
+    ? ({
+        id: row.projectId,
+        supervisorIds: row.supervisorIds ?? [],
+      } as Parameters<typeof canViewWorkspace>[1])
+    : null;
+
+  if (
+    !canViewWorkspace(minimalWorkspace, minimalProject, {
+      userId: session.user.id,
+      role: session.role as UserRole,
+    })
+  ) {
+    notFound();
+  }
+
+  // Admin viewing a supervisor workspace sees the workspace's org owner sidebar.
+  const sidebar =
+    view === 'supervisor' && session.role === 'admin' && row.orgOwnerId
+      ? await getSupervisorSidebarData(row.orgOwnerId)
+      : sidebarSeed;
+
+  const viewer =
+    view === 'intern'
+      ? {
+          initials: `${row.internFirstName?.[0] ?? ''}${row.internLastName?.[0] ?? ''}`,
+          name: `${row.internFirstName ?? ''} ${row.internLastName ?? ''}`.trim() || 'Intern',
+          subtitle: `${row.internUniversity ?? ''} · ${row.internYear ?? ''}`.trim(),
+        }
+      : {
+          initials: 'AD',
+          name: 'Supervisor',
+          subtitle: row.orgName,
+        };
+
+  const basePath =
+    view === 'intern'
+      ? `/intern/workspaces/${row.workspaceId}`
+      : `/company/workspaces/${row.workspaceId}`;
+
+  return {
+    session,
+    workspaceId: row.workspaceId,
+    view,
+    sidebar,
+    basePath,
+    viewer,
+    shell: {
+      workspaceId: row.workspaceId,
+      organizationName: row.orgName,
+      projectOrInternshipLabel: row.projectName ?? row.internshipTitle,
+      internFirstName: row.internFirstName,
+      internLastName: row.internLastName,
+      internshipTitle: row.internshipTitle,
+      locationType: (row.locationType ?? 'hybrid').toUpperCase(),
+      durationWeeks: row.duration ?? 12,
+      startDate: row.startDate ? new Date(row.startDate) : null,
+      endDate: row.endDate ? new Date(row.endDate) : null,
+      taskCount,
+      deliverableCount,
+    },
+  };
+}
+
+/**
+ * Heavy loader: full workspace overview (tasks, deliverables, events,
+ * supervisors, intern profile, project). Called inside an async server
+ * component wrapped in <Suspense> so the body streams independently of
+ * the shell.
+ *
+ * Re-runs authz — defense in depth if a caller forgets the shell pass.
+ */
+export async function loadWorkspaceData(workspaceId: string): Promise<WorkspaceOverviewData> {
+  const session = await getSession();
+  if (!session) redirect('/sign-in');
+
+  const data = await getWorkspaceOverview(workspaceId);
+  if (!data) notFound();
+  if (
+    !canViewWorkspace(data.workspace, data.project, {
+      userId: session.user.id,
+      role: session.role,
+    })
+  ) {
+    notFound();
+  }
+  return data;
+}
+
+/**
+ * Non-streaming loader for tabs (tasks, deliverables, comments, check-in).
+ * Kept as-is from the previous audit — those tabs have their own loading.tsx
+ * skeletons during nav and the overview-specific Suspense split doesn't help.
  */
 export async function loadWorkspacePage(
   workspaceId: string,
@@ -34,17 +244,7 @@ export async function loadWorkspacePage(
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
-  // Load workspace + sidebar in parallel. Sidebar doesn't depend on workspace
-  // for the intern case (we use the *viewer's* sidebar for /intern/...
-  // routes — but the audit pointed out we actually want the *workspace's
-  // intern* sidebar so admins viewing intern routes see the intern's view).
-  // For supervisor: sidebar depends on viewer (or workspace org owner if admin).
-  const workspacePromise = getWorkspaceOverview(workspaceId);
-
-  // Race the workspace fetch — but we need workspace data before we can
-  // confirm authz. Do them serially for safety; the parallelization win
-  // comes from the inner getWorkspaceOverview already batching.
-  const data = await workspacePromise;
+  const data = await getWorkspaceOverview(workspaceId);
   if (!data) notFound();
 
   if (
@@ -56,7 +256,6 @@ export async function loadWorkspacePage(
     notFound();
   }
 
-  // Now load sidebar (depends on intern id or supervisor identity).
   const sidebar =
     view === 'intern'
       ? await getInternSidebarData(data.workspace.internId)

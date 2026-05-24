@@ -1,4 +1,3 @@
-import type { WorkspaceOverviewData } from '../queries';
 import { WorkspaceTabBar } from './tab-bar';
 
 function formatDateRange(start: Date | null, end: Date | null): string {
@@ -12,28 +11,34 @@ function formatDateRange(start: Date | null, end: Date | null): string {
 }
 
 export function WorkspaceMHead({
-  data,
   view,
   basePath,
   activeTab = 'overview',
+  internFirstName,
+  internLastName,
+  internshipTitle,
+  startDate,
+  endDate,
+  taskCount,
+  deliverableCount,
 }: {
-  data: WorkspaceOverviewData;
   view: 'intern' | 'supervisor';
   basePath: string;
   activeTab?: 'overview' | 'tasks' | 'deliverables' | 'timeline' | 'activity' | 'comments';
+  internFirstName: string | null;
+  internLastName: string | null;
+  internshipTitle: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  taskCount: number;
+  deliverableCount: number;
 }) {
-  const intern = data.intern;
   const title =
     view === 'intern'
-      ? `Welcome back, ${intern?.firstName ?? ''}`
-      : `${intern?.firstName ?? ''} ${intern?.lastName ?? ''} · ${data.internship?.title?.split('—')[0]?.trim() ?? ''}`;
+      ? `Welcome back, ${internFirstName ?? ''}`
+      : `${internFirstName ?? ''} ${internLastName ?? ''} · ${internshipTitle.split('—')[0]?.trim() ?? ''}`;
 
-  const start = data.workspace.startDate ? new Date(data.workspace.startDate) : null;
-  const end = data.workspace.endDate ? new Date(data.workspace.endDate) : null;
-  const range = formatDateRange(start, end);
-
-  const taskCount = data.tasks.length;
-  const deliverableCount = data.deliverables.length;
+  const range = formatDateRange(startDate, endDate);
 
   return (
     <div className="ws-mhead">
