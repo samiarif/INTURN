@@ -19,9 +19,12 @@ export async function createInternshipAction(projectId: string, formData: FormDa
 
   let skills: unknown;
   let customQuestions: unknown;
+  let deliverables: unknown;
   try {
     skills = JSON.parse(String(formData.get('skills') ?? '[]'));
     customQuestions = JSON.parse(String(formData.get('customQuestions') ?? '[]'));
+    const deliverablesRaw = formData.get('deliverables');
+    deliverables = deliverablesRaw ? JSON.parse(String(deliverablesRaw)) : undefined;
   } catch {
     throw new Error('Invalid form data');
   }
@@ -40,6 +43,7 @@ export async function createInternshipAction(projectId: string, formData: FormDa
     language: formData.get('language'),
     deadline: formData.get('deadline'),
     customQuestions,
+    deliverables,
   });
 
   await createInternship({

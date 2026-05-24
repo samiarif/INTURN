@@ -1,4 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
+import { db } from '@/db';
+import { organizations } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { PostInternshipForm } from './form';
@@ -17,14 +20,27 @@ export default async function Page({
   if (!project) notFound();
   if (role !== 'admin' && !project.supervisorIds?.includes(user.id)) notFound();
 
+  const [org] = await db
+    .select()
+    .from(organizations)
+    .where(eq(organizations.id, project.organizationId))
+    .limit(1);
+
+  // Build the supervisor's display name for the live-preview rail. Falls back
+  // to email if name fields are empty (older onboarding rows).
+  const supervisorName =
+    [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email || 'You';
+
   return (
-    <div className="max-w-3xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">Post an internship</h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-8">
-        Under <b>{project.name}</b>. Saves as draft — publish from the project page to make
-        it visible on the marketplace.
-      </p>
-      <PostInternshipForm projectId={projectId} />
+    <div className="max-w-[1200px] mx-auto p-6 sm:p-8">
+      <PostInternshipForm
+        projectId={projectId}
+        projectName={project.name}
+        projectStartDate={project.startDate ?? null}
+        orgName={org?.name ?? 'Your company'}
+        orgLocation={org?.city ?? org?.location ?? ''}
+        supervisorName={supervisorName}
+      />
     </div>
   );
 }
