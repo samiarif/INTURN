@@ -1428,3 +1428,161 @@
   background: var(--brand);
   color: #FFF;
 }
+
+/* ==========================================================================
+ * Mobile responsive — workspace shell & app surfaces below 768px.
+ * Strategy: stack vertically, hide the workspace sidebar (Sprint 6 = drawer),
+ * give cards full width, shrink stat grid to 2 columns, allow kanban to
+ * horizontal-scroll. Touch targets stay ≥36px tall.
+ * ========================================================================== */
+@media (max-width: 768px) {
+  /* Workspace shell ----------------------------------------------------- */
+  .ws-side {
+    display: none;
+  }
+  .ws-tb-brand {
+    width: auto;
+    border-right: none;
+    padding: 0 12px;
+  }
+  .ws-tb-brand .name {
+    display: none;
+  }
+  .ws-tb-crumbs {
+    font-size: 12px;
+    padding: 0 8px;
+    gap: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ws-tb-crumbs .chip-mode {
+    display: none;
+  }
+  .ws-tb-search {
+    display: none;
+  }
+  .ws-tb-actions {
+    gap: 2px;
+    padding-right: 8px;
+  }
+
+  /* Main column: stack below the rail */
+  .ws-content {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 16px;
+  }
+  .ws-mhead {
+    padding: 12px 16px 0;
+  }
+  .ws-mhead-title {
+    font-size: 18px;
+  }
+  .ws-mhead-title-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ws-mhead-tabs {
+    margin: 0 -16px;
+    padding: 0 16px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+  .ws-mhead-tabs::-webkit-scrollbar { display: none; }
+  .ws-mhead-tab {
+    flex-shrink: 0;
+  }
+
+  /* Stat tiles: 2 columns instead of 4 */
+  .ws-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ws-stat {
+    padding: 12px 14px;
+    min-height: 76px;
+  }
+  .ws-stat-value b {
+    font-size: 22px;
+  }
+
+  /* Brief card: vertical layout */
+  .ws-brief {
+    grid-template-columns: 1fr;
+    padding: 18px 18px;
+  }
+  .ws-brief-title {
+    font-size: 20px;
+  }
+  .ws-brief-people {
+    border-top: 1px solid var(--border-color);
+    padding-top: 14px;
+    justify-content: space-between;
+  }
+
+  /* Cards: tighter padding */
+  .ws-card {
+    padding: 14px 16px;
+  }
+  .ws-card-head h3 {
+    font-size: 13.5px;
+  }
+
+  /* Tasks board: horizontal scroll for columns */
+  .tb-board {
+    grid-template-columns: repeat(4, minmax(280px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scroll-snap-type: x mandatory;
+  }
+  .tb-col {
+    scroll-snap-align: start;
+  }
+  .tb-toolbar {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .tb-toolbar::-webkit-scrollbar { display: none; }
+
+  /* Stuck pill: smaller, stay visible above mobile keyboards */
+  .ws-stuck {
+    bottom: 14px;
+    right: 14px;
+    padding: 8px 14px 8px 12px;
+    font-size: 12.5px;
+  }
+
+  /* Tasks: drop the tag/status columns on mobile */
+  .ws-task {
+    grid-template-columns: 18px 1fr;
+    grid-template-rows: auto auto;
+    gap: 6px 12px;
+    padding: 10px 4px;
+  }
+  .ws-task .pill,
+  .ws-task-tag,
+  .ws-task-due {
+    grid-column: 2;
+    font-size: 11px;
+  }
+  .ws-task-due {
+    justify-self: end;
+  }
+
+  /* Top bar height */
+  .ws-topbar {
+    height: 52px;
+    flex: 0 0 52px;
+  }
+}
+
+/* Marketing / app pages — basic mobile fixes -------------------------- */
+@media (max-width: 640px) {
+  /* Hide marketing nav middle items, keep brand + signup */
+  nav.hidden.md\:flex {
+    display: none;
+  }
+}
