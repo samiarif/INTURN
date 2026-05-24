@@ -103,9 +103,55 @@ DATABASE_URL=<prod-url> pnpm tsx -e "
 - Add branch protection on `main` requiring the `verify` check
 - (Optional) `brew install gh && gh auth login` so future PRs can be created via CLI
 
-## Remaining sprint plans (C / D / E)
+## Sprint C landed (2026-05-24) — i18n + a11y + mobile
 
-All three written and committed. Each follows the same subagent-driven-execution format as Sprint A/B plans.
+15 commits on branch `sprint-c-i18n-a11y-mobile` (worktree at `../inturn-sprint-c`, off Sprint B). All 8 plan tasks shipped. 107/107 tests, typecheck + lint + build clean. Branch pushed.
+
+```
+3f9f270 feat(onboarding): progress indicator + resume from last completed step
+b3d29fd feat(seo): sitemap + robots + OG image + per-page generateMetadata
+3a7e048 feat: dark mode (palette + cookie-persisted toggle, no FOUC)
+e11ac59 feat(a11y): label htmlFor + aria-label coverage on inputs/buttons
+69e1fb4 feat(a11y): focus-visible rings on interactive elements
+60378d6 feat(a11y): skip-to-content link + html lang + a11y i18n namespace
+21046e8 feat(tasks): @dnd-kit for touch + keyboard drag-and-drop
+94317b7 chore: add @dnd-kit for touch + keyboard accessible DnD
+958867b fix(workspace): align mobile drawer rules + JS query to real class names
+93354ea feat(workspace): mobile responsive (drawer sidebar + stacked layouts)
+802f3c3 i18n: extract marketplace + bookmarks + applications + errors strings
+285d444 i18n(workspace): check-in + schedule + comments + activity + timeline
+fa27401 i18n(workspace): tasks board + task list + deliverables
+a6fd96d i18n(workspace): topbar + stuck-pill + m-head + tab-bar + shell-layout
+12d751e i18n(workspace): add workspace namespace to FR + EN locales
+```
+
+### Highlights
+- **i18n workspace** (~40 strings, 12 components) + marketplace/bookmarks/applications/errors namespaces. FR + EN.
+- **Mobile responsive workspace** with drawer-style sidebar (data-mobile-open toggle), 2-col tasks board at 768px / 1-col at 480px.
+- **`@dnd-kit`** replaces HTML5 DnD on tasks board. PointerSensor 8px activation + KeyboardSensor + screen-reader announcements.
+- **A11y pass**: skip-to-content, server-rendered `<html lang>`, `:focus-visible` rings, form labels (visible or sr-only) across forms.
+- **Dark mode** with cookie-persisted toggle + server-side className injection (no FOUC). Uses `useSyncExternalStore`.
+- **SEO**: sitemap.ts (DB-driven), robots.ts, opengraph-image.tsx (edge), generateMetadata on landing + marketplace + internship detail with FR/EN canonical alternates.
+- **Onboarding resume**: WizardProgress bar + nextInternStep router (5 unit tests). Refresh/sign-out resumes at first incomplete step.
+
+### Sprint C architectural changes worth knowing
+- **`app/layout.tsx` was deleted** (commit `60378d6`) — Next 16 supports root layout at `app/[lang]/layout.tsx`, which is required to set `<html lang={locale}>` server-side.
+- **Real CSS class names**: workspace sidebar is `.ws-side` (not `.ws-sidebar`), tasks board is `.tb-board` (not `.ws-tasks-board`), stat tiles are `.ws-stat` (not `.ws-stat-tile`). The Sprint C plan had imaginary names; commit `958867b` aligned everything.
+
+### Sprint C follow-ups (deferred to D or polish)
+- Activity feed event verbs hardcoded English (needs ICU/rich-text restructuring)
+- Toolbar chips (Board/List/Calendar, filter chips) not in plan namespace
+- Marketplace location enums (`on-site`/`virtual`/`hybrid`) still raw
+- shadcn `<Select>` `htmlFor` audit (Radix handles via aria-labelledby; worth confirming)
+- Dark mode visual QA on colored chips (success/warning/danger)
+- `metadataBase` should be set in `app/[locale]/layout.tsx` for OG image absolute URLs
+
+### Required env var before deploy
+**`NEXT_PUBLIC_BASE_URL`** must be set in Vercel project env vars (all 3 environments) before deploy or sitemap.xml / robots.txt will hard-code `https://inturn-hub.com` everywhere.
+
+## Remaining sprint plans (D / E)
+
+All written. Each follows the same subagent-driven-execution format.
 
 | Sprint | Plan file | Tasks | Effort | Adds |
 |---|---|---|---|---|
