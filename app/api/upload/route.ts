@@ -3,15 +3,11 @@ import { NextResponse } from 'next/server';
 import { requireEnv } from '@/lib/env';
 import { getSession } from '@/modules/auth/session';
 import type { Role } from '@/modules/auth/types';
-
-const ALLOWED_KINDS = ['cv', 'logo', 'deliverable', 'registry'] as const;
-type Kind = (typeof ALLOWED_KINDS)[number];
+import { ALLOWED_KINDS, validateUpload, type Kind } from '@/lib/uploads/allowlist';
 
 function isKind(value: string | null): value is Kind {
   return ALLOWED_KINDS.includes(value as Kind);
 }
-
-const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
 const ALLOWED_ROLES_BY_KIND: Record<Kind, ReadonlyArray<Role>> = {
   cv: ['intern', 'admin'],
@@ -42,8 +38,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'No file' }, { status: 400 });
   }
 
-  if (file.size > MAX_SIZE_BYTES) {
-    return NextResponse.json({ error: 'File too large (max 5MB)' }, { status: 413 });
+  const validation = await validateUpload(kind, file);
+  if (!validation.ok) {
+    const status = validation.code === 'too_large' ? 413 : 400;
+    return NextResponse.json({ error: validation.code }, { status });
   }
 
   requireEnv('BLOB_READ_WRITE_TOKEN');
