@@ -1,14 +1,51 @@
-# inturn — Session Handoff (2026-05-24, updated post Sprint A)
+# inturn — Session Handoff (2026-05-24, updated post Sprint A + Sprint B)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
 ## TL;DR — Where we are
 
 - **Live in prod** at https://inturn.vercel.app. Custom domain inturn-hub.com **not yet wired**.
-- **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace → applies → company reviews + accepts → workspace auto-created → intern + supervisor collaborate (tasks board, deliverables, comments, weekly check-in with AI draft).
+- **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace (filtered + bookmarkable) → applies → company reviews + accepts → workspace auto-created with Overview/Tasks/Deliverables/Comments/Activity/Timeline tabs + weekly check-in with AI draft.
 - **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres + Clerk auth + Tailwind v4 + shadcn/ui (new-york) + next-intl 4 (FR default / EN with `as-needed` prefix) + Vitest 4 + Vercel hosting.
-- **Branch**: `sprint-a-ship-credibility` (ready to merge to `main`). 100/100 tests green. typecheck + lint + build all clean as of last commit `2ab2178`.
-- **Full audit + 5-sprint ship plan** at `docs/superpowers/plans/2026-05-24-sprint-a-ship-credibility.md` (Sprint A) and memory file `audit_2026-05-24.md`. Order: A (credibility) → B (Phase 1 feature closure) → C (i18n + a11y + mobile) → D (engagement: notifications + community + AI) → E (trust: monitoring + legal + billing).
+- **Branches**: `sprint-a-ship-credibility` (Sprint A PR open) and `sprint-b-phase-1-closure` (Sprint B PR ready). 102/102 tests green. typecheck + lint + build all clean as of last commit `dd0169f`.
+- **Full audit + 5-sprint ship plan** at `docs/superpowers/plans/2026-05-24-sprint-{a,b}-*.md` and memory file `audit_2026-05-24.md`. Order: A (credibility) → **B (Phase 1 feature closure) [DONE]** → C (i18n + a11y + mobile) → D (engagement: notifications + community + AI) → E (trust: monitoring + legal + billing).
+
+## Sprint B landed (2026-05-24)
+
+12 commits on branch `sprint-b-phase-1-closure` (after Sprint A). Goal: close Phase 1 product gaps — discoverable marketplace, bookmarks, Timeline tab, paginated comments, loading + error scaffolding, expanded landing.
+
+```
+cc4df35 docs: add Sprint B implementation plan
+36ba247 feat(comments): cursor pagination with 50-row default, 100 cap
+7e400ec feat(db): full-text search on internships via tsvector + GIN
+6b4b368 feat(marketplace): filters (sector/location/duration/language/skill) + FTS search
+41f078d feat: bookmark/save internships with intern saved tab
+11418ec fix(bookmarks): revalidate /marketplace so heart updates on toggle
+2e92455 feat(workspace): Timeline tab with day-grouped events + milestones
+e87794c fix(workspace): Timeline expands targetId to include tasks + deliverables
+4f87b78 feat(ui): loading skeletons + error boundaries scaffolding
+53e3501 feat(landing): value props + how-it-works sections (FR + EN)
+dd0169f fix(marketplace): restore substring search via ilike fallback alongside FTS
+```
+
+### Highlights
+- **Comments pagination** — `(id, options?)` signature with 50-default / 100-cap, cursor via `before: Date`. Back-compat: existing callers pass just `id`.
+- **Marketplace FTS** — `0003_marketplace_fts.sql` adds `search_vector` tsvector column + trigger updating on `title|sector|description` changes + GIN index. Backfilled existing rows.
+- **Marketplace filters** — 6 facets total: search (FTS+ilike hybrid), skill (jsonb `@>`), sector (dropdown from distinct), locationType, duration buckets (<8w/8-12w/>12w), language, paid pills. `listMarketplaceSectors` cached under `MARKETPLACE_TAG`.
+- **Bookmarks** — new `internship_bookmarks` table (composite PK `(intern_id, internship_id)`), `modules/bookmarks/` (queries + server action), heart toggle on cards (only for signed-in interns), `/intern/saved` tab.
+- **Timeline tab** — `getWorkspaceTimeline(workspaceId)` expands to include task + deliverable IDs (mirrors `getWorkspaceOverview` pattern), day-grouped, milestones injected from `workspaces.startDate` + `workspaces.endDate`. Wired to both intern + company workspace routes.
+- **Loading + error scaffolding** — 5 loading.tsx + 3 error.tsx (root + platform + marketplace). Server-rendered skeletons, `'use client'` error boundaries with reset button + Home link + digest reference.
+- **Landing sections** — hero (existing) + For Students (3 value props) + For Companies (2 value props) + How It Works (3-step). i18n keys in `locales/{fr,en}.json` `landing.*`. Sticky header, sticky in-page anchors.
+
+### Sprint B follow-ups for Sprint C
+- 5 byte-identical loading.tsx files — extract `<PageSkeleton>` component
+- Landing page copy is scaffolding — Sam to iterate (especially CTAs and the "For Companies" value props)
+- Workspace UI strings still hardcoded English (next-intl extraction = big surface)
+- Mobile responsiveness pass on workspace.css (no `@media` queries currently)
+- Heart-button affordance could be more obviously interactive (hover/scale)
+- Real DB-touching tests for `modules/bookmarks` and `getWorkspaceTimeline` (current `__tests__` are placeholders)
+- Marketplace search: `simple` text-search config doesn't stem; the ilike fallback covers most cases but a `to_tsquery` with `:*` prefix would also be worth trying
+- Day-grouping on Timeline uses UTC — locale-aware bucketing later
 
 ## Sprint A landed (2026-05-24)
 
