@@ -1,11 +1,17 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { inArray } from 'drizzle-orm';
+import { db } from '@/db';
+import { organizations } from '@/db/schema';
 import { getSession } from '@/modules/auth/session';
 import { getProfileByUserId } from '@/modules/profiles/queries';
 import { getInternSidebarData } from '@/modules/workspace/queries';
 import { getApplicationsByApplicant } from '@/modules/applications/queries';
 import { listPublishedInternships } from '@/modules/internships/queries';
+import { listInternBookmarks } from '@/modules/bookmarks/queries';
 import { InternshipCard } from '@/components/marketplace/internship-card';
+import { orgMark } from '@/lib/avatar';
 
 const STATUS_STYLE: Record<string, string> = {
   new: 'bg-[#EFF6FF] text-[#1D4ED8]',
@@ -15,6 +21,14 @@ const STATUS_STYLE: Record<string, string> = {
   accepted: 'bg-[#ECFDF5] text-[#15803D]',
   rejected: 'bg-[#FEF2F2] text-[#B91C1C]',
 };
+
+const STATUS_KEYS = new Set(['new', 'reviewed', 'shortlisted', 'interview', 'accepted', 'rejected']);
+
+function greetingKey(hour: number): 'greetingMorning' | 'greetingAfternoon' | 'greetingEvening' {
+  if (hour < 12) return 'greetingMorning';
+  if (hour < 18) return 'greetingAfternoon';
+  return 'greetingEvening';
+}
 
 export default async function Page() {
   const session = await getSession();
@@ -27,12 +41,17 @@ export default async function Page() {
     redirect('/onboarding/intern/basics');
   }
 
-  const [profile, sidebarData, applicationRows, recommendedAll] = await Promise.all([
-    Promise.resolve(earlyProfile),
-    getInternSidebarData(user.id),
-    getApplicationsByApplicant(user.id),
-    listPublishedInternships({ limit: 12 }),
-  ]);
+  const [profile, sidebarData, applicationRows, recommendedAll, bookmarkRows, tApps, tDash, locale] =
+    await Promise.all([
+      Promise.resolve(earlyProfile),
+      getInternSidebarData(user.id),
+      getApplicationsByApplicant(user.id),
+      listPublishedInternships({ limit: 12 }),
+      listInternBookmarks(user.id),
+      getTranslations('applications'),
+      getTranslations('dash.intern'),
+      getLocale(),
+    ]);
 
   const workspaces = sidebarData.role === 'intern' ? sidebarData.activeWorkspaces : [];
   const recentApplications = applicationRows.slice(0, 5);
@@ -40,29 +59,100 @@ export default async function Page() {
   // Recommend top 3 by role match (in-memory filter). If no profile.roles,
   // fall back to first 3.
   const profileRoles = new Set((profile?.roles ?? []).map((r) => r.toLowerCase()));
-  const recommended = profileRoles.size > 0
-    ? recommendedAll
-        .filter((r) => (r.internship.sector ?? '').toLowerCase().split(/\s+/).some((w) => profileRoles.has(w)))
-        .slice(0, 3)
-    : recommendedAll.slice(0, 3);
+  const recommended =
+    profileRoles.size > 0
+      ? recommendedAll
+          .filter((r) =>
+            (r.internship.sector ?? '')
+              .toLowerCase()
+              .split(/\s+/)
+              .some((w) => profileRoles.has(w)),
+          )
+          .slice(0, 3)
+      : recommendedAll.slice(0, 3);
+
+  // Org lookup for the applications list (same trick as the apps page —
+  // avoid mutating the shared query signature).
+  const recentOrgIds = [...new Set(recentApplications.map((r) => r.internship.organizationId))];
+  const orgs =
+    recentOrgIds.length > 0
+      ? await db.select().from(organizations).where(inArray(organizations.id, recentOrgIds))
+      : [];
+  const orgsById = new Map(orgs.map((o) => [o.id, o]));
+
+  // Greeting + eyebrow line based on viewer's locale clock.
+  const now = new Date();
+  const greeting = tDash(greetingKey(now.getHours()));
+  const dateFmt = new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+  const dateLabel = dateFmt.format(now);
+  const eyebrow = profile?.city
+    ? tDash('eyebrowWithCity', { date: dateLabel, city: profile.city })
+    : tDash('eyebrowSolo', { date: dateLabel });
 
   return (
     <div className="max-w-5xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold tracking-tight mb-1">
-        Welcome back, {user.firstName ?? 'there'}
-      </h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-10">
-        Your workspaces, applications, and matched internships.
-      </p>
+      {/* Welcome band ---------------------------------------------------- */}
+      <div
+        className="relative overflow-hidden rounded-xl border border-[var(--border-color)] bg-[var(--surface)] px-8 py-7 mb-6"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 12% 50%, color-mix(in srgb, var(--brand-500) 8%, transparent), transparent 50%), radial-gradient(circle at 88% 30%, color-mix(in srgb, var(--accent-500) 10%, transparent), transparent 50%)',
+        }}
+      >
+        <div className="font-mono text-[11px] tracking-[0.06em] uppercase text-[var(--ink-3)] mb-2">
+          {eyebrow}
+        </div>
+        <h1 className="text-[28px] font-semibold tracking-tight text-[var(--ink)] mb-1">
+          {greeting},{' '}
+          <span
+            className="bg-clip-text text-transparent"
+            style={{
+              backgroundImage:
+                'linear-gradient(135deg, var(--brand-500) 0%, var(--accent-500) 60%)',
+            }}
+          >
+            {user.firstName ?? 'there'}
+          </span>
+        </h1>
+        <p className="text-[14px] text-[var(--ink-2)] max-w-[58ch] leading-relaxed">
+          {tDash('subtitle')}
+        </p>
+      </div>
 
-      <section className="mb-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">My active workspaces</h2>
+      {/* Stat tiles ----------------------------------------------------- */}
+      <div className="grid grid-cols-3 gap-3 mb-8">
+        <StatTile
+          label={tDash('statsApplications')}
+          value={applicationRows.length}
+          suffix={tDash('statsActive')}
+          accentClass="bg-[var(--brand-50)]"
+        />
+        <StatTile
+          label={tDash('statsBookmarks')}
+          value={bookmarkRows.length}
+          suffix={tDash('statsItems')}
+          accentClass="bg-[#FCE7F3]"
+        />
+        <StatTile
+          label={tDash('statsWorkspaces')}
+          value={workspaces.length}
+          suffix={tDash('statsActive')}
+          accentClass="bg-[#CCFBF1]"
+        />
+      </div>
+
+      {/* Workspaces ----------------------------------------------------- */}
+      <section className="mb-10">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[15px] font-semibold tracking-tight">{tDash('workspacesTitle')}</h2>
         </div>
         {workspaces.length === 0 ? (
-          <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
-            No active workspaces yet. Apply to internships and once a company accepts you,
-            your workspace opens automatically.
+          <div className="border border-dashed border-[var(--border-color)] rounded-lg p-8 text-center text-[var(--ink-3)] text-sm bg-[var(--surface)]">
+            {tDash('workspacesEmpty')}
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">
@@ -70,48 +160,25 @@ export default async function Page() {
               <Link
                 key={w.id}
                 href={`/intern/workspaces/${w.id}`}
-                className="block border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-4 hover:border-[var(--border-strong)] hover:shadow-sm"
+                className="group block border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-4 hover:border-[var(--border-strong)] hover:shadow-sm transition-all"
               >
-                <div className="font-medium">{w.label}</div>
-                <div className="text-[12px] text-[var(--ink-3)] mt-1">
-                  {w.live ? '● Active' : 'Done'}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="mb-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Recent applications</h2>
-          {applicationRows.length > 0 && (
-            <Link href="/intern/applications" className="text-[13px] text-[var(--brand-600)] hover:text-[var(--brand-700)]">
-              See all {applicationRows.length} →
-            </Link>
-          )}
-        </div>
-        {recentApplications.length === 0 ? (
-          <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
-            No applications yet. Find an internship below and apply.
-          </div>
-        ) : (
-          <div className="border border-[var(--border-color)] rounded-md overflow-hidden bg-[var(--surface)]">
-            {recentApplications.map(({ application, internship }) => (
-              <Link
-                key={application.id}
-                href={`/intern/applications/${application.id}`}
-                className="block border-b border-[var(--border-color)] last:border-b-0 px-4 py-3 hover:bg-[var(--surface-muted)]"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium text-sm">{internship.title}</div>
-                    <div className="text-[12px] text-[var(--ink-3)] mt-0.5">
-                      Applied {new Date(application.createdAt).toLocaleDateString()}
-                    </div>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="font-medium text-[14px] text-[var(--ink)] tracking-tight">
+                    {w.label}
                   </div>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[application.status ?? 'new']}`}>
-                    {application.status}
+                  <span
+                    className={`inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.06em] uppercase font-semibold px-2 py-0.5 rounded-full ${
+                      w.live
+                        ? 'bg-[#ECFDF5] text-[var(--success)]'
+                        : 'bg-[var(--surface-muted)] text-[var(--ink-3)]'
+                    }`}
+                  >
+                    <span
+                      aria-hidden
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ background: w.live ? 'var(--success)' : 'var(--ink-4)' }}
+                    />
+                    {w.live ? tDash('workspacesActive') : tDash('workspacesDone')}
                   </span>
                 </div>
               </Link>
@@ -120,25 +187,128 @@ export default async function Page() {
         )}
       </section>
 
+      {/* Recent applications -------------------------------------------- */}
+      <section className="mb-10">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[15px] font-semibold tracking-tight">
+            {tDash('recentApplicationsTitle')}
+          </h2>
+          {applicationRows.length > 0 && (
+            <Link
+              href="/intern/applications"
+              className="text-[12.5px] text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+            >
+              {tDash('seeAll', { n: applicationRows.length })}
+            </Link>
+          )}
+        </div>
+        {recentApplications.length === 0 ? (
+          <div className="border border-dashed border-[var(--border-color)] rounded-lg p-8 text-center text-[var(--ink-3)] text-sm bg-[var(--surface)]">
+            {tDash('applicationsEmpty')}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {recentApplications.map(({ application, internship }) => {
+              const status = application.status ?? 'new';
+              const org = orgsById.get(internship.organizationId);
+              const { initials, tone } = orgMark(org?.name ?? '??', internship.organizationId);
+              const statusLabel = STATUS_KEYS.has(status)
+                ? tApps(
+                    `status.${status as 'new' | 'reviewed' | 'shortlisted' | 'interview' | 'accepted' | 'rejected'}`,
+                  )
+                : status;
+              return (
+                <Link
+                  key={application.id}
+                  href={`/intern/applications/${application.id}`}
+                  className="group flex items-center gap-3 border border-[var(--border-color)] bg-[var(--surface)] rounded-lg px-4 py-3 hover:border-[var(--border-strong)] hover:shadow-sm transition-all"
+                >
+                  <span
+                    aria-hidden
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-md font-mono text-[11px] font-bold flex-shrink-0 border"
+                    style={{ background: tone.bg, color: tone.fg, borderColor: tone.border }}
+                  >
+                    {initials}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium text-[14px] truncate">{internship.title}</div>
+                    {org?.name && (
+                      <div className="text-[12px] text-[var(--ink-3)] mt-0.5 truncate">
+                        {org.name}
+                      </div>
+                    )}
+                  </div>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10.5px] font-mono font-semibold tracking-[0.06em] uppercase ${STATUS_STYLE[status] ?? STATUS_STYLE.new}`}
+                  >
+                    {statusLabel}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Recommended ---------------------------------------------------- */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Recommended for you</h2>
-          <Link href="/marketplace" className="text-[13px] text-[var(--brand-600)] hover:text-[var(--brand-700)]">
-            Browse all →
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[15px] font-semibold tracking-tight">{tDash('recommendedTitle')}</h2>
+          <Link
+            href="/marketplace"
+            className="text-[12.5px] text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+          >
+            {tDash('browseAll')}
           </Link>
         </div>
         {recommended.length === 0 ? (
-          <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
-            No internships match yet — check back as new ones get posted.
+          <div className="border border-dashed border-[var(--border-color)] rounded-lg p-8 text-center text-[var(--ink-3)] text-sm bg-[var(--surface)]">
+            {tDash('recommendedEmpty')}
           </div>
         ) : (
           <div className="grid md:grid-cols-3 gap-4">
             {recommended.map(({ internship, organization }) => (
-              <InternshipCard key={internship.id} internship={internship} organization={organization} />
+              <InternshipCard
+                key={internship.id}
+                internship={internship}
+                organization={organization}
+              />
             ))}
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+function StatTile({
+  label,
+  value,
+  suffix,
+  accentClass,
+}: {
+  label: string;
+  value: number;
+  suffix?: string;
+  accentClass: string;
+}) {
+  return (
+    <div className="relative border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-4 overflow-hidden">
+      <span
+        aria-hidden
+        className={`absolute top-3 right-3 w-7 h-7 rounded-md ${accentClass}`}
+      />
+      <div className="font-mono text-[10.5px] tracking-[0.06em] uppercase text-[var(--ink-3)] mb-1">
+        {label}
+      </div>
+      <div className="text-[24px] font-semibold tracking-tight text-[var(--ink)] leading-none">
+        {value}
+        {suffix && (
+          <span className="font-normal text-[12.5px] text-[var(--ink-3)] ml-1.5 tracking-normal">
+            {suffix}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
