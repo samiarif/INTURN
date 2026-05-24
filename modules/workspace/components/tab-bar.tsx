@@ -23,7 +23,7 @@ export function WorkspaceTabBar({
     { id: 'overview', label: 'Overview', href: basePath },
     { id: 'tasks', label: 'Tasks', count: String(tasksCount), href: `${basePath}/tasks` },
     { id: 'deliverables', label: 'Deliverables', count: String(deliverablesCount), href: `${basePath}/deliverables` },
-    { id: 'timeline', label: 'Timeline', href: null },
+    { id: 'timeline', label: 'Timeline', href: `${basePath}/timeline` },
     {
       id: 'activity',
       label: 'Activity',

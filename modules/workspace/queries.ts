@@ -145,6 +145,61 @@ export async function getInternSidebarData(internUserId: string): Promise<Sideba
   };
 }
 
+export type TimelineRow =
+  | {
+      kind: 'event';
+      id: string;
+      at: Date;
+      type: string;
+      actorId: string | null;
+      metadata: Record<string, unknown> | null;
+    }
+  | { kind: 'milestone'; id: string; at: Date; label: string };
+
+export async function getWorkspaceTimeline(workspaceId: string): Promise<TimelineRow[]> {
+  const [ws] = await db
+    .select({ id: workspaces.id, startDate: workspaces.startDate, endDate: workspaces.endDate })
+    .from(workspaces)
+    .where(eq(workspaces.id, workspaceId))
+    .limit(1);
+
+  const eventRows = await db
+    .select()
+    .from(events)
+    .where(eq(events.targetId, workspaceId))
+    .orderBy(desc(events.createdAt))
+    .limit(200);
+
+  const rows: TimelineRow[] = eventRows.map((e) => ({
+    kind: 'event' as const,
+    id: e.id,
+    at: e.createdAt,
+    type: e.type,
+    actorId: e.actorId,
+    metadata: (e.metadata as Record<string, unknown> | null) ?? null,
+  }));
+
+  if (ws?.startDate) {
+    rows.push({
+      kind: 'milestone',
+      id: `${workspaceId}:started`,
+      at: new Date(ws.startDate),
+      label: 'Workspace started',
+    });
+  }
+  if (ws?.endDate) {
+    rows.push({
+      kind: 'milestone',
+      id: `${workspaceId}:deadline`,
+      at: new Date(ws.endDate),
+      label: 'Deadline',
+    });
+  }
+
+  rows.sort((a, b) => b.at.getTime() - a.at.getTime());
+  return rows;
+}
+
 export async function getSupervisorSidebarData(supervisorUserId: string): Promise<SidebarData> {
   // Query 1: projects where viewer is in supervisorIds (JSONB containment)
   // OR projects whose org is owned by viewer (legacy fallback for orgs created
