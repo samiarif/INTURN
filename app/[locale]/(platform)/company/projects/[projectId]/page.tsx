@@ -3,7 +3,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
 import { db } from '@/db';
 import { applications } from '@/db/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { inArray } from 'drizzle-orm';
 import { getUserByClerkId } from '@/modules/profiles/queries';
 import { getProjectById } from '@/modules/projects/queries';
 import { getInternshipsByProject } from '@/modules/internships/queries';
