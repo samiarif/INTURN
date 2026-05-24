@@ -1,7 +1,25 @@
-import { pgTable, text, timestamp, uuid, integer, boolean, jsonb, date, index } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  integer,
+  boolean,
+  jsonb,
+  date,
+  index,
+  customType,
+} from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { organizations } from './organizations';
 import { projects } from './projects';
+
+// Postgres tsvector — maintained by trigger (see 0003_marketplace_fts.sql).
+const tsvector = customType<{ data: string; driverData: string }>({
+  dataType() {
+    return 'tsvector';
+  },
+});
 
 export const internships = pgTable(
   'internships',
@@ -28,11 +46,17 @@ export const internships = pgTable(
       jsonb('custom_questions').$type<Array<{ question: string; required: boolean }>>(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    // Full-text search vector — maintained by a Postgres trigger from
+    // (title, sector, description). See 0003_marketplace_fts.sql.
+    searchVector: tsvector('search_vector'),
   },
   (table) => [
     index('internships_project_idx').on(table.projectId),
     // Marketplace listing: WHERE status = 'published' ORDER BY created_at DESC
     index('internships_status_created_idx').on(table.status, sql`created_at DESC`),
+    // GIN index backing FTS @@ to_tsquery lookups. Created via raw SQL in the
+    // migration; declared here so drizzle's introspection sees it.
+    index('internships_search_vector_idx').using('gin', table.searchVector),
   ],
 );
 
