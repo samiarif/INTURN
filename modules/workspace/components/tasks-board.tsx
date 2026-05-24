@@ -2,9 +2,17 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import type { Task } from '@/db/schema';
 import { TASK_COLUMNS, type TaskStatus } from '@/modules/tasks/state-machine';
 import { moveTaskAction } from '@/modules/tasks/server-actions';
+
+const COLUMN_LABEL_KEY: Record<TaskStatus, 'todo' | 'inProgress' | 'review' | 'done'> = {
+  todo: 'todo',
+  'in-progress': 'inProgress',
+  review: 'review',
+  done: 'done',
+};
 
 type TaskWithMeta = Task & {
   needsReview?: boolean;
@@ -23,19 +31,28 @@ function deriveLabel(tag: string | null): { kind: string; text: string } | null 
   return LABELS_BY_TAG_PREFIX[prefix] ?? null;
 }
 
-function formatDue(task: Task): { text: string; urgent: boolean; overdue: boolean } {
-  if (task.status === 'done') return { text: 'Closed', urgent: false, overdue: false };
-  if (task.status === 'review') return { text: 'Awaiting review', urgent: false, overdue: false };
-  if (!task.dueDate) return { text: '—', urgent: false, overdue: false };
+type DueInfo =
+  | { kind: 'closed'; urgent: false; overdue: false }
+  | { kind: 'review'; urgent: false; overdue: false }
+  | { kind: 'none'; urgent: false; overdue: false }
+  | { kind: 'overdue'; days: number; urgent: true; overdue: true }
+  | { kind: 'dueSoon'; days: number; weekday: string; urgent: true; overdue: false }
+  | { kind: 'dueLater'; date: string; urgent: false; overdue: false };
+
+function formatDue(task: Task): DueInfo {
+  if (task.status === 'done') return { kind: 'closed', urgent: false, overdue: false };
+  if (task.status === 'review') return { kind: 'review', urgent: false, overdue: false };
+  if (!task.dueDate) return { kind: 'none', urgent: false, overdue: false };
   const due = new Date(task.dueDate);
   const days = Math.ceil((due.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  if (days < 0) return { text: `Overdue ${-days}d`, urgent: true, overdue: true };
+  if (days < 0) return { kind: 'overdue', days: -days, urgent: true, overdue: true };
   if (days <= 3) {
     const weekday = due.toLocaleDateString('en-US', { weekday: 'short' });
-    return { text: `Due ${weekday} · in ${days}d`, urgent: true, overdue: false };
+    return { kind: 'dueSoon', days, weekday, urgent: true, overdue: false };
   }
   return {
-    text: `Due ${due.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}`,
+    kind: 'dueLater',
+    date: due.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
     urgent: false,
     overdue: false,
   };
@@ -59,11 +76,34 @@ export function TasksBoard({
   view: 'intern' | 'supervisor';
   internName: string;
 }) {
+  const t = useTranslations('workspace.tasksBoard');
+  const tCols = useTranslations('workspace.tasksBoard.columns');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverCol, setDragOverCol] = useState<TaskStatus | null>(null);
   const [optimistic, setOptimistic] = useState<Record<string, TaskStatus>>({});
+
+  // Render translated due text. Not every kind is in the plan namespace; the
+  // remaining kinds keep their English source until the namespace expands.
+  function renderDue(d: DueInfo): string {
+    switch (d.kind) {
+      case 'closed':
+        return 'Closed';
+      case 'review':
+        return 'Awaiting review';
+      case 'none':
+        return '—';
+      case 'overdue':
+        return t('overdue', { days: d.days });
+      case 'dueSoon':
+        return d.days === 0
+          ? t('dueToday')
+          : `${d.weekday} · ${t('dueIn', { days: d.days })}`;
+      case 'dueLater':
+        return `Due ${d.date}`;
+    }
+  }
 
   function statusOf(task: TaskWithMeta): TaskStatus {
     return (optimistic[task.id] ?? task.status ?? 'todo') as TaskStatus;
@@ -178,7 +218,7 @@ export function TasksBoard({
 
       <div className={`tb-board ${pending ? 'opacity-90' : ''}`}>
         {TASK_COLUMNS.map((col) => {
-          const colTasks = tasks.filter((t) => statusOf(t) === col.status);
+          const colTasks = tasks.filter((task) => statusOf(task) === col.status);
           return (
             <div
               key={col.status}
@@ -189,39 +229,39 @@ export function TasksBoard({
             >
               <div className="tb-col-head">
                 <span className="pip" />
-                <span className="name">{col.label}</span>
+                <span className="name">{tCols(COLUMN_LABEL_KEY[col.status])}</span>
                 <span className="count">{colTasks.length}</span>
                 <button className="menu" aria-label="Column menu" type="button">
                   ⋯
                 </button>
               </div>
               <div className="tb-col-list">
-                {colTasks.map((t) => {
-                  const due = formatDue(t);
-                  const label = deriveLabel(t.tag);
+                {colTasks.map((task) => {
+                  const due = formatDue(task);
+                  const label = deriveLabel(task.tag);
                   const showNeedsReview =
-                    view === 'supervisor' && statusOf(t) === 'review';
+                    view === 'supervisor' && statusOf(task) === 'review';
                   const cardClass = [
                     'tb-card',
                     due.urgent && 'urgent',
                     due.overdue && 'overdue',
                     showNeedsReview && 'needs-review',
-                    statusOf(t) === 'done' && 'done',
-                    draggingId === t.id && 'opacity-50',
+                    statusOf(task) === 'done' && 'done',
+                    draggingId === task.id && 'opacity-50',
                   ]
                     .filter(Boolean)
                     .join(' ');
                   return (
                     <div
-                      key={t.id}
-                      id={`task-${t.id}`}
+                      key={task.id}
+                      id={`task-${task.id}`}
                       className={cardClass}
                       draggable
-                      onDragStart={(e) => onDragStart(e, t.id)}
+                      onDragStart={(e) => onDragStart(e, task.id)}
                       onDragEnd={onDragEnd}
                     >
                       <div className="tb-card-top">
-                        {t.tag && <span className="tb-card-tag">{t.tag}</span>}
+                        {task.tag && <span className="tb-card-tag">{task.tag}</span>}
                         {label && (
                           <span className={`tb-card-label ${label.kind}`}>{label.text}</span>
                         )}
@@ -229,16 +269,16 @@ export function TasksBoard({
                           ⋯
                         </button>
                       </div>
-                      <div className="tb-card-title">{t.title}</div>
-                      {t.description && (
-                        <div className="tb-card-sub">{t.description}</div>
+                      <div className="tb-card-title">{task.title}</div>
+                      {task.description && (
+                        <div className="tb-card-sub">{task.description}</div>
                       )}
                       <div className="tb-card-foot">
                         <span
-                          className={`tb-card-due ${due.urgent ? 'urgent' : ''} ${due.overdue ? 'overdue' : ''} ${statusOf(t) === 'done' ? 'good' : ''}`}
+                          className={`tb-card-due ${due.urgent ? 'urgent' : ''} ${due.overdue ? 'overdue' : ''} ${statusOf(task) === 'done' ? 'good' : ''}`}
                         >
                           <span className="cal" />
-                          <span>{due.text}</span>
+                          <span>{renderDue(due)}</span>
                         </span>
                         <div className="tb-meta-chips" />
                         <span
@@ -259,7 +299,7 @@ export function TasksBoard({
               {view === 'supervisor' && (
                 <button className="tb-col-add" type="button">
                   <span className="plus">+</span>
-                  <span>Add task</span>
+                  <span>{t('addTask')}</span>
                 </button>
               )}
             </div>

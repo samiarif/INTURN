@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import type { Deliverable } from '@/db/schema';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,11 +13,14 @@ import {
   submitDeliverableAction,
 } from '@/modules/deliverables/server-actions';
 
-const STATUS_LABEL: Record<string, string> = {
-  draft: 'Not started',
-  submitted: 'In review',
-  approved: 'Approved',
-  'revision-requested': 'Revisions requested',
+const STATUS_LABEL_KEY: Record<
+  string,
+  'draft' | 'submitted' | 'approved' | 'changesRequested'
+> = {
+  draft: 'draft',
+  submitted: 'submitted',
+  approved: 'approved',
+  'revision-requested': 'changesRequested',
 };
 
 const STATUS_PILL: Record<string, string> = {
@@ -50,6 +54,8 @@ function DeliverableRow({
   deliverable: Deliverable;
   view: 'intern' | 'supervisor';
 }) {
+  const t = useTranslations('workspace.deliverables');
+  const tStatus = useTranslations('workspace.deliverables.status');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [showSubmit, setShowSubmit] = useState(false);
@@ -62,6 +68,7 @@ function DeliverableRow({
   } | null>(null);
 
   const status = deliverable.status ?? 'draft';
+  const statusKey = STATUS_LABEL_KEY[status] ?? 'draft';
 
   function submit() {
     if (!stagedFile) return;
@@ -105,13 +112,13 @@ function DeliverableRow({
             </h3>
             <span className={`pill ${STATUS_PILL[status]}`}>
               <span className="dot" />
-              {STATUS_LABEL[status]}
+              {tStatus(statusKey)}
             </span>
             <span
               className="ws-deliv-ver"
               title={`Version ${deliverable.version}`}
             >
-              v{deliverable.version}
+              {t('version', { n: deliverable.version })}
             </span>
           </div>
 
@@ -172,7 +179,7 @@ function DeliverableRow({
                 borderRadius: 8,
               }}
             >
-              <b>Changes requested:</b> {deliverable.feedback}
+              <b>{tStatus('changesRequested')}:</b> {deliverable.feedback}
             </div>
           )}
         </div>
@@ -197,7 +204,11 @@ function DeliverableRow({
             onClick={() => setShowSubmit((v) => !v)}
             className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
           >
-            {showSubmit ? 'Cancel' : status === 'revision-requested' ? 'Submit revision' : 'Submit'}
+            {showSubmit
+              ? 'Cancel'
+              : status === 'revision-requested'
+                ? 'Submit revision'
+                : 'Submit'}
           </Button>
         )}
         {view === 'supervisor' && status === 'submitted' && (
@@ -208,7 +219,7 @@ function DeliverableRow({
               onClick={approve}
               className="bg-[#15803D] hover:bg-[#166534] text-white"
             >
-              ✓ Approve
+              ✓ {t('approve')}
             </Button>
             <Button
               type="button"
@@ -216,13 +227,13 @@ function DeliverableRow({
               disabled={pending}
               onClick={() => setShowRequest((v) => !v)}
             >
-              {showRequest ? 'Cancel' : 'Request changes'}
+              {showRequest ? 'Cancel' : t('requestChanges')}
             </Button>
           </>
         )}
         {status === 'approved' && (
           <span style={{ color: 'var(--success)', fontSize: 13, fontWeight: 500 }}>
-            ✓ Approved
+            ✓ {tStatus('approved')}
           </span>
         )}
       </div>
@@ -269,7 +280,7 @@ function DeliverableRow({
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             rows={4}
-            placeholder="What needs to change? Be specific — this gets sent to the intern."
+            placeholder={t('changesPlaceholder')}
             maxLength={2000}
           />
           <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
@@ -279,7 +290,7 @@ function DeliverableRow({
               onClick={sendRevision}
               className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
             >
-              {pending ? 'Sending…' : 'Send feedback →'}
+              {pending ? 'Sending…' : t('submitChanges')}
             </Button>
           </div>
         </div>
@@ -295,6 +306,8 @@ export function DeliverablesList({
   deliverables: Deliverable[];
   view: 'intern' | 'supervisor';
 }) {
+  // Empty-state copy ("No deliverables yet.", subline) is not in the plan
+  // namespace and remains English until the namespace expands.
   if (deliverables.length === 0) {
     return (
       <div className="ws-card" style={{ textAlign: 'center', padding: 48 }}>
