@@ -7,12 +7,19 @@
 - **Live in prod** at https://inturn.vercel.app. Custom domain inturn-hub.com **not yet wired**.
 - **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace (filtered + bookmarkable) → applies → company reviews + accepts → workspace auto-created with Overview/Tasks/Deliverables/Comments/Activity/Timeline tabs + weekly check-in with AI draft.
 - **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres + Clerk auth + Tailwind v4 + shadcn/ui (new-york) + next-intl 4 (FR default / EN with `as-needed` prefix) + Vitest 4 + Vercel hosting.
-- **Branches**: `sprint-a-ship-credibility` (Sprint A PR open) and `sprint-b-phase-1-closure` (Sprint B PR ready). 102/102 tests green. typecheck + lint + build all clean as of last commit `dd0169f`.
+- **Branches**: `sprint-a-ship-credibility` (Sprint A PR open) and `sprint-b-phase-1-closure` (Sprint B + perf hotfix, PR ready). 102/102 tests green. typecheck + lint + build all clean as of last commit `689101c`.
 - **Full audit + 5-sprint ship plan** at `docs/superpowers/plans/2026-05-24-sprint-{a,b}-*.md` and memory file `audit_2026-05-24.md`. Order: A (credibility) → **B (Phase 1 feature closure) [DONE]** → C (i18n + a11y + mobile) → D (engagement: notifications + community + AI) → E (trust: monitoring + legal + billing).
 
-## Sprint B landed (2026-05-24)
+## Sprint B landed (2026-05-24) + perf hotfix
 
-12 commits on branch `sprint-b-phase-1-closure` (after Sprint A). Goal: close Phase 1 product gaps — discoverable marketplace, bookmarks, Timeline tab, paginated comments, loading + error scaffolding, expanded landing.
+13 commits on branch `sprint-b-phase-1-closure` (after Sprint A). 11 plan tasks + 2 perf hotfix commits responding to a user-reported "tab nav reloads + slow" issue:
+
+- `4cf92ee` — **perf(workspace): hoist shell to layout so tabs don't re-mount**. Added `app/[locale]/(platform)/{intern,company}/workspaces/[workspaceId]/layout.tsx` + new shared `WorkspaceShellLayout` component. Layout owns topbar + sidebar + StuckPill + ws wrapper divs. Each tab page renders only its MHead + body content. On tab nav, Next preserves the layout — no flash, no sidebar re-fetch.
+- `689101c` — **perf(workspace): React.cache sidebar loaders**. `getInternSidebarData` + `getSupervisorSidebarData` wrapped with `cache()` so when both the layout and the page call them within a single render, only one DB hit happens.
+
+UX trade-off documented: per-tab breadcrumb labels in the topbar (e.g. "Comments", "Tasks") moved out — they're now redundant with the MHead's tab-bar active state. Sprint C can reintroduce dynamic crumbs via a client-side `useSelectedLayoutSegment()` wrapper if needed.
+
+Goal of the 8 Sprint B plan tasks: close Phase 1 product gaps — discoverable marketplace, bookmarks, Timeline tab, paginated comments, loading + error scaffolding, expanded landing.
 
 ```
 cc4df35 docs: add Sprint B implementation plan
@@ -36,6 +43,65 @@ dd0169f fix(marketplace): restore substring search via ilike fallback alongside 
 - **Timeline tab** — `getWorkspaceTimeline(workspaceId)` expands to include task + deliverable IDs (mirrors `getWorkspaceOverview` pattern), day-grouped, milestones injected from `workspaces.startDate` + `workspaces.endDate`. Wired to both intern + company workspace routes.
 - **Loading + error scaffolding** — 5 loading.tsx + 3 error.tsx (root + platform + marketplace). Server-rendered skeletons, `'use client'` error boundaries with reset button + Home link + digest reference.
 - **Landing sections** — hero (existing) + For Students (3 value props) + For Companies (2 value props) + How It Works (3-step). i18n keys in `locales/{fr,en}.json` `landing.*`. Sticky header, sticky in-page anchors.
+
+## Merge + deploy procedure (Sprints A + B together)
+
+> **Order matters — Sprint B depends on Sprint A. Migrations must land on prod before each deploy.**
+
+Migrations to apply to prod (cumulative):
+- `0002_applications_unique_dedupe.sql` (Sprint A) — applications UNIQUE + compound indexes
+- `0003_marketplace_fts.sql` (Sprint B) — tsvector column + trigger + GIN index
+- `0004_internship_bookmarks.sql` (Sprint B) — bookmarks table
+
+All three are idempotent. Pre-flight check before applying 0002: confirm no duplicate `(internship_id, applicant_id)` pairs exist in prod, or the UNIQUE add will fail.
+
+**Recommended merge sequence (when Sam is at the keyboard with prod DATABASE_URL access):**
+
+```bash
+# 1) Confirm prod has no duplicate applications
+DATABASE_URL=<prod-url> pnpm tsx --env-file=/dev/null -e "
+  import { db } from './db';
+  import { sql } from 'drizzle-orm';
+  const r = await db.execute(sql\`
+    SELECT internship_id, applicant_id, COUNT(*) c
+    FROM applications GROUP BY 1,2 HAVING COUNT(*) > 1\`);
+  console.log('duplicate pairs:', r.rows.length);
+"
+
+# 2) Apply Sprint A migration (0002) to prod
+DATABASE_URL=<prod-url> pnpm tsx -e "
+  import { Client } from '@neondatabase/serverless';
+  import { readFile } from 'fs/promises';
+  const f = await readFile('db/migrations/0002_applications_unique_dedupe.sql','utf8');
+  const c = new Client(process.env.DATABASE_URL); await c.connect();
+  await c.query(f); await c.end();
+"
+
+# 3) Merge Sprint A PR via GitHub UI (or fast-forward locally)
+# https://github.com/samiarif/INTURN/pull/new/sprint-a-ship-credibility
+# Vercel auto-deploys Sprint A → smoke test on https://inturn.vercel.app
+
+# 4) Apply Sprint B migrations (0003 FTS + 0004 bookmarks)
+DATABASE_URL=<prod-url> pnpm tsx -e "
+  import { Client } from '@neondatabase/serverless';
+  import { readFile } from 'fs/promises';
+  for (const f of ['db/migrations/0003_marketplace_fts.sql','db/migrations/0004_internship_bookmarks.sql']) {
+    const sql = await readFile(f,'utf8');
+    const c = new Client(process.env.DATABASE_URL); await c.connect();
+    await c.query(sql); await c.end();
+    console.log('applied', f);
+  }
+"
+
+# 5) Merge Sprint B PR
+# https://github.com/samiarif/INTURN/pull/new/sprint-b-phase-1-closure
+# Vercel auto-deploys Sprint B → smoke test on https://inturn.vercel.app
+```
+
+**Manual UI steps (one-time):**
+- Add GitHub repo secrets for CI: `DATABASE_URL_CI`, `CLERK_SECRET_KEY_CI`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_CI`, `CLERK_WEBHOOK_SECRET_CI`, `BLOB_READ_WRITE_TOKEN_CI`
+- Add branch protection on `main` requiring the `verify` check
+- (Optional) `brew install gh && gh auth login` so future PRs can be created via CLI
 
 ### Sprint B follow-ups for Sprint C
 - 5 byte-identical loading.tsx files — extract `<PageSkeleton>` component
