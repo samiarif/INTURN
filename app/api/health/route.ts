@@ -10,11 +10,12 @@ export async function GET() {
   try {
     await db.execute(sql`SELECT 1`);
   } catch (err) {
+    console.error('[health] db ping failed:', err);
     return NextResponse.json(
       {
         status: 'unhealthy',
         component: 'db',
-        message: err instanceof Error ? err.message : 'unknown',
+        code: 'db_unreachable',
         latencyMs: Date.now() - startedAt,
       },
       { status: 503 },
