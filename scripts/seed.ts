@@ -10,8 +10,10 @@ import {
   tasks,
   deliverables,
   events,
+  comments,
+  internshipBookmarks,
 } from '../db/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 
 async function upsertUser(input: {
   clerkId: string;
@@ -442,6 +444,744 @@ export async function runSeed() {
     });
   }
 
+  // ---- Sprint C additions: diverse marketplace, bookmarks, comments, check-in ----
+
+  // --- 3 new verified orgs + their owners ---
+  const youssef = await upsertUser({
+    clerkId: 'seed_user_youssef',
+    email: 'youssef@beyond.tn',
+    firstName: 'Youssef',
+    lastName: 'Garbi',
+    role: 'company',
+  });
+  const nada = await upsertUser({
+    clerkId: 'seed_user_nada',
+    email: 'nada@greenvibe.tn',
+    firstName: 'Nada',
+    lastName: 'Hammami',
+    role: 'company',
+  });
+  const karim = await upsertUser({
+    clerkId: 'seed_user_karim',
+    email: 'karim@foret.tn',
+    firstName: 'Karim',
+    lastName: 'Chebbi',
+    role: 'company',
+  });
+
+  const beyond = await upsertOrgBySlug({
+    ownerId: youssef.id,
+    name: 'Beyond',
+    slug: 'beyond',
+    industry: 'Software & tech',
+    size: '11-50',
+    country: 'Tunisia',
+    city: 'Tunis',
+    description: 'Product engineering studio building remote-first tools.',
+  });
+  const greenvibe = await upsertOrgBySlug({
+    ownerId: nada.id,
+    name: 'GreenVibe',
+    slug: 'greenvibe',
+    industry: 'Marketing & growth',
+    size: '11-50',
+    country: 'Tunisia',
+    city: 'Sousse',
+    description: 'Sustainability-focused brand consultancy.',
+  });
+  const foret = await upsertOrgBySlug({
+    ownerId: karim.id,
+    name: 'Forêt',
+    slug: 'foret',
+    industry: 'Content & media',
+    size: '11-50',
+    country: 'Tunisia',
+    city: 'Sousse',
+    description: 'Bilingual content studio (FR/EN) serving Maghreb founders.',
+  });
+
+  // --- One project per new org ---
+  const beyondProject = await upsertProjectBySlug({
+    organizationId: beyond.id,
+    slug: 'mobile-discovery',
+    name: 'Mobile app discovery sprint',
+    brief:
+      'Six-week discovery on a new mobile companion app: interviews, prototyping, validation.',
+    supervisorIds: [youssef.id],
+  });
+  const greenvibeProject = await upsertProjectBySlug({
+    organizationId: greenvibe.id,
+    slug: 'eco-campaign-q3',
+    name: 'Eco-brand campaign Q3',
+    brief:
+      'Q3 campaign to launch a recycled-fabric collection — brand, social, and editorial.',
+    supervisorIds: [nada.id],
+  });
+  const foretProject = await upsertProjectBySlug({
+    organizationId: foret.id,
+    slug: 'founder-content',
+    name: 'Founder content series',
+    brief:
+      'Bilingual long-form content series featuring Maghreb founders. Interviews + editorial.',
+    supervisorIds: [karim.id],
+  });
+
+  // --- 8 new internships across new orgs + extra Acme roles ---
+  type SeedInternship = {
+    key: string;
+    organizationId: string;
+    projectId: string | null;
+    title: string;
+    description: string;
+    sector: string;
+    skills: string[];
+    duration: number;
+    locationType: 'on-site' | 'virtual' | 'hybrid';
+    location: string;
+    isPaid: boolean;
+    compensation: string | null;
+    language: 'fr' | 'en' | 'ar';
+    deadline: string;
+    customQuestions:
+      | Array<{ question: string; required: boolean }>
+      | null;
+  };
+
+  const deadlineIn = (weeks: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + weeks * 7);
+    return d.toISOString().slice(0, 10);
+  };
+
+  const seedInternshipsData: SeedInternship[] = [
+    {
+      key: 'beyondUxResearch',
+      organizationId: beyond.id,
+      projectId: beyondProject.id,
+      title: 'UX research intern · multi-product',
+      description:
+        'Run discovery interviews across two product lines and synthesize findings. Remote-first, async-first.',
+      sector: 'Product',
+      skills: ['User interviews', 'Synthesis', 'Figma', 'Notion'],
+      duration: 10,
+      locationType: 'virtual',
+      location: '',
+      isPaid: true,
+      compensation: '750 TND / mo',
+      language: 'fr',
+      deadline: deadlineIn(6),
+      customQuestions: [
+        { question: 'Share a research artifact you produced.', required: true },
+      ],
+    },
+    {
+      key: 'beyondFrontend',
+      organizationId: beyond.id,
+      projectId: beyondProject.id,
+      title: 'Junior frontend engineer',
+      description:
+        'Ship UI for a new React + TypeScript companion app. Pair with senior engineers, code-review heavy.',
+      sector: 'Engineering',
+      skills: ['React', 'TypeScript', 'Tailwind'],
+      duration: 12,
+      locationType: 'hybrid',
+      location: 'Tunis',
+      isPaid: true,
+      compensation: '1200 TND / mo',
+      language: 'en',
+      deadline: deadlineIn(5),
+      customQuestions: null,
+    },
+    {
+      key: 'greenvibeContent',
+      organizationId: greenvibe.id,
+      projectId: greenvibeProject.id,
+      title: 'Content + brand intern',
+      description:
+        'Write campaign copy, social captions, and short editorial. French primary, English a plus.',
+      sector: 'Marketing',
+      skills: ['Copywriting', 'Brand voice', 'French + English'],
+      duration: 6,
+      locationType: 'hybrid',
+      location: 'Sousse',
+      isPaid: true,
+      compensation: '650 TND / mo',
+      language: 'fr',
+      deadline: deadlineIn(4),
+      customQuestions: [
+        { question: 'Link a long-form piece you wrote.', required: true },
+        { question: 'Favorite brand voice in the wild?', required: false },
+      ],
+    },
+    {
+      key: 'greenvibeSocial',
+      organizationId: greenvibe.id,
+      projectId: greenvibeProject.id,
+      title: 'Social media intern — Q3 launch',
+      description:
+        'Run the Q3 launch on Instagram + TikTok. Plan, post, and read the comments.',
+      sector: 'Marketing',
+      skills: ['Instagram', 'TikTok', 'Community management'],
+      duration: 8,
+      locationType: 'virtual',
+      location: '',
+      isPaid: false,
+      compensation: null,
+      language: 'fr',
+      deadline: deadlineIn(4),
+      customQuestions: null,
+    },
+    {
+      key: 'foretEditor',
+      organizationId: foret.id,
+      projectId: foretProject.id,
+      title: 'Bilingual editor intern',
+      description:
+        'Edit founder interviews in French and English. Heavy on clarity, voice, and tight deadlines.',
+      sector: 'Content',
+      skills: ['Editing', 'French', 'English', 'Notion'],
+      duration: 12,
+      locationType: 'virtual',
+      location: '',
+      isPaid: true,
+      compensation: '800 TND / mo',
+      language: 'fr',
+      deadline: deadlineIn(7),
+      customQuestions: [
+        { question: 'Share one edit you are proud of (link or attach).', required: true },
+      ],
+    },
+    {
+      key: 'acmeJuniorProduct',
+      organizationId: acme.id,
+      projectId: project.id,
+      title: 'Junior product designer',
+      description:
+        'Design mobile UI flows for an Acme client. Figma, prototyping, weekly critique.',
+      sector: 'Design',
+      skills: ['Figma', 'Prototyping', 'Mobile UI'],
+      duration: 8,
+      locationType: 'hybrid',
+      location: 'Tunis',
+      isPaid: true,
+      compensation: '900 TND / mo',
+      language: 'fr',
+      deadline: deadlineIn(5),
+      customQuestions: null,
+    },
+    {
+      key: 'acmeMotion',
+      organizationId: acme.id,
+      projectId: project.id,
+      title: 'Motion design intern',
+      description:
+        'Produce short brand motion pieces (logo idents, social loops) under direction of the brand lead.',
+      sector: 'Design',
+      skills: ['After Effects', 'Lottie', 'Brand motion'],
+      duration: 4,
+      locationType: 'on-site',
+      location: 'Tunis',
+      isPaid: true,
+      compensation: '500 TND / mo',
+      language: 'fr',
+      deadline: deadlineIn(4),
+      customQuestions: null,
+    },
+    {
+      key: 'acmeDataViz',
+      organizationId: acme.id,
+      projectId: project.id,
+      title: 'Data viz intern',
+      description:
+        'Build interactive charts for a client report — D3 + Observable, Figma for static exports.',
+      sector: 'Design',
+      skills: ['D3', 'Observable', 'Figma'],
+      duration: 10,
+      locationType: 'virtual',
+      location: '',
+      isPaid: true,
+      compensation: '700 TND / mo',
+      language: 'en',
+      deadline: deadlineIn(8),
+      customQuestions: [
+        { question: 'Link a chart you built.', required: false },
+      ],
+    },
+  ];
+
+  const internshipByKey = new Map<string, typeof internships.$inferSelect>();
+  for (const data of seedInternshipsData) {
+    const existing = (
+      await db
+        .select()
+        .from(internships)
+        .where(
+          and(
+            eq(internships.organizationId, data.organizationId),
+            eq(internships.title, data.title),
+          ),
+        )
+        .limit(1)
+    )[0];
+    if (existing) {
+      internshipByKey.set(data.key, existing);
+      continue;
+    }
+    const [created] = await db
+      .insert(internships)
+      .values({
+        organizationId: data.organizationId,
+        projectId: data.projectId,
+        title: data.title,
+        description: data.description,
+        sector: data.sector,
+        skills: data.skills,
+        duration: data.duration,
+        locationType: data.locationType,
+        location: data.location,
+        isPaid: data.isPaid,
+        compensation: data.compensation,
+        internCount: 1,
+        language: data.language,
+        status: 'published',
+        deadline: data.deadline,
+        customQuestions: data.customQuestions,
+      })
+      .returning();
+    internshipByKey.set(data.key, created);
+  }
+
+  // --- 4 more applicant users with profiles ---
+  const extraApplicants = await Promise.all([
+    upsertUser({
+      clerkId: 'seed_user_applicant_4',
+      email: 'imen@ensi.utm.tn',
+      firstName: 'Imen',
+      lastName: 'Bouzid',
+      role: 'intern',
+    }),
+    upsertUser({
+      clerkId: 'seed_user_applicant_5',
+      email: 'rayen@essec.tn',
+      firstName: 'Rayen',
+      lastName: 'Trabelsi',
+      role: 'intern',
+    }),
+    upsertUser({
+      clerkId: 'seed_user_applicant_6',
+      email: 'syrine@insat.utm.tn',
+      firstName: 'Syrine',
+      lastName: 'Jebali',
+      role: 'intern',
+    }),
+    upsertUser({
+      clerkId: 'seed_user_applicant_7',
+      email: 'fares@esprit.tn',
+      firstName: 'Fares',
+      lastName: 'Mejri',
+      role: 'intern',
+    }),
+  ]);
+
+  type ProfileSeed = {
+    university: string;
+    yearOfStudy: string;
+    fieldOfStudy: string;
+    city: string;
+    preferredLanguage: 'fr' | 'en';
+    skills: string[];
+    roles: string[];
+  };
+  const profileSeedByEmail: Record<string, ProfileSeed> = {
+    'imen@ensi.utm.tn': {
+      university: 'ensi',
+      yearOfStudy: 'M1',
+      fieldOfStudy: 'Software Engineering',
+      city: 'Tunis',
+      preferredLanguage: 'fr',
+      skills: ['React', 'TypeScript', 'Node', 'Tailwind'],
+      roles: ['Engineering', 'Frontend'],
+    },
+    'rayen@essec.tn': {
+      university: 'essec-tunis',
+      yearOfStudy: 'L3',
+      fieldOfStudy: 'Marketing',
+      city: 'Tunis',
+      preferredLanguage: 'fr',
+      skills: ['Copywriting', 'Brand voice', 'French + English', 'Instagram'],
+      roles: ['Marketing', 'Content'],
+    },
+    'syrine@insat.utm.tn': {
+      university: 'insat',
+      yearOfStudy: 'L3',
+      fieldOfStudy: 'Computer Science',
+      city: 'Tunis',
+      preferredLanguage: 'fr',
+      skills: ['User research', 'Figma', 'Notion', 'Prototyping'],
+      roles: ['Product', 'Design'],
+    },
+    'fares@esprit.tn': {
+      university: 'esprit',
+      yearOfStudy: 'M2',
+      fieldOfStudy: 'Design',
+      city: 'Sousse',
+      preferredLanguage: 'fr',
+      skills: ['After Effects', 'Lottie', 'Figma', 'Motion'],
+      roles: ['Design', 'Motion'],
+    },
+  };
+
+  for (const a of extraApplicants) {
+    const existingExtra = await db
+      .select()
+      .from(profiles)
+      .where(eq(profiles.userId, a.id))
+      .limit(1);
+    if (existingExtra[0]) continue;
+    const p = profileSeedByEmail[a.email];
+    if (!p) continue;
+    await db.insert(profiles).values({
+      userId: a.id,
+      university: p.university,
+      yearOfStudy: p.yearOfStudy,
+      fieldOfStudy: p.fieldOfStudy,
+      city: p.city,
+      preferredLanguage: p.preferredLanguage,
+      skills: p.skills,
+      roles: p.roles,
+      portfolioLinks: [],
+      profileStep: 'complete',
+    });
+  }
+
+  // --- Applications (Yasmine + new applicants across new internships) ---
+  const beyondUx = internshipByKey.get('beyondUxResearch')!;
+  const beyondFe = internshipByKey.get('beyondFrontend')!;
+  const greenvibeContent = internshipByKey.get('greenvibeContent')!;
+  const greenvibeSocial = internshipByKey.get('greenvibeSocial')!;
+  const foretEditor = internshipByKey.get('foretEditor')!;
+  const acmeJuniorProduct = internshipByKey.get('acmeJuniorProduct')!;
+  const acmeMotion = internshipByKey.get('acmeMotion')!;
+
+  type SeedApp = {
+    internshipId: string;
+    applicantId: string;
+    status: 'new' | 'reviewed' | 'shortlisted' | 'interview' | 'accepted' | 'rejected';
+    coverNote: string;
+    internalNotes?: string | null;
+  };
+
+  const extraApps: SeedApp[] = [
+    // Yasmine: 2 more applications
+    {
+      internshipId: beyondUx.id,
+      applicantId: yasmine.id,
+      status: 'reviewed',
+      coverNote:
+        'I led discovery on a small product last semester — would love to repeat the pattern at Beyond.',
+    },
+    {
+      internshipId: greenvibeContent.id,
+      applicantId: yasmine.id,
+      status: 'shortlisted',
+      coverNote: 'Big fan of GreenVibe campaigns. Comfortable writing in FR + EN.',
+      internalNotes: 'Strong sample. Schedule call.',
+    },
+    // Other applicants — distribute 6 across new internships, varied statuses
+    {
+      internshipId: beyondFe.id,
+      applicantId: extraApplicants[0].id,
+      status: 'shortlisted',
+      coverNote: 'Built a React + TS dashboard for my final-year project. Ready to ship.',
+      internalNotes: 'Send tech screen link.',
+    },
+    {
+      internshipId: foretEditor.id,
+      applicantId: extraApplicants[1].id,
+      status: 'reviewed',
+      coverNote: 'Bilingual editor with ESSEC marketing background. Founder interview tape attached.',
+    },
+    {
+      internshipId: greenvibeSocial.id,
+      applicantId: extraApplicants[1].id,
+      status: 'new',
+      coverNote: 'Run the Instagram for my student org — 12k followers, organic growth.',
+    },
+    {
+      internshipId: beyondUx.id,
+      applicantId: extraApplicants[2].id,
+      status: 'new',
+      coverNote: 'INSAT CS, but research is what gets me out of bed.',
+    },
+    {
+      internshipId: acmeJuniorProduct.id,
+      applicantId: extraApplicants[2].id,
+      status: 'reviewed',
+      coverNote: 'Designed three mobile flows for our internal hackathon win.',
+    },
+    {
+      internshipId: acmeMotion.id,
+      applicantId: extraApplicants[3].id,
+      status: 'shortlisted',
+      coverNote: 'After Effects since 2022. Reel attached. Lottie-ready.',
+      internalNotes: 'Reel is solid. Move to interview.',
+    },
+  ];
+
+  for (const a of extraApps) {
+    const existing = await db
+      .select()
+      .from(applications)
+      .where(
+        and(
+          eq(applications.internshipId, a.internshipId),
+          eq(applications.applicantId, a.applicantId),
+        ),
+      )
+      .limit(1);
+    if (existing[0]) continue;
+    await db.insert(applications).values({
+      internshipId: a.internshipId,
+      applicantId: a.applicantId,
+      status: a.status,
+      coverNote: a.coverNote,
+      internalNotes: a.internalNotes ?? null,
+    });
+  }
+
+  // --- Bookmarks for Yasmine (3 internships) ---
+  const bookmarkIds = [beyondFe.id, foretEditor.id, acmeJuniorProduct.id];
+  for (const internshipId of bookmarkIds) {
+    await db
+      .insert(internshipBookmarks)
+      .values({ internId: yasmine.id, internshipId })
+      .onConflictDoNothing();
+  }
+
+  // --- Comments on Yasmine's workspace ---
+  // The tasks + deliverables tables get wiped + re-inserted on every seed
+  // run, which cascades comments that reference them. So we check workspace
+  // comments and task/deliv comments independently to keep the seed truly
+  // idempotent across re-runs.
+  const moodboardTaskRow = taskByTag.get('BA-005');
+  const submittedDeliv = insertedDelivs.find(
+    (d) => d.title === 'Brand audit · stakeholder findings',
+  );
+
+  const existingWorkspaceComments = await db
+    .select()
+    .from(comments)
+    .where(
+      and(
+        eq(comments.workspaceId, workspace.id),
+        sql`task_id IS NULL AND deliverable_id IS NULL`,
+      ),
+    )
+    .limit(1);
+  if (!existingWorkspaceComments[0]) {
+    await db.insert(comments).values([
+      {
+        workspaceId: workspace.id,
+        authorId: mehdi.id,
+        body: 'Great progress this week — the stakeholder synthesis is sharp. Let me know when you start moodboards.',
+      },
+      {
+        workspaceId: workspace.id,
+        authorId: yasmine.id,
+        body: 'Thanks! Starting moodboards today. I will share three directions by Friday.',
+      },
+      {
+        workspaceId: workspace.id,
+        authorId: mehdi.id,
+        body: 'Sounds good. Push them as a single Figma file so I can comment inline.',
+      },
+    ]);
+  }
+
+  if (moodboardTaskRow) {
+    const existingTaskComment = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.taskId, moodboardTaskRow.id))
+      .limit(1);
+    if (!existingTaskComment[0]) {
+      await db.insert(comments).values({
+        workspaceId: workspace.id,
+        taskId: moodboardTaskRow.id,
+        authorId: yasmine.id,
+        body: 'First direction is more editorial, second is bolder. Will add the third tomorrow.',
+      });
+    }
+  }
+
+  if (submittedDeliv) {
+    const existingDelivComment = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.deliverableId, submittedDeliv.id))
+      .limit(1);
+    if (!existingDelivComment[0]) {
+      await db.insert(comments).values({
+        workspaceId: workspace.id,
+        deliverableId: submittedDeliv.id,
+        authorId: mehdi.id,
+        body: 'Loved the TL;DR — that landed well with the team. Ship v2.',
+      });
+    }
+  }
+
+  // --- Weekly check-in (event of type checkin.submitted) + AI followup ---
+  const days = (d: number) => new Date(Date.now() - d * 24 * 3600_000);
+  const existingCheckin = await db
+    .select()
+    .from(events)
+    .where(
+      and(
+        eq(events.targetId, workspace.id),
+        eq(events.type, 'checkin.submitted'),
+      ),
+    )
+    .limit(1);
+  if (!existingCheckin[0]) {
+    await db.insert(events).values([
+      {
+        type: 'checkin.submitted',
+        actorId: yasmine.id,
+        targetType: 'workspace',
+        targetId: workspace.id,
+        metadata: {
+          shipped:
+            '- Closed BA-001 Kickoff brief sign-off\n- Closed BA-002 Stakeholder interviews · 6 of 6\n- Submitted Brand audit · stakeholder findings (v1)',
+          stuck:
+            '- Still working through BA-003 Audit slide deck · v2\n- Need feedback on Brand audit findings revisions',
+          next:
+            '- Start BA-005 Visual exploration · moodboards\n- Start BA-006 Type pairings — 3 options',
+          authorName: 'Yasmine Ben Salah',
+          aiDraftFollowup:
+            'Suggested focus next week: lock the moodboard direction with Mehdi before opening logo work.',
+          source: 'ai',
+        },
+        createdAt: days(6),
+      },
+    ]);
+  }
+
+  // --- Extra realism: ~10 more timeline events spread across last 14 days ---
+  // Task/deliv-targeted events reference newly-inserted task IDs (re-created
+  // on every seed run). Wipe any prior seed events by metadata.seed tag
+  // before re-inserting to stay idempotent.
+  const SEED_TAG = 'sprint-c-extra';
+  await db.delete(events).where(sql`metadata->>'seed' = ${SEED_TAG}`);
+
+  const typePairingsTaskRow = taskByTag.get('BA-006');
+  const logoTaskRow = taskByTag.get('BA-007');
+  const moodboardDelivRow = insertedDelivs.find(
+    (d) => d.title === 'Visual exploration · moodboards',
+  );
+  const auditDelivRow = insertedDelivs.find(
+    (d) => d.title === 'Brand audit · stakeholder findings',
+  );
+
+  const taskDelivEvents: Array<typeof events.$inferInsert> = [];
+  if (moodboardTaskRow) {
+    taskDelivEvents.push({
+      type: 'task.moved',
+      actorId: yasmine.id,
+      targetType: 'task',
+      targetId: moodboardTaskRow.id,
+      metadata: { seed: SEED_TAG, tag: 'BA-005', to: 'in-progress' },
+      createdAt: days(1),
+    });
+  }
+  if (typePairingsTaskRow) {
+    taskDelivEvents.push({
+      type: 'comment.added',
+      actorId: yasmine.id,
+      targetType: 'task',
+      targetId: typePairingsTaskRow.id,
+      metadata: { seed: SEED_TAG, scope: 'task', text: 'Trying a serif + grotesk combo next.' },
+      createdAt: days(2),
+    });
+  }
+  if (logoTaskRow) {
+    taskDelivEvents.push({
+      type: 'task.moved',
+      actorId: mehdi.id,
+      targetType: 'task',
+      targetId: logoTaskRow.id,
+      metadata: { seed: SEED_TAG, tag: 'BA-007', to: 'todo' },
+      createdAt: days(3),
+    });
+  }
+  if (moodboardDelivRow) {
+    taskDelivEvents.push({
+      type: 'deliverable.submitted',
+      actorId: yasmine.id,
+      targetType: 'deliverable',
+      targetId: moodboardDelivRow.id,
+      metadata: { seed: SEED_TAG, name: 'Visual exploration · moodboards', version: 1 },
+      createdAt: days(4),
+    });
+  }
+  if (auditDelivRow) {
+    taskDelivEvents.push({
+      type: 'deliverable.approved',
+      actorId: mehdi.id,
+      targetType: 'deliverable',
+      targetId: auditDelivRow.id,
+      metadata: { seed: SEED_TAG, name: 'Brand audit · stakeholder findings' },
+      createdAt: days(5),
+    });
+  }
+  if (taskDelivEvents.length > 0) {
+    await db.insert(events).values(taskDelivEvents);
+  }
+
+  // application.received events on internships (also tagged with SEED_TAG so
+  // they get wiped + re-inserted alongside the task/deliv events above).
+  await db.insert(events).values([
+    {
+      type: 'application.received',
+      actorId: extraApplicants[0].id,
+      targetType: 'internship',
+      targetId: beyondFe.id,
+      metadata: { seed: SEED_TAG, applicantName: 'Imen Bouzid' },
+      createdAt: days(7),
+    },
+    {
+      type: 'application.received',
+      actorId: extraApplicants[1].id,
+      targetType: 'internship',
+      targetId: foretEditor.id,
+      metadata: { seed: SEED_TAG, applicantName: 'Rayen Trabelsi' },
+      createdAt: days(9),
+    },
+    {
+      type: 'application.received',
+      actorId: extraApplicants[2].id,
+      targetType: 'internship',
+      targetId: beyondUx.id,
+      metadata: { seed: SEED_TAG, applicantName: 'Syrine Jebali' },
+      createdAt: days(11),
+    },
+    {
+      type: 'application.received',
+      actorId: extraApplicants[3].id,
+      targetType: 'internship',
+      targetId: acmeMotion.id,
+      metadata: { seed: SEED_TAG, applicantName: 'Fares Mejri' },
+      createdAt: days(13),
+    },
+    {
+      type: 'application.received',
+      actorId: yasmine.id,
+      targetType: 'internship',
+      targetId: greenvibeContent.id,
+      metadata: { seed: SEED_TAG, applicantName: 'Yasmine Ben Salah' },
+      createdAt: days(12),
+    },
+  ]);
+
   return {
     workspaceId: workspace.id,
     internUserId: yasmine.id,
@@ -450,6 +1190,31 @@ export async function runSeed() {
     projectId: project.id,
     uxInternshipId: uxInternship.id,
     applicantUserIds: applicants.map((a) => a.id),
+    extraApplicantUserIds: extraApplicants.map((a) => a.id),
+    organizationIds: {
+      acme: acme.id,
+      beyond: beyond.id,
+      greenvibe: greenvibe.id,
+      foret: foret.id,
+    },
+    projectIds: {
+      brandAudit: project.id,
+      mobileDiscovery: beyondProject.id,
+      ecoCampaignQ3: greenvibeProject.id,
+      founderContent: foretProject.id,
+    },
+    internshipIds: {
+      acmeVisual: internship.id,
+      acmeUx: uxInternship.id,
+      acmeJuniorProduct: acmeJuniorProduct.id,
+      acmeMotion: acmeMotion.id,
+      acmeDataViz: internshipByKey.get('acmeDataViz')!.id,
+      beyondUxResearch: beyondUx.id,
+      beyondFrontend: beyondFe.id,
+      greenvibeContent: greenvibeContent.id,
+      greenvibeSocial: greenvibeSocial.id,
+      foretEditor: foretEditor.id,
+    },
   };
 }
 
