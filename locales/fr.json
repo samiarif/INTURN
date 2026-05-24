@@ -142,5 +142,101 @@
       "contact": "Contact",
       "privacy": "Confidentialité"
     }
+  },
+  "workspace": {
+    "topbar": {
+      "search": "Rechercher dans le workspace…",
+      "inbox": "Boîte de réception",
+      "help": "Aide",
+      "profile": "Profil",
+      "keyboardShortcut": "⌘K"
+    },
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "tasks": "Tâches",
+      "deliverables": "Livrables",
+      "timeline": "Chronologie",
+      "activity": "Activité",
+      "comments": "Commentaires",
+      "checkIn": "Point hebdo"
+    },
+    "crumbs": {
+      "myWorkspaces": "Mes workspaces"
+    },
+    "stuck": {
+      "label": "Bloqué·e ?",
+      "title": "Dites-nous ce qui vous bloque",
+      "placeholder": "Décrivez ce que vous avez essayé et ce qui ne fonctionne pas",
+      "send": "Envoyer",
+      "cancel": "Annuler"
+    },
+    "tasksBoard": {
+      "columns": {
+        "todo": "À faire",
+        "inProgress": "En cours",
+        "review": "En revue",
+        "done": "Terminé"
+      },
+      "dueIn": "À rendre dans {days} jours",
+      "dueToday": "À rendre aujourd'hui",
+      "overdue": "En retard de {days} jours",
+      "noTasks": "Aucune tâche pour le moment.",
+      "thisWeek": "Tâches de la semaine",
+      "addTask": "Ajouter une tâche"
+    },
+    "deliverables": {
+      "uploadNew": "Téléverser",
+      "approve": "Approuver",
+      "requestChanges": "Demander des modifications",
+      "changesPlaceholder": "Qu'est-ce qui doit changer ?",
+      "submitChanges": "Envoyer le retour",
+      "version": "v{n}",
+      "status": {
+        "draft": "Brouillon",
+        "submitted": "Soumis",
+        "approved": "Approuvé",
+        "changesRequested": "Modifications demandées"
+      }
+    },
+    "checkIn": {
+      "title": "Point hebdomadaire",
+      "shipped": "Qu'avez-vous livré cette semaine ?",
+      "shippedPlaceholder": "Qu'avez-vous bouclé, livré, décidé ?",
+      "stuck": "Sur quoi êtes-vous bloqué·e ?",
+      "stuckPlaceholder": "Où avez-vous besoin d'aide ?",
+      "next": "Et la suite ?",
+      "nextPlaceholder": "Sur quoi allez-vous travailler la semaine prochaine ?",
+      "submit": "Envoyer le point",
+      "draftedByAi": "Brouillon généré par l'IA — relisez avant d'envoyer",
+      "regenerate": "Régénérer le brouillon"
+    },
+    "schedule": {
+      "title": "Planifier un point",
+      "description": "Choisissez un créneau ; on crée le lien Jitsi et l'ajoute à la timeline.",
+      "submit": "Planifier",
+      "cancel": "Annuler",
+      "successHeading": "Planifié",
+      "linkLabel": "Lien Jitsi"
+    },
+    "comments": {
+      "placeholder": "Écrire un commentaire…",
+      "post": "Publier",
+      "empty": "Pas encore de commentaire. Soyez le premier.",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "deletedNotice": "[supprimé]"
+    },
+    "activity": {
+      "empty": "Aucune activité.",
+      "minutesAgo": "il y a {n} min",
+      "hoursAgo": "il y a {n} h",
+      "daysAgo": "il y a {n} j"
+    },
+    "timeline": {
+      "empty": "Rien sur la timeline pour le moment.",
+      "emptySub": "Les tâches, livrables et points hebdo apparaîtront ici.",
+      "workspaceStarted": "Workspace démarré",
+      "deadline": "Échéance"
+    }
   }
 }

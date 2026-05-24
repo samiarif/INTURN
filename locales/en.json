@@ -142,5 +142,101 @@
       "contact": "Contact",
       "privacy": "Privacy"
     }
+  },
+  "workspace": {
+    "topbar": {
+      "search": "Search workspace…",
+      "inbox": "Inbox",
+      "help": "Help",
+      "profile": "Profile",
+      "keyboardShortcut": "⌘K"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "tasks": "Tasks",
+      "deliverables": "Deliverables",
+      "timeline": "Timeline",
+      "activity": "Activity",
+      "comments": "Comments",
+      "checkIn": "Check-in"
+    },
+    "crumbs": {
+      "myWorkspaces": "My workspaces"
+    },
+    "stuck": {
+      "label": "Stuck?",
+      "title": "Tell us what's blocking you",
+      "placeholder": "Describe what you tried and what's not working",
+      "send": "Send",
+      "cancel": "Cancel"
+    },
+    "tasksBoard": {
+      "columns": {
+        "todo": "To do",
+        "inProgress": "In progress",
+        "review": "In review",
+        "done": "Done"
+      },
+      "dueIn": "Due in {days} days",
+      "dueToday": "Due today",
+      "overdue": "Overdue by {days} days",
+      "noTasks": "No tasks yet.",
+      "thisWeek": "This week's tasks",
+      "addTask": "Add task"
+    },
+    "deliverables": {
+      "uploadNew": "Upload new",
+      "approve": "Approve",
+      "requestChanges": "Request changes",
+      "changesPlaceholder": "What needs to change?",
+      "submitChanges": "Submit feedback",
+      "version": "v{n}",
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "changesRequested": "Changes requested"
+      }
+    },
+    "checkIn": {
+      "title": "Weekly check-in",
+      "shipped": "What did you ship this week?",
+      "shippedPlaceholder": "What did you close, deliver, decide?",
+      "stuck": "Where are you stuck?",
+      "stuckPlaceholder": "Where do you need help?",
+      "next": "What's next?",
+      "nextPlaceholder": "What will you tackle this coming week?",
+      "submit": "Submit check-in",
+      "draftedByAi": "Drafted by AI — edit before submitting",
+      "regenerate": "Regenerate draft"
+    },
+    "schedule": {
+      "title": "Schedule a check-in",
+      "description": "Pick a slot; we'll create a Jitsi link and put it on the timeline.",
+      "submit": "Schedule",
+      "cancel": "Cancel",
+      "successHeading": "Scheduled",
+      "linkLabel": "Jitsi link"
+    },
+    "comments": {
+      "placeholder": "Write a comment…",
+      "post": "Post",
+      "empty": "No comments yet. Be the first.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deletedNotice": "[deleted]"
+    },
+    "activity": {
+      "empty": "No activity yet.",
+      "minutesAgo": "{n}m ago",
+      "hoursAgo": "{n}h ago",
+      "daysAgo": "{n}d ago"
+    },
+    "timeline": {
+      "empty": "Nothing on the timeline yet.",
+      "emptySub": "Tasks, deliverables, and check-ins will appear here as they happen.",
+      "workspaceStarted": "Workspace started",
+      "deadline": "Deadline"
+    }
   }
 }
