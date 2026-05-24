@@ -25,6 +25,13 @@ export async function POST(req: Request) {
   const wh = new Webhook(WEBHOOK_SECRET);
   let evt: WebhookEvent;
 
+  // svix.Webhook.verify() enforces a 5-minute svix-timestamp tolerance by default
+  // (see WEBHOOK_TOLERANCE_IN_SECONDS in standardwebhooks). Replays older than
+  // 5 minutes are rejected here as part of signature verification — no extra
+  // freshness check is needed at this layer. svix@1.94.0 does not expose a
+  // tolerance option in its public API, so narrowing the window further would
+  // require an unsafe cast; leaving the default.
+  // Idempotency (svix-id dedupe) is tracked separately for Sprint E.
   try {
     evt = wh.verify(body, {
       'svix-id': svixId,
@@ -32,7 +39,7 @@ export async function POST(req: Request) {
       'svix-signature': svixSignature,
     }) as WebhookEvent;
   } catch {
-    return new Response('Invalid signature', { status: 400 });
+    return new Response('Invalid signature or stale timestamp', { status: 400 });
   }
 
   switch (evt.type) {
