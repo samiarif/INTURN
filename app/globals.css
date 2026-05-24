@@ -1020,3 +1020,411 @@
 /* Scrollbars off (the canvas hides them via the design canvas itself, this is belt-and-braces) */
 .ws .ws-main::-webkit-scrollbar, .ws .ws-side::-webkit-scrollbar { display: none; }
 .ws .ws-main, .ws .ws-side { scrollbar-width: none; }
+
+/* ==========================================================================
+ * Tasks board — kanban CSS pasted from docs/design-bundle/project/mocks/tasks-board.css
+ * Scoped via .ws-shell. Edits should stay minimal — update the bundle first.
+ * ========================================================================== */
+/* Workspace · Tasks board — Sprint 2.
+   Reuses every token + chrome from workspace.css; only the board-specific
+   pieces live here (toolbar, columns, cards). */
+
+/* ------------------------------------------------------------------
+   Toolbar — view switcher + filter chips + sort + new task
+   ------------------------------------------------------------------ */
+.ws .tb-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.ws .tb-view {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2px;
+  font-family: 'Geist Mono', monospace; font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.ws .tb-view button {
+  background: transparent;
+  border: 0;
+  padding: 4px 10px;
+  color: var(--ink-3);
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.ws .tb-view button.active {
+  background: var(--ink);
+  color: #FFF;
+}
+.ws .tb-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.ws .tb-chip:hover { border-color: var(--border-strong); }
+.ws .tb-chip .caret {
+  width: 6px; height: 6px;
+  border-right: 1.4px solid var(--ink-3);
+  border-bottom: 1.4px solid var(--ink-3);
+  transform: rotate(45deg);
+  margin-left: 2px;
+}
+.ws .tb-chip.active {
+  background: var(--brand-50);
+  color: var(--brand-600);
+  border-color: var(--brand-100);
+  font-weight: 500;
+}
+.ws .tb-chip .num {
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  color: var(--ink-4);
+  margin-left: 2px;
+}
+.ws .tb-chip.active .num { color: var(--brand-600); }
+.ws .tb-spacer { flex: 1; }
+
+/* Supervisor-only review banner across the top */
+.ws .tb-review-banner {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--brand-50);
+  border: 1px solid var(--brand-100);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--brand-600);
+}
+.ws .tb-review-banner .dot {
+  width: 8px; height: 8px; border-radius: 99px;
+  background: var(--brand);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+.ws .tb-review-banner b { color: var(--brand-600); font-weight: 600; }
+.ws .tb-review-banner .nav {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em;
+  color: var(--brand-600);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------------
+   Board — 4 columns + each column has its own scroll feel
+   ------------------------------------------------------------------ */
+.ws .tb-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.ws .tb-col {
+  background: rgba(241, 245, 249, 0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 12px 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  min-height: 600px;
+}
+.ws .tb-col-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 2px 4px 6px;
+}
+.ws .tb-col-head .pip {
+  width: 8px; height: 8px;
+  border-radius: 2px;
+}
+.ws .tb-col.todo  .pip { background: var(--ink-4); }
+.ws .tb-col.prog  .pip { background: #2563EB; }
+.ws .tb-col.review .pip { background: var(--brand); }
+.ws .tb-col.done  .pip { background: var(--success); }
+.ws .tb-col-head .name {
+  font-size: 12.5px; font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.ws .tb-col-head .count {
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  padding: 1px 6px;
+  background: var(--surface);
+  color: var(--ink-3);
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.ws .tb-col-head .menu {
+  margin-left: auto;
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink-3);
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.ws .tb-col-head .menu:hover { background: var(--surface-muted); color: var(--ink); }
+
+/* Stack inside the column */
+.ws .tb-col-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* + add card at the bottom of each column */
+.ws .tb-col-add {
+  display: flex; align-items: center; justify-content: flex-start; gap: 8px;
+  margin-top: auto;
+  padding: 8px 8px;
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  color: var(--ink-4);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.ws .tb-col-add:hover { background: var(--surface); color: var(--ink-2); }
+.ws .tb-col-add .plus {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px;
+  border-radius: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink-3);
+  font-size: 12px; line-height: 1;
+}
+
+/* "+ N more done" collapsed row */
+.ws .tb-col-more {
+  text-align: center;
+  padding: 6px;
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.ws .tb-col-more:hover { background: var(--surface); }
+
+/* ------------------------------------------------------------------
+   Task card
+   ------------------------------------------------------------------ */
+.ws .tb-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px 10px;
+  box-shadow: var(--shadow-xs);
+  cursor: grab;
+  display: flex; flex-direction: column; gap: 8px;
+  position: relative;
+}
+.ws .tb-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+.ws .tb-card.urgent {
+  border-left: 3px solid var(--warning);
+  padding-left: 9px;
+}
+.ws .tb-card.overdue {
+  border-left: 3px solid var(--danger);
+  padding-left: 9px;
+}
+.ws .tb-card.needs-review {
+  box-shadow: 0 0 0 1.5px var(--brand);
+  border-color: var(--brand);
+}
+.ws .tb-card.needs-review::before {
+  content: "NEEDS REVIEW";
+  position: absolute; top: -8px; left: 10px;
+  font-family: 'Geist Mono', monospace; font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  background: var(--brand);
+  color: #FFF;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.ws .tb-card.done {
+  opacity: 0.7;
+  background: var(--surface);
+}
+.ws .tb-card.done .tb-card-title { color: var(--ink-3); text-decoration: line-through; }
+
+.ws .tb-card-top {
+  display: flex; align-items: center; gap: 6px;
+}
+.ws .tb-card-tag {
+  font-family: 'Geist Mono', monospace; font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  background: var(--surface-muted);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.ws .tb-card-label {
+  font-family: 'Geist Mono', monospace; font-size: 9.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+.ws .tb-card-label.design { background: #EDE9FE; color: var(--brand-600); }
+.ws .tb-card-label.research { background: #FCE7F3; color: #9D174D; }
+.ws .tb-card-label.deliverable { background: #DBEAFE; color: #1D4ED8; }
+
+.ws .tb-card-menu {
+  margin-left: auto;
+  width: 20px; height: 20px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-4);
+  cursor: pointer;
+  font-size: 14px; line-height: 1;
+}
+.ws .tb-card-menu:hover { background: var(--surface-muted); color: var(--ink-2); }
+
+.ws .tb-card-title {
+  font-size: 13.5px; font-weight: 500;
+  color: var(--ink);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
+}
+.ws .tb-card-sub {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  line-height: 1.4;
+  margin-top: -2px;
+}
+
+/* Linked deliverable chip inside a card */
+.ws .tb-card-deliv {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 8px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  color: var(--ink-2);
+  text-decoration: none;
+  align-self: flex-start;
+}
+.ws .tb-card-deliv:hover { background: var(--surface); }
+.ws .tb-card-deliv .ico {
+  width: 10px; height: 12px;
+  border: 1.4px solid currentColor;
+  border-radius: 1.5px;
+  position: relative;
+  opacity: 0.8;
+}
+.ws .tb-card-deliv .ico::before {
+  content: "";
+  position: absolute; left: 2px; top: 3px; right: 2px; height: 1px;
+  background: currentColor;
+  box-shadow: 0 3px 0 currentColor;
+}
+.ws .tb-card-deliv b { color: var(--ink); font-weight: 500; }
+
+/* Footer of card */
+.ws .tb-card-foot {
+  display: flex; align-items: center; gap: 8px;
+}
+.ws .tb-card-due {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.ws .tb-card-due .cal {
+  width: 9px; height: 9px;
+  border: 1.2px solid currentColor;
+  border-radius: 1.5px;
+  border-top: 2px solid currentColor;
+}
+.ws .tb-card-due.urgent { color: var(--warning); font-weight: 500; }
+.ws .tb-card-due.overdue { color: var(--danger); font-weight: 500; }
+.ws .tb-card-due.good { color: var(--success); }
+
+.ws .tb-meta-chips {
+  display: inline-flex; gap: 8px;
+  margin-left: 4px;
+}
+.ws .tb-meta-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  position: relative;
+}
+.ws .tb-meta-chip.unread { color: var(--brand-600); font-weight: 500; }
+.ws .tb-meta-chip.unread::after {
+  content: "";
+  position: absolute; top: -2px; right: -6px;
+  width: 6px; height: 6px;
+  border-radius: 99px;
+  background: var(--brand);
+}
+.ws .tb-meta-chip .ico-comment {
+  width: 11px; height: 9px;
+  border: 1.2px solid currentColor;
+  border-radius: 2px;
+  position: relative;
+}
+.ws .tb-meta-chip .ico-comment::after {
+  content: "";
+  position: absolute; left: 1.5px; bottom: -3px;
+  width: 0; height: 0;
+  border-left: 3px solid currentColor;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+}
+.ws .tb-meta-chip .ico-attach {
+  width: 8px; height: 11px;
+  border: 1.2px solid currentColor;
+  border-radius: 4px;
+  transform: rotate(-30deg);
+}
+.ws .tb-meta-chip .ico-check {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 99px;
+  background: var(--success);
+  position: relative;
+}
+.ws .tb-meta-chip .ico-check::after {
+  content: ""; position: absolute;
+  left: 3px; top: 1.5px;
+  width: 3px; height: 5px;
+  border-right: 1.5px solid #FFF;
+  border-bottom: 1.5px solid #FFF;
+  transform: rotate(45deg);
+}
+
+.ws .tb-card-foot .who { margin-left: auto; }
+
+/* Ghost target — shown in supervisor view while explaining a drag */
+.ws .tb-card-ghost {
+  border: 1.5px dashed var(--brand);
+  background: var(--brand-50);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  min-height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Geist Mono', monospace; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--brand-600);
+}
+
+/* On the supervisor tasks board, the tasks tab badge for "needs review" */
+.ws .ws-mhead-tab .count.review {
+  background: var(--brand);
+  color: #FFF;
+}

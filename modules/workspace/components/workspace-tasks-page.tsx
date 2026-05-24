@@ -1,14 +1,8 @@
 import { WorkspaceTopBar, type Crumb } from './topbar';
 import { WorkspaceSidebar } from './sidebar';
 import { WorkspaceMHead } from './m-head';
-import { BriefCard } from './brief-card';
-import { StatTiles } from './stat-tiles';
-import { TaskList } from './task-list';
-import { DeliverablesMini } from './deliverables-mini';
-import { ActivityFeed, type ActorLookup } from './activity-feed';
-import { RailIntern } from './rail-intern';
-import { RailSupervisor } from './rail-supervisor';
 import { StuckPill } from './stuck-pill';
+import { TasksBoard } from './tasks-board';
 import { computeWeekOfTotal } from '../queries';
 import type { WorkspaceOverviewData } from '../queries';
 import type { SidebarData, WorkspaceView } from '../types';
@@ -19,22 +13,15 @@ function buildCrumbs(data: WorkspaceOverviewData, view: WorkspaceView): Crumb[] 
     return [
       { label: 'My workspaces' },
       { label: `${data.organization?.name ?? '—'} · ${projectOrInternship}` },
-      { label: 'Overview', bold: true },
+      { label: 'Tasks', bold: true },
     ];
   }
   return [
     { label: data.organization?.name ?? '—' },
     { label: projectOrInternship },
     { label: data.intern?.firstName ?? '—' },
-    { label: 'Overview', bold: true },
+    { label: 'Tasks', bold: true },
   ];
-}
-
-function buildActorLookup(data: WorkspaceOverviewData): ActorLookup {
-  const map: ActorLookup = new Map();
-  if (data.intern) map.set(data.intern.id, data.intern);
-  for (const s of data.supervisors) map.set(s.id, s);
-  return map;
 }
 
 function buildModeChip(data: WorkspaceOverviewData): { label: string } {
@@ -45,7 +32,7 @@ function buildModeChip(data: WorkspaceOverviewData): { label: string } {
   return { label: `${locationType} · WEEK ${current} / ${total}` };
 }
 
-export function WorkspaceOverview({
+export function WorkspaceTasksPage({
   data,
   view,
   sidebar,
@@ -58,8 +45,13 @@ export function WorkspaceOverview({
   viewer: { initials: string; name: string; subtitle: string };
   basePath: string;
 }) {
+  const internName =
+    `${data.intern?.firstName ?? ''} ${data.intern?.lastName ?? ''}`.trim() || 'the intern';
   return (
-    <div className="ws-shell ws" style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div
+      className="ws-shell ws"
+      style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+    >
       <WorkspaceTopBar
         view={view}
         viewerInitials={viewer.initials}
@@ -69,18 +61,12 @@ export function WorkspaceOverview({
       <div className="ws-body">
         <WorkspaceSidebar data={sidebar} viewer={viewer} activeWorkspaceId={data.workspace.id} />
         <main className="ws-main">
-          <WorkspaceMHead data={data} view={view} basePath={basePath} activeTab="overview" />
-          <div className="ws-content">
-            <div className="ws-col-main">
-              <BriefCard data={data} view={view} />
-              <StatTiles data={data} view={view} />
-              <TaskList tasks={data.tasks} view={view} />
-              <DeliverablesMini deliverables={data.deliverables} />
-              <ActivityFeed events={data.events} actors={buildActorLookup(data)} />
-            </div>
-            <div className="ws-col-side">
-              {view === 'intern' ? <RailIntern data={data} /> : <RailSupervisor data={data} />}
-            </div>
+          <WorkspaceMHead data={data} view={view} basePath={basePath} activeTab="tasks" />
+          <div
+            className="ws-content"
+            style={{ gridTemplateColumns: '1fr', paddingTop: 20, paddingBottom: 40 }}
+          >
+            <TasksBoard tasks={data.tasks} view={view} internName={internName} />
           </div>
         </main>
       </div>

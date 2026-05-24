@@ -14,9 +14,13 @@ function formatDateRange(start: Date | null, end: Date | null): string {
 export function WorkspaceMHead({
   data,
   view,
+  basePath,
+  activeTab = 'overview',
 }: {
   data: WorkspaceOverviewData;
   view: 'intern' | 'supervisor';
+  basePath: string;
+  activeTab?: 'overview' | 'tasks' | 'deliverables' | 'timeline' | 'activity' | 'comments';
 }) {
   const intern = data.intern;
   const title =
@@ -64,6 +68,8 @@ export function WorkspaceMHead({
         deliverablesCount={deliverableCount}
         activityNew={view === 'supervisor' ? 3 : undefined}
         commentsNew={view === 'supervisor' ? 1 : undefined}
+        activeTab={activeTab}
+        basePath={basePath}
       />
     </div>
   );

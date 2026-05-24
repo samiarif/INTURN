@@ -38,6 +38,7 @@ export default async function Page({
       data={data}
       view="supervisor"
       sidebar={sidebar}
+      basePath={`/company/workspaces/${data.workspace.id}`}
       viewer={{
         initials: supervisor
           ? `${supervisor.firstName?.[0] ?? ''}${supervisor.lastName?.[0] ?? ''}`

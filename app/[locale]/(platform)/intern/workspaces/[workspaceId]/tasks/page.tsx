@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getWorkspaceOverview, getInternSidebarData } from '@/modules/workspace/queries';
 import { canViewWorkspace } from '@/modules/workspace/service';
 import { getUserByClerkId } from '@/modules/profiles/queries';
-import { WorkspaceOverview } from '@/modules/workspace/components/workspace-overview';
+import { WorkspaceTasksPage } from '@/modules/workspace/components/workspace-tasks-page';
 
 export default async function Page({
   params,
@@ -28,12 +28,10 @@ export default async function Page({
     notFound();
   }
 
-  // Intern route always shows intern sidebar (admin viewing this route is
-  // "looking through the intern's eyes"); supervisor sidebar is on /company/...
   const sidebar = await getInternSidebarData(data.workspace.internId);
 
   return (
-    <WorkspaceOverview
+    <WorkspaceTasksPage
       data={data}
       view="intern"
       sidebar={sidebar}

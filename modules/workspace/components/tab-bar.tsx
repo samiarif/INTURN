@@ -1,4 +1,6 @@
-type Tab = { id: string; label: string; count?: string; active?: boolean };
+import Link from 'next/link';
+
+type Tab = { id: string; label: string; count?: string; href: string | null };
 
 export function WorkspaceTabBar({
   tasksCount,
@@ -6,35 +8,65 @@ export function WorkspaceTabBar({
   activityNew,
   commentsNew,
   activeTab = 'overview',
+  basePath,
 }: {
   tasksCount: number;
   deliverablesCount: number;
   activityNew?: number;
   commentsNew?: number;
   activeTab?: string;
+  // `basePath` is the workspace URL prefix, e.g. /intern/workspaces/<id> or
+  // /company/workspaces/<id>. Tabs link relative to it.
+  basePath: string;
 }) {
   const tabs: Tab[] = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'tasks', label: 'Tasks', count: String(tasksCount) },
-    { id: 'deliverables', label: 'Deliverables', count: String(deliverablesCount) },
-    { id: 'timeline', label: 'Timeline' },
-    { id: 'activity', label: 'Activity', count: activityNew ? `${activityNew} new` : undefined },
-    { id: 'comments', label: 'Comments', count: commentsNew ? String(commentsNew) : undefined },
+    { id: 'overview', label: 'Overview', href: basePath },
+    { id: 'tasks', label: 'Tasks', count: String(tasksCount), href: `${basePath}/tasks` },
+    { id: 'deliverables', label: 'Deliverables', count: String(deliverablesCount), href: null },
+    { id: 'timeline', label: 'Timeline', href: null },
+    {
+      id: 'activity',
+      label: 'Activity',
+      count: activityNew ? `${activityNew} new` : undefined,
+      href: null,
+    },
+    {
+      id: 'comments',
+      label: 'Comments',
+      count: commentsNew ? String(commentsNew) : undefined,
+      href: null,
+    },
   ];
 
   return (
     <div className="ws-mhead-tabs">
-      {tabs.map((tab) => (
-        <span
-          key={tab.id}
-          className={`ws-mhead-tab ${tab.id === activeTab ? 'active' : ''}`}
-          aria-disabled={tab.id !== activeTab}
-          style={tab.id !== activeTab ? { cursor: 'not-allowed' } : undefined}
-        >
-          {tab.label}
-          {tab.count && <span className="count">{tab.count}</span>}
-        </span>
-      ))}
+      {tabs.map((tab) => {
+        const isActive = tab.id === activeTab;
+        const className = `ws-mhead-tab ${isActive ? 'active' : ''}`;
+        const inner = (
+          <>
+            {tab.label}
+            {tab.count && <span className="count">{tab.count}</span>}
+          </>
+        );
+        if (tab.href && !isActive) {
+          return (
+            <Link key={tab.id} href={tab.href} className={className}>
+              {inner}
+            </Link>
+          );
+        }
+        return (
+          <span
+            key={tab.id}
+            className={className}
+            aria-disabled={!tab.href}
+            style={!tab.href && !isActive ? { cursor: 'not-allowed', opacity: 0.6 } : undefined}
+          >
+            {inner}
+          </span>
+        );
+      })}
     </div>
   );
 }

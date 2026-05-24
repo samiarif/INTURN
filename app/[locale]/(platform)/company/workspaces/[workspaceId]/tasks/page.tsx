@@ -1,9 +1,9 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
-import { getWorkspaceOverview, getInternSidebarData } from '@/modules/workspace/queries';
+import { getWorkspaceOverview, getSupervisorSidebarData } from '@/modules/workspace/queries';
 import { canViewWorkspace } from '@/modules/workspace/service';
 import { getUserByClerkId } from '@/modules/profiles/queries';
-import { WorkspaceOverview } from '@/modules/workspace/components/workspace-overview';
+import { WorkspaceTasksPage } from '@/modules/workspace/components/workspace-tasks-page';
 
 export default async function Page({
   params,
@@ -18,7 +18,7 @@ export default async function Page({
   const clerk = await clerkClient();
   const clerkUser = await clerk.users.getUser(clerkId);
   const role =
-    (clerkUser.publicMetadata.role as 'intern' | 'company' | 'admin' | undefined) ?? 'intern';
+    (clerkUser.publicMetadata.role as 'intern' | 'company' | 'admin' | undefined) ?? 'company';
 
   const { workspaceId } = await params;
   const data = await getWorkspaceOverview(workspaceId);
@@ -28,20 +28,24 @@ export default async function Page({
     notFound();
   }
 
-  // Intern route always shows intern sidebar (admin viewing this route is
-  // "looking through the intern's eyes"); supervisor sidebar is on /company/...
-  const sidebar = await getInternSidebarData(data.workspace.internId);
+  const supervisorOfOrg = role === 'admin' ? data.organization?.ownerId : user.id;
+  const sidebar = await getSupervisorSidebarData(supervisorOfOrg ?? user.id);
 
+  const supervisor = data.supervisors[0];
   return (
-    <WorkspaceOverview
+    <WorkspaceTasksPage
       data={data}
-      view="intern"
+      view="supervisor"
       sidebar={sidebar}
-      basePath={`/intern/workspaces/${data.workspace.id}`}
+      basePath={`/company/workspaces/${data.workspace.id}`}
       viewer={{
-        initials: `${data.intern?.firstName?.[0] ?? ''}${data.intern?.lastName?.[0] ?? ''}`,
-        name: `${data.intern?.firstName ?? ''} ${data.intern?.lastName ?? ''}`.trim() || 'Intern',
-        subtitle: `${data.internProfile?.university ?? ''} · ${data.internProfile?.yearOfStudy ?? ''}`.trim(),
+        initials: supervisor
+          ? `${supervisor.firstName?.[0] ?? ''}${supervisor.lastName?.[0] ?? ''}`
+          : 'AD',
+        name: supervisor
+          ? `${supervisor.firstName ?? ''} ${supervisor.lastName ?? ''}`.trim()
+          : 'Admin',
+        subtitle: data.organization?.name ?? '',
       }}
     />
   );
