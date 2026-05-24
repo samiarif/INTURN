@@ -12,9 +12,7 @@ export default async function Page({
     <WorkspaceTasksPage
       data={ctx.data}
       view={ctx.view}
-      sidebar={ctx.sidebar}
       basePath={ctx.basePath}
-      viewer={ctx.viewer}
     />
   );
 }
