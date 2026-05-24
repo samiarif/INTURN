@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, uuid, index } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { workspaces } from './workspaces';
 import { tasks } from './tasks';
 import { deliverables } from './deliverables';
@@ -27,7 +28,8 @@ export const comments = pgTable(
     index('comments_task_idx').on(table.taskId),
     index('comments_deliverable_idx').on(table.deliverableId),
     index('comments_created_idx').on(table.createdAt),
-    index('comments_workspace_created_idx').on(table.workspaceId, table.createdAt),
+    // Match the migration SQL: thread queries scan newest-first.
+    index('comments_workspace_created_idx').on(table.workspaceId, sql`created_at DESC`),
   ],
 );
 
