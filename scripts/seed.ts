@@ -291,12 +291,165 @@ export async function runSeed() {
     },
   ].filter((v): v is NonNullable<typeof v> => Boolean(v)));
 
+  // ---- Sprint 3 additions ----
+  // A second internship under the same Brand Audit project (UX researcher).
+  let uxInternship = (
+    await db
+      .select()
+      .from(internships)
+      .where(eq(internships.title, 'UX researcher — Brand audit'))
+      .limit(1)
+  )[0];
+  if (!uxInternship) {
+    [uxInternship] = await db
+      .insert(internships)
+      .values({
+        organizationId: acme.id,
+        projectId: project.id,
+        title: 'UX researcher — Brand audit',
+        description:
+          'Run stakeholder interviews and synthesize findings to inform the visual refresh. 8 weeks, async first, one weekly sync.',
+        sector: 'Design',
+        skills: ['User research', 'Interview', 'Notion', 'Figma'],
+        duration: 8,
+        locationType: 'virtual',
+        location: '',
+        isPaid: true,
+        compensation: '600 TND / mo',
+        internCount: 1,
+        language: 'fr',
+        status: 'published',
+        deadline: '2026-05-10',
+        customQuestions: [
+          { question: 'Describe a user interview you ran — what did you learn?', required: true },
+          { question: 'Tools you use for synthesis?', required: false },
+        ],
+      })
+      .returning();
+  }
+
+  // Three demo applicants on the UX researcher internship + 1 on visual designer.
+  const applicants = await Promise.all([
+    upsertUser({
+      clerkId: 'seed_user_applicant_1',
+      email: 'lina@enit.utm.tn',
+      firstName: 'Lina',
+      lastName: 'Khelifi',
+      role: 'intern',
+    }),
+    upsertUser({
+      clerkId: 'seed_user_applicant_2',
+      email: 'amir@insat.utm.tn',
+      firstName: 'Amir',
+      lastName: 'Ben Amor',
+      role: 'intern',
+    }),
+    upsertUser({
+      clerkId: 'seed_user_applicant_3',
+      email: 'sarra@esprit.tn',
+      firstName: 'Sarra',
+      lastName: 'Mansouri',
+      role: 'intern',
+    }),
+  ]);
+
+  // Make sure each applicant has a complete profile
+  for (const a of applicants) {
+    const existingProfile = await db.select().from(profiles).where(eq(profiles.userId, a.id)).limit(1);
+    if (!existingProfile[0]) {
+      await db.insert(profiles).values({
+        userId: a.id,
+        university: a.email.includes('enit') ? 'enit' : a.email.includes('insat') ? 'insat' : 'esprit',
+        yearOfStudy: 'L3',
+        fieldOfStudy: a.email.includes('esprit') ? 'Design' : 'Computer Science',
+        city: 'Tunis',
+        preferredLanguage: 'fr',
+        skills: ['User research', 'Figma', 'Notion'],
+        roles: ['Design', 'Product'],
+        portfolioLinks: [],
+        profileStep: 'complete',
+      });
+    }
+  }
+
+  const seedApps = [
+    {
+      internshipId: uxInternship.id,
+      applicantId: applicants[0].id,
+      status: 'new' as const,
+      coverNote: "I'd love to learn what a real research practice looks like under deadline pressure.",
+    },
+    {
+      internshipId: uxInternship.id,
+      applicantId: applicants[1].id,
+      status: 'reviewed' as const,
+      coverNote: 'I ran the UX leg of my final-year project — interviews, affinity mapping, the works.',
+    },
+    {
+      internshipId: uxInternship.id,
+      applicantId: applicants[2].id,
+      status: 'shortlisted' as const,
+      coverNote: 'Strongly motivated by Tunisian brand work. Available immediately.',
+      internalNotes: 'Strong portfolio. Move to interview.',
+    },
+  ];
+
+  for (const a of seedApps) {
+    const existing = await db
+      .select()
+      .from(applications)
+      .where(eq(applications.applicantId, a.applicantId))
+      .limit(1);
+    if (existing.length > 0 && existing.some((x) => x.internshipId === a.internshipId)) continue;
+    await db.insert(applications).values({
+      internshipId: a.internshipId,
+      applicantId: a.applicantId,
+      status: a.status,
+      coverNote: a.coverNote,
+      internalNotes: 'internalNotes' in a ? a.internalNotes : null,
+      customAnswers: [
+        { question: 'Describe a user interview you ran — what did you learn?', answer: 'Lots.' },
+      ],
+    });
+  }
+
+  // A second, unverified organization for admin testing.
+  const sariMounir = await upsertUser({
+    clerkId: 'seed_user_sari_mounir',
+    email: 'mounir@numentech.tn',
+    firstName: 'Mounir',
+    lastName: 'Sari',
+    role: 'company',
+  });
+  const existingNumentech = await db
+    .select()
+    .from(organizations)
+    .where(eq(organizations.slug, 'numentech'))
+    .limit(1);
+  if (!existingNumentech[0]) {
+    await db.insert(organizations).values({
+      ownerId: sariMounir.id,
+      name: 'Numentech',
+      slug: 'numentech',
+      industry: 'Software & tech',
+      size: '11-50',
+      country: 'Tunisia',
+      city: 'Sfax',
+      description:
+        'Engineering studio building B2B SaaS for the MENA region. 24 people, founded 2019.',
+      verificationStatus: 'draft',
+      verified: false,
+    });
+  }
+
   return {
     workspaceId: workspace.id,
     internUserId: yasmine.id,
     supervisorUserId: mehdi.id,
     organizationId: acme.id,
     projectId: project.id,
+    uxInternshipId: uxInternship.id,
+    applicantUserIds: applicants.map((a) => a.id),
   };
 }
 
