@@ -209,3 +209,15 @@
     display: none;
   }
 }
+
+/* A11y: visible focus ring for keyboard users (no outline for mouse via :focus-visible). */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
