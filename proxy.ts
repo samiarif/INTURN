@@ -14,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   // by the page (requires complete intern profile).
   '/(fr|en)?/internships/([^/]+)',
   '/api/webhooks(.*)',
+  '/api/health',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
