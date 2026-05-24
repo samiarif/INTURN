@@ -65,7 +65,7 @@ export function WorkspaceOverview({
         modeChip={buildModeChip(data)}
       />
       <div className="ws-body">
-        <WorkspaceSidebar data={sidebar} viewer={viewer} />
+        <WorkspaceSidebar data={sidebar} viewer={viewer} activeWorkspaceId={data.workspace.id} />
         <main className="ws-main">
           <WorkspaceMHead data={data} view={view} />
           <div className="ws-content">
@@ -77,7 +77,7 @@ export function WorkspaceOverview({
               <ActivityFeed events={data.events} actors={buildActorLookup(data)} />
             </div>
             <div className="ws-col-side">
-              {view === 'intern' ? <RailIntern /> : <RailSupervisor />}
+              {view === 'intern' ? <RailIntern data={data} /> : <RailSupervisor data={data} />}
             </div>
           </div>
         </main>

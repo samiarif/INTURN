@@ -1,6 +1,19 @@
 import type { WorkspaceOverviewData } from '../queries';
 import { computeDaysRemaining } from '../queries';
 
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+function computeEventsThisWeek(events: WorkspaceOverviewData['events']): number {
+  const weekAgo = Date.now() - 7 * MS_PER_DAY;
+  return events.filter((e) => new Date(e.createdAt).getTime() >= weekAgo).length;
+}
+
+function computeActivityScore(events: WorkspaceOverviewData['events']): number {
+  // Composite: events / week × 5, capped at 100. Tunable as we get cohort data.
+  const recentCount = computeEventsThisWeek(events);
+  return Math.min(100, recentCount * 12);
+}
+
 export function StatTiles({
   data,
   view,
@@ -17,9 +30,14 @@ export function StatTiles({
   const submitted = deliverables.filter((d) =>
     ['submitted', 'approved', 'revision-requested'].includes(d.status ?? ''),
   );
+  const pendingReview = deliverables.filter((d) => d.status === 'submitted').length;
+  const latestSubmitted = submitted[0]; // already ordered by query
 
   const endDate = data.workspace.endDate ? new Date(data.workspace.endDate) : null;
   const daysRemaining = computeDaysRemaining(endDate);
+
+  const eventsThisWeek = computeEventsThisWeek(data.events);
+  const activityScore = computeActivityScore(data.events);
 
   return (
     <div className="ws-stats">
@@ -40,7 +58,13 @@ export function StatTiles({
           <small>of {deliverables.length} submitted</small>
         </div>
         <div className="ws-stat-foot good">
-          {view === 'intern' ? '✓ Latest submitted · v2' : '✓ Pending review'}
+          {view === 'intern'
+            ? latestSubmitted
+              ? `✓ ${latestSubmitted.title.slice(0, 28)}`
+              : 'Nothing submitted yet'
+            : pendingReview > 0
+              ? `${pendingReview} pending review`
+              : 'Nothing pending'}
         </div>
       </div>
       <div className="ws-stat">
@@ -56,14 +80,20 @@ export function StatTiles({
         </div>
       </div>
       <div className="ws-stat">
-        <div className="ws-stat-label">{view === 'intern' ? 'Hours this week' : 'Activity score'}</div>
+        <div className="ws-stat-label">
+          {view === 'intern' ? 'Events this week' : 'Activity score'}
+        </div>
         <div className="ws-stat-value">
-          <b>{view === 'intern' ? '18.5' : '92'}</b>
-          <small>{view === 'intern' ? 'hrs' : '/ 100'}</small>
+          <b>{view === 'intern' ? eventsThisWeek : activityScore}</b>
+          <small>{view === 'intern' ? 'logged' : '/ 100'}</small>
         </div>
         <div className="ws-stat-foot good">
           <span className="arrow-up">↗</span>{' '}
-          {view === 'intern' ? '+2.5 vs last wk' : 'Above the floor of 70'}
+          {view === 'intern'
+            ? `${data.events.length} total this internship`
+            : activityScore >= 70
+              ? 'Above the floor of 70'
+              : 'Below floor — flag for nudge'}
         </div>
       </div>
     </div>

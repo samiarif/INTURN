@@ -1,4 +1,40 @@
-export function RailIntern() {
+import type { WorkspaceOverviewData } from '../queries';
+
+function daysFromNow(date: string | null): number | null {
+  if (!date) return null;
+  return Math.ceil((new Date(date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+}
+
+function fmtDayShort(date: Date): string {
+  return date.toLocaleDateString('en-US', { weekday: 'short' });
+}
+
+export function RailIntern({ data }: { data: WorkspaceOverviewData }) {
+  // "This week" — items due in the next 7 days
+  const now = Date.now();
+  const inAWeek = now + 7 * 86400_000;
+  const tasksThisWeek = data.tasks
+    .filter((t) => {
+      if (!t.dueDate || t.status === 'done') return false;
+      const due = new Date(t.dueDate).getTime();
+      return due >= now && due <= inAWeek;
+    })
+    .slice(0, 4);
+
+  const deliverablesThisWeek = data.deliverables
+    .filter((d) => d.status === 'draft')
+    .slice(0, 2);
+
+  const submittedDelivs = data.deliverables.filter((d) =>
+    ['submitted', 'approved', 'revision-requested'].includes(d.status ?? ''),
+  );
+  const totalDelivs = data.deliverables.length;
+  const eventCount = data.events.length; // approximate — "Full timeline →" gives the precise count
+  const endDate = data.workspace.endDate ? new Date(data.workspace.endDate) : null;
+  const endDateLabel = endDate
+    ? endDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+    : '—';
+
   return (
     <>
       <div className="ws-rail-cta">
@@ -10,26 +46,31 @@ export function RailIntern() {
       <div className="ws-rail-quick">
         <h4>This week</h4>
         <ul>
-          <li className="done">
-            <span className="dot" />
-            Submit audit v2
-          </li>
-          <li className="next">
-            <span className="dot" />
-            Ship moodboards (Fri)
-          </li>
-          <li className="urgent">
-            <span className="dot" />
-            Reply to Mehdi on type pairings
-          </li>
-          <li>
-            <span className="dot" />
-            Pre-fill weekly check-in
-          </li>
-          <li>
-            <span className="dot" />
-            Sync 14:00 Fri — Jitsi
-          </li>
+          {tasksThisWeek.length === 0 && deliverablesThisWeek.length === 0 ? (
+            <li>
+              <span className="dot" />
+              Nothing urgent this week
+            </li>
+          ) : (
+            <>
+              {tasksThisWeek.map((t) => {
+                const daysAway = daysFromNow(t.dueDate);
+                const urgent = daysAway !== null && daysAway <= 2;
+                return (
+                  <li key={t.id} className={urgent ? 'urgent' : 'next'}>
+                    <span className="dot" />
+                    {t.title} {t.dueDate && `(${fmtDayShort(new Date(t.dueDate))})`}
+                  </li>
+                );
+              })}
+              {deliverablesThisWeek.map((d) => (
+                <li key={d.id}>
+                  <span className="dot" />
+                  Ship {d.title}
+                </li>
+              ))}
+            </>
+          )}
         </ul>
       </div>
 
@@ -38,15 +79,15 @@ export function RailIntern() {
         <ul>
           <li>
             <span className="dot" style={{ background: 'var(--success)' }} />
-            2 of 5 deliverables · on time
+            {submittedDelivs.length} of {totalDelivs} deliverables submitted
           </li>
           <li>
-            <span className="dot" style={{ background: 'var(--brand)' }} />
-            32 events logged this internship
+            <span className="dot" style={{ background: 'var(--brand-500)' }} />
+            {eventCount} events logged this internship
           </li>
           <li>
             <span className="dot" style={{ background: 'var(--ink-4)' }} />
-            End-of-internship record · 25 Jul
+            End-of-internship record · {endDateLabel}
           </li>
         </ul>
       </div>

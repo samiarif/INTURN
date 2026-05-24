@@ -1,4 +1,78 @@
-export function RailSupervisor() {
+import type { WorkspaceOverviewData } from '../queries';
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+function hoursAgo(date: Date): number {
+  return Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));
+}
+
+function formatHoursAgo(h: number): string {
+  if (h < 1) return 'just now';
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+/**
+ * Build a sparkline path over the last N weeks of the internship using event
+ * cumulative count. Width = 280, height = 36 (matches .ws-perf-spark).
+ */
+function buildSparkPath(events: WorkspaceOverviewData['events'], weeks: number): { area: string; line: string; tip: { x: number; y: number } } | null {
+  if (events.length === 0) return null;
+  const now = Date.now();
+  const buckets = Array.from({ length: weeks }, () => 0);
+  for (const e of events) {
+    const ageDays = Math.floor((now - new Date(e.createdAt).getTime()) / MS_PER_DAY);
+    const bucket = weeks - 1 - Math.floor(ageDays / 7);
+    if (bucket >= 0 && bucket < weeks) buckets[bucket] += 1;
+  }
+  // Cumulative
+  let total = 0;
+  const cumulative = buckets.map((b) => (total += b));
+  const max = Math.max(1, ...cumulative);
+  const width = 280;
+  const height = 36;
+  const padTop = 4;
+  const points = cumulative.map((c, i) => {
+    const x = (i / (weeks - 1)) * width;
+    const y = padTop + (height - padTop) * (1 - c / max);
+    return { x, y };
+  });
+  const line = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const area = `${line} L ${width},${height} L 0,${height} Z`;
+  return { area, line, tip: points[points.length - 1] };
+}
+
+export function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
+  const intern = data.intern;
+  const internName = intern?.firstName ?? 'the intern';
+
+  // Performance: % of deliverables that have been submitted (proxy for on-time delivery).
+  // Real "on-time" calc would need a deadline per deliverable — Sprint 5 work.
+  const totalDelivs = data.deliverables.length;
+  const submitted = data.deliverables.filter((d) =>
+    ['submitted', 'approved', 'revision-requested'].includes(d.status ?? ''),
+  ).length;
+  const onTimePct = totalDelivs > 0 ? Math.round((submitted / totalDelivs) * 100) : 0;
+
+  // Weeks elapsed in the internship for sparkline domain
+  const weeksDomain = Math.max(2, data.internship?.duration ?? 12);
+  const spark = buildSparkPath(data.events, weeksDomain);
+
+  // "This week" — review-pending deliverables + tasks in review
+  const pendingReviews = data.deliverables
+    .filter((d) => d.status === 'submitted')
+    .slice(0, 2);
+  const tasksInReview = data.tasks.filter((t) => t.status === 'review').slice(0, 2);
+
+  // Quiet flag: hours since last event by the intern
+  const lastInternEvent = intern
+    ? data.events.find((e) => e.actorId === intern.id)
+    : null;
+  const quietHours = lastInternEvent
+    ? hoursAgo(new Date(lastInternEvent.createdAt))
+    : null;
+  const quietFlag = quietHours !== null && quietHours >= 24;
+
   return (
     <>
       <div className="ws-perf">
@@ -8,70 +82,72 @@ export function RailSupervisor() {
         </div>
         <div className="ws-perf-metric">
           <b>
-            100<span style={{ fontSize: 16, marginLeft: 2 }}>%</span>
+            {onTimePct}
+            <span style={{ fontSize: 16, marginLeft: 2 }}>%</span>
           </b>
-          <span className="delta">on-time delivery</span>
+          <span className="delta">deliverables submitted</span>
         </div>
         <div className="ws-perf-bench">
-          Better than <b>78%</b> of interns at this stage. Across 5 weeks.
+          {submitted} of {totalDelivs} sent. {data.events.length} workspace events logged.
         </div>
-        <svg className="ws-perf-spark" viewBox="0 0 280 36" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="sparkGrad" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0" stopColor="#06B6D4" stopOpacity="0.35" />
-              <stop offset="1" stopColor="#06B6D4" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M 0,28 L 30,24 L 60,20 L 90,22 L 120,16 L 150,18 L 180,12 L 210,14 L 240,8 L 270,6 L 280,8 L 280,36 L 0,36 Z"
-            fill="url(#sparkGrad)"
-          />
-          <path
-            d="M 0,28 L 30,24 L 60,20 L 90,22 L 120,16 L 150,18 L 180,12 L 210,14 L 240,8 L 270,6 L 280,8"
-            fill="none"
-            stroke="#06B6D4"
-            strokeWidth="1.5"
-          />
-          <circle cx="270" cy="6" r="3" fill="#06B6D4" />
-        </svg>
+        {spark && (
+          <svg className="ws-perf-spark" viewBox="0 0 280 36" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stopColor="#06B6D4" stopOpacity="0.35" />
+                <stop offset="1" stopColor="#06B6D4" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d={spark.area} fill="url(#sparkGrad)" />
+            <path d={spark.line} fill="none" stroke="#06B6D4" strokeWidth="1.5" />
+            <circle cx={spark.tip.x} cy={spark.tip.y} r="3" fill="#06B6D4" />
+          </svg>
+        )}
       </div>
 
       <div className="ws-rail-cta">
         <h4>Need a sync?</h4>
-        <p>Schedule a check-in. Inturn generates the Jitsi link and adds it to the timeline.</p>
+        <p>Schedule a check-in. Inturn generates the link and adds it to the timeline.</p>
         <button className="ws-btn-w">Schedule check-in →</button>
       </div>
 
       <div className="ws-rail-quick">
         <h4>This week</h4>
         <ul>
-          <li className="urgent">
-            <span className="dot" />
-            Review audit v2 (Yasmine submitted 2h ago)
-          </li>
-          <li className="next">
-            <span className="dot" />
-            Annotate type pairings reply
-          </li>
-          <li>
-            <span className="dot" />
-            Sync 14:00 Fri — Jitsi
-          </li>
-          <li>
-            <span className="dot" />
-            Mid-internship review (week 6)
-          </li>
+          {pendingReviews.length === 0 && tasksInReview.length === 0 ? (
+            <li>
+              <span className="dot" />
+              Nothing waiting on you
+            </li>
+          ) : (
+            <>
+              {pendingReviews.map((d) => (
+                <li key={d.id} className="urgent">
+                  <span className="dot" />
+                  Review {d.title}
+                </li>
+              ))}
+              {tasksInReview.map((t) => (
+                <li key={t.id} className="next">
+                  <span className="dot" />
+                  Annotate {t.title}
+                </li>
+              ))}
+            </>
+          )}
         </ul>
       </div>
 
-      <div className="ws-note">
-        <b>Quiet flag · informational</b>
-        <br />
-        No comments from Yasmine in 26h. Below your average.{' '}
-        <a className="ws-link" style={{ color: '#92400E', textDecoration: 'underline' }}>
-          Send a nudge
-        </a>
-      </div>
+      {quietFlag && quietHours !== null && (
+        <div className="ws-note">
+          <b>Quiet flag · informational</b>
+          <br />
+          No activity from {internName} in {formatHoursAgo(quietHours)}.{' '}
+          <a className="ws-link" style={{ color: '#92400E', textDecoration: 'underline' }}>
+            Send a nudge
+          </a>
+        </div>
+      )}
     </>
   );
 }
