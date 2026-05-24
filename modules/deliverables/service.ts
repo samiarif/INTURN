@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { deliverables } from '@/db/schema';
+import { deliverables, type DeliverableRevision } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
 import {
@@ -12,6 +12,7 @@ export async function submitDeliverable(input: {
   fileUrl: string;
   fileName: string;
   fileType: string | null;
+  note?: string | null;
   actorId: string;
 }) {
   const [current] = await db
@@ -27,7 +28,39 @@ export async function submitDeliverable(input: {
   }
 
   // Bump version on resubmit (revision-requested → submitted = new version)
-  const nextVersion = from === 'revision-requested' ? current.version + 1 : current.version;
+  const isResubmit = from === 'revision-requested';
+  const nextVersion = isResubmit ? current.version + 1 : current.version;
+
+  // Push the just-rejected (or first-submitted) snapshot into history before
+  // overwriting the current row with the new submission. We only push when
+  // there's actually something to keep — never on a fresh draft → submitted
+  // first pass, otherwise we'd end up with a duplicate ghost v1 in history.
+  const history: DeliverableRevision[] = Array.isArray(current.revisionHistory)
+    ? [...current.revisionHistory]
+    : [];
+  if (isResubmit) {
+    const snapshot: DeliverableRevision = {
+      version: current.version,
+      submittedAt: (current.submittedAt ?? current.updatedAt ?? new Date()).toISOString(),
+      submittedBy: input.actorId, // best-effort: pre-row didn't track submittedBy
+      fileUrl: current.fileUrl,
+      fileName: current.fileName,
+      fileType: current.fileType,
+      note: null,
+      status: 'revision-requested',
+    };
+    // If feedback was attached to the previous version, encode it as a review
+    // entry so the version stack can render it inline.
+    if (current.feedback) {
+      snapshot.review = {
+        reviewerId: input.actorId,
+        reviewedAt: (current.updatedAt ?? new Date()).toISOString(),
+        state: 'changes',
+        text: current.feedback,
+      };
+    }
+    history.unshift(snapshot);
+  }
 
   const [updated] = await db
     .update(deliverables)
@@ -36,8 +69,10 @@ export async function submitDeliverable(input: {
       fileUrl: input.fileUrl,
       fileName: input.fileName,
       fileType: input.fileType,
+      feedback: null, // clear stale feedback — it now lives in history
       version: nextVersion,
       submittedAt: new Date(),
+      revisionHistory: history,
       updatedAt: new Date(),
     })
     .where(eq(deliverables.id, input.deliverableId))
@@ -52,6 +87,7 @@ export async function submitDeliverable(input: {
       name: current.title,
       version: nextVersion,
       fileName: input.fileName,
+      note: input.note ?? null,
     },
   });
 

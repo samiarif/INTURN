@@ -7,7 +7,12 @@ export { applications, type Application, type NewApplication } from './applicati
 export { projects, type Project, type NewProject } from './projects';
 export { workspaces, type Workspace, type NewWorkspace } from './workspaces';
 export { tasks, type Task, type NewTask } from './tasks';
-export { deliverables, type Deliverable, type NewDeliverable } from './deliverables';
+export {
+  deliverables,
+  type Deliverable,
+  type NewDeliverable,
+  type DeliverableRevision,
+} from './deliverables';
 export { comments, type Comment, type NewComment } from './comments';
 export {
   internshipBookmarks,

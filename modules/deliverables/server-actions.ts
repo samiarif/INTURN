@@ -35,6 +35,7 @@ export async function submitDeliverableAction(input: {
   fileUrl: string;
   fileName: string;
   fileType?: string;
+  note?: string;
 }) {
   const { session, workspace } = await loadDeliverableContext(input.deliverableId);
   if (session.role !== 'admin' && workspace.internId !== session.user.id) {
@@ -47,6 +48,7 @@ export async function submitDeliverableAction(input: {
     fileUrl: input.fileUrl,
     fileName: input.fileName,
     fileType: input.fileType ?? null,
+    note: input.note?.trim() || null,
     actorId: session.user.id,
   });
   revalidateWorkspace(workspace.id);
