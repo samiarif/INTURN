@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { db } from '@/db';
 import {
   workspaces,
@@ -120,7 +121,9 @@ export async function getWorkspaceOverview(workspaceId: string) {
 
 export type WorkspaceOverviewData = NonNullable<Awaited<ReturnType<typeof getWorkspaceOverview>>>;
 
-export async function getInternSidebarData(internUserId: string): Promise<SidebarData> {
+// React.cache so layout's loadWorkspaceShell + page's loadWorkspacePage
+// share one DB hit per render (same userId arg → cache hit).
+export const getInternSidebarData = cache(async (internUserId: string): Promise<SidebarData> => {
   const myWorkspaces = await db
     .select({
       id: workspaces.id,
@@ -143,7 +146,7 @@ export async function getInternSidebarData(internUserId: string): Promise<Sideba
       live: w.status === 'active',
     })),
   };
-}
+});
 
 export type TimelineRow =
   | {
@@ -217,7 +220,9 @@ export async function getWorkspaceTimeline(workspaceId: string): Promise<Timelin
   return rows;
 }
 
-export async function getSupervisorSidebarData(supervisorUserId: string): Promise<SidebarData> {
+// React.cache so layout's loadWorkspaceShell + page's loadWorkspacePage
+// share one DB hit per render (same userId arg → cache hit).
+export const getSupervisorSidebarData = cache(async (supervisorUserId: string): Promise<SidebarData> => {
   // Query 1: projects where viewer is in supervisorIds (JSONB containment)
   // OR projects whose org is owned by viewer (legacy fallback for orgs created
   // before the supervisorIds plumbing landed).
@@ -283,4 +288,4 @@ export async function getSupervisorSidebarData(supervisorUserId: string): Promis
       };
     }),
   };
-}
+});
