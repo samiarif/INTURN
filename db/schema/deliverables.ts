@@ -1,6 +1,23 @@
-import { pgTable, text, timestamp, uuid, integer, date, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, date, jsonb, index } from 'drizzle-orm/pg-core';
 import { workspaces } from './workspaces';
 import { tasks } from './tasks';
+
+export type DeliverableRevision = {
+  version: number;
+  submittedAt: string; // ISO
+  submittedBy: string; // user id
+  fileUrl: string | null;
+  fileName: string | null;
+  fileType: string | null;
+  note: string | null;
+  status: 'submitted' | 'approved' | 'revision-requested';
+  review?: {
+    reviewerId: string;
+    reviewedAt: string;
+    state: 'approved' | 'changes';
+    text: string;
+  };
+};
 
 export const deliverables = pgTable(
   'deliverables',
@@ -22,6 +39,10 @@ export const deliverables = pgTable(
     version: integer('version').default(1).notNull(),
     submittedAt: timestamp('submitted_at'),
     dueDate: date('due_date'),
+    revisionHistory: jsonb('revision_history')
+      .$type<DeliverableRevision[]>()
+      .default([])
+      .notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
