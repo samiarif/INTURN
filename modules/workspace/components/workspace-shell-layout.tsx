@@ -57,7 +57,7 @@ export async function WorkspaceShellLayout({
           viewer={shell.viewer}
           activeWorkspaceId={shell.workspaceId}
         />
-        <main className="ws-main">{children}</main>
+        <main id="main-content" className="ws-main">{children}</main>
       </div>
       {shell.view === 'intern' && <StuckPill />}
     </div>

@@ -1,4 +1,7 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to content"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

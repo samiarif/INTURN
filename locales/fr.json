@@ -1,4 +1,7 @@
 {
+  "a11y": {
+    "skipToContent": "Aller au contenu"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Une erreur est survenue",
