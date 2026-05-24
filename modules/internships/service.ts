@@ -29,6 +29,9 @@ export async function createInternship(input: {
       language: input.data.language,
       deadline: input.data.deadline,
       customQuestions: input.data.customQuestions,
+      // Sprint 3: deliverables defined here become the workspace
+      // Deliverables tab verbatim — the brief is the contract.
+      deliverables: input.data.deliverables?.filter((d) => d.name.trim().length > 0),
       status: 'draft',
     })
     .returning();

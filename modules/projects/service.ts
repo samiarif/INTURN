@@ -22,6 +22,10 @@ export async function createDraftProject(input: {
   brief?: string;
   supervisorIds: string[];
   actorId: string;
+  startDate?: string;
+  endDate?: string;
+  goals?: string[];
+  phases?: Array<{ name: string; description?: string; fromWeek: number; toWeek: number }>;
 }) {
   const [project] = await db
     .insert(projects)
@@ -31,6 +35,11 @@ export async function createDraftProject(input: {
       slug: input.slug,
       brief: input.brief,
       supervisorIds: input.supervisorIds,
+      startDate: input.startDate,
+      endDate: input.endDate,
+      // Drop empty strings — goal=[''] is essentially "no goal entered".
+      goals: input.goals?.filter((g) => g.trim().length > 0),
+      phases: input.phases?.filter((p) => p.name.trim().length > 0),
       status: 'draft',
     })
     .returning();

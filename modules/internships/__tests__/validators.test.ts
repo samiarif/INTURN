@@ -80,4 +80,25 @@ describe('internshipFormSchema', () => {
       }).success,
     ).toBe(false);
   });
+
+  // Sprint 3 wireframe: deliverables (optional, min 3 enforced in UI, max 10).
+  it('accepts up to 10 deliverables', () => {
+    const deliverables = Array.from({ length: 10 }, (_, i) => ({
+      name: `D${i + 1}`,
+      dueWeek: i + 1,
+    }));
+    expect(internshipFormSchema.safeParse({ ...valid, deliverables }).success).toBe(true);
+  });
+
+  it('rejects more than 10 deliverables', () => {
+    const deliverables = Array.from({ length: 11 }, (_, i) => ({
+      name: `D${i + 1}`,
+      dueWeek: i + 1,
+    }));
+    expect(internshipFormSchema.safeParse({ ...valid, deliverables }).success).toBe(false);
+  });
+
+  it('accepts an empty deliverables array (draft autosave)', () => {
+    expect(internshipFormSchema.safeParse({ ...valid, deliverables: [] }).success).toBe(true);
+  });
 });

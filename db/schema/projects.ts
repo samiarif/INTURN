@@ -15,6 +15,13 @@ export const projects = pgTable(
     supervisorIds: jsonb('supervisor_ids').$type<string[]>().default([]),
     startDate: date('start_date'),
     endDate: date('end_date'),
+    // Sprint 3: 3 short success statements (max 3) shown in every workspace.
+    goals: jsonb('goals').$type<string[]>(),
+    // Sprint 3: optional phase arc (weeks of the project clock). Each phase
+    // is { name, description, fromWeek, toWeek }.
+    phases: jsonb('phases').$type<
+      Array<{ name: string; description?: string; fromWeek: number; toWeek: number }>
+    >(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },

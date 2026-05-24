@@ -44,6 +44,11 @@ export const internships = pgTable(
     deadline: date('deadline'),
     customQuestions:
       jsonb('custom_questions').$type<Array<{ question: string; required: boolean }>>(),
+    // Sprint 3: required deliverables. Min 3, max 10. Each is
+    // { name, description?, dueWeek }. Shown verbatim in the workspace
+    // Deliverables tab post-publish.
+    deliverables:
+      jsonb('deliverables').$type<Array<{ name: string; description?: string; dueWeek: number }>>(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
     // Full-text search vector — maintained by a Postgres trigger from
