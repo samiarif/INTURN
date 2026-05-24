@@ -188,6 +188,19 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Workshop neutrals — dark palette (mirrors the slate scale, inverted) */
+  --bg: oklch(0.18 0.01 240);
+  --surface: oklch(0.22 0.01 240);
+  --surface-muted: oklch(0.25 0.01 240);
+  --border-color: oklch(0.32 0.01 240);
+  --border-strong: oklch(0.40 0.01 240);
+  --ink: oklch(0.95 0.01 240);
+  --ink-2: oklch(0.78 0.01 240);
+  --ink-3: oklch(0.60 0.01 240);
+  --ink-4: oklch(0.50 0.01 240);
+  /* Brand / accent / semantic stay the same — readable on dark already */
+  color-scheme: dark;
 }
 
 @layer base {

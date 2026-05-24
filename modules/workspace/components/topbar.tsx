@@ -2,6 +2,7 @@ import '../workspace.css';
 import { getTranslations } from 'next-intl/server';
 import { cn } from '@/lib/utils';
 import { SidebarTrigger } from '@/components/ui/sidebar-trigger';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export type Crumb = { label: string; bold?: boolean };
 
@@ -17,6 +18,7 @@ export async function WorkspaceTopBar({
   modeChip?: { label: string };
 }) {
   const t = await getTranslations('workspace.topbar');
+  const tA11y = await getTranslations('a11y');
   return (
     <div className="ws-topbar">
       <SidebarTrigger label={t('openSidebar')} />
@@ -51,6 +53,7 @@ export async function WorkspaceTopBar({
         <button className="ws-tb-icon" aria-label={t('help')}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600 }}>?</span>
         </button>
+        <ThemeToggle labelDark={tA11y('switchToDark')} labelLight={tA11y('switchToLight')} />
         <span
           className={cn('ws-tb-avatar', view === 'supervisor' && 'company')}
           aria-label={t('profile')}

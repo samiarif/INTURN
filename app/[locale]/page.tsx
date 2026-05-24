@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export default function LandingPage() {
   const t = useTranslations('landing');
+  const tA11y = useTranslations('a11y');
   const internPoints = t.raw('interns.points') as Array<{ heading: string; body: string }>;
   const companyPoints = t.raw('companies.points') as Array<{ heading: string; body: string }>;
   const howSteps = t.raw('how.steps') as Array<{ step: string; heading: string; body: string }>;
@@ -23,6 +25,7 @@ export default function LandingPage() {
         </nav>
         <div className="flex items-center gap-3">
           <LanguageSwitch />
+          <ThemeToggle labelDark={tA11y('switchToDark')} labelLight={tA11y('switchToLight')} />
           <Link
             href="/sign-in"
             className="text-[14px] font-medium text-[var(--ink-2)] hover:text-[var(--ink)]"

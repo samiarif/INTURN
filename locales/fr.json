@@ -1,6 +1,8 @@
 {
   "a11y": {
-    "skipToContent": "Aller au contenu"
+    "skipToContent": "Aller au contenu",
+    "switchToDark": "Passer en mode sombre",
+    "switchToLight": "Passer en mode clair"
   },
   "common": {
     "loading": "Chargement...",
