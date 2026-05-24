@@ -34,7 +34,7 @@ export function WorkspaceTabBar({
       id: 'comments',
       label: 'Comments',
       count: commentsNew ? String(commentsNew) : undefined,
-      href: null,
+      href: `${basePath}/comments`,
     },
   ];
 
