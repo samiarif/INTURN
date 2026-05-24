@@ -157,16 +157,33 @@ export type TimelineRow =
   | { kind: 'milestone'; id: string; at: Date; label: string };
 
 export async function getWorkspaceTimeline(workspaceId: string): Promise<TimelineRow[]> {
-  const [ws] = await db
-    .select({ id: workspaces.id, startDate: workspaces.startDate, endDate: workspaces.endDate })
-    .from(workspaces)
-    .where(eq(workspaces.id, workspaceId))
-    .limit(1);
+  // Events in the workspace target either the workspace itself OR child
+  // task/deliverable rows. Mirror getWorkspaceOverview's expand-then-IN pattern
+  // so the timeline shows the whole feed, not just workspace-scoped events.
+  const [ws, taskRows, deliverableRows] = await Promise.all([
+    db
+      .select({ id: workspaces.id, startDate: workspaces.startDate, endDate: workspaces.endDate })
+      .from(workspaces)
+      .where(eq(workspaces.id, workspaceId))
+      .limit(1)
+      .then((r) => r[0]),
+    db.select({ id: tasks.id }).from(tasks).where(eq(tasks.workspaceId, workspaceId)),
+    db
+      .select({ id: deliverables.id })
+      .from(deliverables)
+      .where(eq(deliverables.workspaceId, workspaceId)),
+  ]);
+
+  const targetIds = [
+    workspaceId,
+    ...taskRows.map((t) => t.id),
+    ...deliverableRows.map((d) => d.id),
+  ];
 
   const eventRows = await db
     .select()
     .from(events)
-    .where(eq(events.targetId, workspaceId))
+    .where(inArray(events.targetId, targetIds))
     .orderBy(desc(events.createdAt))
     .limit(200);
 
