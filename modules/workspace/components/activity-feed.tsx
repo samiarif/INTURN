@@ -4,10 +4,12 @@ export type ActorLookup = Map<string, { firstName: string | null; lastName: stri
 
 const BULLET_BY_TYPE: Record<string, string> = {
   'deliverable.submitted': 'deliv',
+  'deliverable.approved': 'system',
   'deliverable.revision.requested': 'deliv',
   'comment.added': 'comment',
   'task.moved': 'task',
   'system.checkin.scheduled': 'system',
+  'checkin.submitted': 'system',
   'stuck.signaled': 'stuck',
 };
 
@@ -33,10 +35,19 @@ function describe(event: Event, actors: ActorLookup): React.ReactNode {
   const meta = (event.metadata ?? {}) as Record<string, unknown>;
   const who = actorName(event.actorId, actors);
   switch (event.type) {
-    case 'deliverable.submitted':
+    case 'deliverable.submitted': {
+      const v = meta.version ? ` (v${String(meta.version)})` : '';
       return (
         <>
           <b>{who}</b> submitted <b>{String(meta.name ?? 'a deliverable')}</b>
+          {v}
+        </>
+      );
+    }
+    case 'deliverable.approved':
+      return (
+        <>
+          <b>{who}</b> approved <b>{String(meta.name ?? 'a deliverable')}</b>
         </>
       );
     case 'deliverable.revision.requested':
@@ -46,13 +57,20 @@ function describe(event: Event, actors: ActorLookup): React.ReactNode {
           {meta.note ? ` — "${String(meta.note)}"` : ''}
         </>
       );
-    case 'comment.added':
+    case 'comment.added': {
+      const scopeLabel =
+        meta.scope === 'task'
+          ? 'a task'
+          : meta.scope === 'deliverable'
+            ? 'a deliverable'
+            : 'the workspace';
       return (
         <>
-          <b>{who}</b> commented on <b>{String(meta.task ?? 'a task')}</b>
+          <b>{who}</b> commented on <b>{scopeLabel}</b>
           {meta.text ? ` — "${String(meta.text)}"` : ''}
         </>
       );
+    }
     case 'task.moved':
       return (
         <>
@@ -60,10 +78,28 @@ function describe(event: Event, actors: ActorLookup): React.ReactNode {
           <b>{String(meta.to ?? '')}</b>
         </>
       );
-    case 'system.checkin.scheduled':
+    case 'system.checkin.scheduled': {
+      const when = meta.scheduledAt
+        ? new Date(String(meta.scheduledAt)).toLocaleString('en-US', {
+            weekday: 'short',
+            day: 'numeric',
+            month: 'short',
+            hour: 'numeric',
+            minute: '2-digit',
+          })
+        : meta.for
+          ? String(meta.for)
+          : '';
       return (
         <>
-          Weekly check-in <b>scheduled</b> for {String(meta.for ?? '')}
+          <b>{who}</b> scheduled a check-in {when ? `for ${when}` : ''}
+        </>
+      );
+    }
+    case 'checkin.submitted':
+      return (
+        <>
+          <b>{who}</b> sent the weekly check-in
         </>
       );
     default:

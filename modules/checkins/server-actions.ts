@@ -100,12 +100,11 @@ export async function submitWeeklyCheckInAction(input: {
   }
 
   await recordEvent({
-    type: 'system.checkin.scheduled', // reuse type for now; metadata.kind disambiguates
+    type: 'checkin.submitted',
     actorId: user.id,
     targetType: 'workspace',
     targetId: workspace.id,
     metadata: {
-      kind: 'weekly_checkin',
       shipped,
       stuck,
       next,
