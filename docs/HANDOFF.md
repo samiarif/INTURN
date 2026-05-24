@@ -8,7 +8,7 @@
 - **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace (filtered + bookmarkable) → applies → company reviews + accepts → workspace auto-created with Overview/Tasks/Deliverables/Comments/Activity/Timeline tabs + weekly check-in with AI draft.
 - **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres + Clerk auth + Tailwind v4 + shadcn/ui (new-york) + next-intl 4 (FR default / EN with `as-needed` prefix) + Vitest 4 + Vercel hosting.
 - **Branches**: `sprint-a-ship-credibility` (Sprint A PR open) and `sprint-b-phase-1-closure` (Sprint B + perf hotfix, PR ready). 102/102 tests green. typecheck + lint + build all clean as of last commit `689101c`.
-- **Full audit + 5-sprint ship plan** at `docs/superpowers/plans/2026-05-24-sprint-{a,b}-*.md` and memory file `audit_2026-05-24.md`. Order: A (credibility) → **B (Phase 1 feature closure) [DONE]** → C (i18n + a11y + mobile) → D (engagement: notifications + community + AI) → E (trust: monitoring + legal + billing).
+- **Full audit + 5-sprint ship plan** at `docs/superpowers/plans/2026-05-24-sprint-{a,b,c,d,e}-*.md` and memory file `audit_2026-05-24.md`. Order: A (credibility) → **B (Phase 1 feature closure) [DONE]** → C (i18n + a11y + mobile) → D (engagement: notifications + community + AI) → E (trust: monitoring + legal + billing). All 5 plans now written.
 
 ## Sprint B landed (2026-05-24) + perf hotfix
 
@@ -102,6 +102,29 @@ DATABASE_URL=<prod-url> pnpm tsx -e "
 - Add GitHub repo secrets for CI: `DATABASE_URL_CI`, `CLERK_SECRET_KEY_CI`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_CI`, `CLERK_WEBHOOK_SECRET_CI`, `BLOB_READ_WRITE_TOKEN_CI`
 - Add branch protection on `main` requiring the `verify` check
 - (Optional) `brew install gh && gh auth login` so future PRs can be created via CLI
+
+## Remaining sprint plans (C / D / E)
+
+All three written and committed. Each follows the same subagent-driven-execution format as Sprint A/B plans.
+
+| Sprint | Plan file | Tasks | Effort | Adds |
+|---|---|---|---|---|
+| C | `docs/superpowers/plans/2026-05-24-sprint-c-i18n-a11y-mobile.md` | 8 | 5–7 days | Full workspace i18n FR/EN, mobile responsive workspace.css, `@dnd-kit` for tasks board, a11y pass (skip-to-content, focus rings, labels), dark mode, SEO scaffolding (sitemap/robots/OG/generateMetadata), onboarding progress + resume |
+| D | `docs/superpowers/plans/2026-05-24-sprint-d-engagement-layer.md` | 8 | 7–10 days | Resend + 5 email templates, notification dispatcher + in-app bell, 2 AI assistants (task clarity, intern unblocker), Upstash rate limiting, end-of-internship PDF + share link, community v1 (intern feed + listing discussions, no DMs per brief), admin audit log + moderation + reclamations |
+| E | `docs/superpowers/plans/2026-05-24-sprint-e-trust-polish.md` | 10 | 3–5 days | Sentry, Privacy + Terms (FR/EN scaffolding text), cookie banner, GDPR delete + export, Vercel Analytics consent-gated, `@next/bundle-analyzer`, optional Twilio WhatsApp, per-card Suspense on activity feed, Stripe scaffolding (flag-gated off), N+1 cleanup |
+
+New deps introduced across C/D/E:
+- C: `@dnd-kit/{core,sortable,utilities}`
+- D: `resend`, `@upstash/{ratelimit,redis}`, `@react-pdf/renderer`, `twilio` (optional)
+- E: `@sentry/nextjs`, `@vercel/analytics`, `@next/bundle-analyzer`, `stripe`, `@stripe/stripe-js`
+
+New env vars to provision before each sprint:
+- D: `RESEND_API_KEY`, `EMAIL_FROM`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+- E: `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `TWILIO_*` (optional), `STRIPE_*` (3 keys)
+
+New DB migrations across C/D/E:
+- D: `0005_notifications.sql`, `0006_internship_records.sql`, `0007_community.sql`, `0008_reclamations.sql`
+- E: `0009_subscriptions.sql`
 
 ### Sprint B follow-ups for Sprint C
 - 5 byte-identical loading.tsx files — extract `<PageSkeleton>` component
