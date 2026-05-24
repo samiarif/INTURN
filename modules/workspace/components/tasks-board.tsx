@@ -3,6 +3,25 @@
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import {
+  DndContext,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/db/schema';
 import { TASK_COLUMNS, type TaskStatus } from '@/modules/tasks/state-machine';
 import { moveTaskAction } from '@/modules/tasks/server-actions';
@@ -67,6 +86,158 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
+type CardProps = {
+  task: TaskWithMeta;
+  status: TaskStatus;
+  view: 'intern' | 'supervisor';
+  internName: string;
+  renderDue: (d: DueInfo) => string;
+};
+
+// Each card is sortable within its column. The hook returns drag attributes,
+// listeners, and transform/transition CSS we apply to the wrapper. `data` lets
+// onDragEnd recover the source column without a lookup.
+function SortableTaskCard({ task, status, view, internName, renderDue }: CardProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: task.id, data: { columnId: status } });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    // While dragging, dim the original card (visual cue without DragOverlay).
+    opacity: isDragging ? 0.5 : undefined,
+  };
+
+  const due = formatDue(task);
+  const label = deriveLabel(task.tag);
+  const showNeedsReview = view === 'supervisor' && status === 'review';
+  const cardClass = [
+    'tb-card',
+    due.urgent && 'urgent',
+    due.overdue && 'overdue',
+    showNeedsReview && 'needs-review',
+    status === 'done' && 'done',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <div
+      ref={setNodeRef}
+      id={`task-${task.id}`}
+      className={cardClass}
+      style={style}
+      {...attributes}
+      {...listeners}
+      aria-roledescription="Draggable task"
+    >
+      <div className="tb-card-top">
+        {task.tag && <span className="tb-card-tag">{task.tag}</span>}
+        {label && <span className={`tb-card-label ${label.kind}`}>{label.text}</span>}
+        <button
+          className="tb-card-menu"
+          aria-label="More"
+          type="button"
+          // Stop drag listeners from swallowing the click.
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          ⋯
+        </button>
+      </div>
+      <div className="tb-card-title">{task.title}</div>
+      {task.description && <div className="tb-card-sub">{task.description}</div>}
+      <div className="tb-card-foot">
+        <span
+          className={`tb-card-due ${due.urgent ? 'urgent' : ''} ${due.overdue ? 'overdue' : ''} ${status === 'done' ? 'good' : ''}`}
+        >
+          <span className="cal" />
+          <span>{renderDue(due)}</span>
+        </span>
+        <div className="tb-meta-chips" />
+        <span
+          className="ws-avatar xs who"
+          title={internName}
+          style={{
+            background: 'linear-gradient(135deg,#DDD6FE,#C7D2FE)',
+            color: 'var(--brand-600)',
+          }}
+        >
+          {initials(internName)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+type ColumnProps = {
+  status: TaskStatus;
+  cls: string;
+  label: string;
+  tasks: TaskWithMeta[];
+  view: 'intern' | 'supervisor';
+  internName: string;
+  isOver: boolean;
+  renderDue: (d: DueInfo) => string;
+  addTaskLabel: string;
+};
+
+// A droppable wrapper exposes the column to @dnd-kit so empty columns are valid
+// drop targets. The SortableContext handles cards within. `data.columnId` is
+// how onDragEnd recovers the destination status when dropping on the column
+// itself (vs. on another card).
+function BoardColumn({
+  status,
+  cls,
+  label,
+  tasks,
+  view,
+  internName,
+  isOver,
+  renderDue,
+  addTaskLabel,
+}: ColumnProps) {
+  const { setNodeRef } = useDroppable({ id: `column-${status}`, data: { columnId: status } });
+  const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`tb-col ${cls} ${isOver ? 'tb-col-over' : ''}`}
+      data-column-status={status}
+    >
+      <div className="tb-col-head">
+        <span className="pip" />
+        <span className="name">{label}</span>
+        <span className="count">{tasks.length}</span>
+        <button className="menu" aria-label="Column menu" type="button">
+          ⋯
+        </button>
+      </div>
+      <div className="tb-col-list">
+        <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
+          {tasks.map((task) => (
+            <SortableTaskCard
+              key={task.id}
+              task={task}
+              status={status}
+              view={view}
+              internName={internName}
+              renderDue={renderDue}
+            />
+          ))}
+        </SortableContext>
+        {tasks.length === 0 && <div className="tb-card-ghost">Drop here to move</div>}
+      </div>
+      {view === 'supervisor' && (
+        <button className="tb-col-add" type="button">
+          <span className="plus">+</span>
+          <span>{addTaskLabel}</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function TasksBoard({
   tasks,
   view,
@@ -80,12 +251,17 @@ export function TasksBoard({
   const tCols = useTranslations('workspace.tasksBoard.columns');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dragOverCol, setDragOverCol] = useState<TaskStatus | null>(null);
+  const [activeColumn, setActiveColumn] = useState<TaskStatus | null>(null);
+  const [overColumn, setOverColumn] = useState<TaskStatus | null>(null);
   const [optimistic, setOptimistic] = useState<Record<string, TaskStatus>>({});
 
-  // Render translated due text. Not every kind is in the plan namespace; the
-  // remaining kinds keep their English source until the namespace expands.
+  // PointerSensor with 8px distance threshold keeps clicks/taps from being
+  // mistaken for drags. KeyboardSensor enables Tab/Space/arrow-key DnD.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
   function renderDue(d: DueInfo): string {
     switch (d.kind) {
       case 'closed':
@@ -109,34 +285,55 @@ export function TasksBoard({
     return (optimistic[task.id] ?? task.status ?? 'todo') as TaskStatus;
   }
 
-  function onDragStart(e: React.DragEvent, taskId: string) {
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', taskId);
-    setDraggingId(taskId);
+  function onDragStart(event: DragStartEvent) {
+    const data = event.active.data.current as { columnId?: TaskStatus } | undefined;
+    setActiveColumn(data?.columnId ?? null);
+    setOverColumn(data?.columnId ?? null);
   }
 
-  function onDragOver(e: React.DragEvent, status: TaskStatus) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverCol(status);
+  function onDragOver(event: DragOverEvent) {
+    const { over } = event;
+    if (!over) {
+      setOverColumn(null);
+      return;
+    }
+    const overData = over.data.current as { columnId?: TaskStatus } | undefined;
+    let to: TaskStatus | null = overData?.columnId ?? null;
+    if (!to && typeof over.id === 'string' && over.id.startsWith('column-')) {
+      to = over.id.slice('column-'.length) as TaskStatus;
+    }
+    setOverColumn(to);
   }
 
-  function onDrop(e: React.DragEvent, status: TaskStatus) {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData('text/plain');
-    setDraggingId(null);
-    setDragOverCol(null);
-    if (!taskId) return;
-    const task = tasks.find((t) => t.id === taskId);
+  function onDragEnd(event: DragEndEvent) {
+    setActiveColumn(null);
+    setOverColumn(null);
+    const { active, over } = event;
+    if (!over) return;
+
+    const taskId = String(active.id);
+    const task = tasks.find((tk) => tk.id === taskId);
     if (!task) return;
-    if (statusOf(task) === status) return;
-    setOptimistic((m) => ({ ...m, [taskId]: status }));
+
+    // `over` may be a card or a column droppable. Both carry `columnId` in
+    // their data; fall back to parsing the id for the `column-*` form.
+    const overData = over.data.current as { columnId?: TaskStatus } | undefined;
+    const fromIdPrefix =
+      typeof over.id === 'string' && over.id.startsWith('column-')
+        ? (over.id.slice('column-'.length) as TaskStatus)
+        : null;
+    const toStatus: TaskStatus | null = overData?.columnId ?? fromIdPrefix;
+    if (!toStatus) return;
+
+    if (statusOf(task) === toStatus) return;
+
+    const target: TaskStatus = toStatus;
+    setOptimistic((m) => ({ ...m, [taskId]: target }));
     startTransition(async () => {
       try {
-        await moveTaskAction({ taskId, to: status });
+        await moveTaskAction({ taskId, to: target });
         router.refresh();
       } catch {
-        // Revert on failure
         setOptimistic((m) => {
           const next = { ...m };
           delete next[taskId];
@@ -146,25 +343,23 @@ export function TasksBoard({
     });
   }
 
-  function onDragEnd() {
-    setDraggingId(null);
-    setDragOverCol(null);
+  function onDragCancel() {
+    setActiveColumn(null);
+    setOverColumn(null);
   }
 
-  const needsReviewCount = tasks.filter((t) => statusOf(t) === 'review').length;
-  const firstReviewTask = tasks.find((t) => statusOf(t) === 'review');
+  const needsReviewCount = tasks.filter((task) => statusOf(task) === 'review').length;
+  const firstReviewTask = tasks.find((task) => statusOf(task) === 'review');
 
   // Date.now is read once per render to bucket due dates. Lint flags Date.now
   // as impure; intentional here — we want fresh values across renders.
   // eslint-disable-next-line react-hooks/purity
   const renderTime = Date.now();
-  const dueThisWeekCount = tasks.filter((t) => {
-    if (!t.dueDate || t.status === 'done') return false;
-    const days = (new Date(t.dueDate).getTime() - renderTime) / 86400_000;
+  const dueThisWeekCount = tasks.filter((task) => {
+    if (!task.dueDate || task.status === 'done') return false;
+    const days = (new Date(task.dueDate).getTime() - renderTime) / 86400_000;
     return days >= 0 && days <= 7;
   }).length;
-  // useMemo lint silence (the import is still useful if we add more memos later)
-  void useMemo;
 
   return (
     <div className="ws-col-main" style={{ gap: 0 }}>
@@ -216,96 +411,50 @@ export function TasksBoard({
         </div>
       </div>
 
-      <div className={`tb-board ${pending ? 'opacity-90' : ''}`}>
-        {TASK_COLUMNS.map((col) => {
-          const colTasks = tasks.filter((task) => statusOf(task) === col.status);
-          return (
-            <div
-              key={col.status}
-              className={`tb-col ${col.cls} ${dragOverCol === col.status ? 'tb-col-over' : ''}`}
-              onDragOver={(e) => onDragOver(e, col.status)}
-              onDragLeave={() => setDragOverCol(null)}
-              onDrop={(e) => onDrop(e, col.status)}
-            >
-              <div className="tb-col-head">
-                <span className="pip" />
-                <span className="name">{tCols(COLUMN_LABEL_KEY[col.status])}</span>
-                <span className="count">{colTasks.length}</span>
-                <button className="menu" aria-label="Column menu" type="button">
-                  ⋯
-                </button>
-              </div>
-              <div className="tb-col-list">
-                {colTasks.map((task) => {
-                  const due = formatDue(task);
-                  const label = deriveLabel(task.tag);
-                  const showNeedsReview =
-                    view === 'supervisor' && statusOf(task) === 'review';
-                  const cardClass = [
-                    'tb-card',
-                    due.urgent && 'urgent',
-                    due.overdue && 'overdue',
-                    showNeedsReview && 'needs-review',
-                    statusOf(task) === 'done' && 'done',
-                    draggingId === task.id && 'opacity-50',
-                  ]
-                    .filter(Boolean)
-                    .join(' ');
-                  return (
-                    <div
-                      key={task.id}
-                      id={`task-${task.id}`}
-                      className={cardClass}
-                      draggable
-                      onDragStart={(e) => onDragStart(e, task.id)}
-                      onDragEnd={onDragEnd}
-                    >
-                      <div className="tb-card-top">
-                        {task.tag && <span className="tb-card-tag">{task.tag}</span>}
-                        {label && (
-                          <span className={`tb-card-label ${label.kind}`}>{label.text}</span>
-                        )}
-                        <button className="tb-card-menu" aria-label="More" type="button">
-                          ⋯
-                        </button>
-                      </div>
-                      <div className="tb-card-title">{task.title}</div>
-                      {task.description && (
-                        <div className="tb-card-sub">{task.description}</div>
-                      )}
-                      <div className="tb-card-foot">
-                        <span
-                          className={`tb-card-due ${due.urgent ? 'urgent' : ''} ${due.overdue ? 'overdue' : ''} ${statusOf(task) === 'done' ? 'good' : ''}`}
-                        >
-                          <span className="cal" />
-                          <span>{renderDue(due)}</span>
-                        </span>
-                        <div className="tb-meta-chips" />
-                        <span
-                          className="ws-avatar xs who"
-                          title={internName}
-                          style={{ background: 'linear-gradient(135deg,#DDD6FE,#C7D2FE)', color: 'var(--brand-600)' }}
-                        >
-                          {initials(internName)}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-                {colTasks.length === 0 && (
-                  <div className="tb-card-ghost">Drop here to move</div>
-                )}
-              </div>
-              {view === 'supervisor' && (
-                <button className="tb-col-add" type="button">
-                  <span className="plus">+</span>
-                  <span>{t('addTask')}</span>
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={onDragStart}
+        onDragOver={onDragOver}
+        onDragEnd={onDragEnd}
+        onDragCancel={onDragCancel}
+        accessibility={{
+          screenReaderInstructions: {
+            draggable:
+              'To pick up a task, press space or enter. Use the arrow keys to move the task between columns. Press space or enter again to drop the task, or press escape to cancel.',
+          },
+          announcements: {
+            onDragStart: ({ active }) => `Picked up task ${String(active.id)}.`,
+            onDragOver: ({ active, over }) =>
+              over ? `Task ${String(active.id)} is over ${String(over.id)}.` : `Task ${String(active.id)} is no longer over a droppable area.`,
+            onDragEnd: ({ active, over }) =>
+              over
+                ? `Task ${String(active.id)} was dropped over ${String(over.id)}.`
+                : `Task ${String(active.id)} was dropped.`,
+            onDragCancel: ({ active }) => `Dragging task ${String(active.id)} was cancelled.`,
+          },
+        }}
+      >
+        <div className={`tb-board ${pending ? 'opacity-90' : ''}`}>
+          {TASK_COLUMNS.map((col) => {
+            const colTasks = tasks.filter((task) => statusOf(task) === col.status);
+            return (
+              <BoardColumn
+                key={col.status}
+                status={col.status}
+                cls={col.cls}
+                label={tCols(COLUMN_LABEL_KEY[col.status])}
+                tasks={colTasks}
+                view={view}
+                internName={internName}
+                isOver={overColumn === col.status && activeColumn !== col.status}
+                renderDue={renderDue}
+                addTaskLabel={t('addTask')}
+              />
+            );
+          })}
+        </div>
+      </DndContext>
     </div>
   );
 }
