@@ -1,4 +1,5 @@
 import type { WorkspaceOverviewData } from '../queries';
+import { ScheduleCheckInButton } from './schedule-check-in';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -108,7 +109,7 @@ export function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
       <div className="ws-rail-cta">
         <h4>Need a sync?</h4>
         <p>Schedule a check-in. Inturn generates the link and adds it to the timeline.</p>
-        <button className="ws-btn-w">Schedule check-in →</button>
+        <ScheduleCheckInButton workspaceId={data.workspace.id} />
       </div>
 
       <div className="ws-rail-quick">

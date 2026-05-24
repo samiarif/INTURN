@@ -1,4 +1,5 @@
 import type { WorkspaceOverviewData } from '../queries';
+import { ScheduleCheckInButton } from './schedule-check-in';
 
 function daysFromNow(date: string | null): number | null {
   if (!date) return null;
@@ -42,7 +43,7 @@ export function RailIntern({ data }: { data: WorkspaceOverviewData }) {
       <div className="ws-rail-cta">
         <h4>Weekly check-in</h4>
         <p>Due Friday. Inturn drafts it from your activity — you edit and send.</p>
-        <button className="ws-btn-w">Draft check-in →</button>
+        <ScheduleCheckInButton workspaceId={data.workspace.id} />
       </div>
 
       <div className="ws-rail-quick">
