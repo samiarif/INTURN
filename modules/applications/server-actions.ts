@@ -1,6 +1,7 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getProfileByUserId, getUserByClerkId } from '@/modules/profiles/queries';
 import { getProjectById } from '@/modules/projects/queries';
@@ -57,6 +58,11 @@ export async function applyToInternshipAction(internshipId: string, formData: Fo
     actorId: user.id,
   });
 
+  // Dashboard + applications list show this new row. Without these, the
+  // RSC cache holds the pre-apply snapshot and shows "No applications yet".
+  revalidatePath('/intern/dashboard');
+  revalidatePath('/intern/applications');
+
   redirect(`/intern/applications/${created.id}`);
 }
 
@@ -72,6 +78,12 @@ export async function transitionApplicationStatusAction(input: {
     to: input.to,
     actorId: user.id,
   });
+  // Company inbox + applicant intern's dashboard/list all change.
+  revalidatePath(`/company/projects/${input.projectId}/applications`);
+  revalidatePath(`/company/projects/${input.projectId}/applications/${input.applicationId}`);
+  revalidatePath('/intern/dashboard');
+  revalidatePath('/intern/applications');
+  revalidatePath(`/intern/applications/${input.applicationId}`);
 }
 
 export async function updateInternalNotesAction(input: {
@@ -85,6 +97,7 @@ export async function updateInternalNotesAction(input: {
     applicationId: input.applicationId,
     notes: input.notes,
   });
+  revalidatePath(`/company/projects/${input.projectId}/applications/${input.applicationId}`);
 }
 
 export async function acceptApplicationAction(input: {
@@ -97,5 +110,11 @@ export async function acceptApplicationAction(input: {
     applicationId: input.applicationId,
     actorId: user.id,
   });
+  // Workspace was just created; dashboards on both sides need refresh.
+  revalidatePath('/intern/dashboard');
+  revalidatePath('/intern/applications');
+  revalidatePath('/company/dashboard');
+  revalidatePath(`/company/projects/${input.projectId}`);
+  revalidatePath(`/company/projects/${input.projectId}/applications`);
   redirect(`/company/workspaces/${result.workspace.id}`);
 }
