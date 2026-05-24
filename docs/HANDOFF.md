@@ -1,4 +1,4 @@
-# inturn — Session Handoff (2026-05-24)
+# inturn — Session Handoff (2026-05-24, updated post Sprint A)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
@@ -7,7 +7,41 @@
 - **Live in prod** at https://inturn.vercel.app. Custom domain inturn-hub.com **not yet wired**.
 - **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace → applies → company reviews + accepts → workspace auto-created → intern + supervisor collaborate (tasks board, deliverables, comments, weekly check-in with AI draft).
 - **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres + Clerk auth + Tailwind v4 + shadcn/ui (new-york) + next-intl 4 (FR default / EN with `as-needed` prefix) + Vitest 4 + Vercel hosting.
-- **Branch**: `main`. 92/92 tests green. typecheck + lint + build all clean as of last commit `16fffcf`.
+- **Branch**: `sprint-a-ship-credibility` (ready to merge to `main`). 100/100 tests green. typecheck + lint + build all clean as of last commit `2ab2178`.
+- **Full audit + 5-sprint ship plan** at `docs/superpowers/plans/2026-05-24-sprint-a-ship-credibility.md` (Sprint A) and memory file `audit_2026-05-24.md`. Order: A (credibility) → B (Phase 1 feature closure) → C (i18n + a11y + mobile) → D (engagement: notifications + community + AI) → E (trust: monitoring + legal + billing).
+
+## Sprint A landed (2026-05-24)
+
+12 commits on branch `sprint-a-ship-credibility`. Goal: ship the credibility-blocker fixes from the full audit so the platform is safe and CI-gated before design-partner onboarding.
+
+```
+24d78c9 docs: add Sprint A plan + previously-untracked project brief
+e3ad97d ci: add typecheck + lint + test + build workflow
+737129e ci: pin Node via .nvmrc and pnpm via packageManager field
+45a9d53 feat(security): MIME + magic-byte allowlist on /api/upload
+c01afa0 fix(security): drop SVG from logo allowlist (XSS), add boundary test
+02fa3ba chore: allow next/image to load Vercel Blob + Clerk avatars
+069fbd7 chore: pin remotePatterns search to '' to block cache-bust query strings
+89ff5dd chore(security): document svix tolerance, narrow replay window
+5d6a25b feat(db): unique apps per (internship,intern) + inbox/comments compound indexes
+d3c8804 fix(db): align comments compound index ASC/DESC with migration
+4a296a1 feat: add /api/health endpoint with DB ping
+2ab2178 fix(security): don't leak DB error message from /api/health; log server-side
+```
+
+### Highlights
+- **CI**: `.github/workflows/ci.yml` runs typecheck + lint + test + build on PRs and pushes to main. Node pinned via `.nvmrc` (24), pnpm via `packageManager` field (`pnpm@10.33.2`). GitHub repo secrets `*_CI` still need adding via UI (one-time); branch-protection on `main` requiring `verify` check also a UI step.
+- **Upload hardening (`/api/upload`)**: `lib/uploads/allowlist.ts` validates per-kind MIME + magic bytes + size cap (cv/registry 8MB, logo 2MB, deliverable 25MB). SVG dropped from `logo` (XSS bypass — Vercel Blob serves SVG with `<script>` as `image/svg+xml`). 8 tests cover real PDF accepted, EXE-as-PDF rejected as `content_mismatch`, MIME-not-for-kind, oversize boundary, exact-size boundary.
+- **Image optimization**: `next.config.ts` `images.remotePatterns` allows `**.public.blob.vercel-storage.com` + `img.clerk.com`, both `https` + `pathname: '/**'` + `search: ''` (blocks cache-bust query strings).
+- **Webhook**: documented svix's built-in 5-min `svix-timestamp` tolerance and updated error message to mention stale timestamps. Svix 1.94 doesn't expose tolerance as a configurable option (it's hardcoded in standardwebhooks 1.0); full svix-id idempotency dedup remains a Sprint E task.
+- **DB hygiene**: migration `0002_applications_unique_dedupe.sql` adds `UNIQUE(internship_id, applicant_id)` on applications (with idempotent oldest-wins dedupe — pre-flight confirmed 0 dupes in dev) + compound index `applications(internship_id, status)` for inbox + `comments(workspace_id, created_at DESC)` for thread scans. All idempotent, transactional.
+- **Health probe**: `/api/health` does a `SELECT 1` and returns `{ status, commit, env, latencyMs }` or 503 + machine code `db_unreachable` (full error logged server-side, never leaked to caller). Public route (added to `proxy.ts` matcher).
+
+### Known follow-ups out of Sprint A
+- Logo upload cap dropped 5MB → 2MB. Coordinate with anyone whose flow previously uploaded 3-5MB logos.
+- `/api/health` is unauthenticated and has no rate limit. Vercel Firewall or Upstash Ratelimit will be Sprint B/D work.
+- API error shapes are inconsistent: `/api/upload` returns `{ error: code }`, `/api/health` returns `{ status, code, ... }`, webhook returns plain text. Sprint B should standardize.
+- GitHub Actions branch protection + CI secrets are manual UI tasks (not in scope for the implementer).
 
 ## What just shipped (the perf audit pass — 2026-05-24)
 
@@ -55,7 +89,7 @@ Ranked by impact × risk.
 3. **i18n workspace UI** — task `POLISH-T11` / `S3-T10` still pending. The workspace UI is hardcoded English strings; needs `next-intl` extraction. Big surface area (~12 files).
 
 ### Engineering hygiene
-4. **GitHub Actions CI** — no automated typecheck/lint/test on push. Should be a 30-min PR adding `.github/workflows/ci.yml` (pnpm install → typecheck + lint + test in parallel).
+4. **GitHub Actions CI** — ✅ DONE in Sprint A (`e3ad97d`, `737129e`). Branch protection + repo secrets still to add via UI.
 5. **Suspense per-card streaming** — the current Suspense boundary wraps the *whole* body. The activity feed is the slowest single query — could go in its own nested Suspense so cards appear earlier. Diminishing returns; the COUNT-based MHead already removes the slowest tab-render shift.
 6. **Test coverage for queries layer** — module services are tested but the queries.ts files (the SQL boundary) aren't. Worth at least a smoke test per critical query.
 
@@ -66,9 +100,12 @@ Ranked by impact × risk.
 10. **Search across marketplace** — current `ilike(title, %q%)` is fine for hundreds; needs proper FTS (Postgres `tsvector`) before low thousands.
 
 ### Production readiness
-11. **Error monitoring** — no Sentry / equivalent wired up. Vercel's built-in errors panel exists but no alerting.
-12. **Rate limiting on `/api/upload` and `/api/webhooks/clerk`** — neither is rate-limited. Vercel BotID or Upstash Ratelimit would do it.
-13. **Image optimization for blob URLs** — uploaded logos/CVs served as-is. Wire `next/image` `remotePatterns` for Vercel Blob hostnames.
+11. **Error monitoring** — no Sentry / equivalent wired up. Vercel's built-in errors panel exists but no alerting. Sprint E.
+12. **Rate limiting on `/api/upload`, `/api/webhooks/clerk`, `/api/health`, AI endpoints** — none are rate-limited. Vercel BotID, `@vercel/firewall`, or Upstash Ratelimit. Sprint D includes the AI-endpoint rate limit at minimum.
+13. **Image optimization for blob URLs** — ✅ DONE in Sprint A (`02fa3ba`, `069fbd7`). `next/image` can now load Vercel Blob + Clerk avatars; remaining work is to swap `<img>` → `next/image` where used (Sprint C).
+14. **Upload safety** — ✅ DONE in Sprint A (`45a9d53`, `c01afa0`). MIME + magic-byte + per-kind size cap; SVG dropped from logos.
+15. **DB hygiene** — ✅ Sprint A added unique constraint on applications + compound indexes (`5d6a25b`, `d3c8804`); `users.role` notNull-default deliberately deferred (would break role-selection flow without a refactor).
+16. **Health endpoint** — ✅ DONE in Sprint A (`4a296a1`, `2ab2178`). `/api/health` for UptimeRobot / BetterStack hookup.
 
 ## What's next — recommended order
 
