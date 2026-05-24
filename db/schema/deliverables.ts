@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, date } from 'drizzle-orm/pg-core';
 import { workspaces } from './workspaces';
 import { tasks } from './tasks';
 
@@ -17,6 +17,9 @@ export const deliverables = pgTable('deliverables', {
     enum: ['draft', 'submitted', 'approved', 'revision-requested'],
   }).default('draft'),
   feedback: text('feedback'),
+  version: integer('version').default(1).notNull(),
+  submittedAt: timestamp('submitted_at'),
+  dueDate: date('due_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
