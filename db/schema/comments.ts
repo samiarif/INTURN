@@ -27,6 +27,7 @@ export const comments = pgTable(
     index('comments_task_idx').on(table.taskId),
     index('comments_deliverable_idx').on(table.deliverableId),
     index('comments_created_idx').on(table.createdAt),
+    index('comments_workspace_created_idx').on(table.workspaceId, table.createdAt),
   ],
 );
 

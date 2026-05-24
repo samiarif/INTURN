@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, jsonb, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, jsonb, index, unique } from 'drizzle-orm/pg-core';
 import { users } from './users';
 import { internships } from './internships';
 
@@ -24,6 +24,8 @@ export const applications = pgTable(
   (table) => [
     index('applications_internship_idx').on(table.internshipId),
     index('applications_applicant_idx').on(table.applicantId),
+    index('applications_internship_status_idx').on(table.internshipId, table.status),
+    unique('applications_internship_applicant_unique').on(table.internshipId, table.applicantId),
   ],
 );
 
