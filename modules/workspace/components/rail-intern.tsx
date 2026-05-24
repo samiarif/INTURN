@@ -10,7 +10,9 @@ function fmtDayShort(date: Date): string {
 }
 
 export function RailIntern({ data }: { data: WorkspaceOverviewData }) {
-  // "This week" — items due in the next 7 days
+  // "This week" — items due in the next 7 days. Server component; Date.now()
+  // runs once per request, which is exactly what we want.
+  // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
   const inAWeek = now + 7 * 86400_000;
   const tasksThisWeek = data.tasks
