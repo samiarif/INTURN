@@ -1,9 +1,13 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { inArray } from 'drizzle-orm';
+import { db } from '@/db';
+import { organizations } from '@/db/schema';
 import { getUserByClerkId } from '@/modules/profiles/queries';
 import { getApplicationsByApplicant } from '@/modules/applications/queries';
+import { orgMark } from '@/lib/avatar';
 
 const STATUS_STYLE: Record<string, string> = {
   new: 'bg-[#EFF6FF] text-[#1D4ED8]',
@@ -14,16 +18,35 @@ const STATUS_STYLE: Record<string, string> = {
   rejected: 'bg-[#FEF2F2] text-[#B91C1C]',
 };
 
+const STATUS_KEYS = new Set(['new', 'reviewed', 'shortlisted', 'interview', 'accepted', 'rejected']);
+
 export default async function Page() {
   const { userId: clerkId } = await auth();
   if (!clerkId) redirect('/sign-in');
   const user = await getUserByClerkId(clerkId);
   if (!user) redirect('/sign-in');
 
-  const [rows, tApps] = await Promise.all([
+  const [rows, tApps, locale] = await Promise.all([
     getApplicationsByApplicant(user.id),
     getTranslations('applications'),
+    getLocale(),
   ]);
+
+  // The existing query doesn't return the organization. Fetch the small
+  // set of org rows we need to render the mark + eyebrow without
+  // changing the shared query signature.
+  const orgIds = [...new Set(rows.map((r) => r.internship.organizationId))];
+  const orgs =
+    orgIds.length > 0
+      ? await db.select().from(organizations).where(inArray(organizations.id, orgIds))
+      : [];
+  const orgsById = new Map(orgs.map((o) => [o.id, o]));
+
+  const dateFmt = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 
   return (
     <div className="max-w-3xl mx-auto p-8">
@@ -38,46 +61,85 @@ export default async function Page() {
           {tApps('tabSaved')}
         </Link>
       </nav>
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">My applications</h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-8">
-        {rows.length === 0 ? 'No applications yet.' : `${rows.length} application${rows.length === 1 ? '' : 's'}`}
-      </p>
-      {rows.length === 0 ? (
-        <div className="border border-dashed border-[var(--border-color)] rounded-md p-12 text-center">
-          <p className="text-[var(--ink-2)] font-medium mb-2">Start applying</p>
-          <p className="text-[var(--ink-3)] text-sm mb-4">
-            Browse internships and apply with one click.
+
+      <div className="flex items-end justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight mb-1.5">{tApps('title')}</h1>
+          <p className="text-[13.5px] text-[var(--ink-3)]">
+            {rows.length === 0 ? tApps('subtitleNone') : tApps('subtitleCount', { n: rows.length })}
           </p>
+        </div>
+        {rows.length > 0 && (
+          <span className="font-mono text-[10.5px] tracking-[0.06em] uppercase text-[var(--ink-3)]">
+            {tApps('countLabel')} · {rows.length}
+          </span>
+        )}
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="border border-dashed border-[var(--border-color)] rounded-lg p-12 text-center bg-[var(--surface)]">
+          <p className="text-[var(--ink-2)] font-medium mb-2">{tApps('emptyHeading')}</p>
+          <p className="text-[var(--ink-3)] text-sm mb-4">{tApps('emptyBody')}</p>
           <Link
             href="/marketplace"
             className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
           >
-            Browse internships →
+            {tApps('browseCta')}
           </Link>
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-md overflow-hidden bg-[var(--surface)]">
-          {rows.map(({ application, internship }) => (
-            <Link
-              key={application.id}
-              href={`/intern/applications/${application.id}`}
-              className="block border-b border-[var(--border-color)] last:border-b-0 px-4 py-3 hover:bg-[var(--surface-muted)]"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">{internship.title}</div>
+        <div className="flex flex-col gap-2">
+          {rows.map(({ application, internship }) => {
+            const status = application.status ?? 'new';
+            const org = orgsById.get(internship.organizationId);
+            const { initials, tone } = orgMark(org?.name ?? '??', internship.organizationId);
+            const statusLabel = STATUS_KEYS.has(status)
+              ? tApps(
+                  `status.${status as 'new' | 'reviewed' | 'shortlisted' | 'interview' | 'accepted' | 'rejected'}`,
+                )
+              : status;
+            return (
+              <Link
+                key={application.id}
+                href={`/intern/applications/${application.id}`}
+                className="group flex items-center gap-4 border border-[var(--border-color)] bg-[var(--surface)] rounded-lg px-4 py-3.5 hover:border-[var(--border-strong)] hover:shadow-sm transition-all"
+              >
+                <span
+                  aria-hidden
+                  className="inline-flex items-center justify-center w-10 h-10 rounded-md font-mono text-[12px] font-bold flex-shrink-0 border"
+                  style={{ background: tone.bg, color: tone.fg, borderColor: tone.border }}
+                >
+                  {initials}
+                </span>
+                <div className="min-w-0 flex-1">
+                  {org?.name && (
+                    <div className="font-mono text-[10.5px] text-[var(--ink-3)] uppercase tracking-[0.06em] mb-0.5 truncate">
+                      {org.name}
+                    </div>
+                  )}
+                  <div className="font-medium text-[14.5px] text-[var(--ink)] tracking-tight truncate">
+                    {internship.title}
+                  </div>
                   <div className="text-[12px] text-[var(--ink-3)] mt-0.5">
-                    Applied {new Date(application.createdAt).toLocaleDateString()}
+                    {tApps('appliedOn', {
+                      date: dateFmt.format(new Date(application.createdAt)),
+                    })}
                   </div>
                 </div>
                 <span
-                  className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[application.status ?? 'new']}`}
+                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10.5px] font-mono font-semibold tracking-[0.06em] uppercase ${STATUS_STYLE[status] ?? STATUS_STYLE.new}`}
                 >
-                  {application.status}
+                  {statusLabel}
                 </span>
-              </div>
-            </Link>
-          ))}
+                <span
+                  aria-hidden
+                  className="text-[var(--ink-4)] group-hover:text-[var(--brand-500)] group-hover:translate-x-0.5 transition-all text-[18px] leading-none"
+                >
+                  {'›'}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
