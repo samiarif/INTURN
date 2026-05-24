@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { WorkspaceOverviewData } from '../queries';
 import { ScheduleCheckInButton } from './schedule-check-in';
 
@@ -42,7 +43,19 @@ export function RailIntern({ data }: { data: WorkspaceOverviewData }) {
     <>
       <div className="ws-rail-cta">
         <h4>Weekly check-in</h4>
-        <p>Due Friday. Inturn drafts it from your activity — you edit and send.</p>
+        <p>Inturn drafts it from your activity — you edit and send.</p>
+        <Link
+          href={`/intern/workspaces/${data.workspace.id}/check-in`}
+          className="ws-btn-w"
+          style={{ textDecoration: 'none' }}
+        >
+          Draft check-in →
+        </Link>
+      </div>
+
+      <div className="ws-rail-cta" style={{ background: 'linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)' }}>
+        <h4>Schedule a sync</h4>
+        <p>Pick a time. Inturn generates the Jitsi link and adds it to the timeline.</p>
         <ScheduleCheckInButton workspaceId={data.workspace.id} />
       </div>
 
