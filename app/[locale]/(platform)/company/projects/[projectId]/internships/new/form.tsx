@@ -174,6 +174,7 @@ export function PostInternshipForm({ projectId }: { projectId: string }) {
                   setQuestions(questions.map((qq, j) => (j === i ? { ...qq, question: e.target.value } : qq)))
                 }
                 placeholder="Question text"
+                aria-label="Question text"
               />
               <label className="inline-flex items-center gap-2 text-[13px] text-[var(--ink-2)]">
                 <input

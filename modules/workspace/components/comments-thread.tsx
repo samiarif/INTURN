@@ -73,7 +73,11 @@ export function CommentsThread({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div className="ws-card" style={{ padding: 16 }}>
+        <label htmlFor="comment-body" className="sr-only">
+          {placeholder ?? t('placeholder')}
+        </label>
         <Textarea
+          id="comment-body"
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={3}

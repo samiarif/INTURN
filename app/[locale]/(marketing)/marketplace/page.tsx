@@ -129,14 +129,22 @@ export default async function Page({
 
       <form className="space-y-3 mb-8" action="/marketplace">
         <div className="flex flex-wrap items-center gap-3">
+          <label htmlFor="marketplace-q" className="sr-only">
+            {t('searchPlaceholder')}
+          </label>
           <input
+            id="marketplace-q"
             type="search"
             name="q"
             defaultValue={search ?? ''}
             placeholder={t('searchPlaceholder')}
             className="flex-1 min-w-[240px] h-10 px-3 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-sm"
           />
+          <label htmlFor="marketplace-skill" className="sr-only">
+            {t('skillPlaceholder')}
+          </label>
           <input
+            id="marketplace-skill"
             type="text"
             name="skill"
             defaultValue={skill ?? ''}
@@ -151,7 +159,11 @@ export default async function Page({
           </button>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-sm">
+          <label htmlFor="marketplace-sector" className="sr-only">
+            {t('anySector')}
+          </label>
           <select
+            id="marketplace-sector"
             name="sector"
             defaultValue={sector ?? ''}
             className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]"
@@ -161,17 +173,26 @@ export default async function Page({
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
-          <select name="loc" defaultValue={locationType ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
+          <label htmlFor="marketplace-loc" className="sr-only">
+            {t('anyLocation')}
+          </label>
+          <select id="marketplace-loc" name="loc" defaultValue={locationType ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
             {LOCATION_VALUES.map((v) => (
               <option key={v} value={v}>{locationLabels[v]}</option>
             ))}
           </select>
-          <select name="dur" defaultValue={duration ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
+          <label htmlFor="marketplace-dur" className="sr-only">
+            {t('anyDuration')}
+          </label>
+          <select id="marketplace-dur" name="dur" defaultValue={duration ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
             {DURATION_VALUES.map((v) => (
               <option key={v} value={v}>{durationLabels[v]}</option>
             ))}
           </select>
-          <select name="lang" defaultValue={language ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
+          <label htmlFor="marketplace-lang" className="sr-only">
+            {t('anyLanguage')}
+          </label>
+          <select id="marketplace-lang" name="lang" defaultValue={language ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
             {LANGUAGE_VALUES.map((v) => (
               <option key={v} value={v}>{languageLabels[v]}</option>
             ))}

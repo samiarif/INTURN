@@ -98,6 +98,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div>
           <label
+            htmlFor="checkin-shipped"
             style={{
               display: 'block',
               fontSize: 12,
@@ -111,6 +112,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
             ✓ {t('shipped')}
           </label>
           <Textarea
+            id="checkin-shipped"
             value={shipped}
             onChange={(e) => setShipped(e.target.value)}
             rows={4}
@@ -119,6 +121,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
         </div>
         <div>
           <label
+            htmlFor="checkin-stuck"
             style={{
               display: 'block',
               fontSize: 12,
@@ -132,6 +135,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
             ⚠ {t('stuck')}
           </label>
           <Textarea
+            id="checkin-stuck"
             value={stuck}
             onChange={(e) => setStuck(e.target.value)}
             rows={3}
@@ -140,6 +144,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
         </div>
         <div>
           <label
+            htmlFor="checkin-next"
             style={{
               display: 'block',
               fontSize: 12,
@@ -153,6 +158,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
             → {t('next')}
           </label>
           <Textarea
+            id="checkin-next"
             value={next}
             onChange={(e) => setNext(e.target.value)}
             rows={3}

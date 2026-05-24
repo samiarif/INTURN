@@ -276,7 +276,11 @@ function DeliverableRow({
 
       {showRequest && (
         <div style={{ marginTop: 14 }}>
+          <label htmlFor={`deliv-feedback-${deliverable.id}`} className="sr-only">
+            {t('changesPlaceholder')}
+          </label>
           <Textarea
+            id={`deliv-feedback-${deliverable.id}`}
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             rows={4}

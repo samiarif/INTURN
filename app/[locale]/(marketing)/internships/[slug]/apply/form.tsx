@@ -37,11 +37,12 @@ export function ApplyForm({
 
       {customQuestions.map((q, i) => (
         <div key={i}>
-          <Label>
+          <Label htmlFor={`apply-q-${i}`}>
             {q.question}
             {q.required && <span className="text-[var(--danger)] ml-1">*</span>}
           </Label>
           <Textarea
+            id={`apply-q-${i}`}
             rows={4}
             maxLength={2000}
             required={q.required}

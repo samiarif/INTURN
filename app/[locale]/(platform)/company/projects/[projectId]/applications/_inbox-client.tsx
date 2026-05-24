@@ -98,6 +98,7 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
                       checked={selected.has(r.application.id)}
                       disabled={!selected.has(r.application.id) && selected.size >= 4}
                       onChange={() => toggleSelect(r.application.id)}
+                      aria-label={`Select ${r.applicant.firstName} ${r.applicant.lastName}`}
                     />
                   </td>
                   <td className="px-4 py-3">
