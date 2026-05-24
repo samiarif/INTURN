@@ -1,8 +1,33 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'landing' });
+  return {
+    title: `Inturn — ${t('title')}`,
+    description: t('subtitle'),
+    alternates: {
+      canonical: locale === 'fr' ? '/' : '/en',
+      languages: { fr: '/', en: '/en' },
+    },
+    openGraph: {
+      title: 'Inturn',
+      description: t('subtitle'),
+      type: 'website',
+      locale: locale === 'fr' ? 'fr_TN' : 'en_US',
+    },
+  };
+}
 
 export default function LandingPage() {
   const t = useTranslations('landing');

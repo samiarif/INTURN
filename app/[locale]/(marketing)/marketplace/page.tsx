@@ -1,9 +1,33 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { listPublishedInternships, listMarketplaceSectors } from '@/modules/internships/queries';
 import { InternshipCard } from '@/components/marketplace/internship-card';
 import { getSession } from '@/modules/auth/session';
 import { getBookmarkedSet } from '@/modules/bookmarks/queries';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'marketplace' });
+  return {
+    title: `${t('title')} — Inturn`,
+    description: t('subtitle'),
+    alternates: {
+      canonical: locale === 'fr' ? '/marketplace' : '/en/marketplace',
+      languages: { fr: '/marketplace', en: '/en/marketplace' },
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('subtitle'),
+      type: 'website',
+      locale: locale === 'fr' ? 'fr_TN' : 'en_US',
+    },
+  };
+}
 
 // Filter option values are stable identifiers; visible labels are inlined at
 // render time via t() since translations aren't available at module init.

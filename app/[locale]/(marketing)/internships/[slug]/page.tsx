@@ -1,8 +1,38 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { getInternshipWithOrgById } from '@/modules/internships/queries';
 import { getProfileWithUserByClerkId } from '@/modules/profiles/queries';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { slug, locale } = await params;
+  const row = await getInternshipWithOrgById(slug);
+  if (!row) return { title: 'Not found' };
+  return {
+    title: `${row.internship.title} — ${row.organization.name}`,
+    description:
+      row.internship.description?.slice(0, 160) ??
+      `Internship at ${row.organization.name}`,
+    alternates: {
+      canonical: locale === 'fr' ? `/internships/${slug}` : `/en/internships/${slug}`,
+      languages: {
+        fr: `/internships/${slug}`,
+        en: `/en/internships/${slug}`,
+      },
+    },
+    openGraph: {
+      title: row.internship.title,
+      description: row.internship.description?.slice(0, 160),
+      type: 'website',
+      locale: locale === 'fr' ? 'fr_TN' : 'en_US',
+    },
+  };
+}
 
 export default async function Page({
   params,
