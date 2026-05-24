@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { WizardSteps } from '@/components/wizard-steps';
+import { WizardProgress } from '@/components/ui/wizard-progress';
 import { getProfileWithUserByClerkId } from '@/modules/profiles/queries';
 import { ProfileBasicsForm } from './form';
 
@@ -27,6 +28,7 @@ export default async function Page() {
         <LanguageSwitch />
       </header>
       <main className="max-w-2xl mx-auto p-8">
+        <WizardProgress step={1} total={3} label={tSteps('basics.step')} />
         <WizardSteps
           steps={[
             { id: 'basics', label: tSteps('basics.step'), state: 'on' },

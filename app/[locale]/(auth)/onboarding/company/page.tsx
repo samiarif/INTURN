@@ -6,6 +6,7 @@ import { organizations } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
+import { WizardProgress } from '@/components/ui/wizard-progress';
 import { getUserByClerkId } from '@/modules/profiles/queries';
 import { CompanyProfileForm } from './form';
 
@@ -32,6 +33,7 @@ export default async function Page() {
         <LanguageSwitch />
       </header>
       <main className="max-w-3xl mx-auto p-8">
+        <WizardProgress step={1} total={1} label={t('step')} />
         <h1 className="text-2xl font-semibold tracking-tight mb-2">{t('title')}</h1>
         <p className="text-[14px] text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
         <CompanyProfileForm

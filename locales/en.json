@@ -88,7 +88,8 @@
       "rneOptional": "do now (optional)",
       "rneHelper": "PDF or image · Reviewed by our team in <24h",
       "saveDraft": "Save as draft",
-      "continue": "Continue → Post first internship"
+      "continue": "Continue → Post first internship",
+      "step": "Setup"
     }
   },
   "dashboard": {

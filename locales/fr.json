@@ -88,7 +88,8 @@
       "rneOptional": "à faire maintenant (optionnel)",
       "rneHelper": "PDF ou image · Vérifié par notre équipe en <24h",
       "saveDraft": "Enregistrer comme brouillon",
-      "continue": "Continuer → Publier la première annonce"
+      "continue": "Continuer → Publier la première annonce",
+      "step": "Configuration"
     }
   },
   "dashboard": {
