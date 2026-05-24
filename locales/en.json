@@ -149,7 +149,8 @@
       "inbox": "Inbox",
       "help": "Help",
       "profile": "Profile",
-      "keyboardShortcut": "⌘K"
+      "keyboardShortcut": "⌘K",
+      "openSidebar": "Open sidebar"
     },
     "tabs": {
       "overview": "Overview",

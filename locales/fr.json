@@ -149,7 +149,8 @@
       "inbox": "Boîte de réception",
       "help": "Aide",
       "profile": "Profil",
-      "keyboardShortcut": "⌘K"
+      "keyboardShortcut": "⌘K",
+      "openSidebar": "Ouvrir la barre latérale"
     },
     "tabs": {
       "overview": "Vue d'ensemble",

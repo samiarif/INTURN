@@ -1375,3 +1375,94 @@
   }
 }
 
+/* ────────────────────────── responsive: tablet ────────────────────────── */
+@media (max-width: 768px) {
+  /* Sidebar slides in as drawer; hidden by default */
+  .ws-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 200ms ease-out;
+    z-index: 40;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+    background: var(--surface);
+  }
+  .ws-sidebar[data-mobile-open="true"] {
+    transform: translateX(0);
+  }
+  .ws-body {
+    grid-template-columns: 1fr;
+  }
+  .ws-main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  /* Topbar: collapse search input on small screens */
+  .ws-topbar-search {
+    display: none;
+  }
+  .ws-topbar-mobile-trigger {
+    display: inline-flex;
+  }
+  /* MHead: stack rather than horizontal */
+  .ws-mhead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .ws-mhead-tabs {
+    overflow-x: auto;
+    width: 100%;
+    scrollbar-width: thin;
+  }
+  /* Workspace overview content grid: 1 column on tablet, 2 on desktop */
+  .ws-content {
+    grid-template-columns: 1fr !important;
+  }
+  /* Tasks board: 2 columns instead of 4 */
+  .ws-tasks-board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ────────────────────────── responsive: phone ────────────────────────── */
+@media (max-width: 480px) {
+  .ws-topbar {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .ws-mhead {
+    padding: 16px 12px;
+  }
+  /* Tasks board: 1 column stacked on phone */
+  .ws-tasks-board {
+    grid-template-columns: 1fr;
+  }
+  /* Hide secondary breadcrumbs on phone — only the bold one remains */
+  .ws-topbar-crumb:not(.bold) {
+    display: none;
+  }
+  /* Smaller stat tiles */
+  .ws-stat-tile {
+    padding: 12px;
+  }
+  .ws-stat-tile-value {
+    font-size: 20px;
+  }
+}
+
+/* Backdrop when sidebar drawer is open on mobile */
+.ws-sidebar-backdrop {
+  display: none;
+}
+@media (max-width: 768px) {
+  .ws-sidebar-backdrop[data-mobile-open="true"] {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 30;
+  }
+}
+

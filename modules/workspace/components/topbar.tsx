@@ -1,6 +1,7 @@
 import '../workspace.css';
 import { getTranslations } from 'next-intl/server';
 import { cn } from '@/lib/utils';
+import { SidebarTrigger } from '@/components/ui/sidebar-trigger';
 
 export type Crumb = { label: string; bold?: boolean };
 
@@ -18,6 +19,7 @@ export async function WorkspaceTopBar({
   const t = await getTranslations('workspace.topbar');
   return (
     <div className="ws-topbar">
+      <SidebarTrigger label={t('openSidebar')} />
       <div className="ws-tb-brand">
         <span className="star" />
         <span className="name">Inturn</span>
