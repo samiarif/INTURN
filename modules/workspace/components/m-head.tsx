@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { WorkspaceTabBar } from './tab-bar';
 
 function formatDateRange(start: Date | null, end: Date | null): string {
@@ -10,7 +11,7 @@ function formatDateRange(start: Date | null, end: Date | null): string {
   return `${fmt(start)} — ${fmt(end)}`;
 }
 
-export function WorkspaceMHead({
+export async function WorkspaceMHead({
   view,
   basePath,
   activeTab = 'overview',
@@ -33,6 +34,11 @@ export function WorkspaceMHead({
   taskCount: number;
   deliverableCount: number;
 }) {
+  const tCheckIn = await getTranslations('workspace.checkIn');
+  const tSchedule = await getTranslations('workspace.schedule');
+
+  // Note: "Welcome back, {name}", "● ACTIVE", "Add note", "Assign task"
+  // do not have plan-vetted FR translations — left as-is until namespace expands.
   const title =
     view === 'intern'
       ? `Welcome back, ${internFirstName ?? ''}`
@@ -53,14 +59,14 @@ export function WorkspaceMHead({
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           {view === 'intern' ? (
             <>
-              <button className="ws-btn ghost tiny">Weekly check-in →</button>
+              <button className="ws-btn ghost tiny">{tCheckIn('title')} →</button>
               <button className="ws-btn brand tiny">
                 <span className="plus">+</span> Add note
               </button>
             </>
           ) : (
             <>
-              <button className="ws-btn ghost tiny">Schedule check-in</button>
+              <button className="ws-btn ghost tiny">{tSchedule('title')}</button>
               <button className="ws-btn brand tiny">
                 <span className="plus">+</span> Assign task
               </button>

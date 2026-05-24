@@ -1,9 +1,10 @@
 import '../workspace.css';
+import { getTranslations } from 'next-intl/server';
 import { cn } from '@/lib/utils';
 
 export type Crumb = { label: string; bold?: boolean };
 
-export function WorkspaceTopBar({
+export async function WorkspaceTopBar({
   view,
   viewerInitials,
   crumbs,
@@ -14,6 +15,7 @@ export function WorkspaceTopBar({
   crumbs: Crumb[];
   modeChip?: { label: string };
 }) {
+  const t = await getTranslations('workspace.topbar');
   return (
     <div className="ws-topbar">
       <div className="ws-tb-brand">
@@ -37,17 +39,20 @@ export function WorkspaceTopBar({
       <div className="ws-tb-actions">
         <div className="ws-tb-search">
           <span style={{ opacity: 0.5 }}>🔍</span>
-          <span>Search…</span>
-          <span className="kbd">⌘K</span>
+          <span>{t('search')}</span>
+          <span className="kbd">{t('keyboardShortcut')}</span>
         </div>
-        <button className="ws-tb-icon" aria-label="Inbox">
+        <button className="ws-tb-icon" aria-label={t('inbox')}>
           <span style={{ fontSize: 14 }}>📬</span>
           <span className="badge-dot" />
         </button>
-        <button className="ws-tb-icon" aria-label="Help">
+        <button className="ws-tb-icon" aria-label={t('help')}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600 }}>?</span>
         </button>
-        <span className={cn('ws-tb-avatar', view === 'supervisor' && 'company')}>
+        <span
+          className={cn('ws-tb-avatar', view === 'supervisor' && 'company')}
+          aria-label={t('profile')}
+        >
           {viewerInitials}
         </span>
       </div>

@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
-type Tab = { id: string; label: string; count?: string; href: string | null };
+type TabId = 'overview' | 'tasks' | 'deliverables' | 'timeline' | 'activity' | 'comments';
+type Tab = { id: TabId; label: string; count?: string; href: string | null };
 
-export function WorkspaceTabBar({
+export async function WorkspaceTabBar({
   tasksCount,
   deliverablesCount,
   activityNew,
@@ -19,20 +21,21 @@ export function WorkspaceTabBar({
   // /company/workspaces/<id>. Tabs link relative to it.
   basePath: string;
 }) {
+  const t = await getTranslations('workspace.tabs');
   const tabs: Tab[] = [
-    { id: 'overview', label: 'Overview', href: basePath },
-    { id: 'tasks', label: 'Tasks', count: String(tasksCount), href: `${basePath}/tasks` },
-    { id: 'deliverables', label: 'Deliverables', count: String(deliverablesCount), href: `${basePath}/deliverables` },
-    { id: 'timeline', label: 'Timeline', href: `${basePath}/timeline` },
+    { id: 'overview', label: t('overview'), href: basePath },
+    { id: 'tasks', label: t('tasks'), count: String(tasksCount), href: `${basePath}/tasks` },
+    { id: 'deliverables', label: t('deliverables'), count: String(deliverablesCount), href: `${basePath}/deliverables` },
+    { id: 'timeline', label: t('timeline'), href: `${basePath}/timeline` },
     {
       id: 'activity',
-      label: 'Activity',
+      label: t('activity'),
       count: activityNew ? `${activityNew} new` : undefined,
       href: null,
     },
     {
       id: 'comments',
-      label: 'Comments',
+      label: t('comments'),
       count: commentsNew ? String(commentsNew) : undefined,
       href: `${basePath}/comments`,
     },
