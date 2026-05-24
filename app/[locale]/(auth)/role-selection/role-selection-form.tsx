@@ -23,7 +23,11 @@ export function RoleSelectionForm() {
         throw new Error(data.error || 'Failed to select role');
       }
 
-      const redirectPath = role === 'intern' ? '/intern/dashboard' : '/company/dashboard';
+      // Route new users straight into onboarding, not to the dashboard.
+      // Both onboarding routes are profile-state-aware and will fast-skip
+      // to the dashboard once profile_step === 'complete'.
+      const redirectPath =
+        role === 'intern' ? '/onboarding/intern/basics' : '/onboarding/company';
       router.push(redirectPath);
     } catch (err) {
       console.error('Role selection failed:', err);
