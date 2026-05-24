@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { auth, clerkClient } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { getUserByClerkId, getProfileByUserId } from '@/modules/profiles/queries';
+import { getSession } from '@/modules/auth/session';
+import { getProfileByUserId } from '@/modules/profiles/queries';
 import { getInternSidebarData } from '@/modules/workspace/queries';
 import { getApplicationsByApplicant } from '@/modules/applications/queries';
 import { listPublishedInternships } from '@/modules/internships/queries';
@@ -17,17 +17,10 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 export default async function Page() {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) redirect('/sign-in');
-  const user = await getUserByClerkId(clerkId);
-  if (!user) redirect('/sign-in');
-
-  // Belt-and-braces redirect to onboarding if the user hasn't completed it.
-  // Admins (looking through "intern eyes") bypass — they don't need to
-  // complete the intern wizard to view this surface.
-  const clerk = await clerkClient();
-  const clerkUser = await clerk.users.getUser(clerkId);
-  const isAdmin = clerkUser.publicMetadata.role === 'admin';
+  const session = await getSession();
+  if (!session) redirect('/sign-in');
+  const { user, role } = session;
+  const isAdmin = role === 'admin';
 
   const earlyProfile = await getProfileByUserId(user.id);
   if (!isAdmin && (!earlyProfile || earlyProfile.profileStep !== 'complete')) {

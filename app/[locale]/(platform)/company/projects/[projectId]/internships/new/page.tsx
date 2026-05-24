@@ -1,6 +1,5 @@
-import { auth, clerkClient } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
-import { getUserByClerkId } from '@/modules/profiles/queries';
+import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { PostInternshipForm } from './form';
 
@@ -9,15 +8,9 @@ export default async function Page({
 }: {
   params: Promise<{ projectId: string }>;
 }) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) redirect('/sign-in');
-  const user = await getUserByClerkId(clerkId);
-  if (!user) redirect('/sign-in');
-
-  const clerk = await clerkClient();
-  const clerkUser = await clerk.users.getUser(clerkId);
-  const role =
-    (clerkUser.publicMetadata.role as 'intern' | 'company' | 'admin' | undefined) ?? 'company';
+  const session = await getSession();
+  if (!session) redirect('/sign-in');
+  const { user, role } = session;
 
   const { projectId } = await params;
   const project = await getProjectById(projectId);

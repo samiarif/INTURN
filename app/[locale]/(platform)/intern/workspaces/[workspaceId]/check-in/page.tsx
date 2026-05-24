@@ -1,9 +1,5 @@
-import { auth, clerkClient } from '@clerk/nextjs/server';
-import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { getWorkspaceOverview, getInternSidebarData } from '@/modules/workspace/queries';
-import { canViewWorkspace } from '@/modules/workspace/service';
-import { getUserByClerkId } from '@/modules/profiles/queries';
+import { loadWorkspacePage } from '@/modules/workspace/page-data';
 import { WorkspaceTopBar, type Crumb } from '@/modules/workspace/components/topbar';
 import { WorkspaceSidebar } from '@/modules/workspace/components/sidebar';
 import { StuckPill } from '@/modules/workspace/components/stuck-pill';
@@ -15,22 +11,9 @@ export default async function Page({
 }: {
   params: Promise<{ workspaceId: string }>;
 }) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) redirect('/sign-in');
-  const user = await getUserByClerkId(clerkId);
-  if (!user) redirect('/sign-in');
-
-  const clerk = await clerkClient();
-  const clerkUser = await clerk.users.getUser(clerkId);
-  const role =
-    (clerkUser.publicMetadata.role as 'intern' | 'company' | 'admin' | undefined) ?? 'intern';
-
   const { workspaceId } = await params;
-  const data = await getWorkspaceOverview(workspaceId);
-  if (!data) notFound();
-  if (!canViewWorkspace(data.workspace, data.project, { userId: user.id, role })) notFound();
+  const { data, sidebar, viewer } = await loadWorkspacePage(workspaceId, 'intern');
 
-  const sidebar = await getInternSidebarData(data.workspace.internId);
   const start = data.workspace.startDate ? new Date(data.workspace.startDate) : null;
   const { current, total } = computeWeekOfTotal(start, data.internship?.duration ?? 12);
   const locationType = (data.internship?.locationType ?? 'hybrid').toUpperCase();
@@ -50,18 +33,14 @@ export default async function Page({
     >
       <WorkspaceTopBar
         view="intern"
-        viewerInitials={`${data.intern?.firstName?.[0] ?? ''}${data.intern?.lastName?.[0] ?? ''}`}
+        viewerInitials={viewer.initials}
         crumbs={crumbs}
         modeChip={{ label: `${locationType} · WEEK ${current} / ${total}` }}
       />
       <div className="ws-body">
         <WorkspaceSidebar
           data={sidebar}
-          viewer={{
-            initials: `${data.intern?.firstName?.[0] ?? ''}${data.intern?.lastName?.[0] ?? ''}`,
-            name: `${data.intern?.firstName ?? ''} ${data.intern?.lastName ?? ''}`.trim() || 'Intern',
-            subtitle: `${data.internProfile?.university ?? ''} · ${data.internProfile?.yearOfStudy ?? ''}`.trim(),
-          }}
+          viewer={viewer}
           activeWorkspaceId={data.workspace.id}
         />
         <main className="ws-main">
