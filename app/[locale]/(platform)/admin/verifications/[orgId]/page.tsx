@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getOrganizationDetail } from '@/modules/admin/queries';
 import { VerificationActions } from './_actions';
-import type { VerificationStatus } from '@/modules/admin/service';
+import type { VerificationStatus } from '@/modules/admin/state-machine';
 
 const STATUS_STYLE: Record<string, string> = {
   draft: 'bg-[var(--surface-muted)] text-[var(--ink-3)]',

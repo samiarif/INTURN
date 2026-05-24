@@ -6,7 +6,7 @@ import { getProjectById } from '@/modules/projects/queries';
 import { getApplicationById } from '@/modules/applications/queries';
 import { NotesEditor } from './_notes';
 import { StatusPipeline } from './_status-pipeline';
-import type { ApplicationStatus } from '@/modules/applications/service';
+import type { ApplicationStatus } from '@/modules/applications/state-machine';
 
 export default async function Page({
   params,

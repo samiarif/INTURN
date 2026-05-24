@@ -8,7 +8,7 @@ import {
 import {
   isValidApplicationTransition,
   type ApplicationStatus,
-} from '@/modules/applications/service';
+} from '@/modules/applications/state-machine';
 
 const STEPS: Array<{ value: ApplicationStatus; label: string }> = [
   { value: 'new', label: 'New' },

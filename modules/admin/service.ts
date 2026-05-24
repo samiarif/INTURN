@@ -2,22 +2,9 @@ import { db } from '@/db';
 import { organizations } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
-
-export type VerificationStatus = 'draft' | 'pending' | 'verified' | 'suspended';
-
-const VALID: Record<VerificationStatus, VerificationStatus[]> = {
-  draft: ['pending', 'verified'],
-  pending: ['verified', 'draft'],
-  verified: ['suspended'],
-  suspended: ['verified'],
-};
-
-export function isValidVerificationTransition(
-  from: VerificationStatus,
-  to: VerificationStatus,
-): boolean {
-  return VALID[from].includes(to);
-}
+export { isValidVerificationTransition, type VerificationStatus } from './state-machine';
+import type { VerificationStatus } from './state-machine';
+import { isValidVerificationTransition } from './state-machine';
 
 export async function setOrganizationVerification(input: {
   orgId: string;

@@ -6,7 +6,7 @@ import { setVerificationStatusAction } from '@/modules/admin/server-actions';
 import {
   isValidVerificationTransition,
   type VerificationStatus,
-} from '@/modules/admin/service';
+} from '@/modules/admin/state-machine';
 
 export function VerificationActions({
   orgId,
