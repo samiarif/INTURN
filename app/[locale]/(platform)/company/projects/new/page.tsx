@@ -20,11 +20,7 @@ export default async function Page() {
   if (!org) redirect('/onboarding/company');
 
   return (
-    <div className="max-w-2xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">New project</h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-2">
-        Projects group internships. Each project can post multiple internships under it.
-      </p>
+    <div className="max-w-3xl mx-auto p-6 sm:p-8">
       {org.verificationStatus !== 'verified' && (
         <div className="border border-[#FDE68A] bg-[#FFFBEB] text-[#78350F] rounded-md p-3 text-[12.5px] mb-6">
           <b className="text-[#92400E] block mb-1">

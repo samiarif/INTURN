@@ -27,12 +27,27 @@ export async function createProjectAction(formData: FormData) {
     throw new Error('Your organization must be verified before creating projects');
   }
 
+  // Goals + phases are JSON-encoded into hidden inputs by the client form so
+  // we can keep the existing FormData server-action wiring intact.
+  let goals: unknown;
+  let phases: unknown;
+  try {
+    const goalsRaw = formData.get('goals');
+    const phasesRaw = formData.get('phases');
+    goals = goalsRaw ? JSON.parse(String(goalsRaw)) : undefined;
+    phases = phasesRaw ? JSON.parse(String(phasesRaw)) : undefined;
+  } catch {
+    throw new Error('Invalid form data');
+  }
+
   const parsed = projectCreateSchema.parse({
     name: formData.get('name'),
     slug: formData.get('slug'),
     brief: formData.get('brief') || undefined,
     startDate: formData.get('startDate'),
     endDate: formData.get('endDate'),
+    goals,
+    phases,
   });
 
   const project = await createDraftProject({
@@ -42,6 +57,10 @@ export async function createProjectAction(formData: FormData) {
     brief: parsed.brief,
     supervisorIds: [user.id],
     actorId: user.id,
+    startDate: parsed.startDate,
+    endDate: parsed.endDate,
+    goals: parsed.goals,
+    phases: parsed.phases,
   });
 
   redirect(`/company/projects/${project.id}`);
