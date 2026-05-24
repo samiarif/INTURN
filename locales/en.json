@@ -100,6 +100,47 @@
   },
   "landing": {
     "title": "The internship platform for Tunisia",
-    "subtitle": "Discover internships, build your track record, connect with companies"
+    "subtitle": "Discover internships, build your track record, connect with companies",
+    "browseCta": "Browse internships",
+    "hiringCta": "I'm hiring →",
+    "nav": {
+      "marketplace": "Browse internships",
+      "forCompanies": "For companies",
+      "howItWorks": "How it works",
+      "logIn": "Log in",
+      "signUp": "Sign up"
+    },
+    "interns": {
+      "title": "For students",
+      "subtitle": "Real internships, real work, real proof.",
+      "points": [
+        { "heading": "One profile, every application", "body": "Your CV, skills, and preferences live in one place. Apply in one tap." },
+        { "heading": "Work that counts", "body": "Each internship runs inside a workspace with clear scope and deliverables. Your record is verifiable, not a promise." },
+        { "heading": "Async-friendly", "body": "Remote-first internships are first-class. Hours that fit your schedule." }
+      ]
+    },
+    "companies": {
+      "title": "For companies",
+      "subtitle": "Post once. Run the program inside inturn. No more WhatsApp threads.",
+      "points": [
+        { "heading": "Set up in 15 minutes", "body": "Post a structured internship in minutes. Get pre-screened applications back inside the platform." },
+        { "heading": "Run the work inside the workspace", "body": "Tasks, deliverables, comments, check-ins. The whole program in one place." }
+      ]
+    },
+    "how": {
+      "title": "How it works",
+      "steps": [
+        { "step": "1", "heading": "Post", "body": "Companies define scope, deliverables, and deadlines." },
+        { "step": "2", "heading": "Match", "body": "Students apply through their inturn profile. Companies shortlist and accept." },
+        { "step": "3", "heading": "Run", "body": "A workspace opens automatically. Real work happens. Performance is recorded." }
+      ]
+    },
+    "footer": {
+      "tagline": "Inturn · Tunisia",
+      "universities": "For universities",
+      "about": "About",
+      "contact": "Contact",
+      "privacy": "Privacy"
+    }
   }
 }

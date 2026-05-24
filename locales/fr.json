@@ -100,6 +100,47 @@
   },
   "landing": {
     "title": "La plateforme de stages pour la Tunisie",
-    "subtitle": "Découvrez des stages, construisez votre parcours, connectez-vous avec les entreprises"
+    "subtitle": "Découvrez des stages, construisez votre parcours, connectez-vous avec les entreprises",
+    "browseCta": "Parcourir les stages",
+    "hiringCta": "Je recrute →",
+    "nav": {
+      "marketplace": "Parcourir les stages",
+      "forCompanies": "Pour les entreprises",
+      "howItWorks": "Comment ça marche",
+      "logIn": "Connexion",
+      "signUp": "S'inscrire"
+    },
+    "interns": {
+      "title": "Pour les étudiants",
+      "subtitle": "Des vrais stages, du vrai travail, des vraies preuves.",
+      "points": [
+        { "heading": "Un profil, toutes les candidatures", "body": "Votre CV, vos compétences et vos préférences en un seul endroit. Postulez en un clic." },
+        { "heading": "Du travail qui compte", "body": "Chaque stage se déroule dans un workspace avec un périmètre et des livrables clairs. Votre parcours est vérifiable, pas juste promis." },
+        { "heading": "Compatible asynchrone", "body": "Les stages à distance sont traités au même niveau. Des horaires qui s'adaptent à votre emploi du temps." }
+      ]
+    },
+    "companies": {
+      "title": "Pour les entreprises",
+      "subtitle": "Publiez une fois. Pilotez le programme dans inturn. Finis les threads WhatsApp.",
+      "points": [
+        { "heading": "Configuration en 15 minutes", "body": "Publiez une offre structurée en quelques minutes. Recevez des candidatures pré-qualifiées dans la plateforme." },
+        { "heading": "Pilotez le travail dans le workspace", "body": "Tâches, livrables, commentaires, points hebdo. Tout le programme au même endroit." }
+      ]
+    },
+    "how": {
+      "title": "Comment ça marche",
+      "steps": [
+        { "step": "1", "heading": "Publier", "body": "Les entreprises définissent le périmètre, les livrables et les échéances." },
+        { "step": "2", "heading": "Matcher", "body": "Les étudiants postulent via leur profil inturn. Les entreprises font une short-list et acceptent." },
+        { "step": "3", "heading": "Exécuter", "body": "Un workspace s'ouvre automatiquement. Le vrai travail commence. La performance est enregistrée." }
+      ]
+    },
+    "footer": {
+      "tagline": "Inturn · Tunisie",
+      "universities": "Pour les universités",
+      "about": "À propos",
+      "contact": "Contact",
+      "privacy": "Confidentialité"
+    }
   }
 }
