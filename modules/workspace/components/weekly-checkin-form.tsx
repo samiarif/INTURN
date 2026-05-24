@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +11,7 @@ import {
 } from '@/modules/checkins/server-actions';
 
 export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
+  const t = useTranslations('workspace.checkIn');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [generating, startGenerating] = useTransition();
@@ -48,6 +50,9 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
     });
   }
 
+  // Strings without plan-vetted FR translations (sent confirmation,
+  // template-draft notice, "Sending…", "Drafting…", "Send to supervisor →")
+  // stay English until the namespace expands.
   if (submitted) {
     return (
       <div className="ws-card" style={{ textAlign: 'center', padding: 32 }}>
@@ -63,14 +68,14 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
   return (
     <div className="ws-card" style={{ padding: 24 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ink)' }}>Weekly check-in</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ink)' }}>{t('title')}</h2>
         <button
           type="button"
           onClick={generateDraft}
           disabled={generating}
           className="ws-btn ghost tiny"
         >
-          {generating ? 'Drafting…' : source === 'ai' ? 'Regenerate · AI ✨' : 'Generate draft ✨'}
+          {generating ? 'Drafting…' : source === 'ai' ? `${t('regenerate')} ✨` : 'Generate draft ✨'}
         </button>
       </div>
       {source && (
@@ -86,7 +91,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
           }}
         >
           {source === 'ai'
-            ? '✨ Drafted by Claude from this week\'s activity. Edit anything before sending.'
+            ? `✨ ${t('draftedByAi')}`
             : 'Template draft (no AI key configured). Edit anything before sending.'}
         </div>
       )}
@@ -103,13 +108,13 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
               marginBottom: 6,
             }}
           >
-            ✓ Shipped this week
+            ✓ {t('shipped')}
           </label>
           <Textarea
             value={shipped}
             onChange={(e) => setShipped(e.target.value)}
             rows={4}
-            placeholder="What did you close, ship, or learn?"
+            placeholder={t('shippedPlaceholder')}
           />
         </div>
         <div>
@@ -124,13 +129,13 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
               marginBottom: 6,
             }}
           >
-            ⚠ Stuck or unclear
+            ⚠ {t('stuck')}
           </label>
           <Textarea
             value={stuck}
             onChange={(e) => setStuck(e.target.value)}
             rows={3}
-            placeholder="Where do you need help or feedback?"
+            placeholder={t('stuckPlaceholder')}
           />
         </div>
         <div>
@@ -145,13 +150,13 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
               marginBottom: 6,
             }}
           >
-            → Next week
+            → {t('next')}
           </label>
           <Textarea
             value={next}
             onChange={(e) => setNext(e.target.value)}
             rows={3}
-            placeholder="What's the plan?"
+            placeholder={t('nextPlaceholder')}
           />
         </div>
         {error && (
@@ -164,7 +169,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
             disabled={pending || (!shipped && !stuck && !next)}
             className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
           >
-            {pending ? 'Sending…' : 'Send to supervisor →'}
+            {pending ? 'Sending…' : t('submit')}
           </Button>
         </div>
       </div>

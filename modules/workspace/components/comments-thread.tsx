@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,16 +11,18 @@ import {
 } from '@/modules/comments/server-actions';
 import type { CommentWithAuthor } from '@/modules/comments/queries';
 
-function timeAgo(date: Date | string): string {
+function timeAgo(
+  date: Date | string,
+  t: (key: 'minutesAgo' | 'hoursAgo' | 'daysAgo', vars?: { n: number }) => string,
+): string {
   const ms = Date.now() - new Date(date).getTime();
   const minutes = Math.floor(ms / 60_000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return t('minutesAgo', { n: 0 });
+  if (minutes < 60) return t('minutesAgo', { n: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t('hoursAgo', { n: hours });
   const days = Math.floor(hours / 24);
-  if (days === 1) return 'yesterday';
-  return `${days}d ago`;
+  return t('daysAgo', { n: days });
 }
 
 function initials(first?: string | null, last?: string | null): string {
@@ -32,8 +35,8 @@ export function CommentsThread({
   currentUserId,
   taskId,
   deliverableId,
-  placeholder = 'Write a comment…',
-  emptyMessage = 'No comments yet. Be the first to drop a note.',
+  placeholder,
+  emptyMessage,
 }: {
   workspaceId: string;
   comments: CommentWithAuthor[];
@@ -43,6 +46,8 @@ export function CommentsThread({
   placeholder?: string;
   emptyMessage?: string;
 }) {
+  const t = useTranslations('workspace.comments');
+  const tActivity = useTranslations('workspace.activity');
   const router = useRouter();
   const [body, setBody] = useState('');
   const [pending, startTransition] = useTransition();
@@ -73,7 +78,7 @@ export function CommentsThread({
           onChange={(e) => setBody(e.target.value)}
           rows={3}
           maxLength={4000}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t('placeholder')}
           onKeyDown={(e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
               e.preventDefault();
@@ -83,7 +88,7 @@ export function CommentsThread({
         />
         <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>
-            ⌘/Ctrl + Enter to send · {body.length} / 4000
+            ⌘/Ctrl + Enter · {body.length} / 4000
           </span>
           <Button
             type="button"
@@ -91,14 +96,14 @@ export function CommentsThread({
             onClick={submit}
             className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
           >
-            {pending ? 'Sending…' : 'Post'}
+            {pending ? 'Sending…' : t('post')}
           </Button>
         </div>
       </div>
 
       {comments.length === 0 ? (
         <div className="ws-card" style={{ textAlign: 'center', padding: 32 }}>
-          <p style={{ color: 'var(--ink-3)', fontSize: 13 }}>{emptyMessage}</p>
+          <p style={{ color: 'var(--ink-3)', fontSize: 13 }}>{emptyMessage ?? t('empty')}</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -123,7 +128,7 @@ export function CommentsThread({
                       {author.firstName} {author.lastName}
                     </span>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink-3)' }}>
-                      {timeAgo(comment.createdAt)}
+                      {timeAgo(comment.createdAt, tActivity)}
                     </span>
                     {isAuthor && (
                       <button
@@ -133,7 +138,7 @@ export function CommentsThread({
                         style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--ink-3)', cursor: 'pointer' }}
                         className="hover:text-[var(--danger)]"
                       >
-                        Delete
+                        {t('delete')}
                       </button>
                     )}
                   </div>

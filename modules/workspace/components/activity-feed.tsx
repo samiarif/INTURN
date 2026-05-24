@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import type { Event } from '@/db/schema';
 
 export type ActorLookup = Map<string, { firstName: string | null; lastName: string | null }>;
@@ -13,15 +14,17 @@ const BULLET_BY_TYPE: Record<string, string> = {
   'stuck.signaled': 'stuck',
 };
 
-function timeAgo(date: Date): string {
+function timeAgo(
+  date: Date,
+  t: (key: 'minutesAgo' | 'hoursAgo' | 'daysAgo', vars?: { n: number }) => string,
+): string {
   const ms = Date.now() - date.getTime();
   const minutes = Math.floor(ms / (1000 * 60));
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return t('minutesAgo', { n: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t('hoursAgo', { n: hours });
   const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday';
-  return `${days}d ago`;
+  return t('daysAgo', { n: days });
 }
 
 function actorName(actorId: string | null, actors: ActorLookup): string {
@@ -107,7 +110,18 @@ function describe(event: Event, actors: ActorLookup): React.ReactNode {
   }
 }
 
-export function ActivityFeed({ events, actors }: { events: Event[]; actors: ActorLookup }) {
+export async function ActivityFeed({
+  events,
+  actors,
+}: {
+  events: Event[];
+  actors: ActorLookup;
+}) {
+  const t = await getTranslations('workspace.activity');
+  // "Recent activity" header, "Full timeline →" link, and the per-event
+  // copy inside `describe()` (verbs like "submitted", "approved",
+  // "commented on", scope words, etc.) are not in the plan namespace and
+  // remain English. Empty-state copy uses `activity.empty`.
   return (
     <div className="ws-card">
       <div className="ws-card-head">
@@ -115,18 +129,22 @@ export function ActivityFeed({ events, actors }: { events: Event[]; actors: Acto
         <a className="ws-link">Full timeline →</a>
       </div>
       <div className="ws-activity">
-        {events.map((e) => {
-          const bullet = BULLET_BY_TYPE[e.type] ?? 'system';
-          return (
-            <div className="ws-act" key={e.id}>
-              <span className={`ws-act-bullet ${bullet}`}>
-                <i />
-              </span>
-              <span className="ws-act-text">{describe(e, actors)}</span>
-              <span className="ws-act-time">{timeAgo(new Date(e.createdAt))}</span>
-            </div>
-          );
-        })}
+        {events.length === 0 ? (
+          <p style={{ color: 'var(--ink-3)', fontSize: 13, padding: 12 }}>{t('empty')}</p>
+        ) : (
+          events.map((e) => {
+            const bullet = BULLET_BY_TYPE[e.type] ?? 'system';
+            return (
+              <div className="ws-act" key={e.id}>
+                <span className={`ws-act-bullet ${bullet}`}>
+                  <i />
+                </span>
+                <span className="ws-act-text">{describe(e, actors)}</span>
+                <span className="ws-act-time">{timeAgo(new Date(e.createdAt), t)}</span>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

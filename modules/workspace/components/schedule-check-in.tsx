@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ export function ScheduleCheckInButton({
   workspaceId: string;
   trigger?: 'inline-cta' | 'inline-btn';
 }) {
+  const t = useTranslations('workspace.schedule');
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -62,12 +64,15 @@ export function ScheduleCheckInButton({
     if (!open) {
       return (
         <button type="button" onClick={() => setOpen(true)} className="ws-btn-w">
-          Schedule check-in →
+          {t('title')} →
         </button>
       );
     }
   }
 
+  // "When", "Duration", "15/30/45 minutes", "1 hour", "Agenda (optional)",
+  // the agenda placeholder, and "Scheduling…" are not in the plan namespace
+  // and remain English.
   return (
     <div
       className="ws-card"
@@ -77,7 +82,7 @@ export function ScheduleCheckInButton({
         <div style={{ textAlign: 'center', padding: '12px 0' }}>
           <div style={{ fontSize: 24, marginBottom: 4 }}>✓</div>
           <h4 style={{ color: 'var(--ink)', fontWeight: 600, marginBottom: 4 }}>
-            Check-in scheduled
+            {t('successHeading')}
           </h4>
           <p style={{ fontSize: 13, color: 'var(--ink-3)', marginBottom: 10 }}>
             {new Date(success.when).toLocaleString('en-US', {
@@ -95,7 +100,7 @@ export function ScheduleCheckInButton({
             className="ws-btn brand"
             style={{ display: 'inline-flex', textDecoration: 'none' }}
           >
-            Open Jitsi link ↗
+            {t('linkLabel')} ↗
           </a>
         </div>
       ) : (
@@ -111,8 +116,11 @@ export function ScheduleCheckInButton({
               letterSpacing: '0.05em',
             }}
           >
-            Schedule check-in
+            {t('title')}
           </h4>
+          <p style={{ fontSize: 12, color: 'var(--ink-3)', marginBottom: 10 }}>
+            {t('description')}
+          </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div>
               <Label htmlFor="when" style={{ fontSize: 12 }}>
@@ -160,7 +168,7 @@ export function ScheduleCheckInButton({
                 onClick={() => setOpen(false)}
                 disabled={pending}
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 type="button"
@@ -168,7 +176,7 @@ export function ScheduleCheckInButton({
                 disabled={pending}
                 className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
               >
-                {pending ? 'Scheduling…' : 'Confirm + generate link'}
+                {pending ? 'Scheduling…' : t('submit')}
               </Button>
             </div>
           </div>

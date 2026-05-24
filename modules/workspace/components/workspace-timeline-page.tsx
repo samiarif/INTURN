@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { WorkspaceMHead } from './m-head';
 import { getWorkspaceTimeline, type TimelineRow } from '../queries';
 import type { WorkspaceOverviewData } from '../queries';
@@ -34,6 +35,7 @@ export async function WorkspaceTimelinePage({
   view: WorkspaceView;
   basePath: string;
 }) {
+  const t = await getTranslations('workspace.timeline');
   const rows = await getWorkspaceTimeline(data.workspace.id);
   const grouped = groupByDay(rows);
 
@@ -57,8 +59,8 @@ export async function WorkspaceTimelinePage({
       >
         {rows.length === 0 ? (
           <div className="border border-dashed border-[var(--border-color)] rounded-lg p-12 text-center">
-            <p className="text-[var(--ink-2)] font-medium">Nothing on the timeline yet.</p>
-            <p className="text-[var(--ink-3)] text-sm mt-1">Tasks, deliverables, and check-ins will appear here as they happen.</p>
+            <p className="text-[var(--ink-2)] font-medium">{t('empty')}</p>
+            <p className="text-[var(--ink-3)] text-sm mt-1">{t('emptySub')}</p>
           </div>
         ) : (
           <div className="space-y-6">
