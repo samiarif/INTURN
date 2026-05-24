@@ -1375,84 +1375,68 @@
   }
 }
 
-/* ────────────────────────── responsive: tablet ────────────────────────── */
+/* ────────────────────────── responsive: drawer override ──────────────────
+ * Real class names in JSX: `.ws-side` (sidebar), `.tb-board` (tasks board),
+ * `.ws-stat` (stat tile), `.ws-tb-search`, `.ws-tb-crumbs`. The earlier
+ * 768px block in this file hides .ws-side outright; we override that with
+ * a slide-in drawer pattern when SidebarTrigger sets data-mobile-open=true.
+ * ──────────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  /* Sidebar slides in as drawer; hidden by default */
-  .ws-sidebar {
+  /* Override the earlier `.ws-side { display: none }` with a drawer. */
+  .ws-side {
+    display: flex !important;
     position: fixed;
-    inset: 0 auto 0 0;
+    inset: 52px auto 0 0; /* below the 52px topbar */
     width: 280px;
     transform: translateX(-100%);
     transition: transform 200ms ease-out;
     z-index: 40;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.12);
     background: var(--surface);
+    overflow-y: auto;
   }
-  .ws-sidebar[data-mobile-open="true"] {
+  .ws-side[data-mobile-open="true"] {
     transform: translateX(0);
   }
-  .ws-body {
-    grid-template-columns: 1fr;
-  }
-  .ws-main {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  /* Topbar: collapse search input on small screens */
-  .ws-topbar-search {
-    display: none;
-  }
+
+  /* Hamburger trigger only shows on mobile */
   .ws-topbar-mobile-trigger {
-    display: inline-flex;
+    display: inline-flex !important;
   }
-  /* MHead: stack rather than horizontal */
-  .ws-mhead {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+
+  /* Tasks board (real class is .tb-board): 2 cols at tablet */
+  .tb-board {
+    grid-template-columns: repeat(2, 1fr);
   }
+
+  /* MHead tabs: horizontal scroll on overflow */
   .ws-mhead-tabs {
     overflow-x: auto;
-    width: 100%;
     scrollbar-width: thin;
-  }
-  /* Workspace overview content grid: 1 column on tablet, 2 on desktop */
-  .ws-content {
-    grid-template-columns: 1fr !important;
-  }
-  /* Tasks board: 2 columns instead of 4 */
-  .ws-tasks-board {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 /* ────────────────────────── responsive: phone ────────────────────────── */
 @media (max-width: 480px) {
   .ws-topbar {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
   }
-  .ws-mhead {
-    padding: 16px 12px;
-  }
-  /* Tasks board: 1 column stacked on phone */
-  .ws-tasks-board {
+  /* Tasks board: 1 col stacked on phone */
+  .tb-board {
     grid-template-columns: 1fr;
   }
-  /* Hide secondary breadcrumbs on phone — only the bold one remains */
-  .ws-topbar-crumb:not(.bold) {
-    display: none;
-  }
-  /* Smaller stat tiles */
-  .ws-stat-tile {
+  /* Stat tiles: tighten on phone */
+  .ws-stat {
     padding: 12px;
   }
-  .ws-stat-tile-value {
+  .ws-stat-value b {
     font-size: 20px;
   }
 }
 
-/* Backdrop when sidebar drawer is open on mobile */
+/* Backdrop for the mobile drawer (rendered as sibling by SidebarTrigger).
+   Hidden by default, shown when data-mobile-open=true AND we're on mobile. */
 .ws-sidebar-backdrop {
   display: none;
 }
@@ -1460,7 +1444,7 @@
   .ws-sidebar-backdrop[data-mobile-open="true"] {
     display: block;
     position: fixed;
-    inset: 0;
+    inset: 52px 0 0 0; /* below topbar */
     background: rgba(0,0,0,0.4);
     z-index: 30;
   }

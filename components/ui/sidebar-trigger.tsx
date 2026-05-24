@@ -3,8 +3,10 @@
 import { useState } from 'react';
 
 /**
- * Mobile sidebar drawer toggle. Sets data-mobile-open on the closest
- * .ws-sidebar via DOM query — keeps state in JS, no global store.
+ * Mobile sidebar drawer toggle. Sets data-mobile-open on `.ws-side` (the real
+ * sidebar class in JSX) + the `.ws-sidebar-backdrop` we render below. DOM
+ * query keeps state in JS, no global store. The CSS rules at the bottom of
+ * modules/workspace/workspace.css handle the slide-in animation.
  */
 export function SidebarTrigger({ label }: { label: string }) {
   const [open, setOpen] = useState(false);
@@ -12,7 +14,7 @@ export function SidebarTrigger({ label }: { label: string }) {
   function toggle() {
     const next = !open;
     setOpen(next);
-    const sidebar = document.querySelector('.ws-sidebar');
+    const sidebar = document.querySelector('.ws-side');
     const backdrop = document.querySelector('.ws-sidebar-backdrop');
     if (sidebar) sidebar.setAttribute('data-mobile-open', String(next));
     if (backdrop) backdrop.setAttribute('data-mobile-open', String(next));
