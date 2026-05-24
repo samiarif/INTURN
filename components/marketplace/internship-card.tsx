@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import type { Internship, Organization } from '@/db/schema';
 import { toggleBookmarkAction } from '@/modules/bookmarks/actions';
 
@@ -8,7 +9,7 @@ function daysUntil(date: string | null): number | null {
   return Math.ceil(ms / (1000 * 60 * 60 * 24));
 }
 
-export function InternshipCard({
+export async function InternshipCard({
   internship,
   organization,
   bookmarked,
@@ -23,6 +24,8 @@ export function InternshipCard({
   bookmarked?: boolean;
 }) {
   const deadline = daysUntil(internship.deadline);
+  const tBookmarks = await getTranslations('bookmarks');
+  const tMarketplace = await getTranslations('marketplace');
   // We can't wrap the whole card in <Link> because it now contains a
   // nested <form>+<button> (bookmark toggle). React forbids nesting
   // interactive elements, so the root is a plain <article> and only the
@@ -39,7 +42,7 @@ export function InternshipCard({
         >
           <button
             type="submit"
-            aria-label={bookmarked ? 'Remove from saved' : 'Save for later'}
+            aria-label={bookmarked ? tBookmarks('removeLabel') : tBookmarks('saveLabel')}
             className="h-8 w-8 rounded-full bg-white/90 border border-[var(--border-color)] flex items-center justify-center hover:bg-white"
           >
             <span aria-hidden style={{ color: bookmarked ? 'var(--brand-500)' : 'var(--ink-3)' }}>
@@ -61,7 +64,7 @@ export function InternshipCard({
           </div>
           {internship.isPaid && (
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#ECFDF5] text-[#15803D] flex-shrink-0">
-              Paid
+              {tMarketplace('paid.paid')}
             </span>
           )}
         </div>

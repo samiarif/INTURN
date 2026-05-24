@@ -238,5 +238,55 @@
       "workspaceStarted": "Workspace started",
       "deadline": "Deadline"
     }
+  },
+  "marketplace": {
+    "title": "Browse internships",
+    "subtitle": "Real internships from Tunisian companies. Apply once with your inturn profile.",
+    "searchPlaceholder": "Search title, sector, description…",
+    "skillPlaceholder": "Skill (e.g. Figma)",
+    "searchButton": "Search",
+    "anySector": "Any sector",
+    "anyLocation": "Any location",
+    "anyDuration": "Any duration",
+    "anyLanguage": "Any language",
+    "duration": { "short": "< 8 weeks", "medium": "8–12 weeks", "long": "> 12 weeks" },
+    "paid": { "all": "All", "paid": "Paid", "unpaid": "Unpaid" },
+    "clearFilters": "Clear filters",
+    "noResults": "No internships match.",
+    "noResultsHelp": "Try removing filters or broadening your search.",
+    "previous": "← Previous",
+    "next": "Next →",
+    "page": "Page {n}"
+  },
+  "bookmarks": {
+    "savedTitle": "Saved internships",
+    "savedDescription": "Your wishlist. Heart any internship from the marketplace to keep it here.",
+    "empty": "Nothing saved yet.",
+    "emptySub": "Browse the marketplace and tap the heart on anything you want to come back to.",
+    "openMarketplace": "Open marketplace",
+    "saveLabel": "Save for later",
+    "removeLabel": "Remove from saved"
+  },
+  "applications": {
+    "tabActive": "Applications",
+    "tabSaved": "Saved"
+  },
+  "errors": {
+    "root": {
+      "title": "Something went wrong.",
+      "body": "We've been notified. Try again, or head back to the home page.",
+      "tryAgain": "Try again",
+      "home": "Home",
+      "reference": "Reference: {digest}"
+    },
+    "platform": {
+      "title": "This page hit an error.",
+      "body": "Try again or open another tab from the sidebar. If it keeps happening, ping support."
+    },
+    "marketplace": {
+      "title": "Couldn't load the marketplace.",
+      "body": "We'll get it back in a moment. Try again or visit later.",
+      "back": "Back to home"
+    }
   }
 }

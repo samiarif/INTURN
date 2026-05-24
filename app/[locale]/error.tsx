@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function Error({
   error,
@@ -10,6 +11,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations('errors.root');
+
   useEffect(() => {
     // TODO Sprint E: pipe to Sentry.
     console.error('[error.tsx /]', error);
@@ -17,25 +20,23 @@ export default function Error({
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 text-center">
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">Something went wrong.</h1>
-      <p className="text-[var(--ink-3)] max-w-md mb-6">
-        We&apos;ve been notified. Try again, or head back to the home page.
-      </p>
+      <h1 className="text-3xl font-semibold tracking-tight mb-2">{t('title')}</h1>
+      <p className="text-[var(--ink-3)] max-w-md mb-6">{t('body')}</p>
       {error.digest && (
-        <p className="text-[var(--ink-3)] text-xs font-mono mb-6">Reference: {error.digest}</p>
+        <p className="text-[var(--ink-3)] text-xs font-mono mb-6">{t('reference', { digest: error.digest })}</p>
       )}
       <div className="flex items-center gap-3">
         <button
           onClick={reset}
           className="inline-flex items-center justify-center h-10 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
         >
-          Try again
+          {t('tryAgain')}
         </button>
         <Link
           href="/"
           className="inline-flex items-center justify-center h-10 px-4 rounded-md text-sm font-medium border border-[var(--border-color)] hover:border-[var(--border-strong)]"
         >
-          Home
+          {t('home')}
         </Link>
       </div>
     </div>

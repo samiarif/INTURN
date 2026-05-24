@@ -238,5 +238,55 @@
       "workspaceStarted": "Workspace démarré",
       "deadline": "Échéance"
     }
+  },
+  "marketplace": {
+    "title": "Parcourir les stages",
+    "subtitle": "Des vrais stages d'entreprises tunisiennes. Postulez en un clic avec votre profil inturn.",
+    "searchPlaceholder": "Rechercher titre, secteur, description…",
+    "skillPlaceholder": "Compétence (ex. Figma)",
+    "searchButton": "Rechercher",
+    "anySector": "Tous secteurs",
+    "anyLocation": "Tous lieux",
+    "anyDuration": "Toutes durées",
+    "anyLanguage": "Toutes langues",
+    "duration": { "short": "< 8 semaines", "medium": "8–12 semaines", "long": "> 12 semaines" },
+    "paid": { "all": "Tous", "paid": "Rémunéré", "unpaid": "Non rémunéré" },
+    "clearFilters": "Effacer les filtres",
+    "noResults": "Aucun stage ne correspond.",
+    "noResultsHelp": "Essayez de retirer des filtres ou d'élargir la recherche.",
+    "previous": "← Précédent",
+    "next": "Suivant →",
+    "page": "Page {n}"
+  },
+  "bookmarks": {
+    "savedTitle": "Stages enregistrés",
+    "savedDescription": "Votre wishlist. Cliquez sur un cœur dans le marketplace pour le garder ici.",
+    "empty": "Rien d'enregistré pour le moment.",
+    "emptySub": "Parcourez le marketplace et cliquez sur le cœur pour retrouver un stage plus tard.",
+    "openMarketplace": "Ouvrir le marketplace",
+    "saveLabel": "Enregistrer",
+    "removeLabel": "Retirer des favoris"
+  },
+  "applications": {
+    "tabActive": "Candidatures",
+    "tabSaved": "Enregistrés"
+  },
+  "errors": {
+    "root": {
+      "title": "Une erreur s'est produite.",
+      "body": "Nous avons été notifiés. Réessayez, ou revenez à l'accueil.",
+      "tryAgain": "Réessayer",
+      "home": "Accueil",
+      "reference": "Référence : {digest}"
+    },
+    "platform": {
+      "title": "Cette page a rencontré une erreur.",
+      "body": "Réessayez ou ouvrez un autre onglet depuis la barre latérale. Si ça persiste, contactez le support."
+    },
+    "marketplace": {
+      "title": "Impossible de charger le marketplace.",
+      "body": "On revient dans un instant. Réessayez ou revenez plus tard.",
+      "back": "Retour à l'accueil"
+    }
   }
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { getUserByClerkId } from '@/modules/profiles/queries';
 import { getApplicationsByApplicant } from '@/modules/applications/queries';
 
@@ -19,19 +20,22 @@ export default async function Page() {
   const user = await getUserByClerkId(clerkId);
   if (!user) redirect('/sign-in');
 
-  const rows = await getApplicationsByApplicant(user.id);
+  const [rows, tApps] = await Promise.all([
+    getApplicationsByApplicant(user.id),
+    getTranslations('applications'),
+  ]);
 
   return (
     <div className="max-w-3xl mx-auto p-8">
       <nav className="flex items-center gap-4 text-sm mb-6 border-b border-[var(--border-color)]">
         <span className="px-3 py-2 border-b-2 border-[var(--brand-500)] text-[var(--ink)] font-medium">
-          Applications
+          {tApps('tabActive')}
         </span>
         <Link
           href="/intern/saved"
           className="px-3 py-2 text-[var(--ink-3)] hover:text-[var(--ink)]"
         >
-          Saved
+          {tApps('tabSaved')}
         </Link>
       </nav>
       <h1 className="text-2xl font-semibold tracking-tight mb-2">My applications</h1>
