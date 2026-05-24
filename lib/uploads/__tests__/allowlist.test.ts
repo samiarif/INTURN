@@ -54,6 +54,14 @@ describe('validateUpload', () => {
     if (!result.ok) expect(result.code).toBe('too_large');
   });
 
+  it('accepts a CV at exactly MAX_BYTES_BY_KIND.cv (inclusive boundary)', async () => {
+    const exact = new Uint8Array(MAX_BYTES_BY_KIND.cv);
+    exact.set(pdfMagic, 0);
+    const file = new File([exact], 'cv.pdf', { type: 'application/pdf' });
+    const result = await validateUpload('cv', file);
+    expect(result.ok).toBe(true);
+  });
+
   it('rejects an unknown kind', async () => {
     const file = fileFromBytes('x.pdf', 'application/pdf', pdfMagic);
     // @ts-expect-error testing runtime guard
