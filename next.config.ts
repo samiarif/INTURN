@@ -10,11 +10,13 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.public.blob.vercel-storage.com',
         pathname: '/**',
+        search: '',
       },
       {
         protocol: 'https',
         hostname: 'img.clerk.com',
         pathname: '/**',
+        search: '',
       },
     ],
   },
