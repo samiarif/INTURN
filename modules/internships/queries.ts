@@ -47,8 +47,20 @@ async function queryPublishedInternships(filters: ListFilters) {
     eq(organizations.verificationStatus, 'verified'),
   ];
   if (filters.search) {
-    // tsvector match — search_vector is maintained by a trigger (0003 migration).
-    conditions.push(sql`${internships.searchVector} @@ plainto_tsquery('simple', ${filters.search})`);
+    // Hybrid: tsvector @@ (full-token, indexed) OR ilike substring fallback so
+    // partial-word queries like "marketin" still match "marketing". Substring
+    // matching becomes the dominant path until ~5k listings; tsvector kicks in
+    // when ranking starts to matter.
+    const q = filters.search;
+    const like = `%${q}%`;
+    conditions.push(
+      sql`(
+        ${internships.searchVector} @@ plainto_tsquery('simple', ${q})
+        OR ${internships.title} ILIKE ${like}
+        OR ${internships.sector} ILIKE ${like}
+        OR ${internships.description} ILIKE ${like}
+      )`,
+    );
   }
   if (filters.paid === 'paid') conditions.push(eq(internships.isPaid, true));
   if (filters.paid === 'unpaid') conditions.push(eq(internships.isPaid, false));
