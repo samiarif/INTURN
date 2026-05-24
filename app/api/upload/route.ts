@@ -1,7 +1,8 @@
-import { auth, clerkClient } from '@clerk/nextjs/server';
 import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { requireEnv } from '@/lib/env';
+import { getSession } from '@/modules/auth/session';
+import type { Role } from '@/modules/auth/types';
 
 const ALLOWED_KINDS = ['cv', 'logo', 'deliverable', 'registry'] as const;
 type Kind = (typeof ALLOWED_KINDS)[number];
@@ -12,7 +13,7 @@ function isKind(value: string | null): value is Kind {
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
-const ALLOWED_ROLES_BY_KIND: Record<Kind, ReadonlyArray<'intern' | 'company' | 'admin'>> = {
+const ALLOWED_ROLES_BY_KIND: Record<Kind, ReadonlyArray<Role>> = {
   cv: ['intern', 'admin'],
   logo: ['company', 'admin'],
   registry: ['company', 'admin'],
@@ -20,8 +21,8 @@ const ALLOWED_ROLES_BY_KIND: Record<Kind, ReadonlyArray<'intern' | 'company' | '
 };
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
+  const session = await getSession();
+  if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -31,10 +32,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid kind' }, { status: 400 });
   }
 
-  const clerk = await clerkClient();
-  const clerkUser = await clerk.users.getUser(userId);
-  const role = clerkUser.publicMetadata.role as 'intern' | 'company' | 'admin' | undefined;
-  if (!role || !ALLOWED_ROLES_BY_KIND[kind].includes(role)) {
+  if (!ALLOWED_ROLES_BY_KIND[kind].includes(session.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -51,7 +49,7 @@ export async function POST(req: Request) {
   requireEnv('BLOB_READ_WRITE_TOKEN');
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path = `${kind}/${userId}/${safeName}`;
+  const path = `${kind}/${session.clerkId}/${safeName}`;
 
   const blob = await put(path, file, {
     access: 'public',

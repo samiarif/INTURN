@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { projects } from '@/db/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 
 export async function getProjectsByOrganization(organizationId: string) {
   return db.select().from(projects).where(eq(projects.organizationId, organizationId));
@@ -12,8 +12,15 @@ export async function getProjectById(id: string) {
 }
 
 export async function getActiveProjectsBySupervisor(supervisorUserId: string) {
-  const all = await db.select().from(projects).where(eq(projects.status, 'active'));
-  return all.filter((p) => p.supervisorIds?.includes(supervisorUserId));
+  return db
+    .select()
+    .from(projects)
+    .where(
+      and(
+        eq(projects.status, 'active'),
+        sql`${projects.supervisorIds} @> ${JSON.stringify([supervisorUserId])}::jsonb`,
+      ),
+    );
 }
 
 export async function getProjectsForOrganizations(organizationIds: string[]) {

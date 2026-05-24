@@ -21,6 +21,9 @@ export const projects = pgTable(
   (table) => [
     uniqueIndex('projects_org_slug_idx').on(table.organizationId, table.slug),
     index('projects_status_idx').on(table.status),
+    // Accelerate `supervisor_ids @> '[…]'::jsonb` lookups used by the
+    // workspace authz + supervisor inbox queries.
+    index('projects_supervisors_gin_idx').using('gin', table.supervisorIds),
   ],
 );
 

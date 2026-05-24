@@ -1,4 +1,6 @@
-export type UserRole = 'intern' | 'company' | 'admin';
+import type { Role } from '@/modules/auth/types';
+
+export type UserRole = Role;
 
 export type WorkspaceRoute = 'intern' | 'company';
 

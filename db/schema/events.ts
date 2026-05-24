@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, uuid, jsonb, index } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 export const events = pgTable(
   'events',
@@ -14,7 +15,10 @@ export const events = pgTable(
   (table) => [
     index('events_type_idx').on(table.type),
     index('events_actor_id_idx').on(table.actorId),
-    index('events_target_idx').on(table.targetType, table.targetId),
+    // Compound index for the activity feed query
+    //   WHERE target_id = $1 ORDER BY created_at DESC
+    // (the feed is the hottest event query on every workspace render).
+    index('events_target_created_idx').on(table.targetId, sql`created_at DESC`),
     index('events_created_at_idx').on(table.createdAt),
   ],
 );

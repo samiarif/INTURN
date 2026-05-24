@@ -1,17 +1,15 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { getUserByClerkId } from '@/modules/profiles/queries';
+import { updateTag } from 'next/cache';
+import { requireSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { createInternship, publishInternship } from './service';
+import { MARKETPLACE_TAG } from './queries';
 import { internshipFormSchema } from './validators';
 
 export async function createInternshipAction(projectId: string, formData: FormData) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) throw new Error('Unauthorized');
-  const user = await getUserByClerkId(clerkId);
-  if (!user) throw new Error('User not found');
+  const { user } = await requireSession();
 
   const project = await getProjectById(projectId);
   if (!project) throw new Error('Project not found');
@@ -55,10 +53,7 @@ export async function createInternshipAction(projectId: string, formData: FormDa
 }
 
 export async function publishInternshipAction(internshipId: string) {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) throw new Error('Unauthorized');
-  const user = await getUserByClerkId(clerkId);
-  if (!user) throw new Error('User not found');
-
+  const { user } = await requireSession();
   await publishInternship({ internshipId, actorId: user.id });
+  updateTag(MARKETPLACE_TAG);
 }

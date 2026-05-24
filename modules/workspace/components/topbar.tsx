@@ -1,3 +1,4 @@
+import '../workspace.css';
 import { cn } from '@/lib/utils';
 
 export type Crumb = { label: string; bold?: boolean };
