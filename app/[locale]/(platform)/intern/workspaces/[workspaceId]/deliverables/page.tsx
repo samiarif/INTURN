@@ -3,16 +3,20 @@ import { WorkspaceDeliverablesPage } from '@/modules/workspace/components/worksp
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ workspaceId: string }>;
+  searchParams: Promise<{ selected?: string }>;
 }) {
   const { workspaceId } = await params;
+  const { selected } = await searchParams;
   const ctx = await loadWorkspacePage(workspaceId, 'intern');
   return (
     <WorkspaceDeliverablesPage
       data={ctx.data}
       view={ctx.view}
       basePath={ctx.basePath}
+      selectedId={selected}
     />
   );
 }
