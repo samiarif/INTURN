@@ -197,7 +197,21 @@
       "overdue": "En retard de {days} jours",
       "noTasks": "Aucune tâche pour le moment.",
       "thisWeek": "Tâches de la semaine",
-      "addTask": "Ajouter une tâche"
+      "addTask": "Ajouter une tâche",
+      "emptyDrop": "Déposer ici",
+      "viewBoard": "Tableau",
+      "viewList": "Liste",
+      "viewCalendar": "Calendrier",
+      "filterAll": "Toutes",
+      "filterMine": "Les miennes",
+      "filterAssignedTo": "Assignées à {name}",
+      "filterPhase": "Phase",
+      "filterDueThisWeek": "À rendre cette semaine",
+      "sortDueDate": "Trier : Échéance",
+      "groupStatus": "Grouper : Statut",
+      "reviewBannerHeadline": "{count, plural, =1 {1 tâche attend votre revue.} other {# tâches attendent votre revue.}}",
+      "reviewBannerBodyPrefix": "{name} a soumis",
+      "reviewBannerJump": "VOIR LA CARTE →"
     },
     "deliverables": {
       "uploadNew": "Téléverser",

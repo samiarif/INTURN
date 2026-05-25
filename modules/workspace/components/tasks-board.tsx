@@ -150,10 +150,9 @@ function SortableTaskCard({ task, status, view, internName, renderDue }: CardPro
         <span
           className={`tb-card-due ${due.urgent ? 'urgent' : ''} ${due.overdue ? 'overdue' : ''} ${status === 'done' ? 'good' : ''}`}
         >
-          <span className="cal" />
+          {status === 'done' ? <span className="ico-check" /> : <span className="cal" />}
           <span>{renderDue(due)}</span>
         </span>
-        <div className="tb-meta-chips" />
         <span
           className="ws-avatar xs who"
           title={internName}
@@ -179,6 +178,7 @@ type ColumnProps = {
   isOver: boolean;
   renderDue: (d: DueInfo) => string;
   addTaskLabel: string;
+  emptyDropLabel: string;
 };
 
 // A droppable wrapper exposes the column to @dnd-kit so empty columns are valid
@@ -195,6 +195,7 @@ function BoardColumn({
   isOver,
   renderDue,
   addTaskLabel,
+  emptyDropLabel,
 }: ColumnProps) {
   const { setNodeRef } = useDroppable({ id: `column-${status}`, data: { columnId: status } });
   const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
@@ -206,10 +207,12 @@ function BoardColumn({
       data-column-status={status}
     >
       <div className="tb-col-head">
-        <span className="pip" />
+        <span className="pip" aria-hidden="true" />
         <span className="name">{label}</span>
-        <span className="count">{tasks.length}</span>
-        <button className="menu" aria-label="Column menu" type="button">
+        <span className="count" aria-label={`${tasks.length} tasks`}>
+          {tasks.length}
+        </span>
+        <button className="menu" aria-label={`${label} column menu`} type="button">
           ⋯
         </button>
       </div>
@@ -226,7 +229,7 @@ function BoardColumn({
             />
           ))}
         </SortableContext>
-        {tasks.length === 0 && <div className="tb-card-ghost">Drop here to move</div>}
+        {tasks.length === 0 && <div className="tb-card-ghost">{emptyDropLabel}</div>}
       </div>
       {view === 'supervisor' && (
         <button className="tb-col-add" type="button">
@@ -367,10 +370,8 @@ export function TasksBoard({
         <div className="tb-review-banner">
           <span className="dot" />
           <span>
-            <b>
-              {needsReviewCount} task{needsReviewCount === 1 ? ' is' : 's are'} waiting on you.
-            </b>{' '}
-            {internName} submitted{' '}
+            <b>{t('reviewBannerHeadline', { count: needsReviewCount })}</b>{' '}
+            {t('reviewBannerBodyPrefix', { name: internName })}{' '}
             <b>
               {firstReviewTask.tag ? `${firstReviewTask.tag} · ` : ''}
               {firstReviewTask.title}
@@ -378,7 +379,7 @@ export function TasksBoard({
             .
           </span>
           <a className="nav" href={`#task-${firstReviewTask.id}`}>
-            JUMP TO CARD →
+            {t('reviewBannerJump')}
           </a>
         </div>
       )}
@@ -386,28 +387,39 @@ export function TasksBoard({
       <div className="tb-toolbar">
         <div className="tb-view">
           <button className="active" type="button">
-            Board
+            {t('viewBoard')}
           </button>
           <button type="button" disabled>
-            List
+            {t('viewList')}
           </button>
           <button type="button" disabled>
-            Calendar
+            {t('viewCalendar')}
           </button>
         </div>
         <div className="tb-chip active">
-          All <span className="num">{tasks.length}</span>
+          {t('filterAll')} <span className="num">{tasks.length}</span>
         </div>
         <div className="tb-chip">
-          {view === 'supervisor' ? `Assigned to ${internName.split(' ')[0]}` : 'Mine'}{' '}
+          {view === 'supervisor'
+            ? t('filterAssignedTo', { name: internName.split(' ')[0] })
+            : t('filterMine')}{' '}
           <span className="num">{tasks.length}</span>
         </div>
         <div className="tb-chip">
-          Due this week <span className="num">{dueThisWeekCount}</span>
+          {t('filterPhase')}
+          <span className="caret" />
+        </div>
+        <div className="tb-chip">
+          {t('filterDueThisWeek')} <span className="num">{dueThisWeekCount}</span>
         </div>
         <div className="tb-spacer" />
         <div className="tb-chip">
-          Sort: Due date<span className="caret" />
+          {t('sortDueDate')}
+          <span className="caret" />
+        </div>
+        <div className="tb-chip">
+          {t('groupStatus')}
+          <span className="caret" />
         </div>
       </div>
 
@@ -450,6 +462,7 @@ export function TasksBoard({
                 isOver={overColumn === col.status && activeColumn !== col.status}
                 renderDue={renderDue}
                 addTaskLabel={t('addTask')}
+                emptyDropLabel={t('emptyDrop')}
               />
             );
           })}

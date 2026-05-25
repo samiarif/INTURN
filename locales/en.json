@@ -197,7 +197,21 @@
       "overdue": "Overdue by {days} days",
       "noTasks": "No tasks yet.",
       "thisWeek": "This week's tasks",
-      "addTask": "Add task"
+      "addTask": "Add task",
+      "emptyDrop": "Drop here to move",
+      "viewBoard": "Board",
+      "viewList": "List",
+      "viewCalendar": "Calendar",
+      "filterAll": "All",
+      "filterMine": "Mine",
+      "filterAssignedTo": "Assigned to {name}",
+      "filterPhase": "Phase",
+      "filterDueThisWeek": "Due this week",
+      "sortDueDate": "Sort: Due date",
+      "groupStatus": "Group: Status",
+      "reviewBannerHeadline": "{count, plural, =1 {1 task is waiting on you.} other {# tasks are waiting on you.}}",
+      "reviewBannerBodyPrefix": "{name} submitted",
+      "reviewBannerJump": "JUMP TO CARD →"
     },
     "deliverables": {
       "uploadNew": "Upload new",
