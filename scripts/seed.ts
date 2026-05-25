@@ -72,6 +72,808 @@ async function upsertProjectBySlug(input: {
   return created;
 }
 
+// ============================================================
+// Sam-accounts seed
+// ------------------------------------------------------------
+// Sam has 3 real Clerk-backed sign-in emails. This block makes the
+// in-app experience for each of those accounts rich and consistent:
+//   - hellowemakeitgrow@gmail.com → admin (verification queue)
+//   - dazzsemi@gmail.com         → company supervisor with project,
+//                                   internships, applications, workspace
+//   - sami.arif@thog.io          → intern with complete profile,
+//                                   applications, bookmarks, and an
+//                                   active workspace + deliverables.
+//
+// All lookups use email as the stable key so the script works on any
+// DB (clerk_id varies per-environment). Re-runs do not duplicate
+// rows: every insert checks for an existing record first, and any
+// wipe-and-reinsert is scoped to a workspace that this seed owns or
+// to events tagged with metadata.seed === 'sam-accounts'.
+// ============================================================
+const SAM_SEED_TAG = 'sam-accounts';
+
+async function seedSamAccounts(ctx: { candidateApplicants: Array<typeof users.$inferSelect> }) {
+  const findUserByEmail = async (email: string) => {
+    const [row] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    return row;
+  };
+
+  const dazzsemi = await findUserByEmail('dazzsemi@gmail.com');
+  const samiArif = await findUserByEmail('sami.arif@thog.io');
+  const helloWmig = await findUserByEmail('hellowemakeitgrow@gmail.com');
+
+  const missing: string[] = [];
+  if (!dazzsemi) missing.push('dazzsemi@gmail.com');
+  if (!samiArif) missing.push('sami.arif@thog.io');
+  if (!helloWmig) missing.push('hellowemakeitgrow@gmail.com');
+  if (missing.length === 3) {
+    console.log(
+      `↷ Skipping Sam-accounts seed — none of [${missing.join(', ')}] are in the users table yet (sign in once to create them).`,
+    );
+    return;
+  }
+  if (missing.length > 0) {
+    console.log(
+      `⚠ Sam-accounts seed: missing user rows for [${missing.join(', ')}] — they will be skipped.`,
+    );
+  }
+
+  // ---- 1. hellowemakeitgrow → admin ----
+  if (helloWmig) {
+    if (helloWmig.role !== 'admin') {
+      await db
+        .update(users)
+        .set({ role: 'admin', updatedAt: new Date() })
+        .where(eq(users.id, helloWmig.id));
+    }
+    console.log(`✓ Promoted hellowemakeitgrow@gmail.com → admin`);
+  }
+
+  // ---- 2. dazzsemi → company supervisor ----
+  let dazzOrgId: string | null = null;
+  let dazzProjectId: string | null = null;
+  let visualInternshipId: string | null = null;
+  let uxResearcherInternshipId: string | null = null;
+  let activeWorkspaceId: string | null = null;
+
+  if (dazzsemi) {
+    // Keep role 'company' (already set by Clerk onboarding).
+    if (dazzsemi.role !== 'company') {
+      await db
+        .update(users)
+        .set({ role: 'company', updatedAt: new Date() })
+        .where(eq(users.id, dazzsemi.id));
+    }
+
+    // Find his existing org (auto-created by selectRole as "My Company").
+    const [dazzOrg] = await db
+      .select()
+      .from(organizations)
+      .where(eq(organizations.ownerId, dazzsemi.id))
+      .limit(1);
+
+    if (dazzOrg) {
+      dazzOrgId = dazzOrg.id;
+      const renameToDazzStudio = dazzOrg.name === 'My Company';
+      await db
+        .update(organizations)
+        .set({
+          name: renameToDazzStudio ? 'Dazz Studio' : dazzOrg.name,
+          industry: dazzOrg.industry ?? 'Design & creative',
+          size: dazzOrg.size ?? '11-50',
+          country: dazzOrg.country ?? 'Tunisia',
+          city: dazzOrg.city ?? 'Tunis',
+          description:
+            dazzOrg.description ??
+            'Independent design studio in Lac 2. Brand systems and product UI for founders shipping in MENA.',
+          verified: true,
+          verificationStatus: 'verified',
+          updatedAt: new Date(),
+        })
+        .where(eq(organizations.id, dazzOrg.id));
+
+      // Delete the placeholder "sami test" draft project — but only if it's
+      // truly empty (0 internships) and still a draft.
+      const draftCandidates = await db
+        .select()
+        .from(projects)
+        .where(
+          and(
+            eq(projects.organizationId, dazzOrg.id),
+            eq(projects.status, 'draft'),
+          ),
+        );
+      for (const p of draftCandidates) {
+        if (!/sami\s*test/i.test(p.name)) continue;
+        const intCount = await db
+          .select({ id: internships.id })
+          .from(internships)
+          .where(eq(internships.projectId, p.id))
+          .limit(1);
+        if (intCount.length === 0) {
+          await db.delete(projects).where(eq(projects.id, p.id));
+        }
+      }
+
+      // --- Project: Brand audit & system refresh (under Dazz Studio) ---
+      const projectSlug = 'brand-audit';
+      const goals = [
+        'Clarity of position. Stakeholder-validated story of who Dazz is, in one paragraph.',
+        'System, not assets. Refresh ships as a token-backed Figma library, not a deck of mocks.',
+        'Handoff that lasts. Guidelines a junior designer can apply on day one without us.',
+      ];
+      const phases = [
+        { name: 'Discovery & audit', description: 'Stakeholder interviews + surface gaps', fromWeek: 1, toWeek: 4 },
+        { name: 'Explore & moodboard', description: 'Direction tests, type & colour exploration', fromWeek: 4, toWeek: 7 },
+        { name: 'System build', description: 'Token-backed Figma library + spec', fromWeek: 7, toWeek: 10 },
+        { name: 'Handoff', description: 'Written guidelines + walkthrough', fromWeek: 10, toWeek: 12 },
+      ];
+      const today = new Date();
+      const startDate = new Date(today);
+      startDate.setDate(startDate.getDate() - 14); // 2 weeks ago
+      const endDate = new Date(today);
+      endDate.setDate(endDate.getDate() + 70); // ~10 weeks out
+      const isoDate = (d: Date) => d.toISOString().slice(0, 10);
+
+      const [existingProject] = await db
+        .select()
+        .from(projects)
+        .where(and(eq(projects.organizationId, dazzOrg.id), eq(projects.slug, projectSlug)))
+        .limit(1);
+
+      const projectValues = {
+        organizationId: dazzOrg.id,
+        slug: projectSlug,
+        name: 'Brand audit & system refresh',
+        brief:
+          "Audit Dazz Studio's current brand across every surface, surface the gaps with stakeholders, then deliver a refreshed identity system as a Figma library + written guidelines. Two interns running in parallel — design and research — for the full 12 weeks.",
+        status: 'active' as const,
+        supervisorIds: [dazzsemi.id],
+        startDate: isoDate(startDate),
+        endDate: isoDate(endDate),
+        goals,
+        phases,
+      };
+
+      if (existingProject) {
+        await db
+          .update(projects)
+          .set({ ...projectValues, updatedAt: new Date() })
+          .where(eq(projects.id, existingProject.id));
+        dazzProjectId = existingProject.id;
+      } else {
+        const [created] = await db.insert(projects).values(projectValues).returning();
+        dazzProjectId = created.id;
+      }
+
+      // --- 2 internships under the Brand audit project ---
+      const visualDeliverables = [
+        { name: 'D1 · Brand audit · stakeholder findings', description: 'Slide deck synthesising interviews and visual audit.', dueWeek: 3 },
+        { name: 'D2 · Visual exploration · moodboards', description: '3 distinct directions, each with a one-pager rationale.', dueWeek: 5 },
+        { name: 'D3 · Logo refresh round 1', description: 'Refined marks based on chosen direction.', dueWeek: 7 },
+        { name: 'D4 · Design system library', description: 'Token-backed Figma library: type, colour, components.', dueWeek: 10 },
+        { name: 'D5 · Final handoff package', description: 'Written guidelines + walkthrough video.', dueWeek: 12 },
+      ];
+      const uxDeliverables = [
+        { name: 'R1 · Stakeholder interview plan', description: 'Question bank + screener + scheduling.', dueWeek: 2 },
+        { name: 'R2 · Interview synthesis', description: 'Affinity map + theme write-up.', dueWeek: 5 },
+        { name: 'R3 · Positioning recommendation', description: 'One-paragraph position validated by stakeholders.', dueWeek: 8 },
+        { name: 'R4 · Research handoff', description: 'Notion archive + insights memo for the design lead.', dueWeek: 10 },
+      ];
+
+      const upsertSamInternship = async (data: {
+        title: string;
+        description: string;
+        sector: string;
+        skills: string[];
+        duration: number;
+        compensation: string;
+        deliverables: Array<{ name: string; description?: string; dueWeek: number }>;
+      }) => {
+        const [existing] = await db
+          .select()
+          .from(internships)
+          .where(
+            and(
+              eq(internships.organizationId, dazzOrg.id),
+              eq(internships.title, data.title),
+            ),
+          )
+          .limit(1);
+
+        const values = {
+          organizationId: dazzOrg.id,
+          projectId: dazzProjectId!,
+          title: data.title,
+          description: data.description,
+          sector: data.sector,
+          skills: data.skills,
+          duration: data.duration,
+          locationType: 'hybrid' as const,
+          location: 'Tunis · Lac 2',
+          isPaid: true,
+          compensation: data.compensation,
+          internCount: 1,
+          language: 'fr' as const,
+          status: 'published' as const,
+          deadline: isoDate(new Date(today.getTime() + 14 * 24 * 3600_000)),
+          deliverables: data.deliverables,
+        };
+
+        if (existing) {
+          await db
+            .update(internships)
+            .set({ ...values, updatedAt: new Date() })
+            .where(eq(internships.id, existing.id));
+          return existing.id;
+        }
+        const [created] = await db.insert(internships).values(values).returning();
+        return created.id;
+      };
+
+      visualInternshipId = await upsertSamInternship({
+        title: 'Visual designer · Brand audit',
+        description:
+          'Lead the visual exploration for the brand refresh — moodboards, type pairings, logo work, and the final Figma library. Working closely with the UX researcher on the same project.',
+        sector: 'Design',
+        skills: ['Figma', 'Brand systems', 'Typography', 'Moodboards', 'Design tokens'],
+        duration: 12,
+        compensation: '800 TND / mo',
+        deliverables: visualDeliverables,
+      });
+
+      uxResearcherInternshipId = await upsertSamInternship({
+        title: 'UX researcher · Brand audit',
+        description:
+          'Run the discovery leg of the brand audit — stakeholder interviews, synthesis, and the positioning paragraph that anchors the visual work.',
+        sector: 'Research',
+        skills: ['User interviews', 'Synthesis', 'Figma', 'Notion'],
+        duration: 10,
+        compensation: '750 TND / mo',
+        deliverables: uxDeliverables,
+      });
+
+      // --- Applications ---
+      // sami.arif → Visual designer → ACCEPTED (this is the active workspace).
+      if (samiArif && visualInternshipId) {
+        const [existingApp] = await db
+          .select()
+          .from(applications)
+          .where(
+            and(
+              eq(applications.internshipId, visualInternshipId),
+              eq(applications.applicantId, samiArif.id),
+            ),
+          )
+          .limit(1);
+        if (!existingApp) {
+          await db.insert(applications).values({
+            internshipId: visualInternshipId,
+            applicantId: samiArif.id,
+            status: 'accepted',
+            coverNote:
+              'Brand systems are the work I want to be doing for the rest of my career — would love to learn yours.',
+          });
+        } else if (existingApp.status !== 'accepted') {
+          await db
+            .update(applications)
+            .set({ status: 'accepted', updatedAt: new Date() })
+            .where(eq(applications.id, existingApp.id));
+        }
+      }
+
+      // 3 other applicants → UX researcher (mixed statuses).
+      const uxApplicantPicks: Array<{
+        emailPrefix: string;
+        status: 'new' | 'reviewed' | 'shortlisted';
+        coverNote: string;
+        internalNotes?: string;
+      }> = [
+        {
+          emailPrefix: 'lina@',
+          status: 'new',
+          coverNote: 'I ran the discovery for my final-year project — interviews, synthesis, the works.',
+        },
+        {
+          emailPrefix: 'amir@',
+          status: 'reviewed',
+          coverNote: 'Strong in synthesis. Interview transcripts attached.',
+        },
+        {
+          emailPrefix: 'sarra@',
+          status: 'shortlisted',
+          coverNote: 'Available immediately. Big fan of brand-led research.',
+          internalNotes: 'Strong sample. Schedule call.',
+        },
+        {
+          emailPrefix: 'imen@',
+          status: 'new',
+          coverNote: 'INSAT CS background, but research is the part that gets me out of bed.',
+        },
+      ];
+
+      if (uxResearcherInternshipId) {
+        for (const pick of uxApplicantPicks) {
+          const candidate = ctx.candidateApplicants.find((a) => a.email.startsWith(pick.emailPrefix));
+          if (!candidate) continue;
+          const [existingApp] = await db
+            .select()
+            .from(applications)
+            .where(
+              and(
+                eq(applications.internshipId, uxResearcherInternshipId),
+                eq(applications.applicantId, candidate.id),
+              ),
+            )
+            .limit(1);
+          if (existingApp) continue;
+          await db.insert(applications).values({
+            internshipId: uxResearcherInternshipId,
+            applicantId: candidate.id,
+            status: pick.status,
+            coverNote: pick.coverNote,
+            internalNotes: pick.internalNotes ?? null,
+          });
+        }
+      }
+
+      // 1-2 applicants → Visual designer too (pending in dazzsemi's inbox).
+      const visualPendingPicks: Array<{
+        emailPrefix: string;
+        status: 'new' | 'reviewed';
+        coverNote: string;
+      }> = [
+        {
+          emailPrefix: 'sarra@',
+          status: 'new',
+          coverNote: 'Brand-first designer. Would love a shot at the Dazz refresh.',
+        },
+        {
+          emailPrefix: 'fares@',
+          status: 'reviewed',
+          coverNote: 'Motion + brand systems background. Reel attached.',
+        },
+      ];
+      if (visualInternshipId) {
+        for (const pick of visualPendingPicks) {
+          const candidate = ctx.candidateApplicants.find((a) => a.email.startsWith(pick.emailPrefix));
+          if (!candidate) continue;
+          const [existingApp] = await db
+            .select()
+            .from(applications)
+            .where(
+              and(
+                eq(applications.internshipId, visualInternshipId),
+                eq(applications.applicantId, candidate.id),
+              ),
+            )
+            .limit(1);
+          if (existingApp) continue;
+          await db.insert(applications).values({
+            internshipId: visualInternshipId,
+            applicantId: candidate.id,
+            status: pick.status,
+            coverNote: pick.coverNote,
+          });
+        }
+      }
+
+      // --- Workspace for the accepted sami.arif application ---
+      if (samiArif && visualInternshipId) {
+        const [existingWs] = await db
+          .select()
+          .from(workspaces)
+          .where(
+            and(
+              eq(workspaces.internshipId, visualInternshipId),
+              eq(workspaces.internId, samiArif.id),
+            ),
+          )
+          .limit(1);
+        const wsValues = {
+          internshipId: visualInternshipId,
+          internId: samiArif.id,
+          organizationId: dazzOrg.id,
+          status: 'active' as const,
+          startDate: isoDate(startDate),
+          endDate: isoDate(endDate),
+        };
+        if (existingWs) {
+          await db
+            .update(workspaces)
+            .set({ ...wsValues, updatedAt: new Date() })
+            .where(eq(workspaces.id, existingWs.id));
+          activeWorkspaceId = existingWs.id;
+        } else {
+          const [created] = await db.insert(workspaces).values(wsValues).returning();
+          activeWorkspaceId = created.id;
+        }
+      }
+    }
+  }
+
+  // ---- 3. sami.arif → intern profile + bookmarks + cross-org applications ----
+  if (samiArif) {
+    if (samiArif.role !== 'intern') {
+      await db
+        .update(users)
+        .set({ role: 'intern', updatedAt: new Date() })
+        .where(eq(users.id, samiArif.id));
+    }
+
+    const profileValues = {
+      userId: samiArif.id,
+      university: 'enit',
+      yearOfStudy: 'L3',
+      fieldOfStudy: 'Industrial design',
+      city: 'Tunis',
+      preferredLanguage: 'fr' as const,
+      skills: [
+        'Figma',
+        'Brand systems',
+        'Typography',
+        'Design tokens',
+        'React',
+        'TypeScript',
+        'Prototyping',
+      ],
+      roles: ['Visual designer', 'Junior product designer', 'Brand designer'],
+      portfolioLinks: [
+        { platform: 'Behance', url: 'https://behance.net/samiarif' },
+        { platform: 'GitHub', url: 'https://github.com/samiarif' },
+      ],
+      profileStep: 'complete' as const,
+    };
+    const [existingProfile] = await db
+      .select()
+      .from(profiles)
+      .where(eq(profiles.userId, samiArif.id))
+      .limit(1);
+    if (existingProfile) {
+      await db
+        .update(profiles)
+        .set({ ...profileValues, updatedAt: new Date() })
+        .where(eq(profiles.userId, samiArif.id));
+    } else {
+      await db.insert(profiles).values(profileValues);
+    }
+
+    // Cross-org applications for sami.arif so his inbox feels lived-in.
+    // Look up by internship title (stable across seeds).
+    const findInternshipByTitle = async (title: string) => {
+      const [row] = await db
+        .select()
+        .from(internships)
+        .where(eq(internships.title, title))
+        .limit(1);
+      return row;
+    };
+    const acmeVisual = await findInternshipByTitle('Visual designer — Brand audit');
+    const greenvibeContent = await findInternshipByTitle('Content + brand intern');
+
+    const ensureApp = async (
+      internshipId: string,
+      status: 'new' | 'reviewed' | 'shortlisted' | 'accepted',
+      coverNote: string,
+    ) => {
+      const [existing] = await db
+        .select()
+        .from(applications)
+        .where(
+          and(
+            eq(applications.internshipId, internshipId),
+            eq(applications.applicantId, samiArif.id),
+          ),
+        )
+        .limit(1);
+      if (existing) {
+        if (existing.status !== status) {
+          await db
+            .update(applications)
+            .set({ status, updatedAt: new Date() })
+            .where(eq(applications.id, existing.id));
+        }
+        return;
+      }
+      await db.insert(applications).values({
+        internshipId,
+        applicantId: samiArif.id,
+        status,
+        coverNote,
+      });
+    };
+
+    if (acmeVisual) {
+      await ensureApp(
+        acmeVisual.id,
+        'reviewed',
+        'Big fan of Acme. Would love a shot at the brand-audit role.',
+      );
+    }
+    if (greenvibeContent) {
+      await ensureApp(
+        greenvibeContent.id,
+        'shortlisted',
+        'I write campaign copy in FR + EN — happy to share samples.',
+      );
+    }
+
+    // 3 bookmarks for the bookmarks tab.
+    const foretEditorRow = await findInternshipByTitle('Bilingual editor intern');
+    const beyondFrontendRow = await findInternshipByTitle('Junior frontend engineer');
+    const acmeJuniorRow = await findInternshipByTitle('Junior product designer');
+    const bookmarkTargets = [foretEditorRow, beyondFrontendRow, acmeJuniorRow].filter(
+      (r): r is NonNullable<typeof r> => Boolean(r),
+    );
+    for (const target of bookmarkTargets) {
+      await db
+        .insert(internshipBookmarks)
+        .values({ internId: samiArif.id, internshipId: target.id })
+        .onConflictDoNothing();
+    }
+
+    // ---- 4. Sami's workspace under Dazz: tasks/deliverables/comments/events/checkin ----
+    if (activeWorkspaceId && dazzsemi) {
+      const wsId = activeWorkspaceId;
+      const samiId = samiArif.id;
+      const dazzId = dazzsemi.id;
+      const todayTs = Date.now();
+      const daysAgo = (n: number) => new Date(todayTs - n * 24 * 3600_000);
+      const isoTs = (d: Date) => d.toISOString();
+
+      // Wipe + re-insert: scoped to wsId (we own it). The deliverables
+      // contain a revisionHistory snapshot for D1.
+      await db.delete(tasks).where(eq(tasks.workspaceId, wsId));
+      const taskRows = await db
+        .insert(tasks)
+        .values([
+          { workspaceId: wsId, tag: 'BA-001', title: 'Kickoff brief sign-off', status: 'done', priority: 'medium', order: 1, dueDate: '2026-05-12' },
+          { workspaceId: wsId, tag: 'BA-002', title: 'Stakeholder interviews · 6 of 6', status: 'done', priority: 'high', order: 2, dueDate: '2026-05-18' },
+          { workspaceId: wsId, tag: 'BA-003', title: 'Audit slide deck · in review', status: 'review', priority: 'high', order: 3, dueDate: '2026-05-22' },
+          { workspaceId: wsId, tag: 'BA-005', title: 'Visual exploration · moodboards', status: 'in-progress', priority: 'high', order: 4, dueDate: '2026-05-30' },
+          { workspaceId: wsId, tag: 'BA-006', title: 'Type pairings · 3 options', status: 'in-progress', priority: 'medium', order: 5, dueDate: '2026-05-30' },
+          { workspaceId: wsId, tag: 'BA-007', title: 'Logo refresh · round 1', status: 'todo', priority: 'medium', order: 6, dueDate: '2026-06-06' },
+        ])
+        .returning();
+      const taskByTag = new Map(taskRows.map((t) => [t.tag, t]));
+
+      await db.delete(deliverables).where(eq(deliverables.workspaceId, wsId));
+      const d1V1: import('../db/schema').DeliverableRevision = {
+        version: 1,
+        submittedAt: isoTs(daysAgo(7)),
+        submittedBy: samiId,
+        fileUrl: null,
+        fileName: 'brand-audit-v1.pdf',
+        fileType: 'application/pdf',
+        note: 'First pass — covers all 6 interviews + visual audit photos.',
+        status: 'revision-requested',
+        review: {
+          reviewerId: dazzId,
+          reviewedAt: isoTs(daysAgo(5)),
+          state: 'changes',
+          text: 'Findings section needs a TL;DR up top. Quote attribution is solid.',
+        },
+      };
+      const delivRows = await db
+        .insert(deliverables)
+        .values([
+          {
+            workspaceId: wsId,
+            title: 'D1 · Brand audit · stakeholder findings',
+            description: 'Slide deck synthesising interviews and visual audit.',
+            status: 'submitted',
+            version: 2,
+            submittedAt: daysAgo(1),
+            fileName: 'brand-audit-v2.pdf',
+            fileType: 'application/pdf',
+            revisionHistory: [d1V1],
+          },
+          {
+            workspaceId: wsId,
+            title: 'D2 · Visual exploration · moodboards',
+            description: '3 distinct directions, each with a one-pager rationale.',
+            status: 'draft',
+            version: 1,
+            revisionHistory: [],
+          },
+          {
+            workspaceId: wsId,
+            title: 'D3 · Logo refresh round 1',
+            description: 'Refined marks based on chosen direction.',
+            status: 'draft',
+            version: 1,
+            revisionHistory: [],
+          },
+          {
+            workspaceId: wsId,
+            title: 'D4 · Design system library',
+            description: 'Token-backed Figma library: type, colour, components.',
+            status: 'draft',
+            version: 1,
+            revisionHistory: [],
+          },
+          {
+            workspaceId: wsId,
+            title: 'D5 · Final handoff package',
+            description: 'Written guidelines + walkthrough video.',
+            status: 'draft',
+            version: 1,
+            revisionHistory: [],
+          },
+        ])
+        .returning();
+      const d1Row = delivRows.find((d) => d.title.startsWith('D1'));
+      const d2Row = delivRows.find((d) => d.title.startsWith('D2'));
+
+      // Wipe + re-insert events tagged with sam-accounts SAM_SEED_TAG so we
+      // don't pile up on re-runs.
+      await db.delete(events).where(sql`metadata->>'seed' = ${SAM_SEED_TAG}`);
+
+      const moodboardTask = taskByTag.get('BA-005');
+      const typePairingsTask = taskByTag.get('BA-006');
+      const logoTask = taskByTag.get('BA-007');
+
+      const eventsToInsert: Array<typeof events.$inferInsert> = [
+        {
+          type: 'system.workspace.opened',
+          actorId: dazzId,
+          targetType: 'workspace',
+          targetId: wsId,
+          metadata: { seed: SAM_SEED_TAG, by: 'Dazz Studio' },
+          createdAt: daysAgo(14),
+        },
+      ];
+      if (d1Row) {
+        eventsToInsert.push(
+          {
+            type: 'deliverable.submitted',
+            actorId: samiId,
+            targetType: 'deliverable',
+            targetId: d1Row.id,
+            metadata: { seed: SAM_SEED_TAG, name: 'D1 · Brand audit · stakeholder findings', version: 1 },
+            createdAt: daysAgo(7),
+          },
+          {
+            type: 'deliverable.revision.requested',
+            actorId: dazzId,
+            targetType: 'deliverable',
+            targetId: d1Row.id,
+            metadata: { seed: SAM_SEED_TAG, name: 'D1 · Brand audit · v1', note: 'Findings section needs a TL;DR' },
+            createdAt: daysAgo(5),
+          },
+          {
+            type: 'deliverable.submitted',
+            actorId: samiId,
+            targetType: 'deliverable',
+            targetId: d1Row.id,
+            metadata: { seed: SAM_SEED_TAG, name: 'D1 · Brand audit · stakeholder findings', version: 2 },
+            createdAt: daysAgo(1),
+          },
+        );
+      }
+      if (moodboardTask) {
+        eventsToInsert.push({
+          type: 'task.moved',
+          actorId: samiId,
+          targetType: 'task',
+          targetId: moodboardTask.id,
+          metadata: { seed: SAM_SEED_TAG, tag: 'BA-005', to: 'in-progress' },
+          createdAt: daysAgo(3),
+        });
+      }
+      if (typePairingsTask) {
+        eventsToInsert.push({
+          type: 'comment.added',
+          actorId: dazzId,
+          targetType: 'task',
+          targetId: typePairingsTask.id,
+          metadata: { seed: SAM_SEED_TAG, task: 'Type pairings', text: 'Try a pair without the contrast serif' },
+          createdAt: daysAgo(2),
+        });
+      }
+      if (logoTask) {
+        eventsToInsert.push({
+          type: 'task.moved',
+          actorId: dazzId,
+          targetType: 'task',
+          targetId: logoTask.id,
+          metadata: { seed: SAM_SEED_TAG, tag: 'BA-007', to: 'todo' },
+          createdAt: daysAgo(4),
+        });
+      }
+      eventsToInsert.push({
+        type: 'checkin.submitted',
+        actorId: samiId,
+        targetType: 'workspace',
+        targetId: wsId,
+        metadata: {
+          seed: SAM_SEED_TAG,
+          shipped:
+            '- Closed BA-001 Kickoff brief sign-off\n- Closed BA-002 Stakeholder interviews · 6 of 6\n- Submitted D1 Brand audit · stakeholder findings (v2)',
+          stuck:
+            '- Waiting on review feedback for BA-003\n- Direction call for moodboards (3 options ready)',
+          next:
+            '- Lock moodboard direction\n- Start BA-006 Type pairings · 3 options\n- Open BA-007 Logo refresh draft',
+          authorName: 'Sami Arif',
+          aiDraftFollowup:
+            'Suggested focus next week: lock the moodboard direction with Dazz before opening logo work.',
+          source: 'ai',
+        },
+        createdAt: daysAgo(7),
+      });
+      await db.insert(events).values(eventsToInsert);
+
+      // Wipe + re-insert comments scoped to wsId (we own this workspace).
+      await db.delete(comments).where(eq(comments.workspaceId, wsId));
+      const commentRows: Array<typeof comments.$inferInsert> = [
+        {
+          workspaceId: wsId,
+          authorId: dazzId,
+          body: 'Welcome aboard! Kickoff brief is in Notion — give it a read before our 1:1 Thursday.',
+          createdAt: daysAgo(13),
+        },
+        {
+          workspaceId: wsId,
+          authorId: samiId,
+          body: 'Read it twice. Two questions in the doc — flagged with @Dazz.',
+          createdAt: daysAgo(12),
+        },
+        {
+          workspaceId: wsId,
+          authorId: dazzId,
+          body: 'Answered both. Push the stakeholder findings as v1 whenever you are ready.',
+          createdAt: daysAgo(8),
+        },
+        {
+          workspaceId: wsId,
+          authorId: samiId,
+          body: 'V2 of the audit is up — added the TL;DR you asked for and tightened the quote pull-outs.',
+          createdAt: daysAgo(1),
+        },
+        {
+          workspaceId: wsId,
+          authorId: dazzId,
+          body: 'Sharp. Will review tomorrow morning. Start exploring moodboards in parallel.',
+          createdAt: daysAgo(1),
+        },
+      ];
+      if (d2Row) {
+        commentRows.push({
+          workspaceId: wsId,
+          deliverableId: d2Row.id,
+          authorId: samiId,
+          body: 'Pushed three initial moodboards as draft — editorial, brutalist, and a softer geometric one.',
+          createdAt: daysAgo(2),
+        });
+      }
+      if (typePairingsTask) {
+        commentRows.push({
+          workspaceId: wsId,
+          taskId: typePairingsTask.id,
+          authorId: samiId,
+          body: 'First pairing is editorial (Söhne + Tiempos). Second leans bolder (GT Walsheim + Editorial New).',
+          createdAt: daysAgo(2),
+        });
+      }
+      await db.insert(comments).values(commentRows);
+    }
+
+    console.log(
+      `✓ Set up sami.arif@thog.io → complete profile + ${
+        2 + (acmeVisual && greenvibeContent ? 1 : 0)
+      } applications (1 accepted under Dazz) + ${bookmarkTargets.length} bookmarks + workspace with 5 deliverables + 6 tasks + comments + check-in`,
+    );
+  }
+
+  if (dazzsemi && dazzOrgId) {
+    console.log(
+      `✓ Set up dazzsemi@gmail.com → Dazz Studio (verified) + Brand audit project + ${
+        (visualInternshipId ? 1 : 0) + (uxResearcherInternshipId ? 1 : 0)
+      } internships + applications + ${activeWorkspaceId ? '1 active workspace' : '0 workspaces'}`,
+    );
+  }
+}
+
 export async function runSeed() {
   console.log('Seeding…');
 
@@ -1181,6 +1983,19 @@ export async function runSeed() {
       createdAt: days(12),
     },
   ]);
+
+  // ============================================================
+  // Sam-accounts seed: bind rich data to Sam's 3 sign-in emails so
+  // admin / company / intern dashboards have real content when he
+  // signs in. Looks users up by email (stable key) so this works
+  // across DBs. Fully idempotent — safe to re-run.
+  // ============================================================
+  await seedSamAccounts({
+    candidateApplicants: [
+      ...applicants, // Lina, Amir, Sarra
+      ...extraApplicants, // Imen, Rayen, Syrine, Fares
+    ],
+  });
 
   return {
     workspaceId: workspace.id,
