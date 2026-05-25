@@ -110,37 +110,37 @@
    * ========================================================================== */
 
   /* Brand violet */
-  --brand-50: #F3EEFF;
-  --brand-100: #DDCCFF;
-  --brand-200: #BDA0FF;
-  --brand-300: #9970FF;
-  --brand-500: #7C3AED;
-  --brand-600: #6D28D9;
-  --brand-700: #5B21B6;
-  --brand-800: #3B1486;
-  --brand-gradient: linear-gradient(120deg, #2BD9C8 0%, #8F70FE 30%, #8F1FFE 60%, #E467FE 100%);
+  --brand-50: #f3eeff;
+  --brand-100: #ddccff;
+  --brand-200: #bda0ff;
+  --brand-300: #9970ff;
+  --brand-500: #7c3aed;
+  --brand-600: #6d28d9;
+  --brand-700: #5b21b6;
+  --brand-800: #3b1486;
+  --brand-gradient: linear-gradient(120deg, #2bd9c8 0%, #8f70fe 30%, #8f1ffe 60%, #e467fe 100%);
 
   /* Cyan accent — emphasis only */
-  --accent-50: #ECFEFF;
-  --accent-500: #06B6D4;
-  --accent-700: #0E7490;
+  --accent-50: #ecfeff;
+  --accent-500: #06b6d4;
+  --accent-700: #0e7490;
 
   /* Cool neutrals (slate) */
-  --bg: #F8FAFC;
-  --surface: #FFFFFF;
-  --surface-muted: #F1F5F9;
-  --border-color: #E2E8F0;
-  --border-strong: #94A3B8;
-  --ink: #0F172A;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-muted: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-strong: #94a3b8;
+  --ink: #0f172a;
   --ink-2: #334155;
-  --ink-3: #64748B;
-  --ink-4: #94A3B8;
+  --ink-3: #64748b;
+  --ink-4: #94a3b8;
 
   /* Semantic */
-  --success: #16A34A;
-  --warning: #EA580C;
-  --danger: #DC2626;
-  --info: #0284C7;
+  --success: #16a34a;
+  --warning: #ea580c;
+  --danger: #dc2626;
+  --info: #0284c7;
 
   /* Radius (Workshop scale) */
   --radius-ws-sm: 2px;
@@ -152,7 +152,7 @@
   /* Shadows — short, neutral */
   --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
   --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px 0 rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.10);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.1);
   --shadow-lg: 0 12px 32px -10px rgba(15, 23, 42, 0.18);
 }
 
@@ -194,11 +194,11 @@
   --surface: oklch(0.22 0.01 240);
   --surface-muted: oklch(0.25 0.01 240);
   --border-color: oklch(0.32 0.01 240);
-  --border-strong: oklch(0.40 0.01 240);
+  --border-strong: oklch(0.4 0.01 240);
   --ink: oklch(0.95 0.01 240);
   --ink-2: oklch(0.78 0.01 240);
-  --ink-3: oklch(0.60 0.01 240);
-  --ink-4: oklch(0.50 0.01 240);
+  --ink-3: oklch(0.6 0.01 240);
+  --ink-4: oklch(0.5 0.01 240);
   /* Brand / accent / semantic stay the same — readable on dark already */
   color-scheme: dark;
 }
@@ -229,8 +229,690 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
-[role="button"]:focus-visible,
-[tabindex]:not([tabindex="-1"]):focus-visible {
+[role='button']:focus-visible,
+[tabindex]:not([tabindex='-1']):focus-visible {
   outline: 2px solid var(--brand-500);
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+ * Project Hub — supervisor's roll-up screen for a single project.
+ * Lives under (platform) — uses PlatformHeader, not WorkspaceShellLayout.
+ * Ported from /tmp/inturn-design-3/inturn/project/mocks/project-hub.css
+ * with token names rebound to our globals (--border-color, --brand-500…).
+ * ========================================================================== */
+
+/* Brief card — eyebrow + title + goals + meta + team cluster on the right. */
+.ph-brief {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 28px;
+  align-items: start;
+  padding: 24px 26px;
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+}
+.dark .ph-brief {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-muted) 100%);
+}
+.ph-brief::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(143, 31, 254, 0.1), transparent 70%);
+  pointer-events: none;
+}
+.ph-brief > * {
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 768px) {
+  .ph-brief {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.ph-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+.ph-eyebrow .sep {
+  color: var(--ink-4);
+  margin: 0 6px;
+}
+.ph-brief-title {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  text-wrap: balance;
+  margin-bottom: 10px;
+}
+.ph-brief-desc {
+  font-size: 14px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  max-width: 56ch;
+  margin-bottom: 14px;
+}
+
+.ph-goals {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ph-goals li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.ph-goals li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 12px;
+  height: 1px;
+  background: var(--brand-500);
+}
+.ph-goals li b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.ph-brief-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+.ph-brief-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ph-brief-meta b {
+  color: var(--ink);
+  font-weight: 500;
+}
+.ph-brief-meta .pip {
+  width: 4px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--ink-4);
+}
+
+.ph-brief-team h6 {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.ph-brief-team-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+.dark .ph-brief-team-row {
+  border-bottom-color: var(--border-color);
+}
+.ph-brief-team-row:last-child {
+  border-bottom: 0;
+}
+.ph-brief-team-row .meta {
+  flex: 1;
+  min-width: 0;
+}
+.ph-brief-team-row .name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.ph-brief-team-row .role {
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+/* Avatar primitive (reused in brief + roster + side rail). */
+.ph-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ddd6fe, #c7d2fe);
+  color: var(--brand-600);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 11px;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--border-color);
+  flex: 0 0 auto;
+}
+.ph-avatar.company {
+  background: linear-gradient(135deg, #fecaca, #fed7aa);
+  color: #9a3412;
+}
+.ph-avatar.pink {
+  background: linear-gradient(135deg, #fbcfe8, #fda4af);
+  color: #9f1239;
+}
+
+/* Org-code mark for internship rows (e.g., "VD" for Visual designer). */
+.ph-code-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--brand-50);
+  border: 1px solid var(--brand-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--brand-600);
+  letter-spacing: 0.02em;
+  flex: 0 0 auto;
+}
+
+/* Phase strip — 4-step horizontal stepper with brand→accent progress fill. */
+.ph-phase-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative;
+  margin-top: 16px;
+}
+.ph-phase-strip::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: var(--border-color);
+  border-radius: 999px;
+  z-index: 0;
+}
+.ph-phase-strip::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  height: 2px;
+  width: var(--ph-progress, 0%);
+  background: linear-gradient(90deg, var(--brand-500), var(--accent-500));
+  border-radius: 999px;
+  z-index: 0;
+  transition: width 0.3s ease;
+}
+.ph-phase {
+  position: relative;
+  z-index: 1;
+  padding-top: 36px;
+  text-align: left;
+  padding-right: 18px;
+}
+.ph-phase .pip {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 0 0 4px var(--surface);
+}
+.ph-phase.done .pip {
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+}
+.ph-phase.done .pip::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 4px;
+  height: 8px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+}
+.ph-phase.now .pip {
+  background: var(--surface);
+  border-color: var(--accent-500);
+  box-shadow:
+    0 0 0 4px var(--surface),
+    0 0 0 7px var(--accent-50);
+}
+.ph-phase.now .pip::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--accent-500);
+}
+.ph-phase .num {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 2px;
+}
+.ph-phase.now .num {
+  color: var(--accent-500);
+}
+.ph-phase.done .num {
+  color: var(--brand-500);
+}
+.ph-phase .name {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+}
+.ph-phase.upcoming .name {
+  color: var(--ink-2);
+}
+.ph-phase .wks {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.02em;
+}
+@media (max-width: 768px) {
+  .ph-phase-strip {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .ph-phase-strip::before,
+  .ph-phase-strip::after {
+    display: none;
+  }
+  .ph-phase {
+    padding-top: 0;
+    padding-left: 28px;
+  }
+  .ph-phase .pip {
+    top: 2px;
+  }
+}
+
+/* Internships roster — one row per role. */
+.ph-intern {
+  display: grid;
+  grid-template-columns: 40px 1fr 180px 200px auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 8px;
+  border-radius: var(--radius-md);
+  border-bottom: 1px solid var(--border-color);
+}
+.ph-intern:last-child {
+  border-bottom: 0;
+}
+.ph-intern:hover {
+  background: var(--surface-muted);
+}
+@media (max-width: 900px) {
+  .ph-intern {
+    grid-template-columns: 40px 1fr auto;
+    gap: 12px;
+  }
+  .ph-intern > .ph-intern-person,
+  .ph-intern > .ph-intern-prog {
+    grid-column: 1 / -1;
+    padding-left: 52px;
+  }
+}
+
+.ph-intern-role .role-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.ph-intern-role .role-meta {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.ph-intern-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.ph-intern-person .who {
+  min-width: 0;
+}
+.ph-intern-person .pn {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ph-intern-person .pm {
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+.ph-intern-prog {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ph-intern-prog .col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ph-intern-prog .label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.ph-intern-prog .value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.ph-intern-prog .value small {
+  color: var(--ink-3);
+  font-weight: 400;
+  font-size: 11px;
+}
+
+.ph-intern-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ph-intern-open:hover {
+  background: var(--surface-muted);
+  border-color: var(--border-strong);
+}
+
+/* "Add another internship" dashed row at the bottom of the roster. */
+.ph-add-intern {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--ink-3);
+  background: transparent;
+  width: 100%;
+  text-decoration: none;
+}
+.ph-add-intern:hover {
+  background: var(--surface-muted);
+  color: var(--ink-2);
+}
+
+/* Right rail · Project signal card (purple→white tint, sparkline). */
+.ph-signal {
+  background: linear-gradient(180deg, #ecfeff 0%, #ffffff 60%);
+  border: 1px solid #a5f3fc;
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+}
+.dark .ph-signal {
+  background: linear-gradient(180deg, var(--surface-muted) 0%, var(--surface) 60%);
+  border-color: var(--border-color);
+}
+.ph-signal-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.ph-signal-head h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0e7490;
+}
+.dark .ph-signal-head h4 {
+  color: var(--accent-500);
+}
+.ph-signal-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0e7490;
+  background: rgba(6, 182, 212, 0.12);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.ph-signal-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 6px;
+}
+.ph-signal-metric b {
+  font-size: 28px;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ph-signal-metric .delta {
+  font-size: 12px;
+  color: var(--success);
+  font-weight: 500;
+}
+.ph-signal-bench {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 4px;
+}
+.ph-signal-bench b {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+.ph-signal-spark {
+  margin-top: 10px;
+  height: 36px;
+  display: block;
+  width: 100%;
+}
+
+/* Right rail · Project sync card (purple gradient CTA). */
+.ph-sync {
+  background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%);
+  color: #fff;
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.ph-sync::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 70%);
+}
+.ph-sync h4 {
+  font-size: 14.5px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  position: relative;
+}
+.ph-sync p {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  position: relative;
+}
+.ph-sync-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  padding: 7px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  position: relative;
+  cursor: pointer;
+}
+.ph-sync-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Right rail · Supervisors & team card. */
+.ph-team-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+}
+.ph-team-card h4 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.ph-team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ph-team-member {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+.ph-team-member .nm {
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.ph-team-member .rl {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 1px;
+}
+.ph-team-member .ld {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--brand-50);
+  color: var(--brand-600);
+}
+
+/* Right rail · "This week · {date}" bullet list. */
+.ph-week {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+.ph-week h4 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.ph-week ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ph-week li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-2);
+  padding: 4px 0;
+}
+.ph-week li .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ink-4);
+  flex: 0 0 auto;
+}
+.ph-week li.urgent .dot {
+  background: var(--warning);
+}
+.ph-week li.next .dot {
+  background: var(--brand-500);
+}
+.ph-week li.done {
+  color: var(--ink-4);
+  text-decoration: line-through;
+}
+.ph-week li.done .dot {
+  background: var(--success);
 }
