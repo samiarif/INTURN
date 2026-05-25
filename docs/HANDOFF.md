@@ -1,14 +1,65 @@
-# inturn — Session Handoff (2026-05-24, updated post Sprint A + Sprint B)
+# inturn — Session Handoff (2026-05-25, updated post 05-canvas polish pass)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
 ## TL;DR — Where we are
 
 - **Live in prod** at https://inturn.vercel.app. Custom domain inturn-hub.com **not yet wired**.
-- **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace (filtered + bookmarkable) → applies → company reviews + accepts → workspace auto-created with Overview/Tasks/Deliverables/Comments/Activity/Timeline tabs + weekly check-in with AI draft.
+- **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace (filtered + bookmarkable + match-scored) → applies → company reviews + accepts → workspace auto-created with Overview/Tasks/Deliverables/Comments/Activity/Timeline tabs + weekly check-in with AI draft.
 - **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres + Clerk auth + Tailwind v4 + shadcn/ui (new-york) + next-intl 4 (FR default / EN with `as-needed` prefix) + Vitest 4 + Vercel hosting.
-- **Branches**: `sprint-a-ship-credibility` (Sprint A PR open) and `sprint-b-phase-1-closure` (Sprint B + perf hotfix, PR ready). 102/102 tests green. typecheck + lint + build all clean as of last commit `689101c`.
-- **Full audit + 5-sprint ship plan** at `docs/superpowers/plans/2026-05-24-sprint-{a,b,c,d,e}-*.md` and memory file `audit_2026-05-24.md`. Order: A (credibility) → **B (Phase 1 feature closure) [DONE]** → C (i18n + a11y + mobile) → D (engagement: notifications + community + AI) → E (trust: monitoring + legal + billing). All 5 plans now written.
+- **Branch**: `sprint-b-phase-1-closure` carries Sprint A + B + C + Sprint 3 wireframes + Deliverables redesign + **05 Workspace Canvas full polish pass**. 110/110 tests green, typecheck + lint + build all clean as of `688bb45`.
+- **5-sprint ship plan + 3 design implementations done** at `docs/superpowers/plans/2026-05-{24,25}-*.md`. Sprint D (engagement) and Sprint E (trust+legal+billing) remain.
+
+## 05 Workspace Canvas — full polish landed (2026-05-25)
+
+6 commits on `sprint-b-phase-1-closure`, all pushed. The eight sections of the design at `docs/inturn-project-brief.md`-adjacent `Inturn — 05 Workspace canvas · print.pdf` are now reflected in the UI:
+
+```
+b75dd2b feat(project-hub): full design polish — brief card, phases, stats, roster, side rail
+84af4d4 feat(workspace/overview): component polish to match design 05 §04 fidelity
+3aba42e feat(dashboard/company): KPI tiles + recent projects + today's tasks + calendar + syncs (§01)
+2a55980 feat(marketplace/explore): filter rail + match band + match score pill + have-skill chips (§07)
+df4fd11 feat(projects/index): new /company/projects page with stat cards + project grid (§02)
+688bb45 feat(tasks-board): visual polish to match design 05 §05 (columns tint, card density, toolbar)
+```
+
+### Per-section coverage
+
+| § | Section | Route | Status |
+|---|---|---|---|
+| §01 | Workspace · Dashboard (supervisor home) | `/company/dashboard` | Welcome band + 4 KPI tiles + Recent projects (progress bars) + Today's tasks + Calendar widget + Upcoming syncs |
+| §02 | Projects · Index | `/company/projects` (NEW) | Stat cards + List/Grid toggle + status filter + project cards with code/progress/avatars + Continue setup vs View → states |
+| §03 | Project · Detail (Hub) | `/company/projects/[id]` | Brief card (eyebrow chips + 3-goal bullets + project team aside) + Phase strip + 4 stat tiles + Internships roster + Project signal/sync/team/this-week right rail |
+| §04 | Workspace · Overview | `/(intern\|company)/workspaces/[id]` | BriefCard / StatTiles / TaskList / DeliverablesMini / ActivityFeed / RailIntern / RailSupervisor polished to design density |
+| §05 | Workspace · Tasks | `/.../workspaces/[id]/tasks` | Board polish (tinted columns + count badges + tag chips + review banner on supervisor); Calendar view deferred |
+| §06 | Workspace · Deliverables | `/.../workspaces/[id]/deliverables` | Already shipped pre-polish: master/detail + version stack + role-aware actions |
+| §07 | Explore · Marketplace | `/marketplace` | Left filter rail with facet counts + match band + match score pill (intern only) + skill chip "have" state |
+| §08 | Certificate · Internship complete | not implemented | Deferred to Sprint D/E — needs PDF + share-token infra |
+
+### What this polish needed (new/changed)
+
+- `lib/match.ts` — pure helpers: `matchScore(internSkills, listingSkills)`, `intersectingSkills(...)`
+- `components/marketplace/marketplace-filters.tsx` — server component filter rail (link-based facet toggles, no client JS)
+- `components/dashboard/calendar-widget.tsx` — dynamic month grid with today highlight + event-day dots
+- `modules/internships/queries.ts` — added `computeFacetCounts()` + `MarketplaceFacetCounts` type, cached under `MARKETPLACE_TAG`
+- `app/[locale]/(platform)/company/projects/page.tsx` — NEW Projects Index page (was 404)
+- `app/[locale]/(platform)/company/projects/[projectId]/page.tsx` — rewrite (~720 lines)
+- `app/[locale]/(platform)/company/dashboard/page.tsx` — full rewrite as 2-col `.db-shell`
+- `app/[locale]/(marketing)/marketplace/page.tsx` — restructured to filter rail + cards grid
+- `components/platform-header.tsx` — company nav gains `Projects` link
+- `app/globals.css` — appended ~1500 lines of design-spec CSS (`.ph-*`, `.pi-*`, `.db-*`, `.ex-*`)
+- `modules/workspace/workspace.css` — task-board fidelity additions; deliverables already in
+- `locales/{en,fr}.json` — new namespaces: `projects.index`, `dash.company`, `marketplace.filters`, `tasksBoard.filterChips`, `platformNav.projects`
+
+### Known data gaps surfaced by the polish (defer to product)
+- **Hours-tracking**: §04's 4th stat tile design shows "Hours this week" — we use "Events this week" until per-session/heartbeat data lands.
+- **Cohort benchmarks**: §04 supervisor's "Better than 78% of interns" benchmark needs a cohort-comparison query — currently shows simple delta. Sprint 5 product concern.
+- **AI match score is heuristic**: intern.skills ∩ listing.skills overlap %. No semantic match. Acceptable for v1.
+- **Profile completeness %**: design's "profile 87% complete" omitted — we don't compute this yet.
+- **Joint-sync scheduling**: Project Hub "Schedule project sync" button is decorative — joint sync backend is per-workspace check-in flow today.
+- **Phases & goals**: schema columns exist (Sprint 3 migration); projects.phases/goals editor is in the project-new form but Project Hub doesn't yet have edit-in-place.
+- **Tasks: link-to-deliverable, comment count, attachment count** — schema doesn't yet support; CSS rules in tasks-board are ready when these land.
+- **Tasks: Calendar week view (§05 artboard 3)** — not implemented; visual chip disabled.
 
 ## Sprint B landed (2026-05-24) + perf hotfix
 
