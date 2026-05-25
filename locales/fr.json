@@ -178,7 +178,7 @@
       "myWorkspaces": "Mes workspaces"
     },
     "stuck": {
-      "label": "Bloqué·e ?",
+      "label": "Je suis bloqué·e",
       "title": "Dites-nous ce qui vous bloque",
       "placeholder": "Décrivez ce que vous avez essayé et ce qui ne fonctionne pas",
       "send": "Envoyer",

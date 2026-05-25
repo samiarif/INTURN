@@ -14,6 +14,35 @@ const STATUS_PILL: Record<string, string> = {
   'revision-requested': 'pill-block',
 };
 
+function formatDueDate(due: string | Date): string {
+  const d = new Date(due);
+  const day = d.toLocaleDateString('en-US', { weekday: 'short' });
+  const md = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+  const daysAway = Math.ceil((d.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  // If due in the next week, show the day name + date; otherwise just date
+  if (daysAway >= 0 && daysAway <= 7) return `Due ${day} ${md}`;
+  return `Due ${md}`;
+}
+
+function buildMeta(d: Deliverable): string {
+  const statusKey = d.status ?? 'draft';
+  if (statusKey === 'submitted') {
+    if (d.submittedAt) {
+      const when = new Date(d.submittedAt);
+      const md = when.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+      return `Submitted ${md} · waiting on reviewer`;
+    }
+    return 'Submitted · waiting on reviewer';
+  }
+  if (statusKey === 'approved') return 'Approved';
+  if (statusKey === 'revision-requested') {
+    return d.feedback ? `Changes requested · ${d.feedback.slice(0, 40)}` : 'Changes requested';
+  }
+  // draft
+  if (d.dueDate) return formatDueDate(d.dueDate);
+  return 'Upcoming';
+}
+
 export function DeliverablesMini({ deliverables }: { deliverables: Deliverable[] }) {
   return (
     <div className="ws-card">
@@ -29,14 +58,14 @@ export function DeliverablesMini({ deliverables }: { deliverables: Deliverable[]
             <div key={d.id} className="ws-deliv">
               <div>
                 <div className="ws-deliv-name">{d.title}</div>
-                <div className="ws-deliv-meta">{d.feedback ?? '—'}</div>
+                <div className="ws-deliv-meta">{buildMeta(d)}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span className={`pill ${STATUS_PILL[statusKey] ?? 'pill-todo'}`}>
                   <span className="dot" />
                   {STATUS_LABEL[statusKey] ?? statusKey}
                 </span>
-                <span className="ws-deliv-ver">{isSubmitted ? 'v2' : '—'}</span>
+                <span className="ws-deliv-ver">{isSubmitted ? `v${d.version}` : '—'}</span>
               </div>
             </div>
           );

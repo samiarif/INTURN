@@ -74,6 +74,13 @@ export function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
     : null;
   const quietFlag = quietHours !== null && quietHours >= 24;
 
+  // Today's date for the "This week · 30 May" eyebrow
+  const today = new Date();
+  const thisWeekLabel = `This week · ${today.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+  })}`;
+
   return (
     <>
       <div className="ws-perf">
@@ -86,10 +93,11 @@ export function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
             {onTimePct}
             <span style={{ fontSize: 16, marginLeft: 2 }}>%</span>
           </b>
-          <span className="delta">deliverables submitted</span>
+          <span className="delta">on-time delivery</span>
         </div>
         <div className="ws-perf-bench">
-          {submitted} of {totalDelivs} sent. {data.events.length} workspace events logged.
+          {submitted} of {totalDelivs} sent · {data.events.length} events logged across the
+          internship.
         </div>
         {spark && (
           <svg className="ws-perf-spark" viewBox="0 0 280 36" preserveAspectRatio="none">
@@ -113,7 +121,7 @@ export function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
       </div>
 
       <div className="ws-rail-quick">
-        <h4>This week</h4>
+        <h4>{thisWeekLabel}</h4>
         <ul>
           {pendingReviews.length === 0 && tasksInReview.length === 0 ? (
             <li>

@@ -178,7 +178,7 @@
       "myWorkspaces": "My workspaces"
     },
     "stuck": {
-      "label": "Stuck?",
+      "label": "I'm stuck",
       "title": "Tell us what's blocking you",
       "placeholder": "Describe what you tried and what's not working",
       "send": "Send",

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import type { WorkspaceOverviewData } from '../queries';
-import { ScheduleCheckInButton } from './schedule-check-in';
 
 function daysFromNow(date: string | null): number | null {
   if (!date) return null;
@@ -39,6 +38,13 @@ export function RailIntern({ data }: { data: WorkspaceOverviewData }) {
     ? endDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
     : '—';
 
+  // Today's date for the "This week · 30 May" eyebrow
+  const today = new Date();
+  const thisWeekLabel = `This week · ${today.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+  })}`;
+
   return (
     <>
       <div className="ws-rail-cta">
@@ -53,14 +59,8 @@ export function RailIntern({ data }: { data: WorkspaceOverviewData }) {
         </Link>
       </div>
 
-      <div className="ws-rail-cta" style={{ background: 'linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)' }}>
-        <h4>Schedule a sync</h4>
-        <p>Pick a time. Inturn generates the Jitsi link and adds it to the timeline.</p>
-        <ScheduleCheckInButton workspaceId={data.workspace.id} />
-      </div>
-
       <div className="ws-rail-quick">
-        <h4>This week</h4>
+        <h4>{thisWeekLabel}</h4>
         <ul>
           {tasksThisWeek.length === 0 && deliverablesThisWeek.length === 0 ? (
             <li>
@@ -98,7 +98,7 @@ export function RailIntern({ data }: { data: WorkspaceOverviewData }) {
             {submittedDelivs.length} of {totalDelivs} deliverables submitted
           </li>
           <li>
-            <span className="dot" style={{ background: 'var(--brand-500)' }} />
+            <span className="dot" style={{ background: 'var(--brand)' }} />
             {eventCount} events logged this internship
           </li>
           <li>

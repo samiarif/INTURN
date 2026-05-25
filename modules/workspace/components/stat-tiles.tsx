@@ -14,6 +14,10 @@ function computeActivityScore(events: WorkspaceOverviewData['events']): number {
   return Math.min(100, recentCount * 12);
 }
 
+function truncate(text: string, max: number): string {
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
 export function StatTiles({
   data,
   view,
@@ -39,6 +43,18 @@ export function StatTiles({
   const eventsThisWeek = computeEventsThisWeek(data.events);
   const activityScore = computeActivityScore(data.events);
 
+  // Deliverable footer: design shows `✓ Brand audit · v2 sent` (intern) or
+  // `Brand audit · 1 pending review` (supervisor). Fall back gracefully.
+  const delivFoot = latestSubmitted
+    ? view === 'intern'
+      ? `✓ ${truncate(latestSubmitted.title, 22)} · v${latestSubmitted.version} sent`
+      : pendingReview > 0
+        ? `${pendingReview} pending review`
+        : `✓ ${truncate(latestSubmitted.title, 22)} reviewed`
+    : view === 'intern'
+      ? 'Nothing submitted yet'
+      : 'Nothing pending';
+
   return (
     <div className="ws-stats">
       <div className="ws-stat">
@@ -57,15 +73,7 @@ export function StatTiles({
           <b>{submitted.length}</b>
           <small>of {deliverables.length} submitted</small>
         </div>
-        <div className="ws-stat-foot good">
-          {view === 'intern'
-            ? latestSubmitted
-              ? `✓ ${latestSubmitted.title.slice(0, 28)}`
-              : 'Nothing submitted yet'
-            : pendingReview > 0
-              ? `${pendingReview} pending review`
-              : 'Nothing pending'}
-        </div>
+        <div className={`ws-stat-foot ${latestSubmitted ? 'good' : ''}`}>{delivFoot}</div>
       </div>
       <div className="ws-stat">
         <div className="ws-stat-label">Days remaining</div>
@@ -75,7 +83,7 @@ export function StatTiles({
         </div>
         <div className="ws-stat-foot">
           {endDate
-            ? `Ends ${endDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}`
+            ? `Ends ${endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`
             : '—'}
         </div>
       </div>

@@ -21,7 +21,22 @@ function formatDue(
   task: Task,
   labels: { done: string; review: string; overdue: string },
 ): DueInfo {
-  if (task.status === 'done') return { label: labels.done };
+  if (task.status === 'done') {
+    // Design shows "Done · Mon" / "Done · 2wk ago" — try to derive from updatedAt
+    if (task.updatedAt) {
+      const updated = new Date(task.updatedAt);
+      const daysAgo = Math.floor((Date.now() - updated.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysAgo < 7) {
+        return {
+          label: `${labels.done} · ${updated.toLocaleDateString('en-US', { weekday: 'short' })}`,
+        };
+      }
+      const weeksAgo = Math.floor(daysAgo / 7);
+      if (weeksAgo === 1) return { label: `${labels.done} · 1wk ago` };
+      return { label: `${labels.done} · ${weeksAgo}wk ago` };
+    }
+    return { label: labels.done };
+  }
   if (task.status === 'review') return { label: labels.review };
   if (!task.dueDate) return { label: '—' };
   const due = new Date(task.dueDate);
@@ -29,10 +44,10 @@ function formatDue(
   const daysAway = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   if (daysAway < 0) return { label: labels.overdue, urgent: true };
   if (daysAway <= 7) {
-    const day = due.toLocaleDateString(undefined, { weekday: 'short' });
+    const day = due.toLocaleDateString('en-US', { weekday: 'short' });
     return { label: `Due ${day}`, urgent: true };
   }
-  return { label: `Due ${due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` };
+  return { label: `Due ${due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` };
 }
 
 export async function TaskList({

@@ -1,5 +1,18 @@
 import type { WorkspaceOverviewData } from '../queries';
 
+function formatLocationLabel(locationType: string | null | undefined): string {
+  switch (locationType) {
+    case 'on-site':
+      return 'On-site';
+    case 'virtual':
+      return 'Remote';
+    case 'hybrid':
+      return 'Hybrid';
+    default:
+      return 'Hybrid';
+  }
+}
+
 export function BriefCard({
   data,
   view,
@@ -12,11 +25,18 @@ export function BriefCard({
   const intern = data.intern;
   const supervisor = data.supervisors[0];
 
-  const eyebrow = `Internship · ${internship?.duration ?? 12} weeks · ${
-    internship?.locationType ?? 'hybrid'
-  }`;
+  const eyebrow = `Internship · ${internship?.duration ?? 12} weeks · ${formatLocationLabel(
+    internship?.locationType,
+  )}`;
   const title = project?.name ?? internship?.title ?? 'Workspace';
   const description = project?.brief ?? internship?.description ?? '';
+  const locationType = internship?.locationType;
+  const locationHint =
+    locationType === 'hybrid'
+      ? '3d/wk on-site'
+      : locationType === 'on-site'
+        ? 'on-site full week'
+        : 'remote';
 
   return (
     <div className="ws-brief">
@@ -39,15 +59,14 @@ export function BriefCard({
         <div className="ws-brief-meta">
           {internship?.location && (
             <span>
-              <b>{internship.location}</b>
-              {internship.locationType === 'hybrid' ? ' · 3d/wk on-site' : ''}
+              <b>{internship.location}</b> · {locationHint}
             </span>
           )}
-          {internship?.isPaid && (
+          {internship?.isPaid && internship.compensation && (
             <>
               <span className="dot" />
               <span>
-                Paid · <b>{internship.compensation ?? '—'}</b>
+                Paid · <b>{internship.compensation}</b>
               </span>
             </>
           )}
@@ -77,8 +96,10 @@ export function BriefCard({
                     {intern.firstName} {intern.lastName}
                   </div>
                   <div className="org">
-                    {data.internProfile?.university ?? ''} ·{' '}
-                    {data.internProfile?.yearOfStudy ?? ''}
+                    {data.internProfile?.university ?? ''}
+                    {data.internProfile?.yearOfStudy
+                      ? ` · ${data.internProfile.yearOfStudy}`
+                      : ''}
                   </div>
                 </div>
                 <span className="ws-avatar lg">
