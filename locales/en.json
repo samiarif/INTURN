@@ -7,6 +7,7 @@
   "platformNav": {
     "dashboard": "Dashboard",
     "applications": "Applications",
+    "projects": "Projects",
     "saved": "Saved",
     "browse": "Browse",
     "verifications": "Verifications"
@@ -454,6 +455,41 @@
       "syncsScheduleLink": "Schedule one →",
       "syncsToday": "Today",
       "syncsDurationMin": "{n} min"
+    }
+  },
+  "projects": {
+    "index": {
+      "title": "Project Hubs",
+      "subtitle": "Every project {org} runs through Inturn. Click a card to open its detail view — brief, phases, internships, activity.",
+      "archived": "Archived",
+      "showActive": "Show active",
+      "addProject": "Add project",
+      "newProject": "New project",
+      "statProjects": "Projects",
+      "statProjectsSub": "added",
+      "statActive": "Active projects",
+      "statActiveSub": "running",
+      "statApps": "Applications",
+      "statAppsSub": "new",
+      "viewToggle": "Switch view",
+      "viewGrid": "Grid",
+      "viewList": "List",
+      "filterStatusAll": "All status",
+      "filterStatusActive": "Active",
+      "filterStatusDraft": "Draft",
+      "filterStatusArchived": "Archived",
+      "apply": "Apply",
+      "cardMetaWeekOf": "WK {current} / {total} · {n, plural, =0 {0 internships} one {# internship} other {# internships}}",
+      "cardMetaNotStarted": "Not started · {n, plural, =0 {0 internships} one {# internship} other {# internships}}",
+      "cardMetaNoClock": "No dates · {n, plural, =0 {0 internships} one {# internship} other {# internships}}",
+      "cardProgress": "Progress",
+      "cardTasks": "tasks",
+      "cardActive": "{n, plural, one {# active} other {# active}}",
+      "ctaViewDetails": "View project details →",
+      "ctaContinueSetup": "Continue setup →",
+      "emptyAll": "No projects yet — create your first one to get started.",
+      "emptyDrafts": "No drafts. Start a new project to draft one.",
+      "emptyArchived": "Nothing archived yet."
     }
   },
   "errors": {

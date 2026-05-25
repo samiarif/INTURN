@@ -39,6 +39,7 @@ export function PlatformHeader({ role }: { role: Role }) {
     : role === 'company'
       ? [
           { href: '/company/dashboard', label: tNav('dashboard') },
+          { href: '/company/projects', label: tNav('projects') },
           { href: '/marketplace', label: tNav('browse') },
         ]
       : role === 'admin'

@@ -1752,3 +1752,520 @@ textarea:focus-visible,
     max-height: none;
   }
 }
+
+/* ==========================================================================
+ * Projects Index — design 05 §02
+ * ─────────────────────────────────────────────────────────────────────────
+ * Lives at /company/projects. Title row + 3 stat tiles + toolbar + grid of
+ * project cards. Mock source: docs/design-bundle/project/mocks/
+ * projects-index.{jsx,css} with token names rebound to our globals
+ * (--border-color, --brand-500, --accent-500, --surface-muted…).
+ * ========================================================================== */
+
+.pi-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 28px 80px;
+}
+
+/* Title row */
+.pi-head { margin-bottom: 18px; }
+.pi-head-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pi-head h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.pi-head-badge {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--brand-100);
+  color: var(--brand-700);
+  font-weight: 600;
+}
+.pi-head-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pi-head-link {
+  font-size: 13px;
+  color: var(--ink-3);
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  text-decoration: none;
+}
+.pi-head-link:hover {
+  color: var(--ink);
+  background: var(--surface-muted);
+}
+.pi-head-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  font-weight: 500;
+  background: var(--brand-500);
+  color: #fff;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.pi-head-btn:hover { background: var(--brand-600); }
+.pi-head-btn > span { font-size: 14px; line-height: 1; margin-top: -1px; }
+.pi-head-sub {
+  font-size: 13.5px;
+  color: var(--ink-3);
+  margin-top: 4px;
+  max-width: 64ch;
+}
+
+/* Top stat tiles */
+.pi-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+}
+.pi-stat {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+.pi-stat .ico {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.pi-stat .ico::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+.pi-stat.projects .ico { background: #ccfbf1; }
+.pi-stat.projects .ico::before {
+  border: 1.6px solid #0f766e;
+  border-radius: 3px;
+  background: linear-gradient(135deg, transparent 0 49%, #0f766e 50% 100%);
+}
+.pi-stat.active .ico { background: var(--brand-50); }
+.pi-stat.active .ico::before {
+  border: 1.6px solid var(--brand-600);
+  border-radius: 999px;
+  background: var(--brand-50);
+}
+.pi-stat.active .ico::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--brand-500);
+  border-radius: 999px;
+}
+.pi-stat.apps .ico { background: #fce7f3; }
+.pi-stat.apps .ico::before {
+  border: 1.6px solid #be185d;
+  border-radius: 2px;
+}
+.pi-stat .label {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.pi-stat .value {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.pi-stat .value small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-3);
+  margin-left: 6px;
+  letter-spacing: 0;
+}
+
+/* Dark-mode tile icons — bump tints to legible chips. */
+.dark .pi-stat.projects .ico { background: color-mix(in oklch, #0f766e 25%, var(--surface)); }
+.dark .pi-stat.projects .ico::before { border-color: #5eead4; background: linear-gradient(135deg, transparent 0 49%, #5eead4 50% 100%); }
+.dark .pi-stat.apps .ico { background: color-mix(in oklch, #be185d 25%, var(--surface)); }
+.dark .pi-stat.apps .ico::before { border-color: #f9a8d4; }
+
+/* Toolbar */
+.pi-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.pi-view {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 2px;
+  gap: 2px;
+}
+.pi-view-btn {
+  background: transparent;
+  border: 0;
+  padding: 5px 12px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.pi-view-btn.active {
+  background: var(--brand-50);
+  color: var(--brand-600);
+  font-weight: 500;
+}
+.dark .pi-view-btn.active {
+  background: color-mix(in oklch, var(--brand-500) 25%, var(--surface));
+  color: var(--brand-100);
+}
+.pi-view-btn[aria-disabled='true'] { opacity: 0.55; cursor: not-allowed; }
+.pi-view-btn .ic {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  position: relative;
+}
+.pi-view-btn .ic.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5px;
+}
+.pi-view-btn .ic.grid > span {
+  background: currentColor;
+  border-radius: 1px;
+}
+.pi-view-btn .ic.list > span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.6px;
+  background: currentColor;
+  border-radius: 1px;
+}
+.pi-view-btn .ic.list > span:nth-child(1) { top: 1px; }
+.pi-view-btn .ic.list > span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+.pi-view-btn .ic.list > span:nth-child(3) { bottom: 1px; }
+
+.pi-spacer { flex: 1; }
+
+.pi-filter { display: inline-flex; gap: 8px; }
+.pi-filter-select {
+  height: 32px;
+  padding: 0 28px 0 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 12.5px;
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%),
+                    linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+  background-position: calc(100% - 12px) center, calc(100% - 8px) center;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+.pi-filter-select:hover { border-color: var(--border-strong); }
+.pi-filter-apply {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+/* Cards grid */
+.pi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.pi-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+.pi-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+.pi-card.draft {
+  border-style: dashed;
+  background: linear-gradient(180deg, #fffbeb 0%, var(--surface) 60%);
+}
+.dark .pi-card.draft {
+  background: linear-gradient(180deg, color-mix(in oklch, var(--warning) 12%, var(--surface)) 0%, var(--surface) 60%);
+}
+.pi-card.draft::before {
+  content: 'DRAFT';
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  background: var(--warning);
+  color: #fff;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.pi-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pi-card-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  flex-shrink: 0;
+}
+.pi-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  line-height: 1.3;
+  flex: 1;
+  text-wrap: balance;
+}
+
+.pi-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pi-card-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pi-card-progress .row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.pi-card-progress .row b {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.pi-card-progress .bar {
+  height: 4px;
+  background: var(--surface-muted);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pi-card-progress .bar .fill {
+  height: 100%;
+  background: var(--brand-500);
+  border-radius: 999px;
+  transition: width 240ms ease;
+}
+.pi-card-progress .bar .fill.cyan {
+  background: linear-gradient(90deg, var(--brand-500), var(--accent-500));
+}
+
+.pi-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+  margin-top: 4px;
+}
+.pi-card-tasks {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+.pi-card-tasks .check {
+  width: 13px;
+  height: 13px;
+  border: 1.4px solid var(--ink-4);
+  border-radius: 3px;
+  position: relative;
+}
+.pi-card-tasks .check.done {
+  border-color: var(--success);
+  background: var(--success);
+}
+.pi-card-tasks .check.done::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 4px;
+  height: 6px;
+  border-right: 1.5px solid #fff;
+  border-bottom: 1.5px solid #fff;
+  transform: rotate(45deg);
+}
+.pi-card-tasks b { color: var(--ink); font-weight: 500; }
+
+.pi-card-pill {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-700);
+  background: var(--brand-50);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.dark .pi-card-pill {
+  color: var(--brand-100);
+  background: color-mix(in oklch, var(--brand-500) 25%, var(--surface));
+}
+
+.pi-card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--brand-500);
+  color: #fff;
+  border: 0;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  font-weight: 500;
+  width: 100%;
+}
+.pi-card:hover .pi-card-cta { background: var(--brand-600); }
+.pi-card-cta.draft {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border-color);
+}
+.pi-card:hover .pi-card-cta.draft { background: var(--surface-muted); }
+
+/* "+" new project dashed CTA card */
+.pi-card.add {
+  border: 1.5px dashed var(--border-strong);
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  color: var(--ink-3);
+  font-size: 13.5px;
+  gap: 8px;
+}
+.pi-card.add:hover {
+  background: var(--surface);
+  color: var(--brand-600);
+  border-color: var(--brand-500);
+  transform: none;
+  box-shadow: none;
+}
+.pi-card.add .plus-big {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--surface-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-3);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+}
+.pi-card.add:hover .plus-big {
+  background: var(--brand-50);
+  color: var(--brand-600);
+}
+
+.pi-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 13.5px;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  margin-top: 16px;
+}
+
+@media (max-width: 767px) {
+  .pi-stats { grid-template-columns: 1fr; }
+  .pi-toolbar { flex-wrap: wrap; }
+  .pi-spacer { display: none; }
+}

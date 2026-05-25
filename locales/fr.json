@@ -7,6 +7,7 @@
   "platformNav": {
     "dashboard": "Tableau de bord",
     "applications": "Candidatures",
+    "projects": "Projets",
     "saved": "Enregistrés",
     "browse": "Parcourir",
     "verifications": "Vérifications"
@@ -454,6 +455,41 @@
       "syncsScheduleLink": "En planifier une →",
       "syncsToday": "Aujourd'hui",
       "syncsDurationMin": "{n} min"
+    }
+  },
+  "projects": {
+    "index": {
+      "title": "Hubs de projets",
+      "subtitle": "Tous les projets que {org} pilote via Inturn. Cliquez sur une carte pour ouvrir le détail — brief, phases, stages, activité.",
+      "archived": "Archivés",
+      "showActive": "Voir actifs",
+      "addProject": "Ajouter un projet",
+      "newProject": "Nouveau projet",
+      "statProjects": "Projets",
+      "statProjectsSub": "créés",
+      "statActive": "Projets actifs",
+      "statActiveSub": "en cours",
+      "statApps": "Candidatures",
+      "statAppsSub": "nouvelles",
+      "viewToggle": "Changer de vue",
+      "viewGrid": "Grille",
+      "viewList": "Liste",
+      "filterStatusAll": "Tous statuts",
+      "filterStatusActive": "Actif",
+      "filterStatusDraft": "Brouillon",
+      "filterStatusArchived": "Archivé",
+      "apply": "Appliquer",
+      "cardMetaWeekOf": "SEM {current} / {total} · {n, plural, =0 {0 stage} one {# stage} other {# stages}}",
+      "cardMetaNotStarted": "Pas démarré · {n, plural, =0 {0 stage} one {# stage} other {# stages}}",
+      "cardMetaNoClock": "Sans dates · {n, plural, =0 {0 stage} one {# stage} other {# stages}}",
+      "cardProgress": "Progression",
+      "cardTasks": "tâches",
+      "cardActive": "{n, plural, one {# actif} other {# actifs}}",
+      "ctaViewDetails": "Voir les détails →",
+      "ctaContinueSetup": "Continuer la config →",
+      "emptyAll": "Aucun projet — créez votre premier pour démarrer.",
+      "emptyDrafts": "Aucun brouillon. Démarrez un nouveau projet.",
+      "emptyArchived": "Rien d'archivé pour l'instant."
     }
   },
   "errors": {
