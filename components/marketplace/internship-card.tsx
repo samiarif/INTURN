@@ -20,6 +20,8 @@ export async function InternshipCard({
   internship,
   organization,
   bookmarked,
+  match,
+  haveSkills,
 }: {
   internship: Internship;
   organization: Organization;
@@ -29,6 +31,19 @@ export async function InternshipCard({
    * everyone else so the heart doesn't render.
    */
   bookmarked?: boolean;
+  /**
+   * Match score 0–100 against the signed-in intern's profile. When
+   * defined, renders a colored pill in the card's top-right and (at
+   * threshold) promotes the card to the "matched" visual treatment.
+   * Omit for signed-out viewers or interns without a complete profile.
+   */
+  match?: number;
+  /**
+   * Subset of the listing's skills that the intern already has —
+   * highlighted in green ("have" chip). Empty set is fine; pass
+   * `undefined` to skip the highlighting entirely.
+   */
+  haveSkills?: Set<string>;
 }) {
   const deadline = daysUntil(internship.deadline);
   const [tBookmarks, tMarketplace, tCard] = await Promise.all([
@@ -38,9 +53,12 @@ export async function InternshipCard({
   ]);
   const { initials, tone } = orgMark(organization.name, organization.id);
 
-  // Cap skills to keep cards even-height. Profile-based "have" highlighting
-  // is intentionally out of scope here — flagged for a future enhancement.
-  const skills = (internship.skills ?? []).slice(0, 4);
+  // Cap skills to keep cards even-height. "Have" skills bubble to the front
+  // so the green chips are visible when the listing has more than 4.
+  const allSkills = internship.skills ?? [];
+  const skills = haveSkills
+    ? [...allSkills.filter((s) => haveSkills.has(s)), ...allSkills.filter((s) => !haveSkills.has(s))].slice(0, 4)
+    : allSkills.slice(0, 4);
 
   const locationLabel =
     internship.locationType && LOCATION_LABEL[internship.locationType]
@@ -60,12 +78,21 @@ export async function InternshipCard({
           ? tCard('deadlineToday')
           : tCard('deadlineInDays', { n: deadline });
 
+  // Match tiers — `>= 85` is the visual promotion threshold (purple ring +
+  // gradient top edge). `>= 70` is "mid" (cyan pill). Below that the pill
+  // is neutral so the score is informative but not loud.
+  const matchClass = match === undefined ? '' : match >= 85 ? ' hi' : match >= 70 ? ' mid' : '';
+  const isMatched = match !== undefined && match >= 85;
+
   // We can't wrap the whole card in <Link> because it now contains a
   // nested <form>+<button> (bookmark toggle). React forbids nesting
   // interactive elements, so the root is a plain <article> and only the
   // body block is wrapped in <Link>.
   return (
-    <article className="group relative border border-[var(--border-color)] rounded-lg bg-[var(--surface)] hover:border-[var(--border-strong)] hover:shadow-sm transition-all">
+    <article
+      className="ex-card group relative border border-[var(--border-color)] rounded-lg bg-[var(--surface)] hover:border-[var(--border-strong)] hover:shadow-sm transition-all"
+      data-matched={isMatched ? 'true' : undefined}
+    >
       {bookmarked !== undefined && (
         <form
           action={async () => {
@@ -96,7 +123,7 @@ export async function InternshipCard({
           >
             {initials}
           </span>
-          <div className="flex-1 min-w-0 pr-9">
+          <div className={`flex-1 min-w-0 ${match !== undefined ? 'pr-28' : 'pr-9'}`}>
             <div className="font-mono text-[10.5px] text-[var(--ink-3)] uppercase tracking-[0.06em] truncate mb-1">
               {organization.name}
               {organization.city && ` · ${organization.city}`}
@@ -105,6 +132,18 @@ export async function InternshipCard({
               {internship.title}
             </h3>
           </div>
+          {match !== undefined ? (
+            // Anchored top-right; sits left of the bookmark heart when the
+            // viewer is also a signed-in intern (heart is positioned in
+            // its own absolute box above).
+            <span
+              className={`ex-card-match${matchClass}`}
+              style={{ position: 'absolute', top: 16, right: bookmarked !== undefined ? 56 : 16 }}
+              aria-label={tMarketplace('matchPill', { n: match })}
+            >
+              {tMarketplace('matchPill', { n: match })}
+            </span>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-3 text-[12.5px] text-[var(--ink-2)]">
@@ -140,14 +179,19 @@ export async function InternshipCard({
 
         {skills.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
-            {skills.map((skill) => (
-              <span
-                key={skill}
-                className="inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--surface-muted)] text-[var(--ink-2)] text-[11.5px] leading-5"
-              >
-                {skill}
-              </span>
-            ))}
+            {skills.map((skill) => {
+              const have = haveSkills?.has(skill);
+              return (
+                <span
+                  key={skill}
+                  className="ex-skill inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--surface-muted)] text-[var(--ink-2)] text-[11.5px] leading-5"
+                  data-have={have ? 'true' : undefined}
+                >
+                  {have ? <span aria-hidden style={{ fontSize: 9, fontWeight: 700, marginRight: 3 }}>{'✓'}</span> : null}
+                  {skill}
+                </span>
+              );
+            })}
           </div>
         )}
 

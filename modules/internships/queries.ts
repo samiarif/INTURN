@@ -131,3 +131,77 @@ export async function listMarketplaceSectors(): Promise<string[]> {
   );
   return cached();
 }
+
+/**
+ * Facet counts for the explore filter rail. Counts represent the number
+ * of published, verified-org listings broken down per facet value.
+ *
+ * v1 keeps it simple: counts are computed against the unfiltered published
+ * set (snapshot at page load). Trade-off vs. the "minus-that-facet"
+ * approach: filter labels stay stable as the user toggles, and we avoid
+ * fan-out queries. Acceptable until the catalog grows enough that the
+ * counts look misleading.
+ *
+ * Cached at the data layer; invalidated on publish/unpublish via
+ * MARKETPLACE_TAG.
+ */
+export type MarketplaceFacetCounts = {
+  sector: Record<string, number>;
+  locationType: Record<string, number>;
+  duration: Record<string, number>;
+  paid: { paid: number; unpaid: number };
+  language: Record<string, number>;
+  city: Record<string, number>;
+};
+
+export async function computeFacetCounts(): Promise<MarketplaceFacetCounts> {
+  const cached = unstable_cache(
+    async (): Promise<MarketplaceFacetCounts> => {
+      const baseWhere = and(
+        eq(internships.status, 'published'),
+        eq(organizations.verificationStatus, 'verified'),
+      );
+
+      const rows = await db
+        .select({
+          sector: internships.sector,
+          locationType: internships.locationType,
+          duration: internships.duration,
+          isPaid: internships.isPaid,
+          language: internships.language,
+          city: organizations.city,
+        })
+        .from(internships)
+        .innerJoin(organizations, eq(organizations.id, internships.organizationId))
+        .where(baseWhere);
+
+      const counts: MarketplaceFacetCounts = {
+        sector: {},
+        locationType: {},
+        duration: { short: 0, medium: 0, long: 0 },
+        paid: { paid: 0, unpaid: 0 },
+        language: {},
+        city: {},
+      };
+
+      for (const r of rows) {
+        if (r.sector) counts.sector[r.sector] = (counts.sector[r.sector] ?? 0) + 1;
+        if (r.locationType) counts.locationType[r.locationType] = (counts.locationType[r.locationType] ?? 0) + 1;
+        if (typeof r.duration === 'number') {
+          if (r.duration < 8) counts.duration.short += 1;
+          else if (r.duration <= 12) counts.duration.medium += 1;
+          else counts.duration.long += 1;
+        }
+        if (r.isPaid) counts.paid.paid += 1;
+        else counts.paid.unpaid += 1;
+        if (r.language) counts.language[r.language] = (counts.language[r.language] ?? 0) + 1;
+        if (r.city) counts.city[r.city] = (counts.city[r.city] ?? 0) + 1;
+      }
+
+      return counts;
+    },
+    ['marketplace-facet-counts'],
+    { tags: [MARKETPLACE_TAG], revalidate: 600 },
+  );
+  return cached();
+}

@@ -1,10 +1,17 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { listPublishedInternships, listMarketplaceSectors } from '@/modules/internships/queries';
+import {
+  listPublishedInternships,
+  listMarketplaceSectors,
+  computeFacetCounts,
+} from '@/modules/internships/queries';
 import { InternshipCard } from '@/components/marketplace/internship-card';
+import { MarketplaceFilters } from '@/components/marketplace/marketplace-filters';
 import { getSession } from '@/modules/auth/session';
 import { getBookmarkedSet } from '@/modules/bookmarks/queries';
+import { getProfileByUserId } from '@/modules/profiles/queries';
+import { matchScore, intersectingSkills } from '@/lib/match';
 
 export async function generateMetadata({
   params,
@@ -29,19 +36,6 @@ export async function generateMetadata({
   };
 }
 
-// Filter option values are stable identifiers; visible labels are inlined at
-// render time via t() since translations aren't available at module init.
-const PAID_VALUES = ['all', 'paid', 'unpaid'] as const;
-const LOCATION_VALUES = ['', 'on-site', 'virtual', 'hybrid'] as const;
-const DURATION_VALUES = ['', 'short', 'medium', 'long'] as const;
-const LANGUAGE_VALUES = ['', 'fr', 'en', 'ar'] as const;
-// Display names for non-paid/duration languages are language endonyms — not translated.
-const LANGUAGE_LABELS: Record<string, string> = {
-  fr: 'Français',
-  en: 'English',
-  ar: 'العربية',
-};
-
 type Search = {
   q?: string;
   paid?: string;
@@ -60,7 +54,7 @@ export default async function Page({
 }) {
   const params = await searchParams;
   const search = params.q?.trim() || undefined;
-  const paid = (params.paid === 'paid' || params.paid === 'unpaid') ? params.paid : 'all';
+  const paid = params.paid === 'paid' || params.paid === 'unpaid' ? params.paid : 'all';
   const sector = params.sector?.trim() || undefined;
   const locationType =
     params.loc === 'on-site' || params.loc === 'virtual' || params.loc === 'hybrid'
@@ -70,12 +64,16 @@ export default async function Page({
     params.dur === 'short' || params.dur === 'medium' || params.dur === 'long'
       ? params.dur
       : undefined;
-  const language = params.lang === 'fr' || params.lang === 'en' || params.lang === 'ar' ? params.lang : undefined;
+  const language =
+    params.lang === 'fr' || params.lang === 'en' || params.lang === 'ar' ? params.lang : undefined;
   const skill = params.skill?.trim() || undefined;
   const page = Math.max(1, Number(params.page ?? '1') || 1);
   const pageSize = 20;
 
-  const [results, sectors, session, t] = await Promise.all([
+  const session = await getSession();
+  const profile = session?.role === 'intern' ? await getProfileByUserId(session.user.id) : null;
+
+  const [results, sectors, facetCounts, t] = await Promise.all([
     listPublishedInternships({
       search,
       paid,
@@ -88,32 +86,10 @@ export default async function Page({
       offset: (page - 1) * pageSize,
     }),
     listMarketplaceSectors(),
-    getSession(),
+    computeFacetCounts(),
     getTranslations('marketplace'),
   ]);
 
-  // Localized label maps assembled at render time.
-  const locationLabels: Record<string, string> = {
-    '': t('anyLocation'),
-    'on-site': 'On-site',
-    virtual: 'Virtual',
-    hybrid: 'Hybrid',
-  };
-  const durationLabels: Record<string, string> = {
-    '': t('anyDuration'),
-    short: t('duration.short'),
-    medium: t('duration.medium'),
-    long: t('duration.long'),
-  };
-  const languageLabels: Record<string, string> = {
-    '': t('anyLanguage'),
-    ...LANGUAGE_LABELS,
-  };
-  const paidLabels: Record<string, string> = {
-    all: t('paid.all'),
-    paid: t('paid.paid'),
-    unpaid: t('paid.unpaid'),
-  };
   const hasNext = results.length > pageSize;
   const rows = results.slice(0, pageSize);
 
@@ -127,31 +103,40 @@ export default async function Page({
         )
       : null;
 
-  function buildHref(overrides: Partial<Search>): string {
-    const sp = new URLSearchParams();
-    const next = {
-      q: overrides.q ?? search,
-      paid: overrides.paid ?? (paid === 'all' ? undefined : paid),
-      sector: overrides.sector ?? sector,
-      loc: overrides.loc ?? locationType,
-      dur: overrides.dur ?? duration,
-      lang: overrides.lang ?? language,
-      skill: overrides.skill ?? skill,
-      page: overrides.page ?? (page > 1 ? String(page) : undefined),
-    };
-    for (const [k, v] of Object.entries(next)) {
-      if (v && v !== 'all' && v !== '') sp.set(k, String(v));
-    }
-    const s = sp.toString();
-    return `/marketplace${s ? `?${s}` : ''}`;
-  }
+  // Decorate cards with match-score data. Only signed-in interns with at
+  // least one skill on their profile see scores; everyone else gets the
+  // standard card. The match band above the grid is gated on the same
+  // signal plus "at least one listing scored ≥ 70".
+  const internSkills = profile?.skills && profile.skills.length > 0 ? profile.skills : null;
+  const rowsWithMatch = rows.map((r) => ({
+    ...r,
+    match: internSkills ? matchScore(internSkills, r.internship.skills) : undefined,
+    haveSkills: internSkills ? intersectingSkills(internSkills, r.internship.skills) : undefined,
+  }));
+
+  const matchedCount = rowsWithMatch.filter((r) => (r.match ?? 0) >= 70).length;
+  const highlyMatchedCount = rowsWithMatch.filter((r) => (r.match ?? 0) >= 85).length;
+  const topMatch = internSkills
+    ? rowsWithMatch.reduce<{ score: number; row: (typeof rowsWithMatch)[number] } | null>(
+        (acc, r) => {
+          const s = r.match ?? 0;
+          return acc && acc.score >= s ? acc : { score: s, row: r };
+        },
+        null,
+      )
+    : null;
+  const showMatchBand = Boolean(internSkills) && matchedCount > 0;
+
+  const hasActiveFilters = Boolean(
+    sector || locationType || duration || language || skill || paid !== 'all' || search,
+  );
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
+    <div className="max-w-7xl mx-auto px-6 py-10">
       <h1 className="text-3xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
+      <p className="text-[var(--ink-3)] mb-6">{t('subtitle')}</p>
 
-      <form className="space-y-3 mb-8" action="/marketplace">
+      <form className="mb-6" action="/marketplace">
         <div className="flex flex-wrap items-center gap-3">
           <label htmlFor="marketplace-q" className="sr-only">
             {t('searchPlaceholder')}
@@ -182,103 +167,137 @@ export default async function Page({
             {t('searchButton')}
           </button>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <label htmlFor="marketplace-sector" className="sr-only">
-            {t('anySector')}
-          </label>
-          <select
-            id="marketplace-sector"
-            name="sector"
-            defaultValue={sector ?? ''}
-            className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]"
-          >
-            <option value="">{t('anySector')}</option>
-            {sectors.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-          <label htmlFor="marketplace-loc" className="sr-only">
-            {t('anyLocation')}
-          </label>
-          <select id="marketplace-loc" name="loc" defaultValue={locationType ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
-            {LOCATION_VALUES.map((v) => (
-              <option key={v} value={v}>{locationLabels[v]}</option>
-            ))}
-          </select>
-          <label htmlFor="marketplace-dur" className="sr-only">
-            {t('anyDuration')}
-          </label>
-          <select id="marketplace-dur" name="dur" defaultValue={duration ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
-            {DURATION_VALUES.map((v) => (
-              <option key={v} value={v}>{durationLabels[v]}</option>
-            ))}
-          </select>
-          <label htmlFor="marketplace-lang" className="sr-only">
-            {t('anyLanguage')}
-          </label>
-          <select id="marketplace-lang" name="lang" defaultValue={language ?? ''} className="h-9 px-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)]">
-            {LANGUAGE_VALUES.map((v) => (
-              <option key={v} value={v}>{languageLabels[v]}</option>
-            ))}
-          </select>
-          <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-[13px]">
-            {PAID_VALUES.map((value) => (
-              <Link
-                key={value}
-                href={buildHref({ paid: value, page: undefined })}
-                className={
-                  paid === value
-                    ? 'px-3 py-1 rounded-[4px] font-medium bg-white shadow-sm'
-                    : 'px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
-                }
-              >
-                {paidLabels[value]}
-              </Link>
-            ))}
-          </div>
-          {(sector || locationType || duration || language || skill || paid !== 'all' || search) && (
-            <Link href="/marketplace" className="text-[var(--ink-3)] hover:text-[var(--ink)] underline ml-1">
-              {t('clearFilters')}
-            </Link>
-          )}
-        </div>
       </form>
 
-      {rows.length === 0 ? (
-        <div className="border border-dashed border-[var(--border-color)] rounded-lg p-12 text-center">
-          <p className="text-[var(--ink-2)] font-medium mb-1">{t('noResults')}</p>
-          <p className="text-[var(--ink-3)] text-sm">{t('noResultsHelp')}</p>
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-4">
-          {rows.map(({ internship, organization }) => (
-            <InternshipCard
-              key={internship.id}
-              internship={internship}
-              organization={organization}
-              bookmarked={bookmarkedSet ? bookmarkedSet.has(internship.id) : undefined}
-            />
-          ))}
-        </div>
-      )}
+      <div className="ex-layout grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-6">
+        <MarketplaceFilters
+          state={{
+            search,
+            paid,
+            sector,
+            locationType,
+            duration,
+            language,
+            skill,
+          }}
+          sectors={sectors}
+          counts={facetCounts}
+          hasActiveFilters={hasActiveFilters}
+        />
 
-      <div className="flex items-center justify-between mt-8 text-sm">
-        {page > 1 ? (
-          <Link href={buildHref({ page: String(page - 1) })} className="text-[var(--brand-600)] hover:text-[var(--brand-700)]">
-            {t('previous')}
-          </Link>
-        ) : (
-          <span />
-        )}
-        <span className="text-[var(--ink-3)]">{t('page', { n: page })}</span>
-        {hasNext ? (
-          <Link href={buildHref({ page: String(page + 1) })} className="text-[var(--brand-600)] hover:text-[var(--brand-700)]">
-            {t('next')}
-          </Link>
-        ) : (
-          <span />
-        )}
+        <div>
+          <div className="ex-meta">
+            <b>{rows.length}</b> {t('countInternships', { n: rows.length })}
+            {highlyMatchedCount > 0 ? (
+              <>
+                {' · '}
+                <b>{highlyMatchedCount}</b> {t('highlyMatched')}
+              </>
+            ) : null}
+          </div>
+
+          {showMatchBand && topMatch ? (
+            <div className="ex-match-band" role="status">
+              <span className="star" aria-hidden>
+                {'✦'}
+              </span>
+              <div className="body">
+                <div className="title">{t('matchBandTitle', { n: matchedCount })}</div>
+                <div className="sub">
+                  {t('matchBandSub', {
+                    top: topMatch.row.organization.name,
+                    role: topMatch.row.internship.title,
+                    pct: topMatch.score,
+                  })}
+                </div>
+              </div>
+              <span className="more" aria-hidden>
+                {t('whyThese')} →
+              </span>
+            </div>
+          ) : null}
+
+          {rows.length === 0 ? (
+            <div className="border border-dashed border-[var(--border-color)] rounded-lg p-12 text-center">
+              <p className="text-[var(--ink-2)] font-medium mb-1">{t('noResults')}</p>
+              <p className="text-[var(--ink-3)] text-sm">{t('noResultsHelp')}</p>
+            </div>
+          ) : (
+            <div className="ex-grid grid grid-cols-1 xl:grid-cols-2 gap-4">
+              {rowsWithMatch.map(({ internship, organization, match, haveSkills }) => (
+                <InternshipCard
+                  key={internship.id}
+                  internship={internship}
+                  organization={organization}
+                  bookmarked={bookmarkedSet ? bookmarkedSet.has(internship.id) : undefined}
+                  match={match}
+                  haveSkills={haveSkills}
+                />
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mt-8 text-sm">
+            {page > 1 ? (
+              <Link
+                href={buildPaginationHref(
+                  { search, paid, sector, locationType, duration, language, skill },
+                  page - 1,
+                )}
+                className="text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+              >
+                {t('previous')}
+              </Link>
+            ) : (
+              <span />
+            )}
+            <span className="text-[var(--ink-3)]">{t('page', { n: page })}</span>
+            {hasNext ? (
+              <Link
+                href={buildPaginationHref(
+                  { search, paid, sector, locationType, duration, language, skill },
+                  page + 1,
+                )}
+                className="text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+              >
+                {t('next')}
+              </Link>
+            ) : (
+              <span />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
+}
+
+/**
+ * Pagination URL builder. Keeps the active filter set and just updates the
+ * page number. Kept inline here (vs. shared util) because the filter rail
+ * has its own buildHref shape (toggles, never page).
+ */
+function buildPaginationHref(
+  filters: {
+    search?: string;
+    paid: string;
+    sector?: string;
+    locationType?: string;
+    duration?: string;
+    language?: string;
+    skill?: string;
+  },
+  page: number,
+): string {
+  const sp = new URLSearchParams();
+  if (filters.search) sp.set('q', filters.search);
+  if (filters.skill) sp.set('skill', filters.skill);
+  if (filters.sector) sp.set('sector', filters.sector);
+  if (filters.locationType) sp.set('loc', filters.locationType);
+  if (filters.duration) sp.set('dur', filters.duration);
+  if (filters.language) sp.set('lang', filters.language);
+  if (filters.paid && filters.paid !== 'all') sp.set('paid', filters.paid);
+  if (page > 1) sp.set('page', String(page));
+  const s = sp.toString();
+  return `/marketplace${s ? `?${s}` : ''}`;
 }
