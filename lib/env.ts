@@ -5,7 +5,8 @@ type RequiredEnvKey =
   | 'CLERK_WEBHOOK_SECRET'
   | 'BLOB_READ_WRITE_TOKEN'
   | 'RESEND_API_KEY'
-  | 'EMAIL_FROM';
+  | 'EMAIL_FROM'
+  | 'ANTHROPIC_API_KEY';
 
 export function requireEnv(name: RequiredEnvKey): string {
   const value = process.env[name];
