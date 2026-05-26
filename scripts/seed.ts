@@ -12,6 +12,10 @@ import {
   events,
   comments,
   internshipBookmarks,
+  communityPosts,
+  communityComments,
+  internshipRecords,
+  reports,
 } from '../db/schema';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 
@@ -1983,6 +1987,189 @@ export async function runSeed() {
       createdAt: days(12),
     },
   ]);
+
+  // ============================================================
+  // Sprint D seed: community posts, an internship record, a sample
+  // report. Bound to Yasmine + the extra applicants so /intern/community,
+  // /intern/records, and /admin/reports have content to demo.
+  // ============================================================
+  const D_SEED_TAG = 'sprint-d';
+
+  // -- Community posts --
+  const seedPostsData = [
+    {
+      authorId: yasmine.id,
+      title: 'Tips for stakeholder interviews when you only have 30 minutes?',
+      body: "Doing 6 interviews this week and only got 30 min slots. What's your go-to opener so people relax fast? I've been starting with 'tell me about a recent project' but it eats 10 minutes.",
+      ago: 4 * 3600_000,
+    },
+    {
+      authorId: extraApplicants[0].id, // Imen
+      title: 'React + Server Components workflow — share yours',
+      body: "Started using Server Components for the first time at my internship. The mental model is different from what I learned. How do you decide what's server vs client? Any rules of thumb?",
+      ago: 28 * 3600_000,
+    },
+    {
+      authorId: extraApplicants[2].id, // Syrine
+      title: 'Wins of the week',
+      body: "Closed my first user research round (10 interviews). Synthesis was ROUGH — would have died without affinity mapping in FigJam. What helped you survive your first synthesis?",
+      ago: 50 * 3600_000,
+    },
+  ];
+
+  for (const p of seedPostsData) {
+    const existing = await db
+      .select()
+      .from(communityPosts)
+      .where(and(eq(communityPosts.authorId, p.authorId), eq(communityPosts.title, p.title)))
+      .limit(1);
+    if (existing[0]) continue;
+    const lastActivity = new Date(Date.now() - p.ago);
+    await db.insert(communityPosts).values({
+      authorId: p.authorId,
+      title: p.title,
+      body: p.body,
+      status: 'active',
+      commentCount: 0,
+      lastActivityAt: lastActivity,
+      createdAt: lastActivity,
+      updatedAt: lastActivity,
+    });
+  }
+
+  // Add 2 sample comments to Yasmine's interview post (denormalises
+  // commentCount + lastActivityAt to match real flow).
+  const yasminePost = (
+    await db
+      .select()
+      .from(communityPosts)
+      .where(and(eq(communityPosts.authorId, yasmine.id), eq(communityPosts.title, seedPostsData[0].title)))
+      .limit(1)
+  )[0];
+  if (yasminePost) {
+    const existingComments = await db
+      .select()
+      .from(communityComments)
+      .where(eq(communityComments.postId, yasminePost.id))
+      .limit(1);
+    if (!existingComments[0]) {
+      await db.insert(communityComments).values([
+        {
+          postId: yasminePost.id,
+          authorId: extraApplicants[2].id, // Syrine
+          body: "Try 'what does a good day at work look like for you?' — gets you context and emotion in one go.",
+          createdAt: new Date(Date.now() - 2 * 3600_000),
+        },
+        {
+          postId: yasminePost.id,
+          authorId: extraApplicants[0].id, // Imen
+          body: 'Skip the warm-up entirely if they look stressed. Jump to the meaty question and circle back if there is time.',
+          createdAt: new Date(Date.now() - 90 * 60_000),
+        },
+      ]);
+      await db
+        .update(communityPosts)
+        .set({
+          commentCount: 2,
+          lastActivityAt: new Date(Date.now() - 90 * 60_000),
+        })
+        .where(eq(communityPosts.id, yasminePost.id));
+    }
+  }
+
+  // -- Internship record (Mehdi → Yasmine) --
+  // Issue a record for Yasmine's workspace so /intern/records has
+  // something to show. Idempotent: only inserts if no active record
+  // exists for this workspace.
+  const existingRecord = await db
+    .select()
+    .from(internshipRecords)
+    .where(eq(internshipRecords.workspaceId, workspace.id))
+    .limit(1);
+  if (!existingRecord[0]) {
+    const recordSnapshot = {
+      intern: {
+        name: 'Yasmine Ben Salah',
+        email: yasmine.email,
+        university: 'ENIT',
+        fieldOfStudy: 'Computer Science',
+        graduationYear: null,
+      },
+      organization: {
+        name: 'Acme Studio',
+        location: 'Tunis, Tunisia',
+        website: null,
+        logoUrl: null,
+      },
+      internship: {
+        title: 'Visual designer — Brand audit',
+        sector: 'Design',
+        duration: 12,
+        startDate: '2026-05-05',
+        endDate: '2026-07-25',
+        description: 'Lead visual exploration for the brand refresh.',
+      },
+      supervisor: {
+        name: 'Mehdi Triki',
+        email: mehdi.email,
+      },
+      deliverables: insertedDelivs.map((d) => ({
+        title: d.title,
+        status: d.status ?? 'draft',
+        version: d.version,
+        submittedAt: d.submittedAt ? d.submittedAt.toISOString() : null,
+        feedback: d.feedback,
+      })),
+      taskStats: {
+        total: insertedTasks.length,
+        done: insertedTasks.filter((t) => t.status === 'done').length,
+      },
+      signature: {
+        reviewText:
+          "Yasmine joined Acme as our first dedicated visual designer intern on the Brand audit project. Over 12 weeks she ran 6 stakeholder interviews, synthesized findings into a sharp TL;DR, and produced three moodboard directions that we ended up taking to client. Communication was excellent — async-first, with a weekly sync that always had a clear agenda. She raised her hand fast when stuck and shipped polished work on time. Highly recommend.",
+        rating: 5,
+        signedAt: new Date(Date.now() - 24 * 3600_000).toISOString(),
+      },
+      locale: 'fr' as const,
+    };
+
+    // Random url-safe share token (32 chars).
+    const shareToken = Buffer.from(
+      Array.from({ length: 24 }, () => Math.floor(Math.random() * 256)),
+    )
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    await db.insert(internshipRecords).values({
+      workspaceId: workspace.id,
+      internshipId: internship.id,
+      internUserId: yasmine.id,
+      organizationId: acme.id,
+      generatedBy: mehdi.id,
+      shareToken,
+      snapshot: recordSnapshot,
+    });
+  }
+
+  // -- Sample report (Lina → Numentech's unverified org demo) --
+  // Stays as 'open' so /admin/reports has a triage entry to demo.
+  const existingReports = await db.select().from(reports).limit(1);
+  if (!existingReports[0]) {
+    await db.insert(reports).values({
+      reporterId: applicants[0].id, // Lina
+      subjectType: 'internship',
+      subjectId: greenvibeContent.id,
+      reason: 'misleading',
+      body: 'The compensation listed (650 TND / mo) is below the rate they actually pay according to a friend who interviewed there. Worth double-checking with the org before this misleads more students.',
+      status: 'open',
+    });
+  }
+
+  console.log(
+    `✓ Sprint D seed: ${seedPostsData.length} community posts, 2 comments, 1 record, 1 report (tag=${D_SEED_TAG})`,
+  );
 
   // ============================================================
   // Sam-accounts seed: bind rich data to Sam's 3 sign-in emails so
