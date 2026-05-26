@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getAdminStats, listRecentOrganizations } from '@/modules/admin/queries';
+import { countOpenReports } from '@/modules/reports/queries';
 
 const STATUS_STYLE: Record<string, string> = {
   draft: 'bg-[var(--surface-muted)] text-[var(--ink-3)]',
@@ -9,14 +10,18 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 export default async function Page() {
-  const [stats, recent] = await Promise.all([getAdminStats(), listRecentOrganizations(10)]);
+  const [stats, recent, openReports] = await Promise.all([
+    getAdminStats(),
+    listRecentOrganizations(10),
+    countOpenReports(),
+  ]);
 
   return (
     <div className="max-w-5xl mx-auto p-8">
       <h1 className="text-2xl font-semibold tracking-tight mb-2">Admin dashboard</h1>
       <p className="text-[14px] text-[var(--ink-3)] mb-8">Verifications, workspaces, recent activity.</p>
 
-      <div className="grid grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-4 gap-4 mb-10">
         <Link
           href="/admin/verifications"
           className="block border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)] hover:border-[var(--border-strong)]"
@@ -41,6 +46,24 @@ export default async function Page() {
           <div className="text-3xl font-semibold tracking-tight">{stats.activeWorkspaces}</div>
           <div className="text-[12px] text-[var(--success)] mt-1">+{stats.activeWorkspacesRecent} in last 30d</div>
         </div>
+        <Link
+          href="/admin/reports?status=open"
+          className={`block border rounded-lg p-5 hover:border-[var(--border-strong)] ${
+            openReports > 0
+              ? 'border-[#FCA5A5] bg-[#FEF2F2]'
+              : 'border-[var(--border-color)] bg-[var(--surface)]'
+          }`}
+        >
+          <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
+            Open reports
+          </div>
+          <div className={`text-3xl font-semibold tracking-tight ${openReports > 0 ? 'text-[#B91C1C]' : ''}`}>
+            {openReports}
+          </div>
+          <div className="text-[12px] text-[var(--ink-3)] mt-1">
+            {openReports > 0 ? 'Needs triage' : 'All clear'}
+          </div>
+        </Link>
       </div>
 
       <section>

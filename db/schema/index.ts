@@ -30,3 +30,5 @@ export {
   type NewInternshipRecord,
   type RecordSnapshot,
 } from './internship-records';
+export { reports, type Report, type NewReport } from './reports';
+export { auditLogs, type AuditLog, type NewAuditLog } from './audit-logs';

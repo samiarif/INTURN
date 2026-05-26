@@ -2,6 +2,7 @@ import { db } from '@/db';
 import { organizations } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
+import { recordAuditLog } from '@/modules/audit/service';
 export { isValidVerificationTransition, type VerificationStatus } from './state-machine';
 import type { VerificationStatus } from './state-machine';
 import { isValidVerificationTransition } from './state-machine';
@@ -37,5 +38,13 @@ export async function setOrganizationVerification(input: {
     targetType: 'organization',
     targetId: input.orgId,
     metadata: { from, to: input.to, note: input.note },
+  });
+
+  await recordAuditLog({
+    actorId: input.actorId,
+    action: `org.verification.${input.to}`,
+    targetType: 'organization',
+    targetId: input.orgId,
+    metadata: { from, to: input.to, note: input.note ?? null },
   });
 }

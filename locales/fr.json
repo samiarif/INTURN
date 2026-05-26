@@ -11,7 +11,9 @@
     "saved": "Enregistrés",
     "records": "Attestations",
     "browse": "Parcourir",
-    "verifications": "Vérifications"
+    "verifications": "Vérifications",
+    "reports": "Signalements",
+    "audit": "Audit"
   },
   "notifications": {
     "label": "Notifications",
@@ -529,6 +531,30 @@
       "body": "On revient dans un instant. Réessayez ou revenez plus tard.",
       "back": "Retour à l'accueil"
     }
+  },
+  "report": {
+    "open": "Signaler cette offre",
+    "title": "Signaler cette offre",
+    "subtitle": "Un administrateur examine chaque signalement. Soyez précis pour qu'on puisse agir vite.",
+    "reasonLabel": "Quel est le problème ?",
+    "reasons": {
+      "scam": "Semble être une arnaque",
+      "misleading": "Informations trompeuses",
+      "inappropriate": "Contenu inapproprié",
+      "spam": "Spam",
+      "unsafe": "Dangereux / harcèlement",
+      "other": "Autre"
+    },
+    "bodyLabel": "Que s'est-il passé ?",
+    "bodyPlaceholder": "Décrivez ce que vous avez vu. Soyez aussi précis que possible (liens, captures partagées ailleurs).",
+    "cancel": "Annuler",
+    "submit": "Envoyer le signalement",
+    "submitting": "Envoi…",
+    "successTitle": "Signalement reçu",
+    "successBody": "Un administrateur va l'examiner. Merci de garder la plateforme sûre.",
+    "close": "Fermer",
+    "errorMin": "Veuillez décrire le problème (20 caractères minimum).",
+    "errorGeneric": "Échec de l'envoi. Réessayez."
   },
   "records": {
     "verified": "Document vérifié",

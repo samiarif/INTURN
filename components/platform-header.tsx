@@ -58,6 +58,8 @@ export function PlatformHeader({
         ? [
             { href: '/admin/dashboard', label: tNav('dashboard') },
             { href: '/admin/verifications', label: tNav('verifications') },
+            { href: '/admin/reports', label: tNav('reports') },
+            { href: '/admin/audit', label: tNav('audit') },
             { href: '/marketplace', label: tNav('browse') },
           ]
         : [];

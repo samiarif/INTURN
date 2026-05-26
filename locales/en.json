@@ -11,7 +11,9 @@
     "saved": "Saved",
     "records": "Records",
     "browse": "Browse",
-    "verifications": "Verifications"
+    "verifications": "Verifications",
+    "reports": "Reports",
+    "audit": "Audit"
   },
   "notifications": {
     "label": "Notifications",
@@ -529,6 +531,30 @@
       "body": "We'll get it back in a moment. Try again or visit later.",
       "back": "Back to home"
     }
+  },
+  "report": {
+    "open": "Report this listing",
+    "title": "Report this listing",
+    "subtitle": "An admin reviews every report. Be specific so we can act quickly.",
+    "reasonLabel": "What is the problem?",
+    "reasons": {
+      "scam": "Looks like a scam",
+      "misleading": "Misleading information",
+      "inappropriate": "Inappropriate content",
+      "spam": "Spam",
+      "unsafe": "Unsafe / harassment",
+      "other": "Other"
+    },
+    "bodyLabel": "Tell us what happened",
+    "bodyPlaceholder": "What did you see? Include specifics if possible (links, screenshots if shared elsewhere).",
+    "cancel": "Cancel",
+    "submit": "Submit report",
+    "submitting": "Submitting…",
+    "successTitle": "Report received",
+    "successBody": "An admin will triage this. Thanks for keeping the platform safe.",
+    "close": "Close",
+    "errorMin": "Please describe the problem (min 20 characters).",
+    "errorGeneric": "Could not submit. Please try again."
   },
   "records": {
     "verified": "Verified record",

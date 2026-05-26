@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { getInternshipWithOrgById } from '@/modules/internships/queries';
 import { getProfileWithUserByClerkId } from '@/modules/profiles/queries';
+import { ReportButton } from '@/modules/reports/components/report-button';
 
 export async function generateMetadata({
   params,
@@ -154,7 +155,7 @@ export default async function Page({
         </section>
       )}
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <Link
           href={applyHref}
           className="inline-flex items-center justify-center h-11 px-6 rounded-md text-base font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
@@ -167,6 +168,12 @@ export default async function Page({
         >
           ← All internships
         </Link>
+        {clerkId && (
+          <>
+            <span className="flex-1" />
+            <ReportButton subjectType="internship" subjectId={internship.id} />
+          </>
+        )}
       </div>
     </div>
   );
