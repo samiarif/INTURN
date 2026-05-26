@@ -32,3 +32,11 @@ export {
 } from './internship-records';
 export { reports, type Report, type NewReport } from './reports';
 export { auditLogs, type AuditLog, type NewAuditLog } from './audit-logs';
+export {
+  communityPosts,
+  communityComments,
+  type CommunityPost,
+  type NewCommunityPost,
+  type CommunityComment,
+  type NewCommunityComment,
+} from './community';

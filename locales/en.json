@@ -10,6 +10,7 @@
     "projects": "Projects",
     "saved": "Saved",
     "records": "Records",
+    "community": "Community",
     "browse": "Browse",
     "verifications": "Verifications",
     "reports": "Reports",
@@ -559,6 +560,40 @@
       "title": "Couldn't load the marketplace.",
       "body": "We'll get it back in a moment. Try again or visit later.",
       "back": "Back to home"
+    }
+  },
+  "community": {
+    "eyebrow": "Inturn · Community",
+    "title": "Community",
+    "subtitle": "Where interns swap notes — questions, wins, lessons learned.",
+    "newPost": "New post",
+    "startThread": "Start the first thread",
+    "emptyTitle": "Nothing here yet",
+    "emptyBody": "Be the first to start a conversation.",
+    "replies": "{count, plural, =0 {No replies} =1 {1 reply} other {# replies}}",
+    "noReplies": "Be the first to reply.",
+    "reply": "Reply",
+    "replying": "Posting…",
+    "replyPlaceholder": "Share your thoughts…",
+    "readOnly": "Only interns can post and reply here.",
+    "backToFeed": "Back to feed",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "deleteConfirm": "Delete this post? This action cannot be undone.",
+    "errorGeneric": "Could not post. Please try again.",
+    "new": {
+      "title": "Start a thread",
+      "subtitle": "Ask a question or share something you've learned. Other interns can reply.",
+      "titleLabel": "Title",
+      "titlePlaceholder": "What's on your mind?",
+      "bodyLabel": "Body",
+      "bodyPlaceholder": "Add detail, context, or examples.",
+      "submit": "Post",
+      "saving": "Posting…",
+      "errorTitleMin": "Title must be at least 6 characters.",
+      "errorBodyMin": "Body must be at least 20 characters.",
+      "errorGeneric": "Could not post. Please try again.",
+      "backToFeed": "Back to feed"
     }
   },
   "footer": {

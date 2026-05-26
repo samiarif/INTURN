@@ -46,6 +46,7 @@ export function PlatformHeader({
         { href: '/intern/applications', label: tNav('applications') },
         { href: '/intern/saved', label: tNav('saved') },
         { href: '/intern/records', label: tNav('records') },
+        { href: '/intern/community', label: tNav('community') },
         { href: '/marketplace', label: tNav('browse') },
       ]
     : role === 'company'
