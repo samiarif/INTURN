@@ -14,7 +14,8 @@
     "browse": "Parcourir",
     "verifications": "Vérifications",
     "reports": "Signalements",
-    "audit": "Audit"
+    "audit": "Audit",
+    "account": "Compte"
   },
   "notifications": {
     "label": "Notifications",
@@ -560,6 +561,53 @@
       "title": "Impossible de charger le marketplace.",
       "body": "On revient dans un instant. Réessayez ou revenez plus tard.",
       "back": "Retour à l'accueil"
+    }
+  },
+  "account": {
+    "title": "Compte",
+    "subtitle": "Votre identité, votre profil et vos contrôles de confidentialité.",
+    "identity": "Identité",
+    "email": "Email",
+    "name": "Nom",
+    "role": "Rôle",
+    "memberSince": "Membre depuis",
+    "notSet": "Non renseigné",
+    "clerkNote": "L'email et le mot de passe sont gérés par notre fournisseur d'authentification (Clerk). Utilisez le menu utilisateur (en haut à droite) pour les modifier.",
+    "profile": "Profil",
+    "edit": "Modifier",
+    "university": "Établissement",
+    "fieldOfStudy": "Domaine",
+    "city": "Ville",
+    "language": "Langue préférée",
+    "organization": "Entreprise",
+    "orgName": "Nom",
+    "industry": "Secteur",
+    "verificationStatus": "Statut de vérification",
+    "dataAndPrivacy": "Données et confidentialité",
+    "dataIntro": "Téléchargez une copie de toutes les données que nous détenons sur vous. Vous pouvez également supprimer votre compte définitivement.",
+    "exportData": "Télécharger mes données (JSON)",
+    "readPrivacy": "Lire la politique de confidentialité",
+    "roles": {
+      "intern": "Stagiaire",
+      "company": "Entreprise",
+      "admin": "Administrateur"
+    },
+    "verification": {
+      "draft": "Brouillon",
+      "pending": "En attente",
+      "verified": "Vérifié",
+      "suspended": "Suspendu"
+    },
+    "delete": {
+      "section": "Zone sensible",
+      "intro": "Supprimer définitivement votre compte et toutes les données associées. Cette action est irréversible.",
+      "cta": "Supprimer mon compte",
+      "confirmInstruction": "Pour confirmer, saisissez votre email ({email}) ci-dessous.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer définitivement",
+      "deleting": "Suppression…",
+      "errorMismatch": "L'email ne correspond pas. Saisissez l'adresse exacte.",
+      "errorGeneric": "Une erreur est survenue. Réessayez ou contactez le support."
     }
   },
   "community": {

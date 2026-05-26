@@ -40,6 +40,7 @@ export function PlatformHeader({
   // Workspace routes own their own shell (topbar + sidebar). Don't double-up.
   if (pathname.includes('/workspaces/')) return null;
 
+  const accountItem = { href: '/account', label: tNav('account') };
   const navItems = role === 'intern'
     ? [
         { href: '/intern/dashboard', label: tNav('dashboard') },
@@ -48,12 +49,14 @@ export function PlatformHeader({
         { href: '/intern/records', label: tNav('records') },
         { href: '/intern/community', label: tNav('community') },
         { href: '/marketplace', label: tNav('browse') },
+        accountItem,
       ]
     : role === 'company'
       ? [
           { href: '/company/dashboard', label: tNav('dashboard') },
           { href: '/company/projects', label: tNav('projects') },
           { href: '/marketplace', label: tNav('browse') },
+          accountItem,
         ]
       : role === 'admin'
         ? [
@@ -62,6 +65,7 @@ export function PlatformHeader({
             { href: '/admin/reports', label: tNav('reports') },
             { href: '/admin/audit', label: tNav('audit') },
             { href: '/marketplace', label: tNav('browse') },
+            accountItem,
           ]
         : [];
 

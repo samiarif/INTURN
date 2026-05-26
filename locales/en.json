@@ -14,7 +14,8 @@
     "browse": "Browse",
     "verifications": "Verifications",
     "reports": "Reports",
-    "audit": "Audit"
+    "audit": "Audit",
+    "account": "Account"
   },
   "notifications": {
     "label": "Notifications",
@@ -560,6 +561,53 @@
       "title": "Couldn't load the marketplace.",
       "body": "We'll get it back in a moment. Try again or visit later.",
       "back": "Back to home"
+    }
+  },
+  "account": {
+    "title": "Account",
+    "subtitle": "Your identity, profile, and privacy controls.",
+    "identity": "Identity",
+    "email": "Email",
+    "name": "Name",
+    "role": "Role",
+    "memberSince": "Member since",
+    "notSet": "Not set",
+    "clerkNote": "Email + password are managed by our authentication provider (Clerk). Use the user menu (top right) to change them.",
+    "profile": "Profile",
+    "edit": "Edit",
+    "university": "University",
+    "fieldOfStudy": "Field of study",
+    "city": "City",
+    "language": "Preferred language",
+    "organization": "Organization",
+    "orgName": "Name",
+    "industry": "Industry",
+    "verificationStatus": "Verification status",
+    "dataAndPrivacy": "Data & privacy",
+    "dataIntro": "Download a copy of everything we hold about you. You can also delete your account permanently.",
+    "exportData": "Download my data (JSON)",
+    "readPrivacy": "Read the privacy policy",
+    "roles": {
+      "intern": "Intern",
+      "company": "Company",
+      "admin": "Administrator"
+    },
+    "verification": {
+      "draft": "Draft",
+      "pending": "Pending review",
+      "verified": "Verified",
+      "suspended": "Suspended"
+    },
+    "delete": {
+      "section": "Danger zone",
+      "intro": "Permanently delete your account and all related data. This action cannot be undone.",
+      "cta": "Delete my account",
+      "confirmInstruction": "To confirm, type your email ({email}) below.",
+      "cancel": "Cancel",
+      "confirm": "Permanently delete",
+      "deleting": "Deleting…",
+      "errorMismatch": "Email does not match. Type the exact address.",
+      "errorGeneric": "Something went wrong. Please try again or contact support."
     }
   },
   "community": {
