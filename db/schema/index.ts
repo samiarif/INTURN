@@ -24,3 +24,9 @@ export {
   type Notification,
   type NewNotification,
 } from './notifications';
+export {
+  internshipRecords,
+  type InternshipRecord,
+  type NewInternshipRecord,
+  type RecordSnapshot,
+} from './internship-records';

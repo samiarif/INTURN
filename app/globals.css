@@ -2269,3 +2269,338 @@ textarea:focus-visible,
   .pi-toolbar { flex-wrap: wrap; }
   .pi-spacer { display: none; }
 }
+
+/* ================================================
+   Records viewer — public end-of-internship records
+   Used by /[locale]/records/[token]/page.tsx
+   ================================================ */
+.rec-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(0,112,243,0.05), transparent 50%),
+    radial-gradient(circle at 80% 100%, rgba(34,197,94,0.05), transparent 50%),
+    var(--bg);
+  color: var(--ink);
+}
+.rec-header {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rec-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.rec-brand-star { width: 22px; height: 22px; }
+.rec-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.2);
+  color: rgb(21,128,61);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.rec-stamp::before {
+  content: "✓";
+  font-weight: 700;
+}
+.rec-main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 40px 24px 48px;
+}
+.rec-title-band {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-color);
+}
+.rec-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--brand-700);
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+}
+.rec-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.rec-subtitle {
+  margin-top: 8px;
+  font-size: 15px;
+  color: var(--ink-3);
+}
+.rec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.rec-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+.rec-card-wide { margin-bottom: 16px; }
+.rec-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand-700);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 14px 0;
+  font-family: var(--font-mono);
+}
+.rec-card-body { display: flex; flex-direction: column; gap: 10px; }
+.rec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 6px;
+}
+.rec-row:last-child { border-bottom: none; padding-bottom: 0; }
+.rec-label {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  flex-shrink: 0;
+}
+.rec-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: right;
+  word-break: break-word;
+}
+.rec-link { color: var(--brand-700); text-decoration: none; }
+.rec-link:hover { text-decoration: underline; }
+.rec-description {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+.rec-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.rec-stat {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+}
+.rec-stat-positive {
+  background: linear-gradient(135deg, rgba(34,197,94,0.06), transparent);
+  border-color: rgba(34,197,94,0.2);
+}
+.rec-stat-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.rec-stat-value {
+  margin-top: 8px;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--brand-700);
+}
+.rec-stat-positive .rec-stat-value { color: rgb(21,128,61); }
+.rec-stat-value span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-3);
+  letter-spacing: 0;
+}
+.rec-deliv-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.rec-deliv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.rec-deliv:last-child { border-bottom: none; }
+.rec-deliv-title { font-size: 14px; font-weight: 500; }
+.rec-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.rec-badge-approved { background: rgba(34,197,94,0.1); color: rgb(21,128,61); }
+.rec-badge-submitted { background: rgba(0,112,243,0.1); color: var(--brand-700); }
+.rec-badge-revision-requested { background: rgba(245,158,11,0.1); color: rgb(180,83,9); }
+.rec-badge-draft { background: var(--surface-muted); color: var(--ink-3); }
+
+.rec-review {
+  margin-top: 24px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+.rec-review-text {
+  margin: 0 0 20px 0;
+  padding: 16px;
+  background: var(--brand-50, rgba(0,112,243,0.05));
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--brand-500);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.rec-signature {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+.rec-supervisor { font-size: 14px; font-weight: 600; margin: 2px 0 0 0; }
+.rec-signed { font-size: 12px; color: var(--ink-3); margin: 2px 0 0 0; }
+.rec-rating { font-size: 20px; color: #f59e0b; margin: 4px 0 0 0; letter-spacing: 1px; }
+.rec-rating-empty { color: var(--border-color); }
+
+.rec-actions {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.rec-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms, transform 120ms;
+  text-decoration: none;
+  border: none;
+}
+.rec-btn-primary {
+  background: var(--brand-500);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.rec-btn-primary::before {
+  content: "↓";
+  font-weight: 700;
+}
+.rec-btn-primary:hover { background: var(--brand-700); }
+.rec-btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border-color);
+}
+.rec-btn-ghost:hover { background: var(--surface-muted); }
+
+.rec-footer {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.rec-footer p { margin: 4px 0; }
+.rec-verify { font-size: 11px; max-width: 600px; margin: 8px auto 0; line-height: 1.5; }
+
+@media (max-width: 720px) {
+  .rec-grid { grid-template-columns: 1fr; }
+  .rec-stats { grid-template-columns: 1fr; }
+  .rec-row { flex-direction: column; gap: 4px; align-items: flex-start; }
+  .rec-value { text-align: left; }
+  .rec-signature { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .rec-title { font-size: 24px; }
+  .rec-stat-value { font-size: 28px; }
+}
+
+/* Issue record dialog (supervisor) — uses ws-* base classes */
+.rec-issue-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+.rec-issue-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+.rec-issue-stars {
+  display: inline-flex;
+  gap: 4px;
+}
+.rec-issue-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 4px;
+  color: var(--border-color);
+  transition: color 120ms;
+}
+.rec-issue-star.active { color: #f59e0b; }
+.rec-issue-star:hover { color: #f59e0b; }
+.rec-issue-hint {
+  font-size: 12px;
+  color: var(--ink-3);
+  padding: 8px 12px;
+  background: rgba(245,158,11,0.08);
+  border-left: 3px solid #f59e0b;
+  border-radius: 4px;
+}
+.rec-issue-error {
+  font-size: 13px;
+  color: var(--danger);
+  margin: 0;
+}

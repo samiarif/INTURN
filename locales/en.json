@@ -9,6 +9,7 @@
     "applications": "Applications",
     "projects": "Projects",
     "saved": "Saved",
+    "records": "Records",
     "browse": "Browse",
     "verifications": "Verifications"
   },
@@ -527,6 +528,60 @@
       "title": "Couldn't load the marketplace.",
       "body": "We'll get it back in a moment. Try again or visit later.",
       "back": "Back to home"
+    }
+  },
+  "records": {
+    "verified": "Verified record",
+    "eyebrow": "Internship record",
+    "title": "End-of-Internship Record",
+    "subtitle": "Official document issued by the host organisation",
+    "intern": "Intern",
+    "organization": "Organisation",
+    "internship": "Internship",
+    "deliverables": "Deliverables",
+    "review": "Supervisor's review",
+    "supervisor": "Supervisor",
+    "signedOn": "Signed on",
+    "rating": "Rating",
+    "statsTasks": "Tasks completed",
+    "statsDeliv": "Deliverables approved",
+    "of": "of",
+    "name": "Name",
+    "email": "Email",
+    "university": "University",
+    "fieldOfStudy": "Field of study",
+    "title2": "Title",
+    "sector": "Sector",
+    "duration": "Duration",
+    "period": "Period",
+    "location": "Location",
+    "website": "Website",
+    "weeks": "weeks",
+    "downloadPdf": "Download PDF",
+    "shareLink": "Copy share link",
+    "linkCopied": "Link copied",
+    "issuedBy": "Issued by",
+    "verifyBlurb": "This record was issued through Inturn. The supervisor signed off on the work shown above; the URL above is the only canonical source.",
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "revision-requested": "Revision"
+    },
+    "issue": {
+      "buttonOpen": "Issue end-of-internship record",
+      "title": "Issue end-of-internship record",
+      "subtitle": "Snapshot the intern's deliverables, your review, and a 1-5 rating. Generates a permanent PDF + a shareable link.",
+      "reviewLabel": "Written review",
+      "reviewPlaceholder": "What did this intern accomplish? What did they learn?",
+      "ratingLabel": "Overall rating (optional)",
+      "submit": "Issue record",
+      "cancel": "Cancel",
+      "saving": "Issuing…",
+      "successTitle": "Record issued",
+      "successCta": "View record",
+      "alreadyExistsHint": "An active record exists. Issuing a new one revokes the previous one.",
+      "minReviewError": "Review must be at least 40 characters."
     }
   }
 }

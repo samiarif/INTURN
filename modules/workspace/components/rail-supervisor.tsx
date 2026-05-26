@@ -1,5 +1,8 @@
 import type { WorkspaceOverviewData } from '../queries';
 import { ScheduleCheckInButton } from './schedule-check-in';
+import { IssueRecordButton } from '@/modules/records/components/issue-record-button';
+import { findActiveRecordByWorkspace } from '@/modules/records/queries';
+import { getLocale } from 'next-intl/server';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -43,7 +46,15 @@ function buildSparkPath(events: WorkspaceOverviewData['events'], weeks: number):
   return { area, line, tip: points[points.length - 1] };
 }
 
-export function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
+export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
+  const locale = await getLocale();
+  const activeRecord = await findActiveRecordByWorkspace(data.workspace.id);
+  // Show "Issue record" once the supervisor has anything to sign off on —
+  // i.e. at least one deliverable has been submitted. (Hidden until then so
+  // it doesn't add noise on day 1 of the internship.)
+  const hasSubmittedDeliverables = data.deliverables.some(
+    (d) => d.status === 'submitted' || d.status === 'approved',
+  );
   const intern = data.intern;
   const internName = intern?.firstName ?? 'the intern';
 
@@ -119,6 +130,22 @@ export function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
         <p>Schedule a check-in. Inturn generates the link and adds it to the timeline.</p>
         <ScheduleCheckInButton workspaceId={data.workspace.id} />
       </div>
+
+      {hasSubmittedDeliverables && (
+        <div className="ws-rail-cta">
+          <h4>Wrap-up</h4>
+          <p>
+            Issue the end-of-internship record. Snapshots deliverables, your review, and a
+            rating. Generates a shareable PDF for the intern.
+          </p>
+          <IssueRecordButton
+            workspaceId={data.workspace.id}
+            hasActiveRecord={Boolean(activeRecord)}
+            activeRecordToken={activeRecord?.shareToken ?? null}
+            locale={locale}
+          />
+        </div>
+      )}
 
       <div className="ws-rail-quick">
         <h4>{thisWeekLabel}</h4>

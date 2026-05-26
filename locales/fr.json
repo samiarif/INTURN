@@ -9,6 +9,7 @@
     "applications": "Candidatures",
     "projects": "Projets",
     "saved": "Enregistrés",
+    "records": "Attestations",
     "browse": "Parcourir",
     "verifications": "Vérifications"
   },
@@ -527,6 +528,60 @@
       "title": "Impossible de charger le marketplace.",
       "body": "On revient dans un instant. Réessayez ou revenez plus tard.",
       "back": "Retour à l'accueil"
+    }
+  },
+  "records": {
+    "verified": "Document vérifié",
+    "eyebrow": "Attestation de stage",
+    "title": "Attestation de fin de stage",
+    "subtitle": "Document officiel délivré par l'entreprise d'accueil",
+    "intern": "Stagiaire",
+    "organization": "Entreprise",
+    "internship": "Stage",
+    "deliverables": "Livrables",
+    "review": "Évaluation du superviseur",
+    "supervisor": "Superviseur",
+    "signedOn": "Signé le",
+    "rating": "Note",
+    "statsTasks": "Tâches accomplies",
+    "statsDeliv": "Livrables approuvés",
+    "of": "sur",
+    "name": "Nom",
+    "email": "Email",
+    "university": "Établissement",
+    "fieldOfStudy": "Domaine",
+    "title2": "Intitulé",
+    "sector": "Secteur",
+    "duration": "Durée",
+    "period": "Période",
+    "location": "Localisation",
+    "website": "Site web",
+    "weeks": "semaines",
+    "downloadPdf": "Télécharger le PDF",
+    "shareLink": "Copier le lien",
+    "linkCopied": "Lien copié",
+    "issuedBy": "Délivré par",
+    "verifyBlurb": "Cette attestation a été délivrée via Inturn. Le superviseur a validé le travail décrit ci-dessus ; cette URL est l'unique source officielle.",
+    "status": {
+      "draft": "Brouillon",
+      "submitted": "Soumis",
+      "approved": "Approuvé",
+      "revision-requested": "Révision"
+    },
+    "issue": {
+      "buttonOpen": "Délivrer l'attestation de fin de stage",
+      "title": "Délivrer l'attestation de fin de stage",
+      "subtitle": "Capture les livrables du stagiaire, votre évaluation et une note de 1 à 5. Génère un PDF permanent + un lien partageable.",
+      "reviewLabel": "Évaluation écrite",
+      "reviewPlaceholder": "Qu'a accompli ce stagiaire ? Qu'a-t-il appris ?",
+      "ratingLabel": "Note globale (optionnel)",
+      "submit": "Délivrer l'attestation",
+      "cancel": "Annuler",
+      "saving": "Délivrance…",
+      "successTitle": "Attestation délivrée",
+      "successCta": "Voir l'attestation",
+      "alreadyExistsHint": "Une attestation active existe. En délivrer une nouvelle révoque l'ancienne.",
+      "minReviewError": "L'évaluation doit faire au moins 40 caractères."
     }
   }
 }
