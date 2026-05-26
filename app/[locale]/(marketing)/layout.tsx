@@ -3,6 +3,7 @@ import { UserButton } from '@clerk/nextjs';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { getSession } from '@/modules/auth/session';
+import { SiteFooter } from '@/components/site-footer';
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -58,6 +59,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
         </div>
       </header>
       <main className="flex-1">{children}</main>
+      <SiteFooter />
     </div>
   );
 }

@@ -561,6 +561,143 @@
       "back": "Retour à l'accueil"
     }
   },
+  "footer": {
+    "tagline": "La plateforme de stages pour les universités tunisiennes et les entreprises qui recrutent leurs étudiants.",
+    "product": "Produit",
+    "marketplace": "Marketplace",
+    "forCompanies": "Pour les entreprises",
+    "forInterns": "Pour les stagiaires",
+    "legal": "Mentions légales",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Confidentialité",
+    "cookies": "Cookies",
+    "madeIn": "Fait à Tunis",
+    "contact": "hello@inturn.tn"
+  },
+  "cookieBanner": {
+    "title": "Consentement aux cookies",
+    "body": "Nous utilisons des cookies essentiels (session, langue, thème) pour faire fonctionner Inturn. Les cookies optionnels nous aident à comprendre l'usage. Vous pouvez modifier votre choix à tout moment dans vos paramètres.",
+    "readMore": "Lire notre politique cookies",
+    "acceptAll": "Tout accepter",
+    "essentialOnly": "Essentiels uniquement"
+  },
+  "legal": {
+    "terms": {
+      "eyebrow": "Inturn · Conditions d'utilisation",
+      "title": "Conditions d'utilisation",
+      "subtitle": "Les règles auxquelles chacun adhère en utilisant Inturn.",
+      "lastUpdated": "Mise à jour : {date}",
+      "contactFootnote": "Questions ? Écrivez-nous à hello@inturn.tn.",
+      "sections": [
+        {
+          "heading": "Qui sommes-nous",
+          "body": "Inturn est exploitée par We Make It Grow, société immatriculée à Tunis, Tunisie. En créant un compte sur inturn.tn, vous acceptez ces Conditions d'utilisation, notre Politique de confidentialité et notre Politique cookies."
+        },
+        {
+          "heading": "Qui peut utiliser Inturn",
+          "body": "Inturn s'adresse à : (a) des étudiants majeurs (18+) inscrits dans un établissement reconnu, (b) des entreprises ou associations proposant de véritables stages, et (c) des administrateurs autorisés par Inturn. Les comptes usurpant l'identité d'autrui, scrapant les données ou opérant des bots seront suspendus."
+        },
+        {
+          "heading": "Annonces de stage",
+          "body": "Les entreprises sont responsables de l'exactitude et de la légalité de chaque stage qu'elles publient. Inturn examine les annonces avant publication mais ne garantit pas la qualité, la sécurité ou la légalité d'une annonce tierce. Les stagiaires doivent effectuer leur propre vérification avant de postuler."
+        },
+        {
+          "heading": "Rémunération et contrats",
+          "body": "Inturn ne fait que faciliter les mises en relation. Tout contrat de stage, paiement ou rémunération relève directement du stagiaire, de l'entreprise d'accueil et (le cas échéant) de l'université. Inturn n'est pas partie à ce contrat et n'est pas responsable d'un défaut de paiement, d'un changement de périmètre ou d'une rupture par l'une des parties."
+        },
+        {
+          "heading": "Usage acceptable",
+          "body": "Ne publiez pas de contenu nuisible, illégal, harcelant, frauduleux ou sexuellement explicite. Ne tentez pas de compromettre la plateforme, de contourner les limites de débit ou d'envoyer des messages de masse non sollicités. N'usurpez pas l'identité d'autrui, y compris du personnel Inturn. Ne demandez pas à un stagiaire de vous payer pour obtenir un stage."
+        },
+        {
+          "heading": "Propriété intellectuelle",
+          "body": "Vous conservez les droits sur le contenu que vous téléversez (CV, descriptions de projet, livrables). Vous accordez à Inturn une licence mondiale et non exclusive pour afficher, stocker et sauvegarder ce contenu dans le cadre du service. La marque, le code et le design d'Inturn sont © We Make It Grow."
+        },
+        {
+          "heading": "Suspension et résiliation",
+          "body": "Nous pouvons suspendre ou clôturer tout compte qui enfreint ces Conditions, avec ou sans préavis selon la gravité. Vous pouvez clôturer votre compte à tout moment depuis les paramètres — vos données sont alors supprimées sous 30 jours, sauf obligations légales de conservation imposant la rétention de certains éléments."
+        },
+        {
+          "heading": "Responsabilité",
+          "body": "Inturn est fourni « tel quel ». Dans la limite autorisée par la loi tunisienne, notre responsabilité maximale pour toute réclamation liée à l'utilisation de la plateforme est plafonnée aux montants que vous nous avez versés au cours des 12 mois précédant la réclamation (0 € pour les comptes gratuits)."
+        },
+        {
+          "heading": "Droit applicable",
+          "body": "Ces Conditions sont régies par le droit tunisien. Les litiges seront tranchés par les tribunaux compétents de Tunis, sauf si un for impératif en protection des consommateurs s'applique pour votre pays de résidence."
+        },
+        {
+          "heading": "Modifications",
+          "body": "Nous pouvons mettre à jour ces Conditions. Les changements substantiels sont notifiés par email et sur la plateforme au moins 14 jours avant leur entrée en vigueur. Continuer à utiliser Inturn après cette date vaut acceptation des nouvelles Conditions."
+        }
+      ]
+    },
+    "privacy": {
+      "eyebrow": "Inturn · Politique de confidentialité",
+      "title": "Politique de confidentialité",
+      "subtitle": "Ce que nous collectons, pourquoi, et ce que vous pouvez en faire.",
+      "lastUpdated": "Mise à jour : {date}",
+      "contactFootnote": "Contact confidentialité : privacy@inturn.tn.",
+      "sections": [
+        {
+          "heading": "Responsable du traitement",
+          "body": "Le responsable du traitement de vos données est We Make It Grow (opérateur d'Inturn), Tunis, Tunisie. Contact protection des données : privacy@inturn.tn."
+        },
+        {
+          "heading": "Ce que nous collectons",
+          "body": "Données de compte (email, nom, rôle) via Clerk ; données de profil que vous saisissez (établissement, compétences, CV, liens portfolio) ; données d'usage (pages vues, actions effectuées — pour sécuriser la plateforme et corriger les bugs) ; contenu que vous créez (candidatures, commentaires, livrables). Nous ne collectons pas sciemment de données de personnes de moins de 18 ans."
+        },
+        {
+          "heading": "Pourquoi nous l'utilisons",
+          "body": "Pour créer votre compte et vous authentifier (Clerk) ; pour montrer votre profil aux entreprises auxquelles vous postulez ; pour envoyer les emails transactionnels (bienvenue, mises à jour de candidature, échéances) ; pour sécuriser la plateforme (rate-limit, détection de fraude) ; pour corriger les bugs et améliorer le produit. Nous ne vendons pas de données personnelles et ne faisons pas de publicité ciblée."
+        },
+        {
+          "heading": "Base légale",
+          "body": "Nous traitons les données personnelles sur la base de (a) l'exécution du contrat — fournir le service auquel vous avez souscrit ; (b) l'intérêt légitime — sécuriser et améliorer la plateforme ; et (c) le consentement — pour les cookies optionnels et tout email marketing (révocable à tout moment)."
+        },
+        {
+          "heading": "Sous-traitants",
+          "body": "Nous partageons les données avec : Clerk (authentification), Neon (hébergement base de données, région UE), Vercel (hébergement web, région UE), Resend (email transactionnel), Anthropic (fonctionnalités IA — uniquement le texte que vous soumettez pour cette requête précise). Tous sont liés par des accords de traitement de données."
+        },
+        {
+          "heading": "Rétention",
+          "body": "Comptes actifs : tant que vous utilisez le service. Comptes clôturés : supprimés sous 30 jours, à l'exception de (a) journaux d'audit légalement obligatoires, et (b) attestations de fin de stage — ce sont des documents signés ; nous les conservons jusqu'à votre demande de suppression."
+        },
+        {
+          "heading": "Vos droits",
+          "body": "Vous avez les droits d'accès, de rectification, de portabilité et de suppression de vos données. Écrivez à privacy@inturn.tn depuis l'adresse enregistrée. Nous répondons sous 30 jours. Vous pouvez également déposer plainte auprès de l'Instance Nationale de Protection des Données Personnelles (INPDP) ou de votre autorité locale."
+        },
+        {
+          "heading": "Transferts internationaux",
+          "body": "Notre hébergement et nos sous-traitants opèrent depuis l'UE et la Tunisie. Lorsque des données sont transférées hors UE, nous utilisons les Clauses Contractuelles Types et garanties équivalentes."
+        },
+        {
+          "heading": "Sécurité",
+          "body": "Nous utilisons TLS en transit, le chiffrement au repos, des limites de débit contre les abus et des contrôles d'accès au moindre privilège. Aucun système n'est parfaitement sûr — signalez toute vulnérabilité à security@inturn.tn."
+        }
+      ]
+    },
+    "cookies": {
+      "eyebrow": "Inturn · Politique cookies",
+      "title": "Politique cookies",
+      "subtitle": "Les cookies que nous posons et leur rôle.",
+      "lastUpdated": "Mise à jour : {date}",
+      "contactFootnote": "Questions ? privacy@inturn.tn.",
+      "sections": [
+        {
+          "heading": "Cookies essentiels",
+          "body": "Indispensables au fonctionnement d'Inturn. Nous posons : __clerk_* (authentification, posé par Clerk) ; inturn-theme (votre préférence clair/sombre) ; inturn-cookie-consent (votre choix sur ce bandeau — pour ne pas vous redemander). Ces cookies ne peuvent être désactivés sans rendre le service inutilisable."
+        },
+        {
+          "heading": "Cookies optionnels",
+          "body": "Nous ne posons actuellement aucun cookie d'analyse ou marketing. Si nous en ajoutons à l'avenir (par exemple, analytics produit anonymes), ils ne se chargeront qu'après votre acceptation explicite via le bandeau. Vous pouvez changer d'avis à tout moment en supprimant la valeur inturn-cookie-consent dans le stockage de votre navigateur."
+        },
+        {
+          "heading": "Cookies tiers",
+          "body": "Clerk (notre fournisseur d'authentification) pose ses propres cookies selon sa propre politique de confidentialité : https://clerk.com/privacy. Lorsque vous intégrez un lien de visioconférence ou regardez une vidéo, le tiers concerné peut poser ses propres cookies selon sa propre politique."
+        }
+      ]
+    }
+  },
   "report": {
     "open": "Signaler cette offre",
     "title": "Signaler cette offre",

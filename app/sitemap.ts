@@ -22,6 +22,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/en`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     { url: `${BASE}/marketplace`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.9 },
     { url: `${BASE}/en/marketplace`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.7 },
+    { url: `${BASE}/terms`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${BASE}/privacy`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${BASE}/cookies`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${BASE}/en/terms`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.2 },
+    { url: `${BASE}/en/privacy`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.2 },
+    { url: `${BASE}/en/cookies`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.2 },
   ];
 
   const internshipEntries: MetadataRoute.Sitemap = rows.map((r) => ({

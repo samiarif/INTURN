@@ -561,6 +561,143 @@
       "back": "Back to home"
     }
   },
+  "footer": {
+    "tagline": "The internship platform for Tunisian universities and the companies hiring their students.",
+    "product": "Product",
+    "marketplace": "Marketplace",
+    "forCompanies": "For companies",
+    "forInterns": "For interns",
+    "legal": "Legal",
+    "terms": "Terms of Service",
+    "privacy": "Privacy",
+    "cookies": "Cookies",
+    "madeIn": "Made in Tunis",
+    "contact": "hello@inturn.tn"
+  },
+  "cookieBanner": {
+    "title": "Cookie consent",
+    "body": "We use essential cookies (session, language, theme) to make Inturn work. Optional cookies help us understand usage. You can change your choice any time in your account settings.",
+    "readMore": "Read our cookie policy",
+    "acceptAll": "Accept all",
+    "essentialOnly": "Essential only"
+  },
+  "legal": {
+    "terms": {
+      "eyebrow": "Inturn · Terms of Service",
+      "title": "Terms of Service",
+      "subtitle": "The rules everyone agrees to by using Inturn.",
+      "lastUpdated": "Last updated: {date}",
+      "contactFootnote": "Questions? Email hello@inturn.tn.",
+      "sections": [
+        {
+          "heading": "Who we are",
+          "body": "Inturn is operated by We Make It Grow, a company registered in Tunis, Tunisia. By creating an account on inturn.tn you accept these Terms of Service together with our Privacy Policy and Cookie Policy."
+        },
+        {
+          "heading": "Who can use Inturn",
+          "body": "Inturn is for: (a) students aged 18+ enrolled in a recognised institution, (b) companies or non-profits offering legitimate internships, and (c) administrators authorised by Inturn. Accounts found to be impersonating others, scraping data, or operating bots will be suspended."
+        },
+        {
+          "heading": "Internship listings",
+          "body": "Companies are responsible for the accuracy and legality of every internship they publish. Inturn reviews listings before they go live, but does not guarantee the quality, safety, or legality of any third-party listing. Interns are responsible for performing their own due diligence before applying."
+        },
+        {
+          "heading": "Compensation and contracts",
+          "body": "Inturn facilitates introductions only. Any internship contract, payment, or compensation is a direct relationship between the intern, the host company, and (where applicable) the university. Inturn is not a party to that contract and is not liable for non-payment, scope changes, or termination by either side."
+        },
+        {
+          "heading": "Acceptable use",
+          "body": "Don't post harmful, illegal, harassing, fraudulent, or sexually explicit content. Don't try to compromise the platform, bypass rate limits, or send unsolicited bulk messages. Don't impersonate someone else, including Inturn staff. Don't ask interns to pay you for an internship."
+        },
+        {
+          "heading": "Intellectual property",
+          "body": "You keep the IP rights to content you upload (CVs, project descriptions, deliverables). You grant Inturn a worldwide, non-exclusive licence to display, store, and back up that content as needed to run the service. Inturn's branding, code, and design are © We Make It Grow."
+        },
+        {
+          "heading": "Suspension and termination",
+          "body": "We can suspend or close any account that violates these Terms, with or without notice depending on severity. You can close your own account at any time from the account settings — your data is then deleted within 30 days, except where legal record-keeping obligations require us to retain specific items longer."
+        },
+        {
+          "heading": "Liability",
+          "body": "Inturn is provided 'as is.' To the extent permitted by Tunisian law, our maximum liability for any claim arising from the use of the platform is limited to the fees you paid us in the 12 months before the claim arose (€0 for free accounts)."
+        },
+        {
+          "heading": "Governing law",
+          "body": "These Terms are governed by the laws of Tunisia. Disputes will be resolved by the competent courts of Tunis unless a mandatory consumer-protection forum applies for your country of residence."
+        },
+        {
+          "heading": "Changes to these Terms",
+          "body": "We may update these Terms. Material changes are announced by email and on the platform at least 14 days before they take effect. Continued use of Inturn after that means you accept the updated Terms."
+        }
+      ]
+    },
+    "privacy": {
+      "eyebrow": "Inturn · Privacy Policy",
+      "title": "Privacy Policy",
+      "subtitle": "What we collect, why, and what you can do about it.",
+      "lastUpdated": "Last updated: {date}",
+      "contactFootnote": "Privacy contact: privacy@inturn.tn.",
+      "sections": [
+        {
+          "heading": "Data controller",
+          "body": "The controller of your personal data is We Make It Grow (the operator of Inturn), Tunis, Tunisia. You can reach the data protection contact at privacy@inturn.tn."
+        },
+        {
+          "heading": "What we collect",
+          "body": "Account data (email, name, role) from Clerk; profile data you enter (university, skills, CV, portfolio links); usage data (pages viewed, actions taken — used to keep the platform secure and to fix bugs); content you create (applications, comments, deliverables). We do not knowingly collect data from anyone under 18."
+        },
+        {
+          "heading": "Why we use it",
+          "body": "To create your account and authenticate you (Clerk); to show your profile to companies you apply to; to send transactional emails (welcome, application updates, deadlines); to keep the platform secure (rate-limit + fraud detection); to fix bugs and improve the product. We do not sell personal data and we do not run targeted advertising."
+        },
+        {
+          "heading": "Legal basis",
+          "body": "We process personal data under the legal basis of (a) contract — running the service you signed up for; (b) legitimate interest — keeping the platform secure and improving it; and (c) consent — for optional cookies and any marketing emails (you can withdraw at any time)."
+        },
+        {
+          "heading": "Sub-processors",
+          "body": "We share data with: Clerk (authentication), Neon (database hosting, EU region), Vercel (web hosting, EU region), Resend (transactional email), Anthropic (AI-assisted features — only the text you submit for that specific request). All sub-processors are bound by data-processing agreements."
+        },
+        {
+          "heading": "Retention",
+          "body": "Active accounts: as long as you're using the service. Closed accounts: deleted within 30 days, except (a) audit logs we are legally required to retain, and (b) end-of-internship records — these are signed artefacts; we keep them until you ask for deletion."
+        },
+        {
+          "heading": "Your rights",
+          "body": "You have the right to access, correct, export, or delete your personal data. Email privacy@inturn.tn from the address on file. We respond within 30 days. You also have the right to lodge a complaint with the Tunisian Instance Nationale de Protection des Données Personnelles (INPDP) or your local supervisory authority."
+        },
+        {
+          "heading": "International transfers",
+          "body": "Our hosting and sub-processors operate from the EU and Tunisia. Where data is transferred outside the EU, we rely on Standard Contractual Clauses and equivalent safeguards."
+        },
+        {
+          "heading": "Security",
+          "body": "We use TLS in transit, encrypted storage at rest, rate-limiting against abuse, and least-privilege access controls. No system is perfectly secure — please report vulnerabilities to security@inturn.tn."
+        }
+      ]
+    },
+    "cookies": {
+      "eyebrow": "Inturn · Cookie Policy",
+      "title": "Cookie Policy",
+      "subtitle": "The cookies we set and what they do.",
+      "lastUpdated": "Last updated: {date}",
+      "contactFootnote": "Questions? privacy@inturn.tn.",
+      "sections": [
+        {
+          "heading": "Essential cookies",
+          "body": "These are required for Inturn to work. We use: __clerk_* (authentication, set by Clerk); inturn-theme (your light/dark preference); inturn-cookie-consent (records your choice on this banner — so we don't keep asking). You cannot disable essential cookies and continue to use the service."
+        },
+        {
+          "heading": "Optional cookies",
+          "body": "We currently do not set analytics or marketing cookies. If we do in the future (e.g. anonymous product analytics), they will only load after you explicitly accept the cookie banner. You can change your choice any time by clearing the inturn-cookie-consent value in your browser storage."
+        },
+        {
+          "heading": "Third-party cookies",
+          "body": "Clerk (our authentication provider) sets its own cookies under its own privacy policy: https://clerk.com/privacy. When you embed a meeting link or watch a video, that third party may set its own cookies under its own policy."
+        }
+      ]
+    }
+  },
   "report": {
     "open": "Report this listing",
     "title": "Report this listing",

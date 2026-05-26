@@ -7,6 +7,7 @@ import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { frFR, enUS } from '@clerk/localizations';
+import { CookieBanner } from '@/components/cookie-banner';
 import '../globals.css';
 
 const clerkLocales = { fr: frFR, en: enUS };
@@ -52,6 +53,7 @@ export default async function LocaleLayout({
         <ClerkProvider localization={clerkLocales[locale as keyof typeof clerkLocales]}>
           <NextIntlClientProvider locale={locale} messages={messages}>
             {children}
+            <CookieBanner />
           </NextIntlClientProvider>
         </ClerkProvider>
       </body>
