@@ -1,14 +1,59 @@
-# inturn — Session Handoff (2026-05-25, updated post 05-canvas polish pass)
+# inturn — Session Handoff (2026-05-27, Sprint D complete + legal + GDPR)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
 ## TL;DR — Where we are
 
 - **Live in prod** at https://inturn.vercel.app. Custom domain inturn-hub.com **not yet wired**.
-- **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace (filtered + bookmarkable + match-scored) → applies → company reviews + accepts → workspace auto-created with Overview/Tasks/Deliverables/Comments/Activity/Timeline tabs + weekly check-in with AI draft.
-- **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres + Clerk auth + Tailwind v4 + shadcn/ui (new-york) + next-intl 4 (FR default / EN with `as-needed` prefix) + Vitest 4 + Vercel hosting.
-- **Branch**: `sprint-b-phase-1-closure` carries Sprint A + B + C + Sprint 3 wireframes + Deliverables redesign + **05 Workspace Canvas full polish pass**. 110/110 tests green, typecheck + lint + build all clean as of `688bb45`.
-- **5-sprint ship plan + 3 design implementations done** at `docs/superpowers/plans/2026-05-{24,25}-*.md`. Sprint D (engagement) and Sprint E (trust+legal+billing) remain.
+- **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace (filtered + bookmarkable + match-scored) → applies → company reviews + accepts → workspace auto-created with Overview/Tasks/Deliverables/Comments/Activity/Timeline tabs + weekly check-in with AI draft → end of internship → supervisor issues PDF record with shareable link.
+- **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres + Clerk auth + Tailwind v4 + shadcn/ui (new-york) + next-intl 4 (FR default / EN with `as-needed` prefix) + Vitest 4 + Vercel hosting + @react-pdf/renderer + Resend (transactional email) + Anthropic SDK (Claude Sonnet 4.5).
+- **Branch**: `sprint-b-phase-1-closure` carries Sprint A + B + C + 3 design implementations + **Sprint D complete (D1-D8)** + Legal pages + Cookie banner + Account/GDPR. 133/133 tests green, typecheck + lint + build all clean as of `1f7d475`.
+- **Sprint D fully shipped**. Sprint E remaining: Sentry observability, Stripe scaffolding (flag-gated), Twilio WhatsApp, bundle analyzer. Plans at `docs/superpowers/plans/2026-05-{24,25}-*.md`.
+
+## Sprint D shipped (2026-05-26 to 2026-05-27)
+
+10 commits on `sprint-b-phase-1-closure`, all pushed. The engagement layer + GDPR + legal:
+
+```
+de84290 feat(email): Resend integration + 5 transactional templates (FR + EN)         D1
+72ed552 feat(notifications): in-app bell + dispatcher + email triggers                D2
+2cc01b1 feat(ai): task-clarity + intern-unblocker endpoints (rate-limited)            D3
+8acfc6b feat(stuck-pill): AI-assisted blocker → workspace comment                     D4 wiring
+7abe627 feat(security): in-memory rate limit on /api/upload + clerk webhook           D5
+665e590 feat(records): end-of-internship PDF records + share link                     D6
+cf94c89 feat(admin): moderation queue + audit log + reports                           D8
+eb9d5c4 feat(tasks): add-task modal with AI clarity assist                            D3 UI
+cc921e3 feat(community): intern feed v1 — posts + comments + moderation               D7
+342e109 feat(legal): Terms / Privacy / Cookie policy + cookie banner + site footer
+66fef2a feat(account): GDPR data export + delete account + settings page
+1f7d475 feat(seed): community posts + sample record + sample report
+```
+
+### Sprint D feature coverage
+
+| # | Feature | Surface | Notes |
+|---|---------|---------|-------|
+| D1 | Transactional email | `lib/email.ts` + 5 templates | Resend, test-mode short-circuit, XSS-escaped, FR+EN |
+| D2 | Notifications | `notifications` table + `NotificationBell` + `dispatchNotificationsFor` | in-app bell + email, per-user `preferredLanguage` |
+| D3 | AI task clarity | `/api/ai/task-clarity` + Add Task modal | Claude Sonnet, rate-limited 10/min/user |
+| D4 | AI intern unblocker | `/api/ai/intern-unblocker` + StuckPill | Posts `[STUCK]` workspace comment |
+| D5 | Rate limiting | `lib/ratelimit.ts` | Sliding window, 5 named buckets |
+| D6 | Internship records | `/[locale]/records/[token]` + `/api/records/[id]/pdf` + `IssueRecordButton` | React-PDF, 32-char share token, soft revoke |
+| D7 | Community v1 | `/intern/community` | Posts + comments + Report + author/admin delete |
+| D8 | Admin moderation | `/admin/reports` + `/admin/audit` | Reports queue + append-only audit log |
+
+### GDPR / Legal (post-Sprint-D)
+
+| Surface | What | Notes |
+|---------|------|-------|
+| `/[locale]/terms` | Terms of Service | 10 sections, FR + EN, Tunisian law clause |
+| `/[locale]/privacy` | Privacy Policy | 9 sections, sub-processors enumerated, INPDP cited |
+| `/[locale]/cookies` | Cookie Policy | 3 sections covering essential/optional/third-party |
+| `<CookieBanner>` | Bottom banner on every page | `useSyncExternalStore`, versioned consent |
+| `<SiteFooter>` | Marketing footer | Product + legal + contact columns |
+| `/account` | Settings page | Identity + profile preview + Edit link + Data export + Delete |
+| `/api/account/export` | GDPR right of access | Streams JSON of everything we hold about the user |
+| `deleteAccountAction` | GDPR right of erasure | Email re-confirmation + DB cascade + Clerk delete + audit |
 
 ## 05 Workspace Canvas — full polish landed (2026-05-25)
 
@@ -424,18 +469,32 @@ Sign in at http://localhost:3000/sign-in. Admin account: `hellowemakeitgrow@gmai
 ## Recent commits worth knowing
 
 ```
-16fffcf perf(workspace): stream overview body behind Suspense
-4d72a35 perf: hot-path indexes, marketplace cache tag, workspace CSS split
-7f69fc1 perf: cache session + DRY workspace pages and server actions
-4717038 fix: AI model id + 3 event metadata routing bugs
-cf40d18 fix: load .env.local in drizzle config
-68ebf75 fix: resolve lint errors in role-selection tests
-ee86c62 chore: add deployment config and cleanup
-60ce8b8 feat: add role-gated layouts and dashboard placeholders
-ce0740b feat: add role selection flow
+1f7d475 feat(seed): community posts + sample record + sample report (Sprint D)
+66fef2a feat(account): GDPR data export + delete account + settings page
+342e109 feat(legal): Terms / Privacy / Cookie policy + cookie banner + site footer
+cc921e3 feat(community): intern feed v1 — posts + comments + moderation (D7)
+eb9d5c4 feat(tasks): add-task modal with AI clarity assist
+cf94c89 feat(admin): moderation queue + audit log + reports (D8)
+665e590 feat(records): end-of-internship PDF records + share link (D6)
+8acfc6b feat(stuck-pill): AI-assisted blocker → workspace comment (D4 wiring)
+2cc01b1 feat(ai): task-clarity + intern-unblocker endpoints (rate-limited)
+7abe627 feat(security): in-memory rate limit on /api/upload + clerk webhook (D5)
+72ed552 feat(notifications): in-app bell + dispatcher + email triggers (D2)
+de84290 feat(email): Resend integration + 5 transactional templates (FR + EN)
+3bc141e fix(marketing): show Dashboard link + UserButton when signed in
+75dada3 feat(seed): rich data bound to Sam's 3 sign-in emails
 ```
 
 Full history: `git log --oneline | head -50`.
+
+## Sprint E — remaining ("running product" polish, post-launch optional)
+
+- **Sentry** for error/perf observability (TODO comment exists in `app/[locale]/error.tsx`)
+- **Stripe scaffolding** (flag-gated; no monetisation yet)
+- **Twilio WhatsApp** for SMS/WhatsApp delivery channel (optional, FR market often prefers WhatsApp over email)
+- **Bundle analyzer** for production size audits
+
+These are quality-of-life; the platform is launch-ready functionally.
 
 ## Memory files (for AI-augmented sessions)
 
