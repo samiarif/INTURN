@@ -12,6 +12,11 @@
     "browse": "Parcourir",
     "verifications": "Vérifications"
   },
+  "notifications": {
+    "label": "Notifications",
+    "empty": "Pas encore de notification.",
+    "markAllRead": "Tout marquer comme lu"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Une erreur est survenue",

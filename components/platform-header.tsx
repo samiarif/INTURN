@@ -7,7 +7,9 @@ import { UserButton } from '@clerk/nextjs';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { NotificationBell } from '@/components/ui/notification-bell';
 import type { Role } from '@/modules/auth/types';
+import type { Notification } from '@/db/schema';
 
 /**
  * App shell header for every (platform) page outside the workspace.
@@ -21,9 +23,18 @@ import type { Role } from '@/modules/auth/types';
  * Hides itself on workspace routes so the WorkspaceTopBar doesn't get
  * stacked under a duplicate brand header.
  */
-export function PlatformHeader({ role }: { role: Role }) {
+export function PlatformHeader({
+  role,
+  notifications,
+  unreadCount,
+}: {
+  role: Role;
+  notifications: Notification[];
+  unreadCount: number;
+}) {
   const tA11y = useTranslations('a11y');
   const tNav = useTranslations('platformNav');
+  const tNotif = useTranslations('notifications');
   const pathname = usePathname();
 
   // Workspace routes own their own shell (topbar + sidebar). Don't double-up.
@@ -88,6 +99,11 @@ export function PlatformHeader({ role }: { role: Role }) {
         <ThemeToggle
           labelDark={tA11y('switchToDark')}
           labelLight={tA11y('switchToLight')}
+        />
+        <NotificationBell
+          initialUnread={unreadCount}
+          initialItems={notifications}
+          label={tNotif('label')}
         />
         <UserButton
           appearance={{ elements: { avatarBox: 'h-9 w-9' } }}

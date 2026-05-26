@@ -19,3 +19,8 @@ export {
   type InternshipBookmark,
   type NewInternshipBookmark,
 } from './internship-bookmarks';
+export {
+  notifications,
+  type Notification,
+  type NewNotification,
+} from './notifications';

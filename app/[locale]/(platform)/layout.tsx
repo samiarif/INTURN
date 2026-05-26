@@ -2,12 +2,22 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
 import { PlatformHeader } from '@/components/platform-header';
+import {
+  getUnreadCount,
+  listRecentNotifications,
+} from '@/modules/notifications/queries';
 
 export default async function PlatformLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   if (!session) redirect('/sign-in');
   if (!session.user.role) redirect('/role-selection');
   const t = await getTranslations('a11y');
+
+  const [unreadCount, notifications] = await Promise.all([
+    getUnreadCount(session.user.id),
+    listRecentNotifications(session.user.id, 12),
+  ]);
+
   return (
     <>
       <a
@@ -16,7 +26,11 @@ export default async function PlatformLayout({ children }: { children: React.Rea
       >
         {t('skipToContent')}
       </a>
-      <PlatformHeader role={session.role} />
+      <PlatformHeader
+        role={session.role}
+        unreadCount={unreadCount}
+        notifications={notifications}
+      />
       <main id="main-content">{children}</main>
     </>
   );

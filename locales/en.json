@@ -12,6 +12,11 @@
     "browse": "Browse",
     "verifications": "Verifications"
   },
+  "notifications": {
+    "label": "Notifications",
+    "empty": "No notifications yet.",
+    "markAllRead": "Mark all read"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
