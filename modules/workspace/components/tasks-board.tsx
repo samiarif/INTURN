@@ -25,6 +25,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/db/schema';
 import { TASK_COLUMNS, type TaskStatus } from '@/modules/tasks/state-machine';
 import { moveTaskAction } from '@/modules/tasks/server-actions';
+import { AddTaskModal } from './add-task-modal';
 
 const COLUMN_LABEL_KEY: Record<TaskStatus, 'todo' | 'inProgress' | 'review' | 'done'> = {
   todo: 'todo',
@@ -179,6 +180,7 @@ type ColumnProps = {
   renderDue: (d: DueInfo) => string;
   addTaskLabel: string;
   emptyDropLabel: string;
+  onAddClick: () => void;
 };
 
 // A droppable wrapper exposes the column to @dnd-kit so empty columns are valid
@@ -196,6 +198,7 @@ function BoardColumn({
   renderDue,
   addTaskLabel,
   emptyDropLabel,
+  onAddClick,
 }: ColumnProps) {
   const { setNodeRef } = useDroppable({ id: `column-${status}`, data: { columnId: status } });
   const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
@@ -232,7 +235,7 @@ function BoardColumn({
         {tasks.length === 0 && <div className="tb-card-ghost">{emptyDropLabel}</div>}
       </div>
       {view === 'supervisor' && (
-        <button className="tb-col-add" type="button">
+        <button className="tb-col-add" type="button" onClick={onAddClick}>
           <span className="plus">+</span>
           <span>{addTaskLabel}</span>
         </button>
@@ -245,10 +248,12 @@ export function TasksBoard({
   tasks,
   view,
   internName,
+  workspaceId,
 }: {
   tasks: TaskWithMeta[];
   view: 'intern' | 'supervisor';
   internName: string;
+  workspaceId: string;
 }) {
   const t = useTranslations('workspace.tasksBoard');
   const tCols = useTranslations('workspace.tasksBoard.columns');
@@ -257,6 +262,7 @@ export function TasksBoard({
   const [activeColumn, setActiveColumn] = useState<TaskStatus | null>(null);
   const [overColumn, setOverColumn] = useState<TaskStatus | null>(null);
   const [optimistic, setOptimistic] = useState<Record<string, TaskStatus>>({});
+  const [addingForColumn, setAddingForColumn] = useState<TaskStatus | null>(null);
 
   // PointerSensor with 8px distance threshold keeps clicks/taps from being
   // mistaken for drags. KeyboardSensor enables Tab/Space/arrow-key DnD.
@@ -463,11 +469,19 @@ export function TasksBoard({
                 renderDue={renderDue}
                 addTaskLabel={t('addTask')}
                 emptyDropLabel={t('emptyDrop')}
+                onAddClick={() => setAddingForColumn(col.status)}
               />
             );
           })}
         </div>
       </DndContext>
+      {view === 'supervisor' && addingForColumn && (
+        <AddTaskModal
+          workspaceId={workspaceId}
+          initialStatus={addingForColumn}
+          onClose={() => setAddingForColumn(null)}
+        />
+      )}
     </div>
   );
 }

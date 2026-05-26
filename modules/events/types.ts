@@ -14,6 +14,7 @@ export const EVENT_TYPES = [
   'project.created',
   'project.status.changed',
   'workspace.created',
+  'task.created',
   'task.moved',
   'comment.added',
   'deliverable.submitted',

@@ -32,7 +32,12 @@ export function WorkspaceTasksPage({
         className="ws-content"
         style={{ gridTemplateColumns: '1fr', paddingTop: 20, paddingBottom: 40 }}
       >
-        <TasksBoard tasks={data.tasks} view={view} internName={internName} />
+        <TasksBoard
+          tasks={data.tasks}
+          view={view}
+          internName={internName}
+          workspaceId={data.workspace.id}
+        />
       </div>
     </>
   );
