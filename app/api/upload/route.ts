@@ -4,6 +4,7 @@ import { requireEnv } from '@/lib/env';
 import { getSession } from '@/modules/auth/session';
 import type { Role } from '@/modules/auth/types';
 import { ALLOWED_KINDS, validateUpload, type Kind } from '@/lib/uploads/allowlist';
+import { ratelimit, sweepExpired } from '@/lib/ratelimit';
 
 function isKind(value: string | null): value is Kind {
   return ALLOWED_KINDS.includes(value as Kind);
@@ -30,6 +31,22 @@ export async function POST(req: Request) {
 
   if (!ALLOWED_ROLES_BY_KIND[kind].includes(session.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  sweepExpired();
+  const rl = ratelimit('upload').limit(session.user.id);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: 'rate_limited', retryAfter: Math.ceil((rl.reset - Date.now()) / 1000) },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': String(rl.limit),
+          'X-RateLimit-Remaining': String(rl.remaining),
+          'X-RateLimit-Reset': String(Math.floor(rl.reset / 1000)),
+        },
+      },
+    );
   }
 
   const formData = await req.formData();

@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { users } from '@/db/schema';
 import { requireEnv } from '@/lib/env';
 import { recordEvent } from '@/modules/events/service';
+import { ratelimit, sweepExpired } from '@/lib/ratelimit';
 import { eq } from 'drizzle-orm';
 
 export async function POST(req: Request) {
@@ -17,6 +18,16 @@ export async function POST(req: Request) {
 
   if (!svixId || !svixTimestamp || !svixSignature) {
     return new Response('Missing svix headers', { status: 400 });
+  }
+
+  // Clerk webhooks come from a small IP range. Limit by forwarded-for so a
+  // misbehaving instance can't blow our DB. Allow 120/min — well above
+  // normal traffic from a single Clerk source IP.
+  sweepExpired();
+  const ip = headerPayload.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  const rl = ratelimit('clerk-webhook').limit(ip);
+  if (!rl.success) {
+    return new Response('Rate limited', { status: 429 });
   }
 
   const payload = await req.json();
