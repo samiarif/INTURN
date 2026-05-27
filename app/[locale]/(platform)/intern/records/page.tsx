@@ -28,11 +28,17 @@ export default async function InternRecordsPage() {
           <p className="text-[var(--ink-2)] font-medium mb-1">
             {locale === 'fr' ? 'Aucune attestation pour l’instant' : 'No records yet'}
           </p>
-          <p className="text-[var(--ink-3)] text-sm">
+          <p className="text-[var(--ink-3)] text-sm mb-4">
             {locale === 'fr'
               ? 'Vous recevrez votre première attestation lorsque votre superviseur validera votre stage.'
               : 'You will receive your first record when a supervisor signs off on your internship.'}
           </p>
+          <Link
+            href="/marketplace"
+            className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+          >
+            {locale === 'fr' ? 'Parcourir les stages →' : 'Browse internships →'}
+          </Link>
         </div>
       ) : (
         <ul className="grid md:grid-cols-2 gap-4">

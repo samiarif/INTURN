@@ -273,12 +273,6 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
             )}
 
             <div className="ml-auto flex items-center gap-2">
-              <button
-                type="button"
-                className="inline-flex items-center h-8 px-3 rounded-md text-[12px] font-medium bg-[var(--surface)] text-[var(--ink)] border border-[var(--border-color)] hover:bg-[var(--surface-muted)]"
-              >
-                Edit project
-              </button>
               <Link
                 href={`/company/projects/${projectId}/internships/new`}
                 className="inline-flex items-center gap-1 h-8 px-3 rounded-md text-[12px] font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
@@ -287,46 +281,6 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
               </Link>
             </div>
           </div>
-
-          {/* Sub-tab bar — visual only for now. TODO: route the other tabs. */}
-          <nav
-            aria-label="Project sections"
-            className="flex gap-0 border-b border-[var(--border-color)] -mx-1"
-          >
-            {[
-              { label: 'Overview', active: true },
-              { label: 'Internships', count: internships.length },
-              {
-                label: 'Activity',
-                count: recentEvents.length ? `${recentEvents.length} new` : null,
-              },
-              { label: 'Timeline' },
-              { label: 'Documents' },
-              { label: 'Settings' },
-            ].map((tab) => (
-              <span
-                key={tab.label}
-                className={`px-3.5 py-2.5 text-[13.5px] font-medium border-b-2 -mb-px inline-flex items-center gap-2 ${
-                  tab.active
-                    ? 'text-[var(--ink)] border-[var(--ink)]'
-                    : 'text-[var(--ink-3)] border-transparent'
-                }`}
-              >
-                {tab.label}
-                {tab.count != null && (
-                  <span
-                    className={`font-mono text-[10.5px] px-1.5 py-px rounded ${
-                      tab.active
-                        ? 'bg-[var(--brand-100)] text-[var(--brand-600)]'
-                        : 'bg-[var(--surface-muted)] text-[var(--ink-3)]'
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
-                )}
-              </span>
-            ))}
-          </nav>
         </header>
 
         {/* =============== Two-column body =============== */}
@@ -517,10 +471,10 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                   Internships under this project
                 </h3>
                 <Link
-                  href={`/company/projects/${projectId}/applications/compare`}
+                  href={`/company/projects/${projectId}/applications`}
                   className="ml-auto text-[12.5px] text-[var(--ink-3)] hover:text-[var(--ink)] inline-flex items-center gap-1"
                 >
-                  Compare workspaces →
+                  View applications →
                 </Link>
               </div>
 
@@ -707,17 +661,14 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
               </svg>
             </div>
 
-            {/* Project sync CTA */}
+            {/* Project sync info — actual scheduling lives in each workspace's
+                per-intern Schedule Check-In flow. */}
             <div className="ph-sync">
               <h4>Project sync</h4>
               <p>
-                Run a joint check-in with all interns. Inturn schedules and posts the same Jitsi
-                link to each workspace.
+                Each workspace has its own check-in schedule. Open a workspace below to schedule
+                a sync — the Jitsi link gets posted to the workspace activity feed.
               </p>
-              {/* Decorative — scheduling backend lives in the workspace per-intern flow. */}
-              <button type="button" className="ph-sync-btn">
-                Schedule project sync →
-              </button>
             </div>
 
             {/* Supervisors & team */}

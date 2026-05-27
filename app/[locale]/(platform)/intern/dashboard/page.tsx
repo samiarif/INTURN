@@ -124,7 +124,7 @@ export default async function Page() {
       </div>
 
       {/* Stat tiles ----------------------------------------------------- */}
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
         <StatTile
           label={tDash('statsApplications')}
           value={applicationRows.length}

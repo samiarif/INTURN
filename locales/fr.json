@@ -2,7 +2,9 @@
   "a11y": {
     "skipToContent": "Aller au contenu",
     "switchToDark": "Passer en mode sombre",
-    "switchToLight": "Passer en mode clair"
+    "switchToLight": "Passer en mode clair",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
   },
   "platformNav": {
     "dashboard": "Tableau de bord",
@@ -15,7 +17,8 @@
     "verifications": "Vérifications",
     "reports": "Signalements",
     "audit": "Audit",
-    "account": "Compte"
+    "account": "Compte",
+    "menu": "Menu principal"
   },
   "notifications": {
     "label": "Notifications",
@@ -166,6 +169,25 @@
       "contact": "Contact",
       "privacy": "Confidentialité"
     }
+  },
+  "workspaceSidebar": {
+    "general": "Général",
+    "dashboard": "Tableau de bord",
+    "applications": "Candidatures",
+    "saved": "Enregistrés",
+    "marketplace": "Marketplace",
+    "inbox": "Boîte de réception",
+    "listings": "Annonces",
+    "team": "Équipe",
+    "myWorkspaces": "Mes espaces",
+    "activeProjects": "Projets actifs",
+    "projectHub": "Hub du projet",
+    "community": "Communauté",
+    "pipeline": "Pipeline",
+    "feed": "Fil",
+    "myRecord": "Mes attestations",
+    "candidates": "Candidats",
+    "recordsIssued": "Attestations délivrées"
   },
   "workspace": {
     "topbar": {
@@ -416,6 +438,17 @@
       "interview": "Entretien",
       "accepted": "Accepté",
       "rejected": "Refusé"
+    },
+    "detail": {
+      "back": "← Toutes les candidatures",
+      "appliedOn": "Postulé le {date}",
+      "statusLabel": "Statut",
+      "closedLabel": "Candidature fermée",
+      "openWorkspace": "Ouvrir l'espace →",
+      "yourCoverNote": "Votre lettre",
+      "yourAnswers": "Vos réponses",
+      "withdraw": "Retirer la candidature",
+      "withdrawConfirm": "Retirer votre candidature ? Vous pourrez postuler à nouveau plus tard si le stage est encore ouvert."
     }
   },
   "card": {

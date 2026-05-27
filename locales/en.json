@@ -2,7 +2,9 @@
   "a11y": {
     "skipToContent": "Skip to content",
     "switchToDark": "Switch to dark mode",
-    "switchToLight": "Switch to light mode"
+    "switchToLight": "Switch to light mode",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "platformNav": {
     "dashboard": "Dashboard",
@@ -15,7 +17,8 @@
     "verifications": "Verifications",
     "reports": "Reports",
     "audit": "Audit",
-    "account": "Account"
+    "account": "Account",
+    "menu": "Main menu"
   },
   "notifications": {
     "label": "Notifications",
@@ -166,6 +169,25 @@
       "contact": "Contact",
       "privacy": "Privacy"
     }
+  },
+  "workspaceSidebar": {
+    "general": "General",
+    "dashboard": "Dashboard",
+    "applications": "Applications",
+    "saved": "Saved",
+    "marketplace": "Marketplace",
+    "inbox": "Inbox",
+    "listings": "Listings",
+    "team": "Team",
+    "myWorkspaces": "My workspaces",
+    "activeProjects": "Active projects",
+    "projectHub": "Project hub",
+    "community": "Community",
+    "pipeline": "Pipeline",
+    "feed": "Feed",
+    "myRecord": "My record",
+    "candidates": "Candidates",
+    "recordsIssued": "Records issued"
   },
   "workspace": {
     "topbar": {
@@ -416,6 +438,17 @@
       "interview": "Interview",
       "accepted": "Accepted",
       "rejected": "Rejected"
+    },
+    "detail": {
+      "back": "← All applications",
+      "appliedOn": "Applied {date}",
+      "statusLabel": "Status",
+      "closedLabel": "Application closed",
+      "openWorkspace": "Open workspace →",
+      "yourCoverNote": "Your cover note",
+      "yourAnswers": "Your answers",
+      "withdraw": "Withdraw application",
+      "withdrawConfirm": "Withdraw your application? You can apply again later if the internship is still open."
     }
   },
   "card": {

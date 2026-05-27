@@ -21,7 +21,7 @@ export default async function Page() {
       <h1 className="text-2xl font-semibold tracking-tight mb-2">Admin dashboard</h1>
       <p className="text-[14px] text-[var(--ink-3)] mb-8">Verifications, workspaces, recent activity.</p>
 
-      <div className="grid grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         <Link
           href="/admin/verifications"
           className="block border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)] hover:border-[var(--border-strong)]"
@@ -73,8 +73,8 @@ export default async function Page() {
             No organizations yet.
           </div>
         ) : (
-          <div className="border border-[var(--border-color)] rounded-md overflow-hidden bg-[var(--surface)]">
-            <table className="w-full text-sm">
+          <div className="border border-[var(--border-color)] rounded-md overflow-x-auto bg-[var(--surface)]">
+            <table className="w-full text-sm min-w-[600px]">
               <thead className="bg-[var(--surface-muted)] text-left">
                 <tr>
                   <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">Company</th>

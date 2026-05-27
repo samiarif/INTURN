@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import { notFound, redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { db } from '@/db';
 import { workspaces } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { getUserByClerkId } from '@/modules/profiles/queries';
 import { getApplicationById } from '@/modules/applications/queries';
+import { WithdrawButton } from './withdraw-button';
 
 const TIMELINE_STEPS = ['new', 'reviewed', 'shortlisted', 'interview', 'accepted'] as const;
 type TimelineStep = (typeof TIMELINE_STEPS)[number];
@@ -13,17 +15,22 @@ type TimelineStep = (typeof TIMELINE_STEPS)[number];
 export default async function Page({
   params,
 }: {
-  params: Promise<{ applicationId: string }>;
+  params: Promise<{ applicationId: string; locale: string }>;
 }) {
   const { userId: clerkId } = await auth();
   if (!clerkId) redirect('/sign-in');
   const user = await getUserByClerkId(clerkId);
   if (!user) redirect('/sign-in');
 
-  const { applicationId } = await params;
+  const { applicationId, locale } = await params;
   const data = await getApplicationById(applicationId);
   if (!data) notFound();
   if (data.application.applicantId !== user.id) notFound();
+
+  const [t, tStatus] = await Promise.all([
+    getTranslations({ locale, namespace: 'applications.detail' }),
+    getTranslations({ locale, namespace: 'applications.status' }),
+  ]);
 
   const { application, internship } = data;
   const status = application.status ?? 'new';
@@ -41,31 +48,34 @@ export default async function Page({
     workspaceId = ws?.id ?? null;
   }
 
+  const canWithdraw = status !== 'accepted' && status !== 'rejected';
+
   return (
-    <div className="max-w-2xl mx-auto p-8">
-      <div className="mb-2">
+    <div className="max-w-2xl mx-auto px-6 py-8 md:p-8">
+      <div className="mb-2 flex items-center justify-between gap-3">
         <Link
           href="/intern/applications"
           className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)]"
         >
-          ← All applications
+          {t('back')}
         </Link>
+        {canWithdraw && <WithdrawButton applicationId={application.id} />}
       </div>
       <h1 className="text-2xl font-semibold tracking-tight mb-1">{internship.title}</h1>
       <div className="text-[14px] text-[var(--ink-3)] mb-8">
-        Applied {new Date(application.createdAt).toLocaleDateString()}
+        {t('appliedOn', { date: new Date(application.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US') })}
       </div>
 
       <section className="mb-8">
         <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-          Status
+          {t('statusLabel')}
         </h2>
         {status === 'rejected' ? (
           <div className="border border-[#FECACA] bg-[#FEF2F2] text-[#B91C1C] rounded-md p-3 text-[14px] font-medium">
-            Application closed
+            {t('closedLabel')}
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-y-2 gap-x-2">
             {TIMELINE_STEPS.map((step, i) => {
               const isCurrent = i === currentIdx;
               const isPast = i < currentIdx;
@@ -74,16 +84,16 @@ export default async function Page({
                   <div
                     className={
                       isCurrent
-                        ? 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--brand-500)] text-white'
+                        ? 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--brand-500)] text-white whitespace-nowrap'
                         : isPast
-                          ? 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--brand-50)] text-[var(--brand-600)]'
-                          : 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)]'
+                          ? 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--brand-50)] text-[var(--brand-600)] whitespace-nowrap'
+                          : 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] whitespace-nowrap'
                     }
                   >
-                    {step}
+                    {tStatus(step)}
                   </div>
                   {i < TIMELINE_STEPS.length - 1 && (
-                    <span className="h-px w-3 bg-[var(--border-color)]" />
+                    <span className="hidden sm:inline h-px w-3 bg-[var(--border-color)]" />
                   )}
                 </div>
               );
@@ -96,7 +106,7 @@ export default async function Page({
               href={`/intern/workspaces/${workspaceId}`}
               className="inline-flex items-center justify-center h-10 px-5 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
             >
-              Open workspace →
+              {t('openWorkspace')}
             </Link>
           </div>
         )}
@@ -105,9 +115,9 @@ export default async function Page({
       {application.coverNote && (
         <section className="mb-6">
           <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-2">
-            Your cover note
+            {t('yourCoverNote')}
           </h2>
-          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] text-[14px] text-[var(--ink-2)] whitespace-pre-line">
+          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] text-[14px] text-[var(--ink-2)] whitespace-pre-line max-h-[300px] overflow-y-auto">
             {application.coverNote}
           </div>
         </section>
@@ -116,13 +126,13 @@ export default async function Page({
       {application.customAnswers && application.customAnswers.length > 0 && (
         <section>
           <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-            Your answers
+            {t('yourAnswers')}
           </h2>
           <div className="space-y-3">
             {application.customAnswers.map((a, i) => (
               <div key={i} className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)]">
                 <div className="text-[12.5px] text-[var(--ink-3)] mb-1">{a.question}</div>
-                <div className="text-[14px] text-[var(--ink-2)] whitespace-pre-line">{a.answer}</div>
+                <div className="text-[14px] text-[var(--ink-2)] whitespace-pre-line max-h-[200px] overflow-y-auto">{a.answer}</div>
               </div>
             ))}
           </div>

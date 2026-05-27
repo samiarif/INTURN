@@ -27,16 +27,18 @@ function initials(name: string): string {
 }
 
 export default async function Page() {
-  await requireSession();
+  const session = await requireSession();
   const [posts, t, locale] = await Promise.all([
     listFeed(30),
     getTranslations('community'),
     getLocale(),
   ]);
 
+  const canPost = session.role === 'intern' || session.role === 'admin';
+
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start sm:items-center justify-between gap-4 mb-6 flex-col sm:flex-row">
         <div>
           <p className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-1">
             {t('eyebrow')}
@@ -44,12 +46,14 @@ export default async function Page() {
           <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
           <p className="text-[var(--ink-3)] mt-1">{t('subtitle')}</p>
         </div>
-        <Link
-          href="/intern/community/new"
-          className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
-        >
-          + {t('newPost')}
-        </Link>
+        {canPost && (
+          <Link
+            href="/intern/community/new"
+            className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] whitespace-nowrap"
+          >
+            + {t('newPost')}
+          </Link>
+        )}
       </div>
 
       {posts.length === 0 ? (

@@ -50,8 +50,8 @@ export default async function Page({
           No organizations in this state.
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-md overflow-hidden bg-[var(--surface)]">
-          <table className="w-full text-sm">
+        <div className="border border-[var(--border-color)] rounded-md overflow-x-auto bg-[var(--surface)]">
+          <table className="w-full text-sm min-w-[640px]">
             <thead className="bg-[var(--surface-muted)] text-left">
               <tr>
                 <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">Company</th>

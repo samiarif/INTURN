@@ -85,11 +85,21 @@ export default async function Page({
         </h2>
         {organization.rneUrl ? (
           isPdf ? (
-            <iframe
-              src={organization.rneUrl}
-              className="w-full h-[600px] border border-[var(--border-color)] rounded-md"
-              title="RNE document"
-            />
+            <div>
+              <iframe
+                src={organization.rneUrl}
+                className="w-full h-[400px] md:h-[600px] border border-[var(--border-color)] rounded-md"
+                title="RNE document"
+              />
+              <a
+                href={organization.rneUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-[13px] text-[var(--brand-700)] hover:underline"
+              >
+                Open original ↗
+              </a>
+            </div>
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
             <img

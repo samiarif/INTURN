@@ -118,3 +118,34 @@ export async function acceptApplicationAction(input: {
   revalidatePath(`/company/projects/${input.projectId}/applications`);
   redirect(`/company/workspaces/${result.workspace.id}`);
 }
+
+/**
+ * Intern-initiated withdrawal. Soft transition to 'rejected' so the
+ * intern row drops out of the company's active pipeline. The applicant
+ * can re-apply later (the unique constraint is on (internshipId,
+ * applicantId) but a 'rejected' row still occupies the slot — so we
+ * actually hard-delete here. Companies that already accepted cannot
+ * be withdrawn from on this path; the intern would have to ask
+ * support.
+ */
+export async function withdrawApplicationAction(applicationId: string): Promise<void> {
+  const user = await requireUser();
+  const { db } = await import('@/db');
+  const { applications } = await import('@/db/schema');
+  const { eq } = await import('drizzle-orm');
+
+  const [app] = await db
+    .select()
+    .from(applications)
+    .where(eq(applications.id, applicationId))
+    .limit(1);
+  if (!app) throw new Error('not_found');
+  if (app.applicantId !== user.id) throw new Error('forbidden');
+  if (app.status === 'accepted') throw new Error('already_accepted');
+
+  await db.delete(applications).where(eq(applications.id, applicationId));
+
+  revalidatePath('/intern/dashboard');
+  revalidatePath('/intern/applications');
+  redirect('/intern/applications');
+}

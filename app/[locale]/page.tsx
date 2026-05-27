@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { SiteFooter } from '@/components/site-footer';
 
 export async function generateMetadata({
   params,
@@ -137,20 +138,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-[var(--border-color)] bg-[var(--surface)] py-8 px-6">
-        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4 text-[13px] text-[var(--ink-3)]">
-          <div className="flex items-center gap-2">
-            <GradientStar size="sm" />
-            <span>{t('footer.tagline')}</span>
-          </div>
-          <nav className="flex items-center gap-5">
-            <Link href="/for-universities" className="hover:text-[var(--ink-2)]">{t('footer.universities')}</Link>
-            <Link href="/about" className="hover:text-[var(--ink-2)]">{t('footer.about')}</Link>
-            <Link href="/contact" className="hover:text-[var(--ink-2)]">{t('footer.contact')}</Link>
-            <Link href="/privacy" className="hover:text-[var(--ink-2)]">{t('footer.privacy')}</Link>
-          </nav>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
