@@ -1,14 +1,20 @@
 import '../workspace.css';
 import { getTranslations } from 'next-intl/server';
-import { cn } from '@/lib/utils';
-import { SidebarTrigger } from '@/components/ui/sidebar-trigger';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export type Crumb = { label: string; bold?: boolean };
 
+/**
+ * Workspace topbar. Lives inside the platform sidebar's main content
+ * area, so it intentionally does NOT re-render the global brand /
+ * notifications / theme / user — those are in the sidebar footer.
+ *
+ * What stays here is workspace-scoped: the breadcrumb, the run-mode
+ * chip ("Hybrid · Week 3/12"), and workspace-local actions
+ * (workspace search + inbox + help).
+ */
 export async function WorkspaceTopBar({
-  view,
-  viewerInitials,
+  view: _view,
+  viewerInitials: _viewerInitials,
   crumbs,
   modeChip,
 }: {
@@ -18,14 +24,8 @@ export async function WorkspaceTopBar({
   modeChip?: { label: string };
 }) {
   const t = await getTranslations('workspace.topbar');
-  const tA11y = await getTranslations('a11y');
   return (
     <div className="ws-topbar">
-      <SidebarTrigger label={t('openSidebar')} />
-      <div className="ws-tb-brand">
-        <span className="star" />
-        <span className="name">Inturn</span>
-      </div>
       <div className="ws-tb-crumbs">
         {crumbs.map((c, i) => (
           <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -53,13 +53,6 @@ export async function WorkspaceTopBar({
         <button className="ws-tb-icon" aria-label={t('help')}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600 }}>?</span>
         </button>
-        <ThemeToggle labelDark={tA11y('switchToDark')} labelLight={tA11y('switchToLight')} />
-        <span
-          className={cn('ws-tb-avatar', view === 'supervisor' && 'company')}
-          aria-label={t('profile')}
-        >
-          {viewerInitials}
-        </span>
       </div>
     </div>
   );
