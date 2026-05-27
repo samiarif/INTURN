@@ -1,6 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import createIntlMiddleware from 'next-intl/middleware';
-import type { NextRequest } from 'next/server';
 import { routing } from '@/i18n/routing';
 
 const handleI18nRouting = createIntlMiddleware(routing);
@@ -19,17 +18,17 @@ const isPublicRoute = createRouteMatcher([
   '/api/health',
 ]);
 
-// Dev-only bypass: when DEV_AUTH_BYPASS=1 the page-level getSession()
-// handles auth via the inturn-dev-session cookie. Skip clerkMiddleware
-// entirely so it doesn't attempt to validate sessions against the
-// unreachable Clerk API.
-function devProxy(req: NextRequest) {
-  if (req.nextUrl.pathname.startsWith('/api')) return;
-  return handleI18nRouting(req);
-}
-
-const realProxy = clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
+// Always mount clerkMiddleware — even in dev-bypass mode. Without it,
+// `auth()` calls scattered across pages throw "Clerk can't detect usage
+// of clerkMiddleware()". `clerkMiddleware()` itself is purely local:
+// it only reads/validates the JWT cookie when present, never hits the
+// Clerk API on its own. The hang risk is from `auth.protect()` (which
+// would redirect to the hosted Clerk UI) — we skip that branch when
+// the bypass is on, so pages can render their own auth flow via our
+// `getSession()` instead.
+export default clerkMiddleware(async (auth, req) => {
+  const bypassed = process.env.DEV_AUTH_BYPASS === '1';
+  if (!bypassed && !isPublicRoute(req)) {
     await auth.protect();
   }
   if (req.nextUrl.pathname.startsWith('/api')) {
@@ -37,13 +36,6 @@ const realProxy = clerkMiddleware(async (auth, req) => {
   }
   return handleI18nRouting(req);
 });
-
-export default function proxy(req: NextRequest, ev: Parameters<typeof realProxy>[1]) {
-  if (process.env.DEV_AUTH_BYPASS === '1') {
-    return devProxy(req);
-  }
-  return realProxy(req, ev);
-}
 
 export const config = {
   matcher: ['/((?!_next|_vercel|.*\\..*).*)', '/(api|trpc)(.*)'],

@@ -7,10 +7,21 @@
  */
 
 export async function register() {
+  // Node 24 defaults DNS result order to "verbatim". Many Neon endpoints
+  // resolve IPv6 addresses *first* in their DNS response — on networks
+  // without working IPv6 (common on cellular / Tunisia ISPs), fetch
+  // hangs for ~10s per attempt before falling back to IPv4. Forcing
+  // ipv4-first eliminates the hang. Safe in prod too (Vercel's runtime
+  // has both — IPv4-first just skips an empty IPv6 fallback).
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    const { setDefaultResultOrder } = await import('node:dns');
+    setDefaultResultOrder('ipv4first');
+  }
+
   if (!process.env.SENTRY_DSN) {
-    // No DSN configured → no-op. Lets local dev + CI run unchanged
-    // and gates rollout to whichever environments actually have the
-    // env var set.
+    // No DSN configured → no-op for Sentry. Lets local dev + CI run
+    // unchanged and gates rollout to whichever environments actually
+    // have the env var set.
     return;
   }
 
