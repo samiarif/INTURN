@@ -1,4 +1,4 @@
-# inturn — Session Handoff (2026-05-27, Sprint D complete + legal + GDPR)
+# inturn — Session Handoff (2026-05-27, Sprint D + Legal + GDPR + 7-round UX sweep)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
@@ -466,9 +466,48 @@ pnpm db:seed
 
 Sign in at http://localhost:3000/sign-in. Admin account: `hellowemakeitgrow@gmail.com`. To test as intern, sign up fresh or use Yasmine.
 
+## UX/UI sweep — 7 rounds (2026-05-27)
+
+A general-purpose audit agent surveyed every route and identified ~55 findings
+across critical / high-impact / polish / a11y / mobile buckets. Shipped in 7
+batches on `sprint-b-phase-1-closure`:
+
+| Round | Commit | Highlights |
+|---|---|---|
+| 1 | `b8c054e` | Mobile nav drawer, workspace sidebar (real links + i18n + no mock counts), footer fixed, status pill i18n, project hub dead UI removed, intern app detail i18n + Withdraw action, mobile grids |
+| 2 | `5c127cf` | `<StatusPill>` shared component + dark-mode CSS tokens (`--status-{tone}-bg/-ink`), `/account/edit` page (no more onboarding wizard ricochet) |
+| 3 | `a15213c` | Marketplace mobile filter collapse, compare candidates responsive grid, project hub + internship detail + apply + review page i18n |
+| 4 | `d2db6c4` | All admin pages translated (dashboard, verifications, reports, audit), audit log action-type filter chips |
+| 5 | `beed269` | `/admin/users` with role + status filters + suspend/reactivate action, `requireActiveSession` enforcement, `<SuspendedBanner>` |
+| 6 | `27b97e2` | Project goals/phases inline edit dialog, `lib/format-time.ts`, `<Avatar>` component, verifications detail i18n |
+| 7 | `133a26b` | Avatar adoption on community detail, 19 new tests (format-time + Avatar) |
+| — | `cb2a449` | Empty-state CTAs on intern + company dashboards |
+
+**Visible deltas a user will notice**
+
+- Phones now have a working hamburger nav drawer (was: only logo + avatar on mobile)
+- Workspace sidebar shows real workspace counts and clickable links (was: mock counts `2`, `14`, `3` + inert divs)
+- French speakers see French everywhere — admin, application detail, project hub, internship detail, apply, compare candidates, verifications detail (was: large English islands)
+- Status pills look right in dark mode (was: hex-literal white-on-white)
+- Edit profile no longer kicks you back through onboarding wizard (was: /account → /onboarding/intern/basics → skills → done)
+- Interns can withdraw applications
+- Admins can suspend abusive users; suspended users see a red banner + are blocked from all writes (`requireActiveSession`)
+- Project supervisors can edit goals + phases inline (was: only set at creation, no way to fix typos)
+- First-time intern + company users see "Browse internships →" / "+ Create your first project" buttons on empty dashboards (was: paragraph-only empty states)
+
+**Tally**: 8 commits, ~2,500 lines net added, 50+ audit findings resolved. **152/152 tests passing** (was 133 — added format-time + avatar coverage). Lint + typecheck + build clean throughout.
+
 ## Recent commits worth knowing
 
 ```
+cb2a449 fix(ux): empty-state CTAs on dashboards
+133a26b fix(ux): round 7 — Avatar adoption + format-time + avatar tests
+27b97e2 fix(ux): round 6 — project goals/phases edit, time-ago, Avatar, verifications i18n
+beed269 feat(admin): users page + suspend/unsuspend action (round 5)
+d2db6c4 fix(ux): round 4 — admin i18n + audit filters
+a15213c fix(ux): round 3 — marketplace mobile filter + compare mobile + i18n batch
+5c127cf fix(ux): round 2 — StatusPill + /account/edit + dark-mode status tokens
+b8c054e fix(ux): round 1 — mobile nav, sidebar, footer, i18n, dead UI cleanup
 1f7d475 feat(seed): community posts + sample record + sample report (Sprint D)
 66fef2a feat(account): GDPR data export + delete account + settings page
 342e109 feat(legal): Terms / Privacy / Cookie policy + cookie banner + site footer
