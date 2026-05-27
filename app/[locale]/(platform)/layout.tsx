@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
-import { PlatformHeader } from '@/components/platform-header';
+import { PlatformSidebar } from '@/components/platform-sidebar';
+import { PlatformMobileTopStrip } from '@/components/platform-mobile-top-strip';
 import {
   getUnreadCount,
   listRecentNotifications,
@@ -20,6 +21,20 @@ export default async function PlatformLayout({ children }: { children: React.Rea
     listRecentNotifications(session.user.id, 12),
   ]);
 
+  const userProps = {
+    role: session.role,
+    user: {
+      id: session.user.id,
+      firstName: session.user.firstName,
+      lastName: session.user.lastName,
+      email: session.user.email,
+      imageUrl: session.user.imageUrl,
+    },
+    notifications,
+    unreadCount,
+    devBypassed: isDevAuthBypassed(),
+  };
+
   return (
     <>
       <a
@@ -28,14 +43,14 @@ export default async function PlatformLayout({ children }: { children: React.Rea
       >
         {t('skipToContent')}
       </a>
-      <PlatformHeader
-        role={session.role}
-        unreadCount={unreadCount}
-        notifications={notifications}
-        devBypassed={isDevAuthBypassed()}
-      />
-      {session.user.suspendedAt && <SuspendedBanner />}
-      <main id="main-content">{children}</main>
+      <PlatformMobileTopStrip {...userProps} />
+      <div className="md:grid md:grid-cols-[240px_1fr] min-h-screen">
+        <PlatformSidebar {...userProps} />
+        <div className="flex flex-col min-w-0">
+          {session.user.suspendedAt && <SuspendedBanner />}
+          <main id="main-content" className="flex-1">{children}</main>
+        </div>
+      </div>
     </>
   );
 }
