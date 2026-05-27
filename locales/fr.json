@@ -285,6 +285,20 @@
           "created": "Par création"
         }
       },
+      "list": {
+        "caption": "Liste des tâches, triable",
+        "empty": "Aucune tâche.",
+        "relativeToday": "aujourd'hui",
+        "relativeDays": "il y a {n}j",
+        "header": {
+          "title": "Titre",
+          "status": "Statut",
+          "phase": "Phase",
+          "due": "Échéance",
+          "priority": "Priorité",
+          "created": "Création"
+        }
+      },
       "toolbar": {
         "viewTabsLabel": "Vue des tâches",
         "viewBoard": "Tableau",

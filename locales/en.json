@@ -285,6 +285,20 @@
           "created": "By created"
         }
       },
+      "list": {
+        "caption": "Tasks list, sortable",
+        "empty": "No tasks.",
+        "relativeToday": "today",
+        "relativeDays": "{n}d ago",
+        "header": {
+          "title": "Title",
+          "status": "Status",
+          "phase": "Phase",
+          "due": "Due",
+          "priority": "Priority",
+          "created": "Created"
+        }
+      },
       "toolbar": {
         "viewTabsLabel": "Task view",
         "viewBoard": "Board",
