@@ -482,6 +482,79 @@
       "pipeline": "Pipeline"
     }
   },
+  "admin": {
+    "dashboard": {
+      "title": "Admin dashboard",
+      "subtitle": "Verifications, workspaces, recent activity.",
+      "verificationsPending": "Verifications pending",
+      "verificationsPendingHelp": "Draft + pending companies",
+      "companiesVerified": "Companies verified",
+      "activeWorkspaces": "Active workspaces",
+      "openReports": "Open reports",
+      "openReportsNeedsTriage": "Needs triage",
+      "openReportsAllClear": "All clear",
+      "recentLast30d": "+{n} in last 30d",
+      "recentOrgs": "Recent organizations",
+      "noOrgs": "No organizations yet.",
+      "company": "Company",
+      "owner": "Owner",
+      "status": "Status",
+      "created": "Created",
+      "open": "Open →"
+    },
+    "verifications": {
+      "title": "Verifications",
+      "subtitle": "Companies waiting for verification. Once verified, their internships go live on the marketplace.",
+      "filterPending": "Pending (draft + pending)",
+      "filterVerified": "Verified",
+      "filterSuspended": "Suspended",
+      "filterAll": "All",
+      "empty": "No organizations in this state.",
+      "company": "Company",
+      "owner": "Owner",
+      "rne": "RNE",
+      "status": "Status",
+      "created": "Created",
+      "review": "Review →"
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Reclamations submitted by interns. Triage open reports to keep the marketplace clean.",
+      "filterOpen": "Open",
+      "filterReviewed": "Reviewed",
+      "filterResolved": "Resolved",
+      "filterAll": "All",
+      "empty": "No reports in this state.",
+      "reportedBy": "Reported by {email}",
+      "deletedUser": "deleted user"
+    },
+    "audit": {
+      "title": "Audit log",
+      "subtitle": "Append-only record of admin actions. Last 100 entries.",
+      "empty": "No audit entries yet.",
+      "time": "Time",
+      "actor": "Actor",
+      "action": "Action",
+      "target": "Target"
+    },
+    "status": {
+      "draft": "Draft",
+      "pending": "Pending",
+      "verified": "Verified",
+      "suspended": "Suspended",
+      "open": "Open",
+      "reviewed": "Reviewed",
+      "resolved": "Resolved"
+    },
+    "reasons": {
+      "scam": "Scam",
+      "misleading": "Misleading",
+      "inappropriate": "Inappropriate",
+      "spam": "Spam",
+      "unsafe": "Unsafe",
+      "other": "Other"
+    }
+  },
   "projectHub": {
     "addInternship": "+ Add internship",
     "projectPhases": "Project phases",

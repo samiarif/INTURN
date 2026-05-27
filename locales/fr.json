@@ -482,6 +482,79 @@
       "pipeline": "Pipeline"
     }
   },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau d'administration",
+      "subtitle": "Vérifications, espaces, activité récente.",
+      "verificationsPending": "Vérifications en attente",
+      "verificationsPendingHelp": "Brouillons + en attente",
+      "companiesVerified": "Entreprises vérifiées",
+      "activeWorkspaces": "Espaces actifs",
+      "openReports": "Signalements ouverts",
+      "openReportsNeedsTriage": "À traiter",
+      "openReportsAllClear": "Rien à signaler",
+      "recentLast30d": "+{n} sur 30j",
+      "recentOrgs": "Entreprises récentes",
+      "noOrgs": "Aucune entreprise pour l'instant.",
+      "company": "Entreprise",
+      "owner": "Propriétaire",
+      "status": "Statut",
+      "created": "Créée",
+      "open": "Ouvrir →"
+    },
+    "verifications": {
+      "title": "Vérifications",
+      "subtitle": "Entreprises en attente de vérification. Une fois vérifiées, leurs stages sont publiés sur le marketplace.",
+      "filterPending": "En attente (brouillon + en attente)",
+      "filterVerified": "Vérifiées",
+      "filterSuspended": "Suspendues",
+      "filterAll": "Toutes",
+      "empty": "Aucune entreprise dans cet état.",
+      "company": "Entreprise",
+      "owner": "Propriétaire",
+      "rne": "RNE",
+      "status": "Statut",
+      "created": "Créée",
+      "review": "Examiner →"
+    },
+    "reports": {
+      "title": "Signalements",
+      "subtitle": "Réclamations soumises par les stagiaires. Traitez les signalements ouverts pour garder le marketplace propre.",
+      "filterOpen": "Ouverts",
+      "filterReviewed": "Examinés",
+      "filterResolved": "Résolus",
+      "filterAll": "Tous",
+      "empty": "Aucun signalement dans cet état.",
+      "reportedBy": "Signalé par {email}",
+      "deletedUser": "utilisateur supprimé"
+    },
+    "audit": {
+      "title": "Journal d'audit",
+      "subtitle": "Registre append-only des actions admin. 100 dernières entrées.",
+      "empty": "Aucune entrée pour l'instant.",
+      "time": "Heure",
+      "actor": "Acteur",
+      "action": "Action",
+      "target": "Cible"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "pending": "En attente",
+      "verified": "Vérifié",
+      "suspended": "Suspendu",
+      "open": "Ouvert",
+      "reviewed": "Examiné",
+      "resolved": "Résolu"
+    },
+    "reasons": {
+      "scam": "Arnaque",
+      "misleading": "Trompeur",
+      "inappropriate": "Inapproprié",
+      "spam": "Spam",
+      "unsafe": "Dangereux",
+      "other": "Autre"
+    }
+  },
   "projectHub": {
     "addInternship": "+ Ajouter un stage",
     "projectPhases": "Phases du projet",
