@@ -885,6 +885,29 @@
       "backToFeed": "Retour au fil"
     }
   },
+  "cvImport": {
+    "eyebrow": "Assistant IA",
+    "title": "Importer depuis votre CV",
+    "subtitle": "Déposez un PDF — nous extrayons votre établissement, domaine, compétences et liens portfolio. Vérifiez avant d'appliquer.",
+    "cta": "Téléverser le CV (PDF)",
+    "parsing": "Lecture de votre CV…",
+    "apply": "Appliquer au formulaire",
+    "discard": "Ignorer",
+    "errorTooLarge": "Fichier trop volumineux. Le PDF doit faire moins de 8 Mo.",
+    "errorNotPdf": "Seuls les fichiers PDF sont acceptés.",
+    "errorRateLimited": "Trop de requêtes. Attendez une minute.",
+    "errorGeneric": "Impossible de lire ce CV. Réessayez ou remplissez le formulaire manuellement.",
+    "errorNetwork": "Erreur réseau. Vérifiez votre connexion et réessayez.",
+    "fields": {
+      "name": "Nom :",
+      "university": "Établissement :",
+      "field": "Domaine :",
+      "year": "Année :",
+      "city": "Ville :",
+      "skills": "Compétences :",
+      "portfolio": "Portfolio :"
+    }
+  },
   "fte": {
     "intern": {
       "eyebrow": "Pour bien démarrer",

@@ -6,6 +6,7 @@ import { db } from '@/db';
 import { profiles } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { ProfileBasicsForm } from '@/app/[locale]/(auth)/onboarding/intern/basics/form';
+import { CvImportButton } from '@/components/cv-import-button';
 
 /**
  * In-place profile edit. Reuses the onboarding `ProfileBasicsForm` with
@@ -38,7 +39,9 @@ export default async function Page() {
         ← {t('title')}
       </Link>
       <h1 className="text-3xl font-semibold tracking-tight mb-2">{t('profile')}</h1>
-      <p className="text-[var(--ink-3)] mb-8">{t('editIntro')}</p>
+      <p className="text-[var(--ink-3)] mb-6">{t('editIntro')}</p>
+
+      <CvImportButton />
 
       <ProfileBasicsForm
         mode="account"

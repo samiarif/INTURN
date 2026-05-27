@@ -885,6 +885,29 @@
       "backToFeed": "Back to feed"
     }
   },
+  "cvImport": {
+    "eyebrow": "AI assist",
+    "title": "Import from your CV",
+    "subtitle": "Drop a PDF — we'll extract your university, field, skills, and portfolio links. Review before applying.",
+    "cta": "Upload CV (PDF)",
+    "parsing": "Reading your CV…",
+    "apply": "Apply to form",
+    "discard": "Discard",
+    "errorTooLarge": "File too large. PDF must be under 8 MB.",
+    "errorNotPdf": "Only PDF files are supported.",
+    "errorRateLimited": "Too many requests. Wait a minute.",
+    "errorGeneric": "Couldn't read this CV. Try again or fill the form manually.",
+    "errorNetwork": "Network error. Check your connection and retry.",
+    "fields": {
+      "name": "Name:",
+      "university": "University:",
+      "field": "Field of study:",
+      "year": "Year:",
+      "city": "City:",
+      "skills": "Skills:",
+      "portfolio": "Portfolio:"
+    }
+  },
   "fte": {
     "intern": {
       "eyebrow": "Get started",

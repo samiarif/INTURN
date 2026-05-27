@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
@@ -40,13 +40,43 @@ export function ProfileBasicsForm({
   mode?: 'onboarding' | 'account';
 }) {
   const t = useTranslations('onboarding.intern.basics');
+  const [firstName, setFirstName] = useState(initial?.firstName ?? '');
+  const [lastName, setLastName] = useState(initial?.lastName ?? '');
   const [university, setUniversity] = useState(initial?.university ?? '');
   const [yearOfStudy, setYearOfStudy] = useState(initial?.yearOfStudy ?? '');
+  const [fieldOfStudy, setFieldOfStudy] = useState(initial?.fieldOfStudy ?? '');
+  const [city, setCity] = useState(initial?.city ?? '');
   const [preferredLanguage, setPreferredLanguage] = useState<'fr' | 'en'>(
     initial?.preferredLanguage ?? 'fr',
   );
   const action =
     mode === 'account' ? saveProfileBasicsFromAccountAction : saveProfileBasicsAction;
+
+  // Listen for the CV-parser's "cv-parsed" event so importing a CV
+  // populates the form fields. Each field only updates if the parsed
+  // value is truthy — we never overwrite existing input with null.
+  useEffect(() => {
+    function onParsed(e: Event) {
+      const detail = (e as CustomEvent).detail as {
+        firstName?: string | null;
+        lastName?: string | null;
+        university?: string | null;
+        yearOfStudy?: string | null;
+        fieldOfStudy?: string | null;
+        city?: string | null;
+        preferredLanguage?: 'fr' | 'en' | null;
+      };
+      if (detail.firstName) setFirstName(detail.firstName);
+      if (detail.lastName) setLastName(detail.lastName);
+      if (detail.university) setUniversity(detail.university);
+      if (detail.yearOfStudy) setYearOfStudy(detail.yearOfStudy);
+      if (detail.fieldOfStudy) setFieldOfStudy(detail.fieldOfStudy);
+      if (detail.city) setCity(detail.city);
+      if (detail.preferredLanguage) setPreferredLanguage(detail.preferredLanguage);
+    }
+    window.addEventListener('cv-parsed', onParsed);
+    return () => window.removeEventListener('cv-parsed', onParsed);
+  }, []);
 
   return (
     <form action={action} className="space-y-5">
@@ -60,13 +90,20 @@ export function ProfileBasicsForm({
           <Input
             id="firstName"
             name="firstName"
-            defaultValue={initial?.firstName}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
             required
           />
         </div>
         <div>
           <Label htmlFor="lastName">{t('lastName')} *</Label>
-          <Input id="lastName" name="lastName" defaultValue={initial?.lastName} required />
+          <Input
+            id="lastName"
+            name="lastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
         </div>
       </div>
 
@@ -102,7 +139,8 @@ export function ProfileBasicsForm({
           <Input
             id="fieldOfStudy"
             name="fieldOfStudy"
-            defaultValue={initial?.fieldOfStudy}
+            value={fieldOfStudy}
+            onChange={(e) => setFieldOfStudy(e.target.value)}
             required
           />
         </div>
@@ -110,7 +148,13 @@ export function ProfileBasicsForm({
 
       <div>
         <Label htmlFor="city">{t('city')}</Label>
-        <Input id="city" name="city" defaultValue={initial?.city} required />
+        <Input
+          id="city"
+          name="city"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          required
+        />
         <p className="text-[12px] text-[var(--ink-3)] mt-1">{t('cityHelper')}</p>
       </div>
 
