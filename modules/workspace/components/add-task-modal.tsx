@@ -4,10 +4,13 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { createTaskAction } from '@/modules/tasks/server-actions';
+import type { Task } from '@/db/schema';
 
 type Props = {
   workspaceId: string;
   initialStatus: 'todo' | 'in-progress' | 'review' | 'done';
+  /** When present, the modal is in edit mode and submits via updateTaskAction. */
+  initialTask?: Task;
   onClose: () => void;
 };
 
@@ -18,13 +21,16 @@ type ClarityResponse = {
   notes: string;
 };
 
-export function AddTaskModal({ workspaceId, initialStatus, onClose }: Props) {
+export function AddTaskModal({ workspaceId, initialStatus, initialTask, onClose }: Props) {
   const t = useTranslations('workspace.addTask');
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
-  const [dueDate, setDueDate] = useState('');
+  const isEdit = Boolean(initialTask);
+  const [title, setTitle] = useState(initialTask?.title ?? '');
+  const [description, setDescription] = useState(initialTask?.description ?? '');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(
+    (initialTask?.priority as 'low' | 'medium' | 'high' | null) ?? 'medium',
+  );
+  const [dueDate, setDueDate] = useState(initialTask?.dueDate ?? '');
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -79,16 +85,30 @@ export function AddTaskModal({ workspaceId, initialStatus, onClose }: Props) {
       return;
     }
     startTransition(async () => {
-      const res = await createTaskAction({
-        workspaceId,
-        title,
-        description: description.trim() || null,
-        priority,
-        dueDate: dueDate || null,
-      });
-      if (!res.ok) {
-        setError(t('errorGeneric'));
-        return;
+      if (isEdit && initialTask) {
+        const { updateTaskAction } = await import('@/modules/tasks/server-actions');
+        const res = await updateTaskAction(initialTask.id, {
+          title,
+          description: description.trim() || null,
+          priority,
+          dueDate: dueDate || null,
+        });
+        if (!res.ok) {
+          setError(t('errorGeneric'));
+          return;
+        }
+      } else {
+        const res = await createTaskAction({
+          workspaceId,
+          title,
+          description: description.trim() || null,
+          priority,
+          dueDate: dueDate || null,
+        });
+        if (!res.ok) {
+          setError(t('errorGeneric'));
+          return;
+        }
       }
       router.refresh();
       onClose();
@@ -122,7 +142,7 @@ export function AddTaskModal({ workspaceId, initialStatus, onClose }: Props) {
         }}
       >
         <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4, color: 'var(--ink)' }}>
-          {t('title')}
+          {isEdit ? t('editTitle') : t('title')}
         </h3>
         <p style={{ fontSize: 12.5, color: 'var(--ink-3)', marginBottom: 16 }}>
           {t('subtitle', { status: initialStatus })}

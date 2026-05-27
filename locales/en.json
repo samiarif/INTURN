@@ -250,6 +250,7 @@
     },
     "addTask": {
       "title": "Add a task",
+      "editTitle": "Edit task",
       "subtitle": "Lands in the {status} column at the bottom.",
       "titleLabel": "Title",
       "titlePlaceholder": "What needs to be done?",

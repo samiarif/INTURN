@@ -250,6 +250,7 @@
     },
     "addTask": {
       "title": "Ajouter une tâche",
+      "editTitle": "Modifier la tâche",
       "subtitle": "Atterrit en bas de la colonne {status}.",
       "titleLabel": "Titre",
       "titlePlaceholder": "Que faut-il faire ?",
