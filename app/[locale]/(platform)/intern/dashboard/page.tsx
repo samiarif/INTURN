@@ -12,6 +12,8 @@ import { listPublishedInternships } from '@/modules/internships/queries';
 import { listInternBookmarks } from '@/modules/bookmarks/queries';
 import { InternshipCard } from '@/components/marketplace/internship-card';
 import { orgMark } from '@/lib/avatar';
+import { ProfileCompletenessWidget } from '@/components/profile-completeness-widget';
+import { computeProfileCompleteness } from '@/modules/profiles/service';
 
 const STATUS_STYLE: Record<string, string> = {
   new: 'bg-[#EFF6FF] text-[#1D4ED8]',
@@ -93,6 +95,21 @@ export default async function Page() {
     ? tDash('eyebrowWithCity', { date: dateLabel, city: profile.city })
     : tDash('eyebrowSolo', { date: dateLabel });
 
+  const completeness = profile
+    ? computeProfileCompleteness({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        university: profile.university,
+        yearOfStudy: profile.yearOfStudy,
+        fieldOfStudy: profile.fieldOfStudy,
+        city: profile.city,
+        skills: profile.skills,
+        roles: profile.roles,
+        resumeUrl: profile.resumeUrl,
+        portfolioLinks: profile.portfolioLinks,
+      })
+    : null;
+
   return (
     <div className="max-w-5xl mx-auto p-8">
       {/* Welcome band ---------------------------------------------------- */}
@@ -122,6 +139,9 @@ export default async function Page() {
           {tDash('subtitle')}
         </p>
       </div>
+
+      {/* Profile completeness — hides at 100% */}
+      {completeness && <ProfileCompletenessWidget completeness={completeness} />}
 
       {/* Stat tiles ----------------------------------------------------- */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">

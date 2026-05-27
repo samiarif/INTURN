@@ -883,6 +883,23 @@
       "backToFeed": "Retour au fil"
     }
   },
+  "profileCompleteness": {
+    "title": "Profil complet à",
+    "subtitle": "Un profil plus complet convertit mieux. Renseignez les bases pour que les entreprises aient ce qu'il leur faut.",
+    "cta": "Compléter mon profil →",
+    "more": "de plus",
+    "missing": {
+      "name": "Ajouter votre nom",
+      "university": "Ajouter l'établissement",
+      "year": "Ajouter l'année d'études",
+      "field": "Ajouter le domaine",
+      "city": "Ajouter la ville",
+      "skills": "Ajouter 3+ compétences",
+      "roles": "Ajouter un rôle",
+      "cv": "Téléverser votre CV",
+      "portfolio": "Ajouter un lien portfolio"
+    }
+  },
   "footer": {
     "tagline": "La plateforme de stages pour les universités tunisiennes et les entreprises qui recrutent leurs étudiants.",
     "product": "Produit",

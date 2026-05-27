@@ -883,6 +883,23 @@
       "backToFeed": "Back to feed"
     }
   },
+  "profileCompleteness": {
+    "title": "Profile completeness",
+    "subtitle": "Stronger profiles convert better. Finish the basics so companies have what they need.",
+    "cta": "Complete your profile →",
+    "more": "more",
+    "missing": {
+      "name": "Add your name",
+      "university": "Add university",
+      "year": "Add year of study",
+      "field": "Add field of study",
+      "city": "Add city",
+      "skills": "Add 3+ skills",
+      "roles": "Add a role focus",
+      "cv": "Upload your CV",
+      "portfolio": "Add a portfolio link"
+    }
+  },
   "footer": {
     "tagline": "The internship platform for Tunisian universities and the companies hiring their students.",
     "product": "Product",
