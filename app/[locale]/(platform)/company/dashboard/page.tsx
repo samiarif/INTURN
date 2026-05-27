@@ -504,7 +504,15 @@ export default async function Page() {
             </Link>
           </div>
           {recentProjects.length === 0 ? (
-            <div className="db-tasks-empty">{tDash('recentEmpty')}</div>
+            <div className="db-tasks-empty">
+              <p>{tDash('recentEmpty')}</p>
+              <Link
+                href="/company/projects/new"
+                className="inline-flex items-center h-9 px-4 mt-3 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+              >
+                {tDash('createProjectCta')}
+              </Link>
+            </div>
           ) : (
             <div className="db-projects">
               {recentProjects.map((p) => {

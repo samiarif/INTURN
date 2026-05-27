@@ -151,8 +151,14 @@ export default async function Page() {
           <h2 className="text-[15px] font-semibold tracking-tight">{tDash('workspacesTitle')}</h2>
         </div>
         {workspaces.length === 0 ? (
-          <div className="border border-dashed border-[var(--border-color)] rounded-lg p-8 text-center text-[var(--ink-3)] text-sm bg-[var(--surface)]">
-            {tDash('workspacesEmpty')}
+          <div className="border border-dashed border-[var(--border-color)] rounded-lg p-8 text-center bg-[var(--surface)]">
+            <p className="text-[var(--ink-3)] text-sm mb-4">{tDash('workspacesEmpty')}</p>
+            <Link
+              href="/marketplace"
+              className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+            >
+              {tDash('browseCta')}
+            </Link>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">
@@ -203,8 +209,14 @@ export default async function Page() {
           )}
         </div>
         {recentApplications.length === 0 ? (
-          <div className="border border-dashed border-[var(--border-color)] rounded-lg p-8 text-center text-[var(--ink-3)] text-sm bg-[var(--surface)]">
-            {tDash('applicationsEmpty')}
+          <div className="border border-dashed border-[var(--border-color)] rounded-lg p-8 text-center bg-[var(--surface)]">
+            <p className="text-[var(--ink-3)] text-sm mb-4">{tDash('applicationsEmpty')}</p>
+            <Link
+              href="/marketplace"
+              className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+            >
+              {tDash('browseCta')}
+            </Link>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
