@@ -133,3 +133,34 @@ describe('sortTasks', () => {
     expect(sortTasks([a, b], null).map((t) => t.id)).toEqual(['a', 'b']);
   });
 });
+
+describe('filterTasks', () => {
+  it('returns all when filter is empty', () => {
+    const tasks = [makeTask({ id: 'a' }), makeTask({ id: 'b' })];
+    expect(filterTasks(tasks, {})).toHaveLength(2);
+  });
+  it('filters by phase prefix', () => {
+    const a = makeTask({ id: 'a', tag: 'BA-1' });
+    const b = makeTask({ id: 'b', tag: 'UX-1' });
+    const c = makeTask({ id: 'c', tag: null });
+    expect(filterTasks([a, b, c], { phase: ['BA'] }).map((t) => t.id)).toEqual(['a']);
+  });
+  it('filters by dueIn:7d (next 7 days, excluding done)', () => {
+    const inWeek = new Date(Date.now() + 3 * 86400_000).toISOString().slice(0, 10);
+    const later = new Date(Date.now() + 30 * 86400_000).toISOString().slice(0, 10);
+    const a = makeTask({ id: 'a', dueDate: inWeek });
+    const b = makeTask({ id: 'b', dueDate: later });
+    const c = makeTask({ id: 'c', dueDate: inWeek, status: 'done' });
+    expect(filterTasks([a, b, c], { dueIn: '7d' }).map((t) => t.id)).toEqual(['a']);
+  });
+  it('filters by status', () => {
+    const a = makeTask({ id: 'a', status: 'todo' });
+    const b = makeTask({ id: 'b', status: 'done' });
+    expect(filterTasks([a, b], { status: 'todo' }).map((t) => t.id)).toEqual(['a']);
+  });
+  it('combines filters with AND', () => {
+    const a = makeTask({ id: 'a', tag: 'BA-1', status: 'todo' });
+    const b = makeTask({ id: 'b', tag: 'BA-2', status: 'done' });
+    expect(filterTasks([a, b], { phase: ['BA'], status: 'todo' }).map((t) => t.id)).toEqual(['a']);
+  });
+});
