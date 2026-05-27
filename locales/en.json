@@ -450,7 +450,71 @@
       "yourAnswers": "Your answers",
       "withdraw": "Withdraw application",
       "withdrawConfirm": "Withdraw your application? You can apply again later if the internship is still open."
+    },
+    "compare": {
+      "back": "← All applications",
+      "title": "Compare {count, plural, =1 {# candidate} other {# candidates}}",
+      "subtitle": "Skills highlighted in violet match this internship's required skills.",
+      "skills": "Skills",
+      "roles": "Role chips",
+      "coverNote": "Cover note",
+      "openFull": "Open full →"
+    },
+    "apply": {
+      "eyebrow": "Applying to · {org}",
+      "intro": "Your profile ({name} · {university} · {year}) will be shared with the company."
+    },
+    "review": {
+      "back": "← All applications",
+      "appliedOn": "Applied {date}",
+      "profile": "Profile",
+      "email": "Email",
+      "university": "University",
+      "year": "Year",
+      "field": "Field",
+      "city": "City",
+      "language": "Language",
+      "skills": "Skills",
+      "viewCv": "View CV ↗",
+      "coverNote": "Cover note",
+      "applicationAnswers": "Application answers",
+      "internalNotes": "Internal notes",
+      "pipeline": "Pipeline"
     }
+  },
+  "projectHub": {
+    "addInternship": "+ Add internship",
+    "projectPhases": "Project phases",
+    "noPhases": "No phases defined for this project yet.",
+    "noGoals": "No goals defined yet.",
+    "internships": "Internships under this project",
+    "viewApplications": "View applications →",
+    "noInternships": "No internships yet. Post your first one above.",
+    "statInternships": "INTERNSHIPS",
+    "statTasks": "TASKS · ALL INTERNS",
+    "statDeliverables": "DELIVERABLES SUBMITTED",
+    "statDays": "DAYS REMAINING",
+    "projectSignal": "Project signal",
+    "projectSync": "Project sync",
+    "projectSyncBody": "Each workspace has its own check-in schedule. Open a workspace below to schedule a sync — the Jitsi link gets posted to the workspace activity feed.",
+    "supervisors": "Supervisors & team",
+    "leadSupervisor": "Lead supervisor",
+    "coSupervisor": "Co-supervisor",
+    "thisWeek": "This week",
+    "openWorkspace": "Open workspace →",
+    "applicationsLink": "Applications →"
+  },
+  "internshipDetail": {
+    "weeks": "{n, plural, one {# week} other {# weeks}}",
+    "paid": "Paid",
+    "paidWith": "Paid · {amount}",
+    "skills": "Skills",
+    "applicationQuestions": "Application questions",
+    "about": "About {org}",
+    "back": "← All internships",
+    "applySignUp": "Sign up to apply",
+    "applyNow": "Apply now →",
+    "applyCompleteProfile": "Complete profile to apply"
   },
   "card": {
     "durationWeeks": "{n, plural, one {# week} other {# weeks}}",

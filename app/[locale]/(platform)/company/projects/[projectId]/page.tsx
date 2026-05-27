@@ -5,6 +5,7 @@
 // the only design-polished hub view.
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { inArray, eq, desc } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -88,6 +89,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
   const session = await getSession();
   if (!session) redirect('/sign-in');
   const { user, role } = session;
+  const t = await getTranslations('projectHub');
 
   const { projectId } = await params;
   const project = await getProjectById(projectId);
@@ -277,7 +279,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                 href={`/company/projects/${projectId}/internships/new`}
                 className="inline-flex items-center gap-1 h-8 px-3 rounded-md text-[12px] font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
               >
-                <span className="text-[14px] leading-none -mt-px">+</span> Add internship
+                {t('addInternship')}
               </Link>
             </div>
           </div>
@@ -325,7 +327,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                 ) : (
                   // TODO: surface "Add goals" inline-edit affordance once we have it.
                   <div className="text-[12px] text-[var(--ink-3)] italic mb-4">
-                    No goals defined yet.
+                    {t('noGoals')}
                   </div>
                 )}
 
@@ -385,7 +387,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
             {phases.length > 0 ? (
               <section className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface)] p-5">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-[14.5px] font-semibold text-[var(--ink)]">Project phases</h3>
+                  <h3 className="text-[14.5px] font-semibold text-[var(--ink)]">{t('projectPhases')}</h3>
                   <span className="ml-auto font-mono text-[11px] tracking-wider uppercase text-[var(--ink-3)]">
                     PHASE {currentPhaseIdx + 1} OF {phases.length} · ON TRACK
                   </span>
@@ -421,14 +423,14 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
             ) : (
               // TODO: prompt to add phases in project edit when that exists.
               <section className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-color)] bg-[var(--surface)] p-5 text-center text-[13px] text-[var(--ink-3)]">
-                No phases defined for this project yet.
+                {t('noPhases')}
               </section>
             )}
 
             {/* ----- 4 stat tiles ----- */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatTile
-                label="INTERNSHIPS"
+                label={t('statInternships')}
                 value={String(activeInternshipCount)}
                 sublabel="active"
                 footer={
@@ -440,13 +442,13 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                 }
               />
               <StatTile
-                label="TASKS · ALL INTERNS"
+                label={t('statTasks')}
                 value={String(openTasks)}
                 sublabel={`of ${allTasks.length} open`}
                 footer={`${doneTasks} done · ${reviewTasks} in review`}
               />
               <StatTile
-                label="DELIVERABLES SUBMITTED"
+                label={t('statDeliverables')}
                 value={String(submittedDelivs)}
                 sublabel={`of ${allDelivs.length}`}
                 footer={
@@ -457,7 +459,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                 footerKind="good"
               />
               <StatTile
-                label="DAYS REMAINING"
+                label={t('statDays')}
                 value={daysRemaining != null ? String(daysRemaining) : '—'}
                 sublabel="days"
                 footer={endDate ? `Ends ${formatDateLong(endDate)}` : 'No end date set'}
@@ -468,19 +470,19 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
             <section className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface)] p-5">
               <div className="flex items-center gap-2 mb-3">
                 <h3 className="text-[14.5px] font-semibold text-[var(--ink)]">
-                  Internships under this project
+                  {t('internships')}
                 </h3>
                 <Link
                   href={`/company/projects/${projectId}/applications`}
                   className="ml-auto text-[12.5px] text-[var(--ink-3)] hover:text-[var(--ink)] inline-flex items-center gap-1"
                 >
-                  View applications →
+                  {t('viewApplications')}
                 </Link>
               </div>
 
               {internships.length === 0 ? (
                 <div className="text-center py-8 text-[13px] text-[var(--ink-3)]">
-                  No internships yet. Post your first one above.
+                  {t('noInternships')}
                 </div>
               ) : (
                 <div className="flex flex-col -mx-1">
@@ -577,14 +579,14 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                           {i.status === 'draft' && <PublishInternshipButton internshipId={i.id} />}
                           {wsId ? (
                             <Link href={`/company/workspaces/${wsId}`} className="ph-intern-open">
-                              Open workspace →
+                              {t('openWorkspace')}
                             </Link>
                           ) : (
                             <Link
                               href={`/company/projects/${projectId}/applications`}
                               className="ph-intern-open"
                             >
-                              Applications →
+                              {t('applicationsLink')}
                             </Link>
                           )}
                         </div>
@@ -611,7 +613,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
             {/* Project signal */}
             <div className="ph-signal">
               <div className="ph-signal-head">
-                <h4>Project signal</h4>
+                <h4>{t('projectSignal')}</h4>
                 <span className="ml-auto ph-signal-tag">DATA · LIVE</span>
               </div>
               <div className="ph-signal-metric">
@@ -664,16 +666,13 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
             {/* Project sync info — actual scheduling lives in each workspace's
                 per-intern Schedule Check-In flow. */}
             <div className="ph-sync">
-              <h4>Project sync</h4>
-              <p>
-                Each workspace has its own check-in schedule. Open a workspace below to schedule
-                a sync — the Jitsi link gets posted to the workspace activity feed.
-              </p>
+              <h4>{t('projectSync')}</h4>
+              <p>{t('projectSyncBody')}</p>
             </div>
 
             {/* Supervisors & team */}
             <div className="ph-team-card">
-              <h4>Supervisors &amp; team</h4>
+              <h4>{t('supervisors')}</h4>
               <div className="ph-team-list">
                 {supervisorUsers.map((s, idx) => (
                   <div key={s.id} className="ph-team-member">
@@ -682,7 +681,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                       <div className="nm">
                         {s.firstName} {s.lastName}
                       </div>
-                      <div className="rl">{idx === 0 ? 'Lead supervisor' : 'Co-supervisor'}</div>
+                      <div className="rl">{idx === 0 ? t('leadSupervisor') : t('coSupervisor')}</div>
                     </div>
                     {idx === 0 && <span className="ld">LEAD</span>}
                   </div>
@@ -709,7 +708,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
             {/* This week */}
             <div className="ph-week">
               <h4>
-                This week ·{' '}
+                {t('thisWeek')} ·{' '}
                 {today
                   .toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
                   .toUpperCase()}

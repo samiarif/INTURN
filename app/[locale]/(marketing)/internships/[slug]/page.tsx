@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
+import { getTranslations } from 'next-intl/server';
 import { getInternshipWithOrgById } from '@/modules/internships/queries';
 import { getProfileWithUserByClerkId } from '@/modules/profiles/queries';
 import { ReportButton } from '@/modules/reports/components/report-button';
@@ -38,9 +39,9 @@ export async function generateMetadata({
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const data = await getInternshipWithOrgById(slug);
   if (!data) notFound();
 
@@ -50,18 +51,20 @@ export default async function Page({
     notFound();
   }
 
+  const t = await getTranslations({ locale, namespace: 'internshipDetail' });
+
   // Apply CTA logic — derive what to link to based on auth state
   const { userId: clerkId } = await auth();
   let applyHref = `/sign-up?role=intern&next=/internships/${internship.id}/apply`;
-  let applyLabel = 'Sign up to apply';
+  let applyLabel = t('applySignUp');
   if (clerkId) {
     const ctx = await getProfileWithUserByClerkId(clerkId);
     if (ctx?.profile?.profileStep === 'complete') {
       applyHref = `/internships/${internship.id}/apply`;
-      applyLabel = 'Apply now →';
+      applyLabel = t('applyNow');
     } else {
       applyHref = `/onboarding/intern/basics`;
-      applyLabel = 'Complete profile to apply';
+      applyLabel = t('applyCompleteProfile');
     }
   }
 
@@ -72,7 +75,7 @@ export default async function Page({
       </div>
       <h1 className="text-3xl font-semibold tracking-tight mb-4">{internship.title}</h1>
       <div className="flex flex-wrap items-center gap-3 text-[13px] text-[var(--ink-3)] mb-8">
-        {internship.duration && <span>{internship.duration} weeks</span>}
+        {internship.duration && <span>{t('weeks', { n: internship.duration })}</span>}
         <span>·</span>
         <span className="capitalize">{internship.locationType}</span>
         {internship.location && (
@@ -84,8 +87,10 @@ export default async function Page({
         {internship.isPaid && (
           <>
             <span>·</span>
-            <span className="text-[#15803D] font-medium">
-              Paid{internship.compensation ? ` · ${internship.compensation}` : ''}
+            <span className="text-[var(--status-success-ink)] font-medium">
+              {internship.compensation
+                ? t('paidWith', { amount: internship.compensation })
+                : t('paid')}
             </span>
           </>
         )}
@@ -100,7 +105,7 @@ export default async function Page({
       {internship.skills && internship.skills.length > 0 && (
         <section className="mb-10">
           <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-            Skills
+            {t('skills')}
           </h2>
           <div className="flex flex-wrap gap-2">
             {internship.skills.map((s) => (
@@ -118,7 +123,7 @@ export default async function Page({
       {internship.customQuestions && internship.customQuestions.length > 0 && (
         <section className="mb-10">
           <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-            Application questions
+            {t('applicationQuestions')}
           </h2>
           <ul className="space-y-2 text-[14px] text-[var(--ink-2)]">
             {internship.customQuestions.map((q, i) => (
@@ -139,7 +144,7 @@ export default async function Page({
       {organization.description && (
         <section className="mb-10 pb-10 border-b border-[var(--border-color)]">
           <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-            About {organization.name}
+            {t('about', { org: organization.name })}
           </h2>
           <p className="text-[14px] text-[var(--ink-2)] leading-relaxed">{organization.description}</p>
           {organization.website && (
@@ -166,7 +171,7 @@ export default async function Page({
           href="/marketplace"
           className="text-[14px] text-[var(--ink-3)] hover:text-[var(--ink)]"
         >
-          ← All internships
+          {t('back')}
         </Link>
         {clerkId && (
           <>

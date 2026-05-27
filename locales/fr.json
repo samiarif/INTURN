@@ -450,7 +450,71 @@
       "yourAnswers": "Vos réponses",
       "withdraw": "Retirer la candidature",
       "withdrawConfirm": "Retirer votre candidature ? Vous pourrez postuler à nouveau plus tard si le stage est encore ouvert."
+    },
+    "compare": {
+      "back": "← Toutes les candidatures",
+      "title": "Comparer {count, plural, =1 {# candidat} other {# candidats}}",
+      "subtitle": "Les compétences en violet correspondent à celles requises pour ce stage.",
+      "skills": "Compétences",
+      "roles": "Rôles",
+      "coverNote": "Lettre",
+      "openFull": "Ouvrir la fiche →"
+    },
+    "apply": {
+      "eyebrow": "Candidature · {org}",
+      "intro": "Votre profil ({name} · {university} · {year}) sera partagé avec l'entreprise."
+    },
+    "review": {
+      "back": "← Toutes les candidatures",
+      "appliedOn": "Postulé le {date}",
+      "profile": "Profil",
+      "email": "Email",
+      "university": "Établissement",
+      "year": "Année",
+      "field": "Domaine",
+      "city": "Ville",
+      "language": "Langue",
+      "skills": "Compétences",
+      "viewCv": "Voir le CV ↗",
+      "coverNote": "Lettre de motivation",
+      "applicationAnswers": "Réponses à la candidature",
+      "internalNotes": "Notes internes",
+      "pipeline": "Pipeline"
     }
+  },
+  "projectHub": {
+    "addInternship": "+ Ajouter un stage",
+    "projectPhases": "Phases du projet",
+    "noPhases": "Aucune phase définie pour ce projet.",
+    "noGoals": "Aucun objectif défini pour l'instant.",
+    "internships": "Stages de ce projet",
+    "viewApplications": "Voir les candidatures →",
+    "noInternships": "Aucun stage pour l'instant. Publiez le premier ci-dessus.",
+    "statInternships": "STAGES",
+    "statTasks": "TÂCHES · TOUS STAGIAIRES",
+    "statDeliverables": "LIVRABLES SOUMIS",
+    "statDays": "JOURS RESTANTS",
+    "projectSignal": "Signal projet",
+    "projectSync": "Sync projet",
+    "projectSyncBody": "Chaque espace a son propre calendrier de check-in. Ouvrez un espace ci-dessous pour planifier — le lien Jitsi sera publié dans le fil d'activité.",
+    "supervisors": "Superviseurs & équipe",
+    "leadSupervisor": "Superviseur principal",
+    "coSupervisor": "Co-superviseur",
+    "thisWeek": "Cette semaine",
+    "openWorkspace": "Ouvrir l'espace →",
+    "applicationsLink": "Candidatures →"
+  },
+  "internshipDetail": {
+    "weeks": "{n, plural, one {# semaine} other {# semaines}}",
+    "paid": "Rémunéré",
+    "paidWith": "Rémunéré · {amount}",
+    "skills": "Compétences",
+    "applicationQuestions": "Questions de candidature",
+    "about": "À propos de {org}",
+    "back": "← Tous les stages",
+    "applySignUp": "S'inscrire pour postuler",
+    "applyNow": "Postuler →",
+    "applyCompleteProfile": "Compléter le profil pour postuler"
   },
   "card": {
     "durationWeeks": "{n, plural, one {# semaine} other {# semaines}}",

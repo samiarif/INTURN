@@ -8,6 +8,7 @@ import {
 } from '@/modules/internships/queries';
 import { InternshipCard } from '@/components/marketplace/internship-card';
 import { MarketplaceFilters } from '@/components/marketplace/marketplace-filters';
+import { MarketplaceFiltersCollapse } from '@/components/marketplace/marketplace-filters-collapse';
 import { getSession } from '@/modules/auth/session';
 import { getBookmarkedSet } from '@/modules/bookmarks/queries';
 import { getProfileByUserId } from '@/modules/profiles/queries';
@@ -170,20 +171,35 @@ export default async function Page({
       </form>
 
       <div className="ex-layout grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-6">
-        <MarketplaceFilters
-          state={{
-            search,
-            paid,
-            sector,
-            locationType,
-            duration,
-            language,
-            skill,
-          }}
-          sectors={sectors}
-          counts={facetCounts}
-          hasActiveFilters={hasActiveFilters}
-        />
+        <div>
+          <MarketplaceFiltersCollapse
+            label={t('filters')}
+            activeCount={
+              (search ? 1 : 0) +
+              (paid && paid !== 'all' ? 1 : 0) +
+              (sector ? 1 : 0) +
+              (locationType ? 1 : 0) +
+              (duration ? 1 : 0) +
+              (language ? 1 : 0) +
+              (skill ? 1 : 0)
+            }
+          >
+            <MarketplaceFilters
+              state={{
+                search,
+                paid,
+                sector,
+                locationType,
+                duration,
+                language,
+                skill,
+              }}
+              sectors={sectors}
+              counts={facetCounts}
+              hasActiveFilters={hasActiveFilters}
+            />
+          </MarketplaceFiltersCollapse>
+        </div>
 
         <div>
           <div className="ex-meta">
