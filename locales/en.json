@@ -246,7 +246,27 @@
       "groupStatus": "Group: Status",
       "reviewBannerHeadline": "{count, plural, =1 {1 task is waiting on you.} other {# tasks are waiting on you.}}",
       "reviewBannerBodyPrefix": "{name} submitted",
-      "reviewBannerJump": "JUMP TO CARD →"
+      "reviewBannerJump": "JUMP TO CARD →",
+      "cardMenu": {
+        "triggerLabel": "Task actions",
+        "edit": "Edit…",
+        "changeDue": "Change due…",
+        "changePriority": "Change priority…",
+        "moveTo": "Move to…",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this task? This cannot be undone.",
+        "priority": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        },
+        "status": {
+          "todo": "To do",
+          "in-progress": "In progress",
+          "review": "In review",
+          "done": "Done"
+        }
+      }
     },
     "addTask": {
       "title": "Add a task",

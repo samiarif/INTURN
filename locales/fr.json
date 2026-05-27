@@ -246,7 +246,27 @@
       "groupStatus": "Grouper : Statut",
       "reviewBannerHeadline": "{count, plural, =1 {1 tâche attend votre revue.} other {# tâches attendent votre revue.}}",
       "reviewBannerBodyPrefix": "{name} a soumis",
-      "reviewBannerJump": "VOIR LA CARTE →"
+      "reviewBannerJump": "VOIR LA CARTE →",
+      "cardMenu": {
+        "triggerLabel": "Actions de la tâche",
+        "edit": "Modifier…",
+        "changeDue": "Changer l'échéance…",
+        "changePriority": "Changer la priorité…",
+        "moveTo": "Déplacer vers…",
+        "delete": "Supprimer",
+        "deleteConfirm": "Supprimer cette tâche ? Action irréversible.",
+        "priority": {
+          "low": "Basse",
+          "medium": "Moyenne",
+          "high": "Haute"
+        },
+        "status": {
+          "todo": "À faire",
+          "in-progress": "En cours",
+          "review": "En revue",
+          "done": "Terminé"
+        }
+      }
     },
     "addTask": {
       "title": "Ajouter une tâche",
