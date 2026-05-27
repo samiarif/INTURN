@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +15,10 @@ import {
 } from '@/components/ui/select';
 import { Combobox } from '@/components/combobox';
 import { UNIVERSITIES } from '@/modules/profiles/universities';
-import { saveProfileBasicsAction } from '@/modules/profiles/server-actions';
+import {
+  saveProfileBasicsAction,
+  saveProfileBasicsFromAccountAction,
+} from '@/modules/profiles/server-actions';
 
 const YEARS = ['L1', 'L2', 'L3', 'M1', 'M2', 'Eng1', 'Eng2', 'Eng3', 'PhD'];
 
@@ -28,16 +32,24 @@ type BasicsInitial = Partial<{
   preferredLanguage: 'fr' | 'en';
 }>;
 
-export function ProfileBasicsForm({ initial }: { initial?: BasicsInitial }) {
+export function ProfileBasicsForm({
+  initial,
+  mode = 'onboarding',
+}: {
+  initial?: BasicsInitial;
+  mode?: 'onboarding' | 'account';
+}) {
   const t = useTranslations('onboarding.intern.basics');
   const [university, setUniversity] = useState(initial?.university ?? '');
   const [yearOfStudy, setYearOfStudy] = useState(initial?.yearOfStudy ?? '');
   const [preferredLanguage, setPreferredLanguage] = useState<'fr' | 'en'>(
     initial?.preferredLanguage ?? 'fr',
   );
+  const action =
+    mode === 'account' ? saveProfileBasicsFromAccountAction : saveProfileBasicsAction;
 
   return (
-    <form action={saveProfileBasicsAction} className="space-y-5">
+    <form action={action} className="space-y-5">
       <input type="hidden" name="university" value={university} />
       <input type="hidden" name="yearOfStudy" value={yearOfStudy} />
       <input type="hidden" name="preferredLanguage" value={preferredLanguage} />
@@ -132,11 +144,20 @@ export function ProfileBasicsForm({ initial }: { initial?: BasicsInitial }) {
       </div>
 
       <div className="flex justify-between pt-2">
-        <Button type="button" variant="ghost" disabled>
-          {t('back')}
-        </Button>
+        {mode === 'account' ? (
+          <Link
+            href="/account"
+            className="inline-flex items-center h-9 px-3 text-sm text-[var(--ink-2)] hover:text-[var(--ink)]"
+          >
+            {t('back')}
+          </Link>
+        ) : (
+          <Button type="button" variant="ghost" disabled>
+            {t('back')}
+          </Button>
+        )}
         <Button type="submit" className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]">
-          {t('continue')}
+          {mode === 'account' ? t('save') : t('continue')}
         </Button>
       </div>
     </form>

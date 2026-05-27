@@ -65,7 +65,8 @@
         "preferredLanguageHelper": "This sets the app's language and the default for your applications.",
         "continue": "Continue →",
         "back": "← Back",
-        "step": "Basics"
+        "step": "Basics",
+        "save": "Save changes"
       },
       "skills": {
         "title": "Your skills",
@@ -599,6 +600,7 @@
   "account": {
     "title": "Account",
     "subtitle": "Your identity, profile, and privacy controls.",
+    "editIntro": "Update your details. Changes save back to your account immediately.",
     "identity": "Identity",
     "email": "Email",
     "name": "Name",

@@ -142,6 +142,20 @@
   --danger: #dc2626;
   --info: #0284c7;
 
+  /* Status pill backgrounds + inks — used by StatusPill component.
+     Light mode uses pale tinted backgrounds. Dark mode overrides below. */
+  --status-neutral-bg: #f1f5f9;
+  --status-neutral-ink: #64748b;
+  --status-info-bg: #eff6ff;
+  --status-info-ink: #1d4ed8;
+  --status-warn-bg: #fffbeb;
+  --status-warn-ink: #92400e;
+  --status-success-bg: #ecfdf5;
+  --status-success-ink: #15803d;
+  --status-danger-bg: #fef2f2;
+  --status-danger-ink: #b91c1c;
+  --status-danger-border: #fca5a5;
+
   /* Radius (Workshop scale) */
   --radius-ws-sm: 2px;
   --radius-ws-md: 6px;
@@ -200,6 +214,20 @@
   --ink-3: oklch(0.6 0.01 240);
   --ink-4: oklch(0.5 0.01 240);
   /* Brand / accent / semantic stay the same — readable on dark already */
+
+  /* Status pill colors retuned for dark mode — darker tinted bg, brighter ink. */
+  --status-neutral-bg: oklch(0.28 0.01 240);
+  --status-neutral-ink: oklch(0.75 0.01 240);
+  --status-info-bg: oklch(0.28 0.04 250);
+  --status-info-ink: oklch(0.82 0.13 250);
+  --status-warn-bg: oklch(0.28 0.04 70);
+  --status-warn-ink: oklch(0.85 0.14 80);
+  --status-success-bg: oklch(0.28 0.05 150);
+  --status-success-ink: oklch(0.85 0.16 150);
+  --status-danger-bg: oklch(0.3 0.06 20);
+  --status-danger-ink: oklch(0.85 0.15 20);
+  --status-danger-border: oklch(0.5 0.12 20);
+
   color-scheme: dark;
 }
 

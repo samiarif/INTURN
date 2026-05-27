@@ -1,12 +1,6 @@
 import Link from 'next/link';
 import { listOrganizationsByVerification } from '@/modules/admin/queries';
-
-const STATUS_STYLE: Record<string, string> = {
-  draft: 'bg-[var(--surface-muted)] text-[var(--ink-3)]',
-  pending: 'bg-[#FFFBEB] text-[#92400E]',
-  verified: 'bg-[#ECFDF5] text-[#15803D]',
-  suspended: 'bg-[#FEF2F2] text-[#B91C1C]',
-};
+import { StatusPill, toneForVerificationStatus } from '@/components/status-pill';
 
 export default async function Page({
   searchParams,
@@ -80,9 +74,9 @@ export default async function Page({
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[organization.verificationStatus ?? 'draft']}`}>
+                    <StatusPill tone={toneForVerificationStatus(organization.verificationStatus)}>
                       {organization.verificationStatus}
-                    </span>
+                    </StatusPill>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link

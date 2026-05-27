@@ -18,7 +18,7 @@ export default async function Page() {
 
   const editProfileHref =
     session.role === 'intern'
-      ? '/onboarding/intern/basics'
+      ? '/account/edit'
       : session.role === 'company'
         ? '/onboarding/company'
         : null;

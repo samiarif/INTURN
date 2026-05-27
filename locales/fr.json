@@ -65,7 +65,8 @@
         "preferredLanguageHelper": "Définit la langue de l'application et celle par défaut pour vos candidatures.",
         "continue": "Continuer →",
         "back": "← Retour",
-        "step": "Profil"
+        "step": "Profil",
+        "save": "Enregistrer"
       },
       "skills": {
         "title": "Vos compétences",
@@ -599,6 +600,7 @@
   "account": {
     "title": "Compte",
     "subtitle": "Votre identité, votre profil et vos contrôles de confidentialité.",
+    "editIntro": "Mettez à jour vos informations. Les modifications sont sauvegardées immédiatement.",
     "identity": "Identité",
     "email": "Email",
     "name": "Nom",

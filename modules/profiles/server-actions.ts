@@ -2,6 +2,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { assertOurBlobUrl } from '@/lib/blob';
 import { getUserByClerkId } from './queries';
 import { createOrUpdateBasics, createOrUpdateSkills } from './service';
@@ -26,6 +27,33 @@ export async function saveProfileBasicsAction(formData: FormData) {
 
   await createOrUpdateBasics(user.id, parsed);
   redirect('/onboarding/intern/skills');
+}
+
+/**
+ * Same as saveProfileBasicsAction but redirects back to /account instead
+ * of pushing the user through the rest of onboarding. Used by the
+ * "Edit profile" flow on the account page.
+ */
+export async function saveProfileBasicsFromAccountAction(formData: FormData) {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) throw new Error('Unauthorized');
+
+  const user = await getUserByClerkId(clerkId);
+  if (!user) throw new Error('User not found');
+
+  const parsed = profileBasicsSchema.parse({
+    firstName: formData.get('firstName'),
+    lastName: formData.get('lastName'),
+    university: formData.get('university'),
+    yearOfStudy: formData.get('yearOfStudy'),
+    fieldOfStudy: formData.get('fieldOfStudy'),
+    city: formData.get('city'),
+    preferredLanguage: formData.get('preferredLanguage'),
+  });
+
+  await createOrUpdateBasics(user.id, parsed);
+  revalidatePath('/account');
+  redirect('/account');
 }
 
 export async function saveProfileSkillsAction(formData: FormData) {

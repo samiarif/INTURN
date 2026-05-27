@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { listReportsByStatus } from '@/modules/reports/queries';
+import { StatusPill, toneForReportStatus } from '@/components/status-pill';
 
 const REASON_LABEL: Record<string, string> = {
   scam: 'Scam',
@@ -8,12 +9,6 @@ const REASON_LABEL: Record<string, string> = {
   spam: 'Spam',
   unsafe: 'Unsafe',
   other: 'Other',
-};
-
-const STATUS_STYLE: Record<string, string> = {
-  open: 'bg-[#FEF2F2] text-[#B91C1C]',
-  reviewed: 'bg-[#FFFBEB] text-[#92400E]',
-  resolved: 'bg-[#ECFDF5] text-[#15803D]',
 };
 
 export default async function Page({
@@ -63,11 +58,9 @@ export default async function Page({
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span
-                        className={`text-[11px] uppercase tracking-wider font-mono px-2 py-0.5 rounded ${STATUS_STYLE[report.status]}`}
-                      >
+                      <StatusPill tone={toneForReportStatus(report.status)}>
                         {report.status}
-                      </span>
+                      </StatusPill>
                       <span className="text-[11px] uppercase tracking-wider font-mono text-[var(--ink-3)]">
                         {report.subjectType} · {REASON_LABEL[report.reason]}
                       </span>

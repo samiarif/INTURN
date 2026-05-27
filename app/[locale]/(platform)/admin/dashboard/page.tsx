@@ -1,13 +1,7 @@
 import Link from 'next/link';
 import { getAdminStats, listRecentOrganizations } from '@/modules/admin/queries';
 import { countOpenReports } from '@/modules/reports/queries';
-
-const STATUS_STYLE: Record<string, string> = {
-  draft: 'bg-[var(--surface-muted)] text-[var(--ink-3)]',
-  pending: 'bg-[#FFFBEB] text-[#92400E]',
-  verified: 'bg-[#ECFDF5] text-[#15803D]',
-  suspended: 'bg-[#FEF2F2] text-[#B91C1C]',
-};
+import { StatusPill, toneForVerificationStatus } from '@/components/status-pill';
 
 export default async function Page() {
   const [stats, recent, openReports] = await Promise.all([
@@ -90,9 +84,9 @@ export default async function Page() {
                     <td className="px-4 py-3 font-medium">{organization.name}</td>
                     <td className="px-4 py-3 text-[13px]">{owner.email}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[organization.verificationStatus ?? 'draft']}`}>
+                      <StatusPill tone={toneForVerificationStatus(organization.verificationStatus)}>
                         {organization.verificationStatus}
-                      </span>
+                      </StatusPill>
                     </td>
                     <td className="px-4 py-3 font-mono text-[12px] text-[var(--ink-3)]">
                       {new Date(organization.createdAt).toLocaleDateString()}
