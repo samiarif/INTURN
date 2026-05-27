@@ -1,5 +1,5 @@
 import { WorkspaceMHead } from './m-head';
-import { TasksBoard } from './tasks-board';
+import { TasksViewsShell } from './tasks/tasks-views-shell';
 import type { WorkspaceOverviewData } from '../queries';
 import type { WorkspaceView } from '../types';
 
@@ -32,7 +32,7 @@ export function WorkspaceTasksPage({
         className="ws-content"
         style={{ gridTemplateColumns: '1fr', paddingTop: 20, paddingBottom: 40 }}
       >
-        <TasksBoard
+        <TasksViewsShell
           tasks={data.tasks}
           view={view}
           internName={internName}
