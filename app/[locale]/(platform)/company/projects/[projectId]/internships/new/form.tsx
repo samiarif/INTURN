@@ -17,6 +17,9 @@ import { ChipInput } from '@/components/chip-input';
 import { WizardStepsInline } from '@/components/ui/wizard-steps-inline';
 import { DraftBanner } from '@/components/ui/draft-banner';
 import { createInternshipAction } from '@/modules/internships/server-actions';
+import { TemplatePicker } from '@/modules/internships/components/template-picker';
+import { useTranslations } from 'next-intl';
+import type { InternshipTemplate } from '@/lib/internship-templates';
 
 const SECTORS = [
   'Design',
@@ -84,6 +87,18 @@ export function PostInternshipForm({
   const [deliverables, setDeliverables] = useState<Deliverable[]>(DEFAULT_DELIVERABLES);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [visibility, setVisibility] = useState<Visibility>('public');
+  const tTpl = useTranslations('internshipTemplates');
+
+  function applyTemplate(template: InternshipTemplate) {
+    setTitle(tTpl(`${template.id}.title`));
+    setDescription(tTpl(`${template.id}.description`));
+    setSector(template.sector);
+    setSkills(template.skillsBySector);
+    setDuration(template.duration);
+    setLocationType(template.locationType);
+    setLanguage(template.language);
+    setIsPaid(template.isPaid);
+  }
 
   // ---- Live preview derived state -------------------------------------
   const filledDeliverables = deliverables.filter((d) => d.name.trim().length > 0).length;
@@ -157,6 +172,11 @@ export function PostInternshipForm({
         title="Draft mode"
         message={`saving here won't publish — ${projectName} stays private until you hit Publish.`}
       />
+
+      {/* Templates picker — only shown when title is blank to avoid
+          overwriting work in progress. Companies looking at a fresh
+          internship form get an instant scaffold to start from. */}
+      {title.trim().length === 0 && <TemplatePicker onPick={applyTemplate} />}
 
       <WizardStepsInline
         steps={[

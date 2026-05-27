@@ -443,12 +443,26 @@ export default async function Page() {
           </h1>
           <p>{subtitle}</p>
           {!isVerified && (
-            <p className="text-[12.5px] text-[var(--ink-3)] mt-2 relative z-[1]">
-              <span className="font-mono uppercase tracking-[0.06em] mr-2 text-[var(--warning)]">
-                {tDash('verifyHeading')}
+            <div
+              role="status"
+              className="mt-4 relative z-[1] flex items-start gap-3 p-4 rounded-lg border border-[var(--status-warn-bg)] bg-[var(--status-warn-bg)] max-w-2xl"
+            >
+              <span
+                aria-hidden
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[var(--status-warn-ink)] text-white text-[14px] font-semibold flex-shrink-0"
+                title={tDash('verifyHeading')}
+              >
+                ◷
               </span>
-              {tDash('verifyBody')}
-            </p>
+              <div className="min-w-0">
+                <p className="font-mono uppercase tracking-[0.06em] text-[11.5px] text-[var(--status-warn-ink)] mb-1">
+                  {tDash('verifyHeading')} · {tDash('verifySla')}
+                </p>
+                <p className="text-[13.5px] text-[var(--ink-2)] leading-relaxed">
+                  {tDash('verifyBody')}
+                </p>
+              </div>
+            </div>
           )}
         </div>
 

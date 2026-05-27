@@ -697,7 +697,8 @@
       "statsThisWeek": "cette semaine",
       "statsOnboard": "à bord",
       "verifyHeading": "Vérification en cours",
-      "verifyBody": "Vous pouvez créer des projets et publier des annonces en brouillon dès maintenant. Une fois votre organisation vérifiée par un administrateur, vos stages deviennent visibles sur la marketplace et vous pouvez accepter des candidats.",
+      "verifySla": "Délai moyen : 18 h",
+      "verifyBody": "Vous pouvez créer des projets et publier des annonces en brouillon dès maintenant. Une fois votre organisation vérifiée par un administrateur, vos stages deviennent visibles sur la marketplace et vous pouvez accepter des candidats. Nous vous enverrons un email dès que c'est validé.",
       "projectsTitle": "Projets",
       "newProject": "+ Nouveau projet",
       "newProjectHelp": "Vérifiez d'abord votre organisation",
@@ -881,6 +882,44 @@
       "errorBodyMin": "Le contenu doit faire au moins 20 caractères.",
       "errorGeneric": "Impossible de publier. Réessayez.",
       "backToFeed": "Retour au fil"
+    }
+  },
+  "internshipTemplates": {
+    "pickerTitle": "Partir d'un modèle",
+    "pickerSubtitle": "Brouillons pré-remplis pour les archétypes de stage les plus demandés en Tunisie. Modifiables après application.",
+    "applyTemplate": "Utiliser ce modèle",
+    "blank": "Commencer à blanc",
+    "visualDesigner": {
+      "title": "Designer visuel — Identité de marque",
+      "description": "Pilotez l'exploration visuelle d'une marque ou d'un produit. Vous portez les moodboards, les associations typographiques, les itérations de logo et les guidelines finales. Crit hebdomadaire avec le lead design ; livrables sur Figma + exports PDF."
+    },
+    "uxResearcher": {
+      "title": "Stagiaire UX research",
+      "description": "Menez des entretiens de découverte (5-8 sessions), synthétisez les insights en récit actionnable, présentez aux parties prenantes. Prise de notes solide + à l'aise avec l'ambiguïté. Outils : Notion, Figma, FigJam."
+    },
+    "frontendEngineer": {
+      "title": "Stagiaire ingénieur frontend",
+      "description": "Livrer de l'UI sur un produit React + TypeScript. Pair-programming avec des seniors, culture de code review, vraies PRs dès la semaine 1. Stack : React, TypeScript, Tailwind, Git."
+    },
+    "dataAnalyst": {
+      "title": "Stagiaire analyste data",
+      "description": "Analysez les métriques produit + business, construisez des dashboards, présentez les résultats au comité hebdomadaire. Outils : SQL, Looker, Python (numpy/pandas). Bonus : dbt ou Metabase."
+    },
+    "marketingIntern": {
+      "title": "Stagiaire marketing + marque",
+      "description": "Pilotez Instagram + TikTok pour une campagne en cours. Planifiez + publiez + répondez en commentaires. Outils : Notion pour la planif, Canva pour les visuels, analytics natifs."
+    },
+    "bilingualEditor": {
+      "title": "Éditeur bilingue (FR/EN)",
+      "description": "Éditez des interviews de fondateurs + des contenus longs en français et anglais. Clarté, cohérence de ton, deadlines serrées. Outils : Notion, Google Docs."
+    },
+    "motionDesigner": {
+      "title": "Stagiaire motion design",
+      "description": "Produisez du motion court pour la marque (idents, boucles social, jingles). Sous la direction du lead de marque. Outils : After Effects, Lottie, Figma."
+    },
+    "contentStrategist": {
+      "title": "Stagiaire content strategist",
+      "description": "Construisez le calendrier éditorial, rédigez les briefs, coordonnez les rédacteurs. SEO léger + audience research. Outils : Notion, Search Console, CMS au choix."
     }
   },
   "profileCompleteness": {

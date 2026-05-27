@@ -697,7 +697,8 @@
       "statsThisWeek": "this week",
       "statsOnboard": "onboard",
       "verifyHeading": "Verification pending",
-      "verifyBody": "You can create draft projects and post draft internships now. Once an admin marks your organization as verified, your internships become visible on the marketplace and you can accept candidates.",
+      "verifySla": "Average review: 18h",
+      "verifyBody": "You can create draft projects and post draft internships now. Once an admin marks your organization as verified, your internships become visible on the marketplace and you can accept candidates. We'll email you the moment it's approved.",
       "projectsTitle": "Projects",
       "newProject": "+ New project",
       "newProjectHelp": "Verify your organization first",
@@ -881,6 +882,44 @@
       "errorBodyMin": "Body must be at least 20 characters.",
       "errorGeneric": "Could not post. Please try again.",
       "backToFeed": "Back to feed"
+    }
+  },
+  "internshipTemplates": {
+    "pickerTitle": "Start from a template",
+    "pickerSubtitle": "Pre-filled scaffolds for common Tunisian internship archetypes. Tweak after applying.",
+    "applyTemplate": "Use this template",
+    "blank": "Start blank",
+    "visualDesigner": {
+      "title": "Visual designer — Brand work",
+      "description": "Lead visual exploration for a brand or product. You'll own moodboards, type pairings, logo iterations, and final guidelines. Weekly crit with the design lead; deliverables shipped in Figma + exported PDFs."
+    },
+    "uxResearcher": {
+      "title": "UX research intern",
+      "description": "Run discovery interviews (5-8 sessions), synthesize findings into an actionable narrative, present to stakeholders. Strong note-taking + comfort with ambiguity required. Tools: Notion, Figma, FigJam."
+    },
+    "frontendEngineer": {
+      "title": "Junior frontend engineer",
+      "description": "Ship UI for a React + TypeScript product. Pair with senior engineers, heavy code review culture, real PRs from week 1. Stack: React, TypeScript, Tailwind, Git."
+    },
+    "dataAnalyst": {
+      "title": "Data analyst intern",
+      "description": "Analyze product + business metrics, build dashboards, present findings to leadership weekly. Tools: SQL, Looker, Python (numpy/pandas). Bonus: experience with dbt or Metabase."
+    },
+    "marketingIntern": {
+      "title": "Marketing + brand intern",
+      "description": "Run Instagram + TikTok content for an active campaign. Plan + post + read the comments. Tools: Notion for planning, Canva for assets, native analytics."
+    },
+    "bilingualEditor": {
+      "title": "Bilingual editor (FR/EN)",
+      "description": "Edit founder interviews + long-form content in French and English. Heavy on clarity, voice consistency, tight deadlines. Tools: Notion, Google Docs."
+    },
+    "motionDesigner": {
+      "title": "Motion design intern",
+      "description": "Produce short brand motion (logo idents, social loops, intro videos). Work under direction of the brand lead. Tools: After Effects, Lottie, Figma."
+    },
+    "contentStrategist": {
+      "title": "Content strategist intern",
+      "description": "Build the editorial calendar, write briefs, coordinate writers. Light SEO + audience research. Tools: Notion, Google Search Console, CMS of choice."
     }
   },
   "profileCompleteness": {
