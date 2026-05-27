@@ -60,3 +60,6 @@ Thumbs.db
 
 # Turbo
 .turbo/
+
+# Superpowers brainstorming session artifacts (visual companion mockups)
+.superpowers/
