@@ -489,6 +489,7 @@
       "subtitle": "Vérifications, espaces, activité récente.",
       "verificationsPending": "Vérifications en attente",
       "verificationsPendingHelp": "Brouillons + en attente",
+      "oldestPending": "Plus ancienne : {hours} h",
       "companiesVerified": "Entreprises vérifiées",
       "activeWorkspaces": "Espaces actifs",
       "openReports": "Signalements ouverts",

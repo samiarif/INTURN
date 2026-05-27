@@ -22,13 +22,29 @@ export default async function Page() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         <Link
           href="/admin/verifications"
-          className="block border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)] hover:border-[var(--border-strong)]"
+          className={`block border rounded-lg p-5 hover:border-[var(--border-strong)] ${
+            stats.oldestPendingHours !== null && stats.oldestPendingHours >= 24
+              ? 'border-[var(--status-danger-border)] bg-[var(--status-danger-bg)]'
+              : 'border-[var(--border-color)] bg-[var(--surface)]'
+          }`}
         >
           <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
             {t('verificationsPending')}
           </div>
-          <div className="text-3xl font-semibold tracking-tight">{stats.verificationsPending}</div>
-          <div className="text-[12px] text-[var(--ink-3)] mt-1">{t('verificationsPendingHelp')}</div>
+          <div
+            className={`text-3xl font-semibold tracking-tight ${
+              stats.oldestPendingHours !== null && stats.oldestPendingHours >= 24
+                ? 'text-[var(--status-danger-ink)]'
+                : ''
+            }`}
+          >
+            {stats.verificationsPending}
+          </div>
+          <div className="text-[12px] text-[var(--ink-3)] mt-1">
+            {stats.oldestPendingHours !== null
+              ? t('oldestPending', { hours: stats.oldestPendingHours })
+              : t('verificationsPendingHelp')}
+          </div>
         </Link>
         <div className="border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)]">
           <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">

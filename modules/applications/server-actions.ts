@@ -59,6 +59,18 @@ export async function applyToInternshipAction(internshipId: string, formData: Fo
     actorId: user.id,
   });
 
+  // Fire-and-forget analytics — no awaiting on the Posthog HTTP call.
+  void (async () => {
+    const { trackServer } = await import('@/lib/analytics');
+    await trackServer(user.id, {
+      name: 'application_submitted',
+      props: {
+        internshipId,
+        hasCustomAnswers: (parsed.customAnswers?.length ?? 0) > 0,
+      },
+    });
+  })();
+
   // Dashboard + applications list show this new row. Without these, the
   // RSC cache holds the pre-apply snapshot and shows "No applications yet".
   revalidatePath('/intern/dashboard');

@@ -489,6 +489,7 @@
       "subtitle": "Verifications, workspaces, recent activity.",
       "verificationsPending": "Verifications pending",
       "verificationsPendingHelp": "Draft + pending companies",
+      "oldestPending": "Oldest waiting: {hours}h",
       "companiesVerified": "Companies verified",
       "activeWorkspaces": "Active workspaces",
       "openReports": "Open reports",
