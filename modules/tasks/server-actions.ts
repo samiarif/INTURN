@@ -35,9 +35,10 @@ export type CreateTaskActionResult =
   | { ok: false; error: string };
 
 /**
- * Create a task in a workspace. Supervisors (company + admin) only;
- * interns drive their workflow but tasks land on the board from the
- * supervisor side.
+ * Create a task in a workspace. Allowed for any participant — the
+ * intern can self-assign work between supervisor reviews, the supervisor
+ * adds tasks from the board's `+ Add task` button. Authorization comes
+ * from loadWorkspaceAccess (canViewWorkspace).
  */
 export async function createTaskAction(
   input: CreateTaskActionInput,
@@ -46,7 +47,10 @@ export async function createTaskAction(
   if (input.title.length > 140) return { ok: false, error: 'title_too_long' };
 
   const { session, workspace } = await loadWorkspaceAccess(input.workspaceId);
-  if (session.role !== 'company' && session.role !== 'admin') {
+  // Allow intern, company, or admin — loadWorkspaceAccess already
+  // checked the caller is a participant in this workspace via
+  // canViewWorkspace, so we just need to exclude non-participants.
+  if (session.role !== 'intern' && session.role !== 'company' && session.role !== 'admin') {
     return { ok: false, error: 'forbidden' };
   }
 
