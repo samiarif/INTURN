@@ -44,9 +44,14 @@ export default async function PlatformLayout({ children }: { children: React.Rea
         {t('skipToContent')}
       </a>
       <PlatformMobileTopStrip {...userProps} />
-      <div className="md:grid md:grid-cols-[240px_1fr] min-h-screen">
+      {/*
+        Flex (not grid) so the layout collapses cleanly when the sidebar
+        component returns null on /workspaces/ routes — otherwise the
+        empty 240px grid column would push content right.
+      */}
+      <div className="md:flex min-h-screen">
         <PlatformSidebar {...userProps} />
-        <div className="flex flex-col min-w-0">
+        <div className="flex flex-col min-w-0 flex-1">
           {session.user.suspendedAt && <SuspendedBanner />}
           <main id="main-content" className="flex-1">{children}</main>
         </div>
