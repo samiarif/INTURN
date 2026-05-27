@@ -5,7 +5,9 @@
     "switchToLight": "Passer en mode clair",
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
-    "switchUser": "Changer d'utilisateur (dev)"
+    "switchUser": "Changer d'utilisateur (dev)",
+    "mainNavigation": "Navigation principale",
+    "primaryNav": "Navigation primaire"
   },
   "platformNav": {
     "dashboard": "Tableau de bord",

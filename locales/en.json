@@ -5,7 +5,9 @@
     "switchToLight": "Switch to light mode",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "switchUser": "Switch dev user"
+    "switchUser": "Switch dev user",
+    "mainNavigation": "Main navigation",
+    "primaryNav": "Primary navigation"
   },
   "platformNav": {
     "dashboard": "Dashboard",
