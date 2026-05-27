@@ -5,6 +5,7 @@ import { users, organizations } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import type { Role } from './types';
 import type { User, Organization } from '@/db/schema';
+import { getDevImpersonatedClerkId, isDevAuthBypassed } from '@/lib/dev-auth';
 
 export type Session = {
   clerkId: string;
@@ -26,7 +27,45 @@ export type Session = {
  * or throw 401 themselves).
  */
 export const getSession = cache(async (): Promise<Session | null> => {
-  const { userId: clerkId, sessionClaims } = await auth();
+  // Dev-only bypass — when DEV_AUTH_BYPASS=1 a signed cookie set by
+  // /dev/login impersonates one of the seeded users without going to
+  // Clerk. Strictly gated; the function itself is a no-op when the
+  // flag is unset, so this path never runs in prod.
+  if (isDevAuthBypassed()) {
+    const devClerkId = await getDevImpersonatedClerkId();
+    if (devClerkId) {
+      const [user] = await db.select().from(users).where(eq(users.clerkId, devClerkId)).limit(1);
+      if (user) {
+        const role: Role =
+          user.role === 'admin' || user.role === 'company' || user.role === 'intern'
+            ? user.role
+            : 'intern';
+        return { clerkId: devClerkId, user, role };
+      }
+    }
+    // Fall through to Clerk path if no dev cookie — lets the normal
+    // sign-in still work alongside dev-impersonation, useful for
+    // testing the bypass logic itself.
+  }
+
+  // Defensive: in dev-bypass mode, the Clerk path may not even be
+  // reachable (the whole reason for the bypass). Swallow auth() errors
+  // and treat them as "unauthenticated" so pages can render the
+  // /dev/login link instead of crashing.
+  type ClaimsShape = { publicMetadata?: { role?: string } };
+  let clerkId: string | null = null;
+  let sessionClaims: ClaimsShape | null = null;
+  try {
+    const res = await auth();
+    clerkId = res.userId ?? null;
+    sessionClaims = (res.sessionClaims as ClaimsShape | null) ?? null;
+  } catch (err) {
+    if (isDevAuthBypassed()) {
+      // Expected in dev-bypass + offline mode. Don't spam logs.
+      return null;
+    }
+    throw err;
+  }
   if (!clerkId) return null;
 
   const [user] = await db.select().from(users).where(eq(users.clerkId, clerkId)).limit(1);

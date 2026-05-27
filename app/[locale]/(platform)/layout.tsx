@@ -7,10 +7,11 @@ import {
   listRecentNotifications,
 } from '@/modules/notifications/queries';
 import { SuspendedBanner } from '@/components/suspended-banner';
+import { isDevAuthBypassed } from '@/lib/dev-auth';
 
 export default async function PlatformLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
-  if (!session) redirect('/sign-in');
+  if (!session) redirect(isDevAuthBypassed() ? '/dev/login' : '/sign-in');
   if (!session.user.role) redirect('/role-selection');
   const t = await getTranslations('a11y');
 
@@ -31,6 +32,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
         role={session.role}
         unreadCount={unreadCount}
         notifications={notifications}
+        devBypassed={isDevAuthBypassed()}
       />
       {session.user.suspendedAt && <SuspendedBanner />}
       <main id="main-content">{children}</main>

@@ -19,7 +19,8 @@
     "db:migrate:drizzle": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx --env-file=.env.local scripts/seed.ts"
+    "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
+    "db:link": "tsx --env-file=.env.local scripts/link-clerk-users.ts"
   },
   "engines": {
     "node": ">=22"

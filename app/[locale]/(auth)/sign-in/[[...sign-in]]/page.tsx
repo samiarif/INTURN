@@ -1,8 +1,14 @@
 import { SignIn } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
+import { isDevAuthBypassed } from '@/lib/dev-auth';
 
 export default function SignInPage() {
+  // In dev-bypass mode, Clerk's <SignIn> can't bootstrap (the API is
+  // unreachable, which is the whole reason for the bypass). Send the
+  // user to the local-only impersonation picker instead.
+  if (isDevAuthBypassed()) redirect('/dev/login');
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg)]">
       <header className="h-14 flex items-center justify-between px-6 border-b border-[var(--border-color)] bg-[var(--surface)]">

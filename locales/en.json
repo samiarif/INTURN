@@ -4,7 +4,8 @@
     "switchToDark": "Switch to dark mode",
     "switchToLight": "Switch to light mode",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "switchUser": "Switch dev user"
   },
   "platformNav": {
     "dashboard": "Dashboard",

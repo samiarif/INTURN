@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { frFR, enUS } from '@clerk/localizations';
 import { CookieBanner } from '@/components/cookie-banner';
+import { isDevAuthBypassed } from '@/lib/dev-auth';
 import '../globals.css';
 
 const clerkLocales = { fr: frFR, en: enUS };
@@ -43,6 +44,19 @@ export default async function LocaleLayout({
   const theme = (await cookies()).get('inturn-theme')?.value;
   const themeClass = theme === 'dark' ? 'dark' : '';
 
+  // Dev-only bypass: when DEV_AUTH_BYPASS=1 we skip <ClerkProvider> so
+  // it doesn't hang on the bootstrap fetch to api.clerk.com (which is
+  // blocked on some networks). This is the SAME guard the rest of the
+  // bypass uses — it's belt-and-suspenders, not a security boundary.
+  const skipClerk = isDevAuthBypassed();
+
+  const inner = (
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      {children}
+      <CookieBanner />
+    </NextIntlClientProvider>
+  );
+
   return (
     <html
       lang={locale}
@@ -50,12 +64,13 @@ export default async function LocaleLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${themeClass}`.trim()}
     >
       <body className="font-sans antialiased">
-        <ClerkProvider localization={clerkLocales[locale as keyof typeof clerkLocales]}>
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            {children}
-            <CookieBanner />
-          </NextIntlClientProvider>
-        </ClerkProvider>
+        {skipClerk ? (
+          inner
+        ) : (
+          <ClerkProvider localization={clerkLocales[locale as keyof typeof clerkLocales]}>
+            {inner}
+          </ClerkProvider>
+        )}
       </body>
     </html>
   );

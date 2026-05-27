@@ -4,11 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { UserButton } from '@clerk/nextjs';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { NotificationBell } from '@/components/ui/notification-bell';
+import { UserButtonShim } from '@/components/auth/user-button-shim';
 import type { Role } from '@/modules/auth/types';
 import type { Notification } from '@/db/schema';
 
@@ -28,10 +28,12 @@ export function PlatformHeader({
   role,
   notifications,
   unreadCount,
+  devBypassed = false,
 }: {
   role: Role;
   notifications: Notification[];
   unreadCount: number;
+  devBypassed?: boolean;
 }) {
   const tA11y = useTranslations('a11y');
   const tNav = useTranslations('platformNav');
@@ -135,7 +137,7 @@ export function PlatformHeader({
             initialItems={notifications}
             label={tNotif('label')}
           />
-          <UserButton appearance={{ elements: { avatarBox: 'h-9 w-9' } }} />
+          <UserButtonShim bypassed={devBypassed} />
         </div>
       </header>
 

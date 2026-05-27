@@ -4,7 +4,8 @@
     "switchToDark": "Passer en mode sombre",
     "switchToLight": "Passer en mode clair",
     "openMenu": "Ouvrir le menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "switchUser": "Changer d'utilisateur (dev)"
   },
   "platformNav": {
     "dashboard": "Tableau de bord",

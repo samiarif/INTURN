@@ -1,12 +1,14 @@
 import Link from 'next/link';
-import { UserButton } from '@clerk/nextjs';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { getSession } from '@/modules/auth/session';
 import { SiteFooter } from '@/components/site-footer';
+import { UserButtonShim } from '@/components/auth/user-button-shim';
+import { isDevAuthBypassed } from '@/lib/dev-auth';
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
+  const devBypassed = isDevAuthBypassed();
   const dashHref =
     session?.role === 'admin'
       ? '/admin/dashboard'
@@ -39,7 +41,14 @@ export default async function MarketingLayout({ children }: { children: React.Re
         <div className="flex items-center gap-3">
           <LanguageSwitch />
           {session ? (
-            <UserButton appearance={{ elements: { avatarBox: 'h-9 w-9' } }} />
+            <UserButtonShim bypassed={devBypassed} />
+          ) : devBypassed ? (
+            <Link
+              href="/dev/login"
+              className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)]"
+            >
+              ⚠ Dev login
+            </Link>
           ) : (
             <>
               <Link
