@@ -884,6 +884,31 @@
       "backToFeed": "Back to feed"
     }
   },
+  "fte": {
+    "intern": {
+      "eyebrow": "Get started",
+      "title": "Your first 3 steps on Inturn",
+      "progress": "{done} of {total} done",
+      "dismiss": "Hide checklist",
+      "steps": {
+        "completeProfile": "Complete your profile to 80%",
+        "bookmark": "Bookmark 3 internships",
+        "firstApply": "Apply to your first internship"
+      }
+    },
+    "company": {
+      "eyebrow": "Get started",
+      "title": "Set up your hiring",
+      "progress": "{done} of {total} done",
+      "dismiss": "Hide checklist",
+      "steps": {
+        "completeOrg": "Add logo + description",
+        "firstProject": "Create your first project",
+        "firstInternship": "Post your first internship",
+        "verified": "Get verified (we email you when it's done)"
+      }
+    }
+  },
   "internshipTemplates": {
     "pickerTitle": "Start from a template",
     "pickerSubtitle": "Pre-filled scaffolds for common Tunisian internship archetypes. Tweak after applying.",

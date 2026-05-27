@@ -26,6 +26,7 @@ import { getUserByClerkId } from '@/modules/profiles/queries';
 import { getProjectsByOrganization } from '@/modules/projects/queries';
 import { getInternshipsByProjectIds } from '@/modules/internships/queries';
 import { CalendarWidget } from '@/components/dashboard/calendar-widget';
+import { FteChecklist } from '@/components/fte-checklist';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MS_PER_HOUR = 1000 * 60 * 60;
@@ -442,6 +443,41 @@ export default async function Page() {
             {greeting}, <span className="name">{user.firstName ?? 'there'}</span>
           </h1>
           <p>{subtitle}</p>
+
+          {/* First-time experience checklist for companies. Hides once
+              all 4 done or user dismisses. */}
+          <div className="mt-6 max-w-2xl relative z-[1]">
+            <FteChecklist
+              role="company"
+              userId={user.id}
+              items={[
+                {
+                  key: 'completeOrg',
+                  done: Boolean(org.logoUrl && org.description?.trim()),
+                  href: '/onboarding/company',
+                },
+                {
+                  key: 'firstProject',
+                  done: projects.length > 0,
+                  href: '/company/projects/new',
+                },
+                {
+                  key: 'firstInternship',
+                  done: internshipsList.length > 0,
+                  href:
+                    projects.length > 0
+                      ? `/company/projects/${projects[0].id}/internships/new`
+                      : '/company/projects/new',
+                },
+                {
+                  key: 'verified',
+                  done: isVerified,
+                  href: '/account',
+                },
+              ]}
+            />
+          </div>
+
           {!isVerified && (
             <div
               role="status"

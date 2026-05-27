@@ -14,6 +14,7 @@ import { InternshipCard } from '@/components/marketplace/internship-card';
 import { orgMark } from '@/lib/avatar';
 import { ProfileCompletenessWidget } from '@/components/profile-completeness-widget';
 import { computeProfileCompleteness } from '@/modules/profiles/service';
+import { FteChecklist } from '@/components/fte-checklist';
 
 const STATUS_STYLE: Record<string, string> = {
   new: 'bg-[#EFF6FF] text-[#1D4ED8]',
@@ -139,6 +140,30 @@ export default async function Page() {
           {tDash('subtitle')}
         </p>
       </div>
+
+      {/* First-time experience — hides once all 3 done OR dismissed.
+          Items computed server-side; component handles localStorage + confetti. */}
+      <FteChecklist
+        role="intern"
+        userId={user.id}
+        items={[
+          {
+            key: 'completeProfile',
+            done: (completeness?.percent ?? 0) >= 80,
+            href: '/account/edit',
+          },
+          {
+            key: 'bookmark',
+            done: bookmarkRows.length >= 3,
+            href: '/marketplace',
+          },
+          {
+            key: 'firstApply',
+            done: applicationRows.length > 0,
+            href: '/marketplace',
+          },
+        ]}
+      />
 
       {/* Profile completeness — hides at 100% */}
       {completeness && <ProfileCompletenessWidget completeness={completeness} />}

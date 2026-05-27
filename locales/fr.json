@@ -884,6 +884,31 @@
       "backToFeed": "Retour au fil"
     }
   },
+  "fte": {
+    "intern": {
+      "eyebrow": "Pour bien démarrer",
+      "title": "Vos 3 premières étapes sur Inturn",
+      "progress": "{done} sur {total} terminées",
+      "dismiss": "Masquer la liste",
+      "steps": {
+        "completeProfile": "Compléter votre profil à 80%",
+        "bookmark": "Mettre 3 stages en favoris",
+        "firstApply": "Postuler à votre premier stage"
+      }
+    },
+    "company": {
+      "eyebrow": "Pour bien démarrer",
+      "title": "Configurer vos recrutements",
+      "progress": "{done} sur {total} terminées",
+      "dismiss": "Masquer la liste",
+      "steps": {
+        "completeOrg": "Ajouter logo + description",
+        "firstProject": "Créer votre premier projet",
+        "firstInternship": "Publier votre premier stage",
+        "verified": "Faire vérifier votre entreprise (email envoyé dès validation)"
+      }
+    }
+  },
   "internshipTemplates": {
     "pickerTitle": "Partir d'un modèle",
     "pickerSubtitle": "Brouillons pré-remplis pour les archétypes de stage les plus demandés en Tunisie. Modifiables après application.",
