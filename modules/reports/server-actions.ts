@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import { reports, type NewReport, type Report } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { requireSession, requireAdmin } from '@/modules/auth/session';
+import { requireActiveSession, requireAdmin } from '@/modules/auth/session';
 import { recordAuditLog } from '@/modules/audit/service';
 
 export type ReportReason = 'scam' | 'misleading' | 'inappropriate' | 'spam' | 'unsafe' | 'other';
@@ -37,7 +37,7 @@ const SUBJECTS: ReadonlyArray<ReportSubjectType> = ['internship', 'organization'
  * rate limit can be added later if abuse appears.
  */
 export async function submitReportAction(input: SubmitReportInput): Promise<SubmitReportResult> {
-  const session = await requireSession();
+  const session = await requireActiveSession();
 
   if (!REASONS.includes(input.reason)) return { ok: false, error: 'invalid_reason' };
   if (!SUBJECTS.includes(input.subjectType)) return { ok: false, error: 'invalid_subject' };

@@ -6,6 +6,7 @@ import {
   getUnreadCount,
   listRecentNotifications,
 } from '@/modules/notifications/queries';
+import { SuspendedBanner } from '@/components/suspended-banner';
 
 export default async function PlatformLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -31,6 +32,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
         unreadCount={unreadCount}
         notifications={notifications}
       />
+      {session.user.suspendedAt && <SuspendedBanner />}
       <main id="main-content">{children}</main>
     </>
   );

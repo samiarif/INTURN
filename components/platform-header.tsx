@@ -64,6 +64,7 @@ export function PlatformHeader({
             { href: '/admin/dashboard', label: tNav('dashboard') },
             { href: '/admin/verifications', label: tNav('verifications') },
             { href: '/admin/reports', label: tNav('reports') },
+            { href: '/admin/users', label: tNav('users') },
             { href: '/admin/audit', label: tNav('audit') },
             { href: '/marketplace', label: tNav('browse') },
             accountItem,

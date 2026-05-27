@@ -16,6 +16,7 @@
     "browse": "Browse",
     "verifications": "Verifications",
     "reports": "Reports",
+    "users": "Users",
     "audit": "Audit",
     "account": "Account",
     "menu": "Main menu"
@@ -537,6 +538,29 @@
       "action": "Action",
       "target": "Target"
     },
+    "users": {
+      "title": "Users",
+      "subtitle": "All accounts. Suspend abusive users; suspended users can sign in but cannot post or apply.",
+      "searchPlaceholder": "Search by name or email…",
+      "searchSubmit": "Search",
+      "roleAll": "All",
+      "roleIntern": "Interns",
+      "roleCompany": "Companies",
+      "roleAdmin": "Admins",
+      "statusAny": "Any status",
+      "statusActive": "Active",
+      "statusSuspended": "Suspended",
+      "empty": "No users match.",
+      "colUser": "User",
+      "colRole": "Role",
+      "colExtra": "Org / University",
+      "colJoined": "Joined",
+      "colStatus": "Status",
+      "suspend": "Suspend",
+      "unsuspend": "Reactivate",
+      "suspendConfirm": "Suspend {email}? They can still sign in but cannot post or apply.",
+      "unsuspendConfirm": "Reactivate {email}?"
+    },
     "status": {
       "draft": "Draft",
       "pending": "Pending",
@@ -780,6 +804,11 @@
       "deleting": "Deleting…",
       "errorMismatch": "Email does not match. Type the exact address.",
       "errorGeneric": "Something went wrong. Please try again or contact support."
+    },
+    "suspended": {
+      "label": "Account restricted",
+      "body": "Your account is currently suspended. You can still browse but cannot apply, post, or comment.",
+      "contactSupport": "Contact support →"
     }
   },
   "community": {

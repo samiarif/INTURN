@@ -8,6 +8,11 @@ export const users = pgTable('users', {
   lastName: text('last_name'),
   imageUrl: text('image_url'),
   role: text('role', { enum: ['intern', 'company', 'admin'] }),
+  /** Non-null = the user is suspended by an admin. Login still works
+   * (so we can tell them why) but every write server-side checks this
+   * and refuses. UI shows a banner so the user knows their account is
+   * restricted. */
+  suspendedAt: timestamp('suspended_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

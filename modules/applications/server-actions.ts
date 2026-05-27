@@ -19,6 +19,7 @@ async function requireUser() {
   if (!clerkId) throw new Error('Unauthorized');
   const user = await getUserByClerkId(clerkId);
   if (!user) throw new Error('User not found');
+  if (user.suspendedAt) throw new Error('account_suspended');
   return user;
 }
 

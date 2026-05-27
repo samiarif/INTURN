@@ -16,6 +16,7 @@
     "browse": "Parcourir",
     "verifications": "Vérifications",
     "reports": "Signalements",
+    "users": "Utilisateurs",
     "audit": "Audit",
     "account": "Compte",
     "menu": "Menu principal"
@@ -537,6 +538,29 @@
       "action": "Action",
       "target": "Cible"
     },
+    "users": {
+      "title": "Utilisateurs",
+      "subtitle": "Tous les comptes. Suspendez les utilisateurs abusifs ; ils peuvent se connecter mais ne peuvent plus publier ni postuler.",
+      "searchPlaceholder": "Rechercher par nom ou email…",
+      "searchSubmit": "Rechercher",
+      "roleAll": "Tous",
+      "roleIntern": "Stagiaires",
+      "roleCompany": "Entreprises",
+      "roleAdmin": "Admins",
+      "statusAny": "Tous statuts",
+      "statusActive": "Actif",
+      "statusSuspended": "Suspendu",
+      "empty": "Aucun utilisateur trouvé.",
+      "colUser": "Utilisateur",
+      "colRole": "Rôle",
+      "colExtra": "Entreprise / Établissement",
+      "colJoined": "Inscription",
+      "colStatus": "Statut",
+      "suspend": "Suspendre",
+      "unsuspend": "Réactiver",
+      "suspendConfirm": "Suspendre {email} ? Il pourra se connecter mais ne pourra plus publier ni postuler.",
+      "unsuspendConfirm": "Réactiver {email} ?"
+    },
     "status": {
       "draft": "Brouillon",
       "pending": "En attente",
@@ -780,6 +804,11 @@
       "deleting": "Suppression…",
       "errorMismatch": "L'email ne correspond pas. Saisissez l'adresse exacte.",
       "errorGeneric": "Une erreur est survenue. Réessayez ou contactez le support."
+    },
+    "suspended": {
+      "label": "Compte restreint",
+      "body": "Votre compte est actuellement suspendu. Vous pouvez naviguer mais ne pouvez plus postuler, publier ni commenter.",
+      "contactSupport": "Contacter le support →"
     }
   },
   "community": {

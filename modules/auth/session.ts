@@ -56,6 +56,19 @@ export async function requireSession(): Promise<Session> {
 }
 
 /**
+ * Require a non-suspended session — call from any write action that
+ * should be blocked for suspended users (apply, comment, post, etc.).
+ * Reads still work via requireSession so users can see what they have.
+ */
+export async function requireActiveSession(): Promise<Session> {
+  const session = await requireSession();
+  if (session.user.suspendedAt) {
+    throw new Error('account_suspended');
+  }
+  return session;
+}
+
+/**
  * Require admin role or throw.
  */
 export async function requireAdmin(): Promise<Session> {

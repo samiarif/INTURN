@@ -5,13 +5,13 @@ import { redirect } from 'next/navigation';
 import { db } from '@/db';
 import { communityPosts, communityComments } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { requireSession } from '@/modules/auth/session';
+import { requireActiveSession, requireSession } from '@/modules/auth/session';
 
 export type CreatePostInput = { title: string; body: string };
 export type CreatePostResult = { ok: true; postId: string } | { ok: false; error: string };
 
 export async function createPostAction(input: CreatePostInput): Promise<CreatePostResult> {
-  const session = await requireSession();
+  const session = await requireActiveSession();
   if (session.role !== 'intern' && session.role !== 'admin') {
     return { ok: false, error: 'forbidden' };
   }
@@ -37,7 +37,7 @@ export type AddCommentInput = { postId: string; body: string };
 export type AddCommentResult = { ok: true; commentId: string } | { ok: false; error: string };
 
 export async function addCommentAction(input: AddCommentInput): Promise<AddCommentResult> {
-  const session = await requireSession();
+  const session = await requireActiveSession();
   if (session.role !== 'intern' && session.role !== 'admin') {
     return { ok: false, error: 'forbidden' };
   }
