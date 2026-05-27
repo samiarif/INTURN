@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { WorkspaceTopBar, type Crumb } from './topbar';
-import { WorkspaceSidebar } from './sidebar';
 import { StuckPill } from './stuck-pill';
 import { computeWeekOfTotal } from '../queries';
 import type { WorkspaceShell } from '../page-data';
@@ -52,11 +51,6 @@ export async function WorkspaceShellLayout({
         modeChip={buildShellModeChip(s)}
       />
       <div className="ws-body">
-        <WorkspaceSidebar
-          data={shell.sidebar}
-          viewer={shell.viewer}
-          activeWorkspaceId={shell.workspaceId}
-        />
         <main id="main-content" className="ws-main">{children}</main>
       </div>
       {shell.view === 'intern' && <StuckPill />}
