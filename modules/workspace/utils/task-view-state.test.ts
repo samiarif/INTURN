@@ -29,7 +29,25 @@ describe('parseFilterParam', () => {
   });
 });
 
-import { serializeFilterParam } from './task-view-state';
+import { serializeFilterParam, derivePhasesFromTasks, compareByDue, compareByPriority, compareByTitle, compareByCreated, sortTasks, filterTasks } from './task-view-state';
+import type { Task } from '@/db/schema';
+
+function makeTask(overrides: Partial<Task>): Task {
+  return {
+    id: 'id-' + Math.random().toString(36).slice(2),
+    workspaceId: 'ws-1',
+    tag: null,
+    title: 'Task',
+    description: null,
+    status: 'todo',
+    priority: 'medium',
+    dueDate: null,
+    order: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  } as Task;
+}
 
 describe('serializeFilterParam', () => {
   it('returns undefined for empty state', () => {
@@ -46,5 +64,22 @@ describe('serializeFilterParam', () => {
     const serialized = serializeFilterParam(state);
     expect(serialized).toBeDefined();
     expect(parseFilterParam(serialized!)).toEqual(state);
+  });
+});
+
+describe('derivePhasesFromTasks', () => {
+  it('returns unique prefixes alphabetically', () => {
+    const tasks = [
+      makeTask({ tag: 'BA-1' }),
+      makeTask({ tag: 'UX-3' }),
+      makeTask({ tag: 'BA-2' }),
+    ];
+    expect(derivePhasesFromTasks(tasks)).toEqual(['BA', 'UX']);
+  });
+  it('skips tasks without tags', () => {
+    expect(derivePhasesFromTasks([makeTask({ tag: null })])).toEqual([]);
+  });
+  it('skips tags without a dash', () => {
+    expect(derivePhasesFromTasks([makeTask({ tag: 'plain' })])).toEqual([]);
   });
 });
