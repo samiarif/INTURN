@@ -266,6 +266,18 @@
           "review": "In review",
           "done": "Done"
         }
+      },
+      "columnMenu": {
+        "triggerLabel": "{status} column actions",
+        "addHere": "Add task here",
+        "focus": "Focus this column",
+        "sortWithin": "Sort within column…",
+        "sort": {
+          "due": "By due date",
+          "priority": "By priority",
+          "title": "By title",
+          "created": "By created"
+        }
       }
     },
     "addTask": {

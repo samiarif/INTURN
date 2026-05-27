@@ -266,6 +266,18 @@
           "review": "En revue",
           "done": "Terminé"
         }
+      },
+      "columnMenu": {
+        "triggerLabel": "Actions de la colonne {status}",
+        "addHere": "Ajouter une tâche ici",
+        "focus": "Mettre en évidence cette colonne",
+        "sortWithin": "Trier dans la colonne…",
+        "sort": {
+          "due": "Par échéance",
+          "priority": "Par priorité",
+          "title": "Par titre",
+          "created": "Par création"
+        }
       }
     },
     "addTask": {
