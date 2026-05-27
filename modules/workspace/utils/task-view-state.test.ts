@@ -83,3 +83,53 @@ describe('derivePhasesFromTasks', () => {
     expect(derivePhasesFromTasks([makeTask({ tag: 'plain' })])).toEqual([]);
   });
 });
+
+describe('compareByDue', () => {
+  it('orders overdue < today < later < no-date', () => {
+    const yesterday = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
+    const tomorrow = new Date(Date.now() + 86400_000).toISOString().slice(0, 10);
+    const a = makeTask({ id: 'a', dueDate: yesterday });
+    const b = makeTask({ id: 'b', dueDate: tomorrow });
+    const c = makeTask({ id: 'c', dueDate: null });
+    const sorted = [c, b, a].sort(compareByDue);
+    expect(sorted.map((t) => t.id)).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('compareByPriority', () => {
+  it('orders high before medium before low', () => {
+    const a = makeTask({ id: 'a', priority: 'low' });
+    const b = makeTask({ id: 'b', priority: 'high' });
+    const c = makeTask({ id: 'c', priority: 'medium' });
+    const sorted = [a, b, c].sort(compareByPriority);
+    expect(sorted.map((t) => t.id)).toEqual(['b', 'c', 'a']);
+  });
+});
+
+describe('compareByTitle', () => {
+  it('orders alphabetically case-insensitive', () => {
+    const a = makeTask({ id: 'a', title: 'beta' });
+    const b = makeTask({ id: 'b', title: 'Alpha' });
+    const sorted = [a, b].sort(compareByTitle);
+    expect(sorted.map((t) => t.id)).toEqual(['b', 'a']);
+  });
+});
+
+describe('compareByCreated', () => {
+  it('orders newest first', () => {
+    const a = makeTask({ id: 'a', createdAt: new Date('2026-01-01') });
+    const b = makeTask({ id: 'b', createdAt: new Date('2026-02-01') });
+    const sorted = [a, b].sort(compareByCreated);
+    expect(sorted.map((t) => t.id)).toEqual(['b', 'a']);
+  });
+});
+
+describe('sortTasks', () => {
+  it('dispatches by sort key, defaults to due', () => {
+    const a = makeTask({ id: 'a', priority: 'high', title: 'Z' });
+    const b = makeTask({ id: 'b', priority: 'low', title: 'A' });
+    expect(sortTasks([a, b], 'priority').map((t) => t.id)).toEqual(['a', 'b']);
+    expect(sortTasks([a, b], 'title').map((t) => t.id)).toEqual(['b', 'a']);
+    expect(sortTasks([a, b], null).map((t) => t.id)).toEqual(['a', 'b']);
+  });
+});
