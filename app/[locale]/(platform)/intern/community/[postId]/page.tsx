@@ -6,25 +6,8 @@ import { getPost, listComments } from '@/modules/community/queries';
 import { AddCommentForm } from './add-comment-form';
 import { DeletePostButton } from './delete-post-button';
 import { ReportButton } from '@/modules/reports/components/report-button';
-
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('');
-}
-
-function formatDate(iso: Date, locale: string): string {
-  return iso.toLocaleString(locale === 'fr' ? 'fr-FR' : 'en-US', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
+import { Avatar } from '@/components/avatar';
+import { formatTimeAgo, type FormatLocale } from '@/lib/format-time';
 
 export default async function Page({ params }: { params: Promise<{ postId: string }> }) {
   const session = await requireSession();
@@ -53,23 +36,16 @@ export default async function Page({ params }: { params: Promise<{ postId: strin
 
       <article className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
-          <span
-            className="ws-avatar"
-            style={{
-              background: 'linear-gradient(135deg,#DDD6FE,#C7D2FE)',
-              color: 'var(--brand-700)',
-              fontSize: 12,
-              width: 36,
-              height: 36,
-              flexShrink: 0,
-            }}
-          >
-            {initials(authorName)}
-          </span>
+          <Avatar
+            name={authorName}
+            email={post.author.email}
+            imageUrl={post.author.imageUrl}
+            size="md"
+          />
           <div className="min-w-0 flex-1">
             <p className="font-medium text-[14px]">{authorName}</p>
             <p className="text-[12px] text-[var(--ink-3)]">
-              {formatDate(new Date(post.post.createdAt), locale)}
+              {formatTimeAgo(new Date(post.post.createdAt), locale as FormatLocale)}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -100,23 +76,17 @@ export default async function Page({ params }: { params: Promise<{ postId: strin
                   key={comment.id}
                   className="flex gap-3 border-b border-[var(--border-color)] pb-4 last:border-b-0"
                 >
-                  <span
-                    className="ws-avatar xs flex-shrink-0"
-                    style={{
-                      background: 'linear-gradient(135deg,#E0F2FE,#BAE6FD)',
-                      color: 'var(--brand-700)',
-                      fontSize: 11,
-                      width: 28,
-                      height: 28,
-                    }}
-                  >
-                    {initials(name)}
-                  </span>
+                  <Avatar
+                    name={name}
+                    email={author.email}
+                    imageUrl={author.imageUrl}
+                    size="sm"
+                  />
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-baseline gap-2 mb-1">
+                    <div className="flex items-baseline gap-2 mb-1 flex-wrap">
                       <span className="font-medium text-[13px]">{name}</span>
                       <span className="text-[11px] text-[var(--ink-3)]">
-                        {formatDate(new Date(comment.createdAt), locale)}
+                        {formatTimeAgo(new Date(comment.createdAt), locale as FormatLocale)}
                       </span>
                     </div>
                     <p className="text-[14px] text-[var(--ink-2)] whitespace-pre-wrap">
