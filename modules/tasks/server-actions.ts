@@ -101,3 +101,27 @@ export async function updateTaskAction(
 
   return { ok: true };
 }
+
+export type DeleteTaskActionResult =
+  | { ok: true }
+  | { ok: false; error: string };
+
+export async function deleteTaskAction(taskId: string): Promise<DeleteTaskActionResult> {
+  const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1);
+  if (!task) return { ok: false, error: 'not_found' };
+
+  const { session, workspace } = await loadWorkspaceAccess(task.workspaceId);
+  // Delete is supervisor-only — interns can edit/move but not destroy.
+  if (session.role !== 'company' && session.role !== 'admin') {
+    return { ok: false, error: 'forbidden' };
+  }
+
+  await db.delete(tasks).where(eq(tasks.id, taskId));
+
+  revalidatePath(`/intern/workspaces/${workspace.id}`);
+  revalidatePath(`/company/workspaces/${workspace.id}`);
+  revalidatePath(`/intern/workspaces/${workspace.id}/tasks`);
+  revalidatePath(`/company/workspaces/${workspace.id}/tasks`);
+
+  return { ok: true };
+}
