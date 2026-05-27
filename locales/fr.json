@@ -278,6 +278,24 @@
           "title": "Par titre",
           "created": "Par création"
         }
+      },
+      "toolbar": {
+        "viewTabsLabel": "Vue des tâches",
+        "viewBoard": "Tableau",
+        "viewList": "Liste",
+        "viewCalendar": "Calendrier",
+        "comingSoon": "Bientôt disponible",
+        "filterAll": "Toutes",
+        "filterPhase": "Phase",
+        "filterDueThisWeek": "Cette semaine",
+        "sort": "Tri",
+        "sortDue": "Échéance",
+        "sortPriority": "Priorité",
+        "sortTitle": "Titre",
+        "sortCreated": "Création",
+        "group": "Groupe",
+        "groupStatus": "Statut",
+        "groupPhase": "Phase"
       }
     },
     "addTask": {
