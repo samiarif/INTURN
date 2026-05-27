@@ -285,6 +285,13 @@
           "created": "By created"
         }
       },
+      "calendar": {
+        "prevMonth": "Previous month",
+        "nextMonth": "Next month",
+        "today": "Today",
+        "more": "more",
+        "undatedBanner": "{n} task(s) without a due date"
+      },
       "list": {
         "caption": "Tasks list, sortable",
         "empty": "No tasks.",
