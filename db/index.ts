@@ -3,17 +3,22 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { requireEnv } from '@/lib/env';
 import * as schema from './schema';
 
-// Neon serverless has a "cold start" — when the compute spins down after
-// a few minutes of inactivity, the first request can fail with
-// `TypeError: fetch failed` while the compute wakes up. Subsequent
-// requests succeed in <300ms. We retry network errors transparently so
-// pages don't 500 just because the dev hadn't refreshed in a while.
+// Neon HTTP is fetch-based, so it inherits whatever network flakiness
+// the host network has. Two failure modes we see in dev:
 //
-// We only retry on network-level failures (no response from server),
-// which means we know the request never reached the DB — safe to retry
-// even for writes. We do NOT retry on HTTP errors or query errors.
-const MAX_RETRIES = 3;
-const BACKOFF_MS = [200, 600, 1500];
+//   1. Cold start — Neon compute spun down → first request `fetch failed`
+//      after ~200ms while the connection RSTs.
+//   2. Parallel fan-out — a dashboard that fires 5+ queries via
+//      Promise.all sometimes has 1-2 fail with `fetch failed` even when
+//      the rest succeed. Likely Neon HTTP front-end coalescing or
+//      cellular/Wi-Fi packet loss on Sam's connection.
+//
+// Retry transparently on network-level failures (TypeError from fetch),
+// with jittered backoff so parallel fan-out doesn't all retry at the
+// same instant. We do NOT retry on HTTP 4xx/5xx or query errors —
+// those mean the request reached the DB and got a real response.
+const MAX_RETRIES = 5;
+const BASE_BACKOFF_MS = 150;
 
 const defaultFetch: typeof fetch = (...args) => fetch(...args);
 
@@ -25,10 +30,12 @@ const retryingFetch: typeof fetch = async (...args) => {
     } catch (err) {
       lastErr = err;
       // Only retry network errors — fetch throws TypeError for these.
-      // Anything else (AbortError, etc.) we let through.
       if (!(err instanceof TypeError)) throw err;
       if (attempt < MAX_RETRIES - 1) {
-        await new Promise((r) => setTimeout(r, BACKOFF_MS[attempt]));
+        // Exponential backoff with jitter: 150, 300, 600, 1200ms (± 50%)
+        const base = BASE_BACKOFF_MS * Math.pow(2, attempt);
+        const jitter = base * (0.5 + Math.random());
+        await new Promise((r) => setTimeout(r, jitter));
       }
     }
   }
