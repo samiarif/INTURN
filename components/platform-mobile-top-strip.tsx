@@ -31,7 +31,9 @@ export function PlatformMobileTopStrip(props: Props) {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
-  if (pathname.includes('/workspaces/')) return null;
+  // NB: We deliberately keep the mobile top strip visible inside
+  // workspaces — the hamburger stays accessible so the user can pop
+  // back out to the rest of the platform.
 
   return (
     <>

@@ -34,8 +34,9 @@ export function PlatformSidebar({
   const tA11y = useTranslations('a11y');
   const pathname = usePathname();
 
-  // Hide inside workspaces — they own their own shell.
-  if (pathname.includes('/workspaces/')) return null;
+  // NB: Sidebar stays visible inside workspaces so the user keeps their
+  // bearings across the whole platform. The workspace's own shell
+  // (topbar + tab-bar) sits inside the main content area.
 
   const accountItem = { href: '/account', label: tNav('account') };
   const navItems = role === 'intern'
