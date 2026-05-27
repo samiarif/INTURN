@@ -516,7 +516,23 @@
       "rne": "RNE",
       "status": "Statut",
       "created": "Créée",
-      "review": "Examiner →"
+      "review": "Examiner →",
+      "detail": {
+        "back": "← Toutes les vérifications",
+        "organization": "Entreprise",
+        "owner": "Propriétaire",
+        "rne": "Document RNE",
+        "actions": "Actions",
+        "openOriginal": "Ouvrir l'original ↗",
+        "noRne": "Aucun document RNE téléversé. L'entreprise peut vérifier plus tard — l'admin peut aussi valider sans pour les partenaires design intégrés hors ligne.",
+        "slug": "Slug",
+        "industry": "Secteur",
+        "size": "Taille",
+        "country": "Pays",
+        "city": "Ville",
+        "website": "Site web",
+        "createdOn": "Créée"
+      }
     },
     "reports": {
       "title": "Signalements",
@@ -582,6 +598,26 @@
   "projectHub": {
     "addInternship": "+ Ajouter un stage",
     "projectPhases": "Phases du projet",
+    "addGoals": "+ Ajouter des objectifs",
+    "editGoals": "Modifier les objectifs",
+    "addPhases": "+ Ajouter des phases",
+    "editPhases": "Modifier les phases",
+    "edit": {
+      "goalsTitle": "Objectifs du projet",
+      "goalsHint": "Jusqu'à 3 énoncés courts (≤120 caractères). Visibles par chaque stagiaire sur ce projet.",
+      "goalPlaceholder": "Objectif {n}",
+      "phasesTitle": "Phases du projet",
+      "phasesHint": "Jusqu'à 6 phases sur l'échelle de semaines. Utilisé pour colorer la timeline du projet.",
+      "phaseNamePlaceholder": "Nom de la phase {n}",
+      "phaseDescriptionPlaceholder": "Description (optionnel)",
+      "fromWeek": "De S",
+      "toWeek": "À S",
+      "addPhase": "Ajouter une phase",
+      "removePhase": "Supprimer la phase",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…"
+    },
     "noPhases": "Aucune phase définie pour ce projet.",
     "noGoals": "Aucun objectif défini pour l'instant.",
     "internships": "Stages de ce projet",

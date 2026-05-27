@@ -2,29 +2,8 @@ import Link from 'next/link';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { requireSession } from '@/modules/auth/session';
 import { listFeed } from '@/modules/community/queries';
-
-function timeAgo(date: Date, locale: string): string {
-  const ms = Date.now() - date.getTime();
-  const min = Math.round(ms / 60_000);
-  const hr = Math.round(min / 60);
-  const day = Math.round(hr / 24);
-  if (min < 60) return locale === 'fr' ? `il y a ${min} min` : `${min}m ago`;
-  if (hr < 24) return locale === 'fr' ? `il y a ${hr} h` : `${hr}h ago`;
-  if (day < 7) return locale === 'fr' ? `il y a ${day} j` : `${day}d ago`;
-  return date.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
-    day: '2-digit',
-    month: 'short',
-  });
-}
-
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('');
-}
+import { Avatar } from '@/components/avatar';
+import { formatTimeAgo, type FormatLocale } from '@/lib/format-time';
 
 export default async function Page() {
   const session = await requireSession();
@@ -79,23 +58,11 @@ export default async function Page() {
               >
                 <Link href={`/intern/community/${post.id}`} className="block p-5">
                   <div className="flex items-start gap-3 mb-2">
-                    <span
-                      className="ws-avatar xs"
-                      style={{
-                        background: 'linear-gradient(135deg,#DDD6FE,#C7D2FE)',
-                        color: 'var(--brand-700)',
-                        fontSize: 11,
-                        width: 32,
-                        height: 32,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {initials(name)}
-                    </span>
+                    <Avatar name={name} email={author.email} imageUrl={author.imageUrl} size="sm" />
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] text-[var(--ink-2)]">{name}</p>
                       <p className="text-[12px] text-[var(--ink-3)]">
-                        {timeAgo(new Date(post.lastActivityAt), locale)}
+                        {formatTimeAgo(new Date(post.lastActivityAt), locale as FormatLocale)}
                       </p>
                     </div>
                   </div>

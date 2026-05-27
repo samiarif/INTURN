@@ -1,22 +1,18 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { getOrganizationDetail } from '@/modules/admin/queries';
 import { VerificationActions } from './_actions';
 import type { VerificationStatus } from '@/modules/admin/state-machine';
-
-const STATUS_STYLE: Record<string, string> = {
-  draft: 'bg-[var(--surface-muted)] text-[var(--ink-3)]',
-  pending: 'bg-[#FFFBEB] text-[#92400E]',
-  verified: 'bg-[#ECFDF5] text-[#15803D]',
-  suspended: 'bg-[#FEF2F2] text-[#B91C1C]',
-};
+import { StatusPill, toneForVerificationStatus } from '@/components/status-pill';
+import { formatDateLong, type FormatLocale } from '@/lib/format-time';
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ orgId: string }>;
+  params: Promise<{ orgId: string; locale: string }>;
 }) {
-  const { orgId } = await params;
+  const { orgId, locale } = await params;
   const data = await getOrganizationDetail(orgId);
   if (!data) notFound();
   const { organization, owner } = data;
@@ -24,20 +20,23 @@ export default async function Page({
 
   const isPdf = organization.rneUrl?.toLowerCase().endsWith('.pdf') ?? false;
 
+  const [t, tStatus] = await Promise.all([
+    getTranslations({ locale, namespace: 'admin.verifications.detail' }),
+    getTranslations({ locale, namespace: 'admin.status' }),
+  ]);
+
   return (
-    <div className="max-w-4xl mx-auto p-8">
+    <div className="max-w-4xl mx-auto px-6 py-8 md:p-8">
       <div className="mb-2">
         <Link href="/admin/verifications" className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)]">
-          ← All verifications
+          {t('back')}
         </Link>
       </div>
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight mb-2 inline-flex items-center gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight mb-2 inline-flex items-center gap-3 flex-wrap">
             {organization.name}
-            <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[status]}`}>
-              {status}
-            </span>
+            <StatusPill tone={toneForVerificationStatus(status)}>{tStatus(status)}</StatusPill>
           </h1>
           {organization.description && (
             <p className="text-[14px] text-[var(--ink-2)] max-w-prose">{organization.description}</p>
@@ -48,40 +47,43 @@ export default async function Page({
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <section>
           <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-            Organization
+            {t('organization')}
           </h2>
           <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-[var(--ink-3)]">Slug</span><span className="font-mono">{organization.slug}</span></div>
-            <div className="flex justify-between"><span className="text-[var(--ink-3)]">Industry</span><span>{organization.industry ?? '—'}</span></div>
-            <div className="flex justify-between"><span className="text-[var(--ink-3)]">Size</span><span>{organization.size ?? '—'}</span></div>
-            <div className="flex justify-between"><span className="text-[var(--ink-3)]">Country</span><span>{organization.country ?? '—'}</span></div>
-            <div className="flex justify-between"><span className="text-[var(--ink-3)]">City</span><span>{organization.city ?? '—'}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-[var(--ink-3)]">{t('slug')}</span><span className="font-mono break-all">{organization.slug}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-[var(--ink-3)]">{t('industry')}</span><span>{organization.industry ?? '—'}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-[var(--ink-3)]">{t('size')}</span><span>{organization.size ?? '—'}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-[var(--ink-3)]">{t('country')}</span><span>{organization.country ?? '—'}</span></div>
+            <div className="flex justify-between gap-3"><span className="text-[var(--ink-3)]">{t('city')}</span><span>{organization.city ?? '—'}</span></div>
             {organization.website && (
-              <div className="flex justify-between">
-                <span className="text-[var(--ink-3)]">Website</span>
-                <a href={organization.website} target="_blank" rel="noopener noreferrer" className="text-[var(--brand-600)] hover:text-[var(--brand-700)]">
+              <div className="flex justify-between gap-3">
+                <span className="text-[var(--ink-3)]">{t('website')}</span>
+                <a href={organization.website} target="_blank" rel="noopener noreferrer" className="text-[var(--brand-600)] hover:text-[var(--brand-700)] break-all">
                   {organization.website} ↗
                 </a>
               </div>
             )}
-            <div className="flex justify-between"><span className="text-[var(--ink-3)]">Created</span><span>{new Date(organization.createdAt).toLocaleDateString()}</span></div>
+            <div className="flex justify-between gap-3">
+              <span className="text-[var(--ink-3)]">{t('createdOn')}</span>
+              <span>{formatDateLong(organization.createdAt, locale as FormatLocale)}</span>
+            </div>
           </div>
         </section>
         <section>
           <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-            Owner
+            {t('owner')}
           </h2>
           <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] space-y-2 text-sm">
             <div className="font-medium">{owner.firstName} {owner.lastName}</div>
-            <div className="text-[var(--ink-3)]">{owner.email}</div>
-            <div className="text-[12px] text-[var(--ink-3)] font-mono">{owner.clerkId}</div>
+            <div className="text-[var(--ink-3)] break-all">{owner.email}</div>
+            <div className="text-[12px] text-[var(--ink-3)] font-mono break-all">{owner.clerkId}</div>
           </div>
         </section>
       </div>
 
       <section className="mb-8">
         <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-          RNE document
+          {t('rne')}
         </h2>
         {organization.rneUrl ? (
           isPdf ? (
@@ -89,7 +91,7 @@ export default async function Page({
               <iframe
                 src={organization.rneUrl}
                 className="w-full h-[400px] md:h-[600px] border border-[var(--border-color)] rounded-md"
-                title="RNE document"
+                title={t('rne')}
               />
               <a
                 href={organization.rneUrl}
@@ -97,28 +99,27 @@ export default async function Page({
                 rel="noopener noreferrer"
                 className="inline-block mt-2 text-[13px] text-[var(--brand-700)] hover:underline"
               >
-                Open original ↗
+                {t('openOriginal')}
               </a>
             </div>
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={organization.rneUrl}
-              alt="RNE document"
+              alt={t('rne')}
               className="max-w-full h-auto border border-[var(--border-color)] rounded-md"
             />
           )
         ) : (
           <div className="border border-dashed border-[var(--border-color)] rounded-md p-6 text-center text-[var(--ink-3)] text-sm">
-            No RNE document uploaded yet. The company can verify later — admin can also mark verified
-            without it for design-partner companies onboarded offline.
+            {t('noRne')}
           </div>
         )}
       </section>
 
       <section className="border-t border-[var(--border-color)] pt-6">
         <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
-          Actions
+          {t('actions')}
         </h2>
         <VerificationActions orgId={orgId} currentStatus={status} />
       </section>

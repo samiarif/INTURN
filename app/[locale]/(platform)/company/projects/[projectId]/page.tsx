@@ -22,6 +22,7 @@ import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { getInternshipsByProject } from '@/modules/internships/queries';
 import { PublishInternshipButton } from './_publish-button';
+import { EditGoalsPhasesDialog } from '@/modules/projects/components/edit-goals-phases-dialog';
 
 // ---------------------------------------------------------------------------
 // Helpers (pure — easy to test later if any of this grows hair).
@@ -95,6 +96,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
   const project = await getProjectById(projectId);
   if (!project) notFound();
   if (role !== 'admin' && !project.supervisorIds?.includes(user.id)) notFound();
+  const isSupervisor = project.supervisorIds?.includes(user.id) ?? role === 'admin';
 
   const internships = await getInternshipsByProject(projectId);
   const internshipIds = internships.map((i) => i.id);
@@ -309,25 +311,42 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                 {project.brief && <p className="ph-brief-desc">{project.brief}</p>}
 
                 {goals.length > 0 ? (
-                  <ul className="ph-goals">
-                    {goals.slice(0, 3).map((g, i) => {
-                      // Render the lead-in clause bold (everything up to the first period),
-                      // then the rest. Falls back gracefully on goals with no period.
-                      const dotIdx = g.indexOf('.');
-                      const lead = dotIdx > 0 ? g.slice(0, dotIdx + 1) : g;
-                      const rest = dotIdx > 0 ? g.slice(dotIdx + 1) : '';
-                      return (
-                        <li key={i}>
-                          <b>{lead}</b>
-                          {rest}
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <>
+                    <ul className="ph-goals">
+                      {goals.slice(0, 3).map((g, i) => {
+                        const dotIdx = g.indexOf('.');
+                        const lead = dotIdx > 0 ? g.slice(0, dotIdx + 1) : g;
+                        const rest = dotIdx > 0 ? g.slice(dotIdx + 1) : '';
+                        return (
+                          <li key={i}>
+                            <b>{lead}</b>
+                            {rest}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    {isSupervisor && (
+                      <div className="mb-2">
+                        <EditGoalsPhasesDialog
+                          projectId={project.id}
+                          mode="goals"
+                          initialGoals={goals}
+                          trigger={{ label: t('editGoals') }}
+                        />
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  // TODO: surface "Add goals" inline-edit affordance once we have it.
-                  <div className="text-[12px] text-[var(--ink-3)] italic mb-4">
-                    {t('noGoals')}
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className="text-[12px] text-[var(--ink-3)] italic">{t('noGoals')}</span>
+                    {isSupervisor && (
+                      <EditGoalsPhasesDialog
+                        projectId={project.id}
+                        mode="goals"
+                        initialGoals={[]}
+                        trigger={{ label: t('addGoals') }}
+                      />
+                    )}
                   </div>
                 )}
 
@@ -388,6 +407,14 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
               <section className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface)] p-5">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="text-[14.5px] font-semibold text-[var(--ink)]">{t('projectPhases')}</h3>
+                  {isSupervisor && (
+                    <EditGoalsPhasesDialog
+                      projectId={project.id}
+                      mode="phases"
+                      initialPhases={phases}
+                      trigger={{ label: t('editPhases'), className: 'text-[11.5px] text-[var(--ink-3)] hover:text-[var(--brand-700)] hover:underline' }}
+                    />
+                  )}
                   <span className="ml-auto font-mono text-[11px] tracking-wider uppercase text-[var(--ink-3)]">
                     PHASE {currentPhaseIdx + 1} OF {phases.length} · ON TRACK
                   </span>
@@ -421,9 +448,18 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
                 </div>
               </section>
             ) : (
-              // TODO: prompt to add phases in project edit when that exists.
               <section className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-color)] bg-[var(--surface)] p-5 text-center text-[13px] text-[var(--ink-3)]">
-                {t('noPhases')}
+                <div>{t('noPhases')}</div>
+                {isSupervisor && (
+                  <div className="mt-2">
+                    <EditGoalsPhasesDialog
+                      projectId={project.id}
+                      mode="phases"
+                      initialPhases={[]}
+                      trigger={{ label: t('addPhases') }}
+                    />
+                  </div>
+                )}
               </section>
             )}
 

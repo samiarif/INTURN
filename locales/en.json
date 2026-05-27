@@ -516,7 +516,23 @@
       "rne": "RNE",
       "status": "Status",
       "created": "Created",
-      "review": "Review →"
+      "review": "Review →",
+      "detail": {
+        "back": "← All verifications",
+        "organization": "Organization",
+        "owner": "Owner",
+        "rne": "RNE document",
+        "actions": "Actions",
+        "openOriginal": "Open original ↗",
+        "noRne": "No RNE document uploaded yet. The company can verify later — admin can also mark verified without it for design-partner companies onboarded offline.",
+        "slug": "Slug",
+        "industry": "Industry",
+        "size": "Size",
+        "country": "Country",
+        "city": "City",
+        "website": "Website",
+        "createdOn": "Created"
+      }
     },
     "reports": {
       "title": "Reports",
@@ -582,6 +598,26 @@
   "projectHub": {
     "addInternship": "+ Add internship",
     "projectPhases": "Project phases",
+    "addGoals": "+ Add goals",
+    "editGoals": "Edit goals",
+    "addPhases": "+ Add phases",
+    "editPhases": "Edit phases",
+    "edit": {
+      "goalsTitle": "Project goals",
+      "goalsHint": "Up to 3 short success statements (≤120 chars each). Shown to every intern on this project.",
+      "goalPlaceholder": "Goal {n}",
+      "phasesTitle": "Project phases",
+      "phasesHint": "Up to 6 phases mapped to weeks. Used to color the timeline strip on the project hub.",
+      "phaseNamePlaceholder": "Phase {n} name",
+      "phaseDescriptionPlaceholder": "Optional description",
+      "fromWeek": "From wk",
+      "toWeek": "To wk",
+      "addPhase": "Add phase",
+      "removePhase": "Remove phase",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…"
+    },
     "noPhases": "No phases defined for this project yet.",
     "noGoals": "No goals defined yet.",
     "internships": "Internships under this project",

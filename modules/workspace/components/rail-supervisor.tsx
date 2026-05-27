@@ -3,18 +3,9 @@ import { ScheduleCheckInButton } from './schedule-check-in';
 import { IssueRecordButton } from '@/modules/records/components/issue-record-button';
 import { findActiveRecordByWorkspace } from '@/modules/records/queries';
 import { getLocale } from 'next-intl/server';
+import { formatTimeAgo, hoursSince, type FormatLocale } from '@/lib/format-time';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-function hoursAgo(date: Date): number {
-  return Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));
-}
-
-function formatHoursAgo(h: number): string {
-  if (h < 1) return 'just now';
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
-}
 
 /**
  * Build a sparkline path over the last N weeks of the internship using event
@@ -47,7 +38,7 @@ function buildSparkPath(events: WorkspaceOverviewData['events'], weeks: number):
 }
 
 export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
-  const locale = await getLocale();
+  const locale = (await getLocale()) as FormatLocale;
   const activeRecord = await findActiveRecordByWorkspace(data.workspace.id);
   // Show "Issue record" once the supervisor has anything to sign off on —
   // i.e. at least one deliverable has been submitted. (Hidden until then so
@@ -81,7 +72,7 @@ export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) 
     ? data.events.find((e) => e.actorId === intern.id)
     : null;
   const quietHours = lastInternEvent
-    ? hoursAgo(new Date(lastInternEvent.createdAt))
+    ? hoursSince(new Date(lastInternEvent.createdAt))
     : null;
   const quietFlag = quietHours !== null && quietHours >= 24;
 
@@ -174,11 +165,11 @@ export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) 
         </ul>
       </div>
 
-      {quietFlag && quietHours !== null && (
+      {quietFlag && lastInternEvent && (
         <div className="ws-note">
           <b>Quiet flag · informational</b>
           <br />
-          No activity from {internName} in {formatHoursAgo(quietHours)}.{' '}
+          No activity from {internName} {formatTimeAgo(new Date(lastInternEvent.createdAt), locale)}.{' '}
           <a className="ws-link" style={{ color: '#92400E', textDecoration: 'underline' }}>
             Send a nudge
           </a>
