@@ -466,11 +466,11 @@ pnpm db:seed
 
 Sign in at http://localhost:3000/sign-in. Admin account: `hellowemakeitgrow@gmail.com`. To test as intern, sign up fresh or use Yasmine.
 
-## UX/UI sweep — 7 rounds (2026-05-27)
+## UX/UI sweep — 9 rounds + prod hardening (2026-05-27)
 
 A general-purpose audit agent surveyed every route and identified ~55 findings
-across critical / high-impact / polish / a11y / mobile buckets. Shipped in 7
-batches on `sprint-b-phase-1-closure`:
+across critical / high-impact / polish / a11y / mobile buckets. Shipped in 9
+batches plus a prod-deploy fix on `sprint-b-phase-1-closure`:
 
 | Round | Commit | Highlights |
 |---|---|---|
@@ -482,6 +482,9 @@ batches on `sprint-b-phase-1-closure`:
 | 6 | `27b97e2` | Project goals/phases inline edit dialog, `lib/format-time.ts`, `<Avatar>` component, verifications detail i18n |
 | 7 | `133a26b` | Avatar adoption on community detail, 19 new tests (format-time + Avatar) |
 | — | `cb2a449` | Empty-state CTAs on intern + company dashboards |
+| 8 | `d273439` | `computeProfileCompleteness` + `<ProfileCompletenessWidget>` on intern dashboard, per-field scoring with missing-item chips, 6 unit tests |
+| 9 | `371bb4d` | Avatar full adoption — brief-card, comments-thread, tasks-board, deliv-review-bar, workspace-deliverables-page (~30 lines of duplicated initials helpers removed) |
+| — | `d5adf02` | **Prod migration runner** wired as `prebuild` — closes the silent gap where new tables (notifications, internship_records, reports, audit_logs, community_*, users.suspended_at) wouldn't exist on prod after deploy |
 
 **Visible deltas a user will notice**
 
@@ -494,8 +497,14 @@ batches on `sprint-b-phase-1-closure`:
 - Admins can suspend abusive users; suspended users see a red banner + are blocked from all writes (`requireActiveSession`)
 - Project supervisors can edit goals + phases inline (was: only set at creation, no way to fix typos)
 - First-time intern + company users see "Browse internships →" / "+ Create your first project" buttons on empty dashboards (was: paragraph-only empty states)
+- Intern dashboard shows a profile-completion progress bar with up to 3 missing-field chips + "Complete your profile →" CTA (hides at 100%)
+- Avatar styling now consistent across the entire app — same gradient palette, same fallback rules, Clerk image URLs honored where available
 
-**Tally**: 8 commits, ~2,500 lines net added, 50+ audit findings resolved. **152/152 tests passing** (was 133 — added format-time + avatar coverage). Lint + typecheck + build clean throughout.
+**Deploy hardening**
+
+- `prebuild` now runs `scripts/migrate.ts` which applies tracked, idempotent SQL migrations against the prod DB before `next build`. Skips gracefully when `DATABASE_URL` is unset (CI lint jobs). Verified: ran twice against dev DB — first applied 10 migrations + 2 backfilled, second reported "0 new, 12 skipped."
+
+**Tally**: 11 commits, ~3,200 lines net added, 50+ audit findings resolved + prod deploy gap closed. **158/158 tests passing** (was 133 — added format-time, avatar, and profile-completeness coverage). Lint + typecheck + build clean throughout.
 
 ## Recent commits worth knowing
 
