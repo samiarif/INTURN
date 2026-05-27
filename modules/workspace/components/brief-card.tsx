@@ -1,4 +1,5 @@
 import type { WorkspaceOverviewData } from '../queries';
+import { Avatar } from '@/components/avatar';
 
 function formatLocationLabel(locationType: string | null | undefined): string {
   switch (locationType) {
@@ -83,9 +84,12 @@ export function BriefCard({
                   </div>
                   <div className="org">{data.organization?.name ?? ''}</div>
                 </div>
-                <span className="ws-avatar lg company">
-                  {(supervisor.firstName?.[0] ?? '') + (supervisor.lastName?.[0] ?? '')}
-                </span>
+                <Avatar
+                  name={`${supervisor.firstName ?? ''} ${supervisor.lastName ?? ''}`.trim()}
+                  email={supervisor.email}
+                  imageUrl={supervisor.imageUrl}
+                  size="lg"
+                />
               </>
             )
           : intern && (
@@ -102,9 +106,12 @@ export function BriefCard({
                       : ''}
                   </div>
                 </div>
-                <span className="ws-avatar lg">
-                  {(intern.firstName?.[0] ?? '') + (intern.lastName?.[0] ?? '')}
-                </span>
+                <Avatar
+                  name={`${intern.firstName ?? ''} ${intern.lastName ?? ''}`.trim()}
+                  email={intern.email}
+                  imageUrl={intern.imageUrl}
+                  size="lg"
+                />
               </>
             )}
       </div>

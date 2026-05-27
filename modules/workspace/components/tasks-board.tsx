@@ -25,6 +25,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/db/schema';
 import { TASK_COLUMNS, type TaskStatus } from '@/modules/tasks/state-machine';
 import { moveTaskAction } from '@/modules/tasks/server-actions';
+import { Avatar } from '@/components/avatar';
 import { AddTaskModal } from './add-task-modal';
 
 const COLUMN_LABEL_KEY: Record<TaskStatus, 'todo' | 'inProgress' | 'review' | 'done'> = {
@@ -76,15 +77,6 @@ function formatDue(task: Task): DueInfo {
     urgent: false,
     overdue: false,
   };
-}
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((s) => s[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
 }
 
 type CardProps = {
@@ -154,16 +146,7 @@ function SortableTaskCard({ task, status, view, internName, renderDue }: CardPro
           {status === 'done' ? <span className="ico-check" /> : <span className="cal" />}
           <span>{renderDue(due)}</span>
         </span>
-        <span
-          className="ws-avatar xs who"
-          title={internName}
-          style={{
-            background: 'linear-gradient(135deg,#DDD6FE,#C7D2FE)',
-            color: 'var(--brand-600)',
-          }}
-        >
-          {initials(internName)}
-        </span>
+        <Avatar name={internName} size="xs" title={internName} />
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { DelivReviewBar } from './deliv-review-bar';
 import { DelivUploadZone } from './deliv-upload-zone';
 import type { WorkspaceOverviewData } from '../queries';
 import type { WorkspaceView } from '../types';
+import { Avatar } from '@/components/avatar';
 
 type DeliverableStatusLite = 'draft' | 'submitted' | 'approved' | 'revision-requested';
 type RailStatus = 'review' | 'done' | 'late' | 'todo';
@@ -278,17 +279,7 @@ function Version({
         )}
         {review && (
           <div className={`dv-review ${review.state === 'approved' ? 'approved' : ''}`}>
-            <span
-              className="ws-avatar sm company"
-              style={{ width: 28, height: 28, fontSize: 11 }}
-            >
-              {review.reviewerName
-                .split(/\s+/)
-                .map((s) => s[0] ?? '')
-                .join('')
-                .slice(0, 2)
-                .toUpperCase() || '??'}
-            </span>
+            <Avatar name={review.reviewerName} size="sm" title={review.reviewerName} />
             <div>
               <div className="dv-review-head">
                 <span className="pill">

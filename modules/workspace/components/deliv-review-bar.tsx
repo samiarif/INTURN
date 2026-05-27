@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Textarea } from '@/components/ui/textarea';
+import { Avatar } from '@/components/avatar';
 import {
   approveDeliverableAction,
   requestRevisionAction,
@@ -31,12 +32,6 @@ export function DelivReviewBar({
   const [pending, startTransition] = useTransition();
   const [showRequest, setShowRequest] = useState(false);
   const [feedback, setFeedback] = useState('');
-  const initials = (submitterName || '?')
-    .split(/\s+/)
-    .map((s) => s[0] ?? '')
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
 
   function approve() {
     startTransition(async () => {
@@ -58,7 +53,7 @@ export function DelivReviewBar({
   return (
     <div>
       <div className="dv-review-bar">
-        <span className="ws-avatar sm">{initials || '??'}</span>
+        <Avatar name={submitterName} size="sm" />
         <div className="who">
           <span className="title">
             {t('submittedBy', { name: submitterName })} · {whenLabel}

@@ -10,6 +10,7 @@ import {
   deleteCommentAction,
 } from '@/modules/comments/server-actions';
 import type { CommentWithAuthor } from '@/modules/comments/queries';
+import { Avatar } from '@/components/avatar';
 
 function timeAgo(
   date: Date | string,
@@ -23,10 +24,6 @@ function timeAgo(
   if (hours < 24) return t('hoursAgo', { n: hours });
   const days = Math.floor(hours / 24);
   return t('daysAgo', { n: days });
-}
-
-function initials(first?: string | null, last?: string | null): string {
-  return `${first?.[0] ?? ''}${last?.[0] ?? ''}`.toUpperCase() || '?';
 }
 
 export function CommentsThread({
@@ -119,13 +116,13 @@ export function CommentsThread({
                 className="ws-card"
                 style={{ padding: 16, display: 'grid', gridTemplateColumns: '36px 1fr', gap: 12, alignItems: 'flex-start' }}
               >
-                <span
-                  className="ws-avatar"
-                  style={{ width: 36, height: 36, fontSize: 13 }}
-                  title={`${author.firstName} ${author.lastName}`}
-                >
-                  {initials(author.firstName, author.lastName)}
-                </span>
+                <Avatar
+                  name={`${author.firstName ?? ''} ${author.lastName ?? ''}`.trim()}
+                  email={author.email}
+                  imageUrl={author.imageUrl}
+                  size="md"
+                  title={`${author.firstName ?? ''} ${author.lastName ?? ''}`.trim()}
+                />
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontWeight: 500, color: 'var(--ink)' }}>
