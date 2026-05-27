@@ -14,8 +14,16 @@ export default function Error({
   const t = useTranslations('errors.root');
 
   useEffect(() => {
-    // TODO Sprint E: pipe to Sentry.
     console.error('[error.tsx /]', error);
+    // Sentry capture is opt-in via NEXT_PUBLIC_SENTRY_DSN. The dynamic
+    // import keeps the bundle clean when Sentry isn't configured.
+    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      void import('@sentry/nextjs').then((Sentry) => {
+        Sentry.captureException(error, {
+          tags: { boundary: 'app-root' },
+        });
+      });
+    }
   }, [error]);
 
   return (
