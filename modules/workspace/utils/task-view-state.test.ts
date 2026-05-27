@@ -28,3 +28,23 @@ describe('parseFilterParam', () => {
     expect(parseFilterParam('badkey:foo,dueIn:7d')).toEqual({ dueIn: '7d' });
   });
 });
+
+import { serializeFilterParam } from './task-view-state';
+
+describe('serializeFilterParam', () => {
+  it('returns undefined for empty state', () => {
+    expect(serializeFilterParam({})).toBeUndefined();
+  });
+  it('serializes a single key', () => {
+    expect(serializeFilterParam({ dueIn: '7d' })).toBe('dueIn:7d');
+  });
+  it('serializes multiple phases', () => {
+    expect(serializeFilterParam({ phase: ['BA', 'UX'] })).toBe('phase:BA,phase:UX');
+  });
+  it('round-trips with parseFilterParam', () => {
+    const state = { phase: ['BA'], dueIn: '7d' as const, status: 'todo' as const };
+    const serialized = serializeFilterParam(state);
+    expect(serialized).toBeDefined();
+    expect(parseFilterParam(serialized!)).toEqual(state);
+  });
+});
