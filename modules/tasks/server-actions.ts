@@ -67,3 +67,37 @@ export async function createTaskAction(
 
   return { ok: true, task };
 }
+
+export type UpdateTaskPatch = Partial<
+  Pick<Task, 'title' | 'description' | 'status' | 'priority' | 'dueDate' | 'tag'>
+>;
+
+export type UpdateTaskActionResult =
+  | { ok: true }
+  | { ok: false; error: string };
+
+export async function updateTaskAction(
+  taskId: string,
+  patch: UpdateTaskPatch,
+): Promise<UpdateTaskActionResult> {
+  if (Object.keys(patch).length === 0) return { ok: false, error: 'empty_patch' };
+  if (patch.title !== undefined) {
+    if (patch.title.trim().length < 3) return { ok: false, error: 'title_too_short' };
+    if (patch.title.length > 140) return { ok: false, error: 'title_too_long' };
+  }
+
+  const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1);
+  if (!task) return { ok: false, error: 'not_found' };
+
+  // loadWorkspaceAccess throws Unauthorized/Forbidden — let it propagate.
+  const { workspace } = await loadWorkspaceAccess(task.workspaceId);
+
+  await db.update(tasks).set({ ...patch, updatedAt: new Date() }).where(eq(tasks.id, taskId));
+
+  revalidatePath(`/intern/workspaces/${workspace.id}`);
+  revalidatePath(`/company/workspaces/${workspace.id}`);
+  revalidatePath(`/intern/workspaces/${workspace.id}/tasks`);
+  revalidatePath(`/company/workspaces/${workspace.id}/tasks`);
+
+  return { ok: true };
+}
