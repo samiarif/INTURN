@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/server-auth';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { inArray } from 'drizzle-orm';

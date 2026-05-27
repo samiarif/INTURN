@@ -1,7 +1,8 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth } from '@/lib/server-auth';
+import { clerkClient } from '@clerk/nextjs/server';
 import { requireSession } from '@/modules/auth/session';
 import { recordAuditLog } from '@/modules/audit/service';
 import { hardDeleteUserData } from './service';

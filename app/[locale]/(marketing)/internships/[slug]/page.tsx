@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/server-auth';
 import { getTranslations } from 'next-intl/server';
 import { getInternshipWithOrgById } from '@/modules/internships/queries';
 import { getProfileWithUserByClerkId } from '@/modules/profiles/queries';

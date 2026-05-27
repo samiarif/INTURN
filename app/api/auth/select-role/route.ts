@@ -1,4 +1,5 @@
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth } from '@/lib/server-auth';
+import { clerkClient } from '@clerk/nextjs/server';
 import { selectRole } from '@/modules/auth/role-selection';
 import { NextResponse } from 'next/server';
 

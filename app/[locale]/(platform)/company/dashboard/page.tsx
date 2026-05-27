@@ -8,7 +8,7 @@
 // app/globals.css — token names rebound for our globals (--border-color,
 // --brand-500, --accent-500…). Server component, no client state.
 import Link from 'next/link';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/server-auth';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { and, eq, gte, inArray, desc } from 'drizzle-orm';

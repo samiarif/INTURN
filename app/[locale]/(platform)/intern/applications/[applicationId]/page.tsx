@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/server-auth';
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { db } from '@/db';

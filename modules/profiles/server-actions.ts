@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/server-auth';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { assertOurBlobUrl } from '@/lib/blob';
