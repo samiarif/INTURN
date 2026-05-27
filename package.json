@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.33.2",
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS=\"${NODE_OPTIONS:-} --dns-result-order=ipv4first\" next dev",
     "prebuild": "tsx scripts/migrate.ts",
     "build": "next build",
     "start": "next start",
