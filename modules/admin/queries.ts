@@ -1,5 +1,18 @@
 import { db } from '@/db';
-import { organizations, users, workspaces } from '@/db/schema';
+import {
+  applications,
+  internships,
+  organizations,
+  profiles,
+  users,
+  workspaces,
+  type Application,
+  type Internship,
+  type Organization,
+  type Profile,
+  type User,
+  type Workspace,
+} from '@/db/schema';
 import { and, asc, desc, eq, gte, inArray, sql } from 'drizzle-orm';
 
 /**
@@ -87,4 +100,52 @@ export async function listRecentOrganizations(limit = 10) {
     .innerJoin(users, eq(users.id, organizations.ownerId))
     .orderBy(desc(organizations.createdAt))
     .limit(limit);
+}
+
+export type AdminUserDetail = {
+  user: User;
+  profile: Profile | null;
+  organization: Organization | null;
+  applications: Array<{ application: Application; internship: Internship | null }>;
+  workspaces: Array<{ workspace: Workspace; internship: Internship | null }>;
+};
+
+/**
+ * Full read-model for the admin user-detail page. One target user plus,
+ * in parallel: their profile (interns), the org they own (companies),
+ * their recent applications, and their workspaces — each decorated with
+ * the related internship so the page can render titles without N+1s.
+ *
+ * Returns null when the user id doesn't exist.
+ */
+export async function getUserDetail(userId: string): Promise<AdminUserDetail | null> {
+  const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  if (!user) return null;
+
+  const [profileRows, orgRows, applicationRows, workspaceRows] = await Promise.all([
+    db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1),
+    db.select().from(organizations).where(eq(organizations.ownerId, userId)).limit(1),
+    db
+      .select({ application: applications, internship: internships })
+      .from(applications)
+      .leftJoin(internships, eq(internships.id, applications.internshipId))
+      .where(eq(applications.applicantId, userId))
+      .orderBy(desc(applications.createdAt))
+      .limit(25),
+    db
+      .select({ workspace: workspaces, internship: internships })
+      .from(workspaces)
+      .leftJoin(internships, eq(internships.id, workspaces.internshipId))
+      .where(eq(workspaces.internId, userId))
+      .orderBy(desc(workspaces.createdAt))
+      .limit(25),
+  ]);
+
+  return {
+    user,
+    profile: profileRows[0] ?? null,
+    organization: orgRows[0] ?? null,
+    applications: applicationRows,
+    workspaces: workspaceRows,
+  };
 }
