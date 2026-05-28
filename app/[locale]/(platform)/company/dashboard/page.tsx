@@ -504,7 +504,7 @@ export default async function Page() {
 
         {/* ---------- 4-tile KPI stats ---------- */}
         <div className="db-stats">
-          <div className="db-stat proj">
+          <Link href="/company/projects" className="db-stat proj">
             <span className="label">{tDash('kpiProjects')}</span>
             <span className="value">
               {activeProjectsCount} <small>{tDash('kpiProjectsActive')}</small>
@@ -512,8 +512,8 @@ export default async function Page() {
             <span className={`delta${projectsCreatedLastWeek === 0 ? ' muted' : ''}`}>
               {tDash('kpiProjectsDelta', { n: projectsCreatedLastWeek })}
             </span>
-          </div>
-          <div className="db-stat review">
+          </Link>
+          <Link href="/company/workspaces" className="db-stat review">
             <span className="label">{tDash('kpiReview')}</span>
             <span className="value">
               {waitingReviewCount} <small>{tDash('kpiReviewItems', { n: waitingReviewCount })}</small>
@@ -523,7 +523,7 @@ export default async function Page() {
                 ? tDash('kpiReviewEmpty')
                 : tDash('kpiReviewOldest', { age: shortAge(oldestReview, now) })}
             </span>
-          </div>
+          </Link>
           <div className="db-stat app">
             <span className="label">{tDash('kpiApps')}</span>
             <span className="value">
@@ -533,7 +533,7 @@ export default async function Page() {
               {tDash('kpiAppsDelta', { n: appsDelta })}
             </span>
           </div>
-          <div className="db-stat team">
+          <Link href="/company/workspaces" className="db-stat team">
             <span className="label">{tDash('kpiTeam')}</span>
             <span className="value">
               {internCount + supervisorCount}{' '}
@@ -542,7 +542,7 @@ export default async function Page() {
             <span className={`delta${internCount === 0 ? ' muted' : ''}`}>
               {internCount === 0 ? tDash('kpiTeamEmpty') : tDash('kpiTeamPace')}
             </span>
-          </div>
+          </Link>
         </div>
 
         {/* ---------- Recent projects ---------- */}

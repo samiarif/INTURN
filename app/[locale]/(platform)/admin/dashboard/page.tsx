@@ -46,7 +46,10 @@ export default async function Page() {
               : t('verificationsPendingHelp')}
           </div>
         </Link>
-        <div className="border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)]">
+        <Link
+          href="/admin/verifications?status=verified"
+          className="block border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)] hover:border-[var(--border-strong)]"
+        >
           <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
             {t('companiesVerified')}
           </div>
@@ -54,7 +57,7 @@ export default async function Page() {
           <div className="text-[12px] text-[var(--success)] mt-1">
             {t('recentLast30d', { n: stats.companiesVerifiedRecent })}
           </div>
-        </div>
+        </Link>
         <div className="border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)]">
           <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
             {t('activeWorkspaces')}

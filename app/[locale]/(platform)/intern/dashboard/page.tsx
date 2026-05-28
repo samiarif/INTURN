@@ -183,12 +183,14 @@ export default async function Page() {
           value={applicationRows.length}
           suffix={tDash('statsActive')}
           accentClass="bg-[var(--brand-50)]"
+          href="/intern/applications"
         />
         <StatTile
           label={tDash('statsBookmarks')}
           value={bookmarkRows.length}
           suffix={tDash('statsItems')}
           accentClass="bg-[#FCE7F3]"
+          href="/intern/saved"
         />
         <StatTile
           label={tDash('statsWorkspaces')}
@@ -352,14 +354,17 @@ function StatTile({
   value,
   suffix,
   accentClass,
+  href,
 }: {
   label: string;
   value: number;
   suffix?: string;
   accentClass: string;
+  /** When set, the tile becomes a link to its matching list with hover affordance. */
+  href?: string;
 }) {
-  return (
-    <div className="relative border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-4 overflow-hidden">
+  const inner = (
+    <>
       <span
         aria-hidden
         className={`absolute top-3 right-3 w-7 h-7 rounded-md ${accentClass}`}
@@ -375,6 +380,29 @@ function StatTile({
           </span>
         )}
       </div>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="group relative block border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-4 overflow-hidden hover:border-[var(--border-strong)] hover:bg-[var(--surface-muted)] transition-colors"
+      >
+        {inner}
+        <span
+          aria-hidden
+          className="absolute bottom-3 right-3 text-[var(--ink-4)] group-hover:text-[var(--brand-500)] group-hover:translate-x-0.5 transition-all text-[13px]"
+        >
+          →
+        </span>
+      </Link>
+    );
+  }
+
+  return (
+    <div className="relative border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-4 overflow-hidden">
+      {inner}
     </div>
   );
 }

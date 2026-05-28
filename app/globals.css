@@ -1103,6 +1103,19 @@ textarea:focus-visible,
   gap: 4px;
   position: relative;
 }
+/* Clickable KPI tiles (rendered as <a> with href) get a hover affordance. */
+a.db-stat {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+a.db-stat:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+}
 .db-stat .label {
   font-family: var(--font-mono);
   font-size: 11px;
