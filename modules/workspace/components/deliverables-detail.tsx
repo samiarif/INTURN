@@ -3,6 +3,7 @@ import type { Deliverable, DeliverableRevision } from '@/db/schema';
 import { Avatar } from '@/components/avatar';
 import { DelivReviewBar } from './deliv-review-bar';
 import { DelivUploadZone } from './deliv-upload-zone';
+import { ShareLinkButton } from './share-link-button';
 import type { WorkspaceOverviewData } from '../queries';
 
 function fmtDateLong(d: Date | string | null, locale: string): string {
@@ -339,9 +340,10 @@ export async function DelivDetail({
             {pillText(variant, currentVersion, t)}
           </span>
           <div className="dv-detail-actions">
-            <span className="ws-btn ghost tiny" role="button" tabIndex={0} aria-disabled>
-              {t('shareLink')}
-            </span>
+            <ShareLinkButton
+              deliverableId={deliverable.id}
+              existingToken={deliverable.shareToken}
+            />
           </div>
         </div>
         <div className="dv-detail-meta">

@@ -436,6 +436,12 @@
         "approvedPill": "OK",
         "uploadCount": "{count} / {total}",
         "submittedRelative": "soumis {when}"
+      },
+      "share": {
+        "button": "Lien de partage",
+        "generating": "Génération…",
+        "copied": "Copié ✓",
+        "error": "Échec de la copie"
       }
     },
     "checkIn": {
@@ -1248,6 +1254,27 @@
     "close": "Fermer",
     "errorMin": "Veuillez décrire le problème (20 caractères minimum).",
     "errorGeneric": "Échec de l'envoi. Réessayez."
+  },
+  "deliverables": {
+    "public": {
+      "badge": "Livrable partagé",
+      "eyebrow": "Livrable",
+      "about": "À propos",
+      "versions": "Historique des versions",
+      "version": "Version {n}",
+      "submitted": "Soumis",
+      "openFile": "Ouvrir le fichier",
+      "noFile": "Aucun fichier",
+      "copyLink": "Copier le lien",
+      "linkCopied": "Lien copié",
+      "verifyBlurb": "Ce livrable a été partagé via Inturn. Le lien ci-dessus est l'unique source officielle.",
+      "status": {
+        "draft": "Brouillon",
+        "submitted": "Soumis",
+        "approved": "Approuvé",
+        "revision-requested": "Révision demandée"
+      }
+    }
   },
   "records": {
     "verified": "Document vérifié",

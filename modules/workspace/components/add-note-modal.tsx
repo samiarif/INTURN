@@ -78,7 +78,7 @@ export function AddNoteModal({ workspaceId, onClose }: Props) {
               onChange={(e) => setBody(e.target.value)}
               rows={5}
               placeholder={t('placeholder')}
-              // eslint-disable-next-line jsx-a11y/no-autofocus
+               
               autoFocus
               style={{
                 width: '100%',

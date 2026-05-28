@@ -436,6 +436,12 @@
         "approvedPill": "APPROVED",
         "uploadCount": "{count} / {total}",
         "submittedRelative": "submitted {when}"
+      },
+      "share": {
+        "button": "Share link",
+        "generating": "Generating…",
+        "copied": "Copied ✓",
+        "error": "Copy failed"
       }
     },
     "checkIn": {
@@ -1248,6 +1254,27 @@
     "close": "Close",
     "errorMin": "Please describe the problem (min 20 characters).",
     "errorGeneric": "Could not submit. Please try again."
+  },
+  "deliverables": {
+    "public": {
+      "badge": "Shared deliverable",
+      "eyebrow": "Deliverable",
+      "about": "About",
+      "versions": "Version history",
+      "version": "Version {n}",
+      "submitted": "Submitted",
+      "openFile": "Open file",
+      "noFile": "No file",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied",
+      "verifyBlurb": "This deliverable was shared through Inturn. The link above is the only canonical source.",
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "revision-requested": "Revision requested"
+      }
+    }
   },
   "records": {
     "verified": "Verified record",

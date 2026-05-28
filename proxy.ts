@@ -14,6 +14,12 @@ const isPublicRoute = createRouteMatcher([
   // Internship detail is public; /apply sits under it and is gated separately
   // by the page (requires complete intern profile).
   '/(fr|en)?/internships/([^/]+)',
+  // Public read-only record + deliverable share links. The token IS the
+  // credential — the page itself looks up by token and 404s on miss. Scoped
+  // to a single path segment ([^/]+) so we don't accidentally open anything
+  // nested underneath.
+  '/(fr|en)?/records/([^/]+)',
+  '/(fr|en)?/deliverables/([^/]+)',
   '/api/webhooks(.*)',
   '/api/health',
 ]);
