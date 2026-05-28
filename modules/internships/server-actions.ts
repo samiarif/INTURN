@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { updateTag } from 'next/cache';
-import { requireSession } from '@/modules/auth/session';
+import { requireSession, requireActiveSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { createInternship, publishInternship } from './service';
 import { MARKETPLACE_TAG } from './queries';
@@ -57,7 +57,7 @@ export async function createInternshipAction(projectId: string, formData: FormDa
 }
 
 export async function publishInternshipAction(internshipId: string) {
-  const { user } = await requireSession();
+  const { user } = await requireActiveSession();
   await publishInternship({ internshipId, actorId: user.id });
   updateTag(MARKETPLACE_TAG);
 }

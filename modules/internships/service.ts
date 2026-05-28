@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { internships, projects } from '@/db/schema';
+import { internships, organizations, projects } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
 import { transitionProjectStatus } from '@/modules/projects/service';
@@ -55,6 +55,16 @@ export async function publishInternship(input: { internshipId: string; actorId: 
     .limit(1);
   if (!existing) throw new Error('Internship not found');
   if (existing.status === 'published') return existing;
+
+  // Guard: only verified organizations may publish public internships.
+  const [org] = await db
+    .select({ verificationStatus: organizations.verificationStatus })
+    .from(organizations)
+    .where(eq(organizations.id, existing.organizationId))
+    .limit(1);
+  if (!org || org.verificationStatus !== 'verified') {
+    throw new Error('org_not_verified');
+  }
 
   const [updated] = await db
     .update(internships)
