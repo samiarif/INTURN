@@ -6,9 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 import { WizardStepsInline } from '@/components/ui/wizard-steps-inline';
 import { DraftBanner } from '@/components/ui/draft-banner';
-import { createProjectAction } from '@/modules/projects/server-actions';
+import {
+  createProjectAction,
+  updateProjectAction,
+} from '@/modules/projects/server-actions';
+import type { Project } from '@/db/schema';
 
 function slugify(name: string): string {
   return name
@@ -35,17 +40,51 @@ const DEFAULT_PHASES: Phase[] = [
   { name: '', description: '', fromWeek: 1, toWeek: 4 },
 ];
 
-export function ProjectCreateForm() {
-  const [name, setName] = useState('');
-  const [slug, setSlug] = useState('');
-  const [slugTouched, setSlugTouched] = useState(false);
+const MS_PER_WEEK = 1000 * 60 * 60 * 24 * 7;
+
+/** Whole weeks between two ISO date strings, clamped to the form's 4–52 range. */
+function weeksBetween(start?: string | null, end?: string | null): number | null {
+  if (!start || !end) return null;
+  const s = new Date(start).getTime();
+  const e = new Date(end).getTime();
+  if (Number.isNaN(s) || Number.isNaN(e) || e <= s) return null;
+  return Math.max(4, Math.min(52, Math.round((e - s) / MS_PER_WEEK)));
+}
+
+export function ProjectCreateForm({ initialProject }: { initialProject?: Project }) {
+  const t = useTranslations('projects.edit');
+  const isEdit = Boolean(initialProject);
+
+  // Goals/phases persist on the project row; mode/location/onSiteDays/duration
+  // are create-form-only fields that aren't stored, so in edit mode we seed
+  // the persisted fields and leave the rest at their defaults (duration is
+  // re-derived from the saved start/end dates).
+  const seededGoals = (() => {
+    const g = (initialProject?.goals ?? []).slice(0, 3);
+    return [...g, '', '', ''].slice(0, Math.max(3, g.length));
+  })();
+
+  const [name, setName] = useState(initialProject?.name ?? '');
+  const [slug, setSlug] = useState(initialProject?.slug ?? '');
+  const [slugTouched, setSlugTouched] = useState(Boolean(initialProject));
   const [mode, setMode] = useState<Mode>('hybrid');
   const [location, setLocation] = useState('');
   const [onSiteDays, setOnSiteDays] = useState<string[]>(['Mon', 'Tue', 'Wed']);
-  const [duration, setDuration] = useState(12);
-  const [startDate, setStartDate] = useState(today());
-  const [goals, setGoals] = useState<string[]>(['', '', '']);
-  const [phases, setPhases] = useState<Phase[]>(DEFAULT_PHASES);
+  const [duration, setDuration] = useState(
+    weeksBetween(initialProject?.startDate, initialProject?.endDate) ?? 12,
+  );
+  const [startDate, setStartDate] = useState(initialProject?.startDate ?? today());
+  const [goals, setGoals] = useState<string[]>(isEdit ? seededGoals : ['', '', '']);
+  const [phases, setPhases] = useState<Phase[]>(
+    initialProject?.phases && initialProject.phases.length > 0
+      ? initialProject.phases.map((p) => ({
+          name: p.name,
+          description: p.description ?? '',
+          fromWeek: p.fromWeek,
+          toWeek: p.toWeek,
+        }))
+      : DEFAULT_PHASES,
+  );
 
   const goalsFilled = goals.filter((g) => g.trim().length > 0).length;
   const endDate = (() => {
@@ -91,12 +130,18 @@ export function ProjectCreateForm() {
       toWeek: p.toWeek,
     }));
 
+  const formAction = isEdit
+    ? updateProjectAction.bind(null, initialProject!.id)
+    : createProjectAction;
+
   return (
-    <form action={createProjectAction} className="space-y-8">
-      <DraftBanner
-        title="Draft mode"
-        message="this project stays private until you publish your first internship."
-      />
+    <form action={formAction} className="space-y-8">
+      {!isEdit && (
+        <DraftBanner
+          title="Draft mode"
+          message="this project stays private until you publish your first internship."
+        />
+      )}
 
       <WizardStepsInline
         steps={[
@@ -122,11 +167,12 @@ export function ProjectCreateForm() {
       <section id="basics" className="space-y-6 scroll-mt-24">
         <header>
           <h2 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
-            Create a new project
+            {isEdit ? t('heading') : 'Create a new project'}
           </h2>
           <p className="text-[14px] text-[var(--ink-3)] mt-1">
-            Projects group your internships. One project = one piece of work; one or more
-            interns work on it together in their own workspaces.
+            {isEdit
+              ? t('subheading')
+              : 'Projects group your internships. One project = one piece of work; one or more interns work on it together in their own workspaces.'}
           </p>
         </header>
 
@@ -453,11 +499,12 @@ export function ProjectCreateForm() {
       <section id="review" className="space-y-4 scroll-mt-24 pt-2 border-t border-[var(--border-color)]">
         <header className="pt-6">
           <h2 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
-            Ready to save?
+            {isEdit ? t('reviewHeading') : 'Ready to save?'}
           </h2>
           <p className="text-[14px] text-[var(--ink-3)] mt-1">
-            The project goes live the moment you post your first internship — until then,
-            nobody outside your org sees it.
+            {isEdit
+              ? t('reviewSubheading')
+              : 'The project goes live the moment you post your first internship — until then, nobody outside your org sees it.'}
           </p>
         </header>
 
@@ -473,26 +520,38 @@ export function ProjectCreateForm() {
           phases={phasesPayload}
         />
 
-        <div className="rounded-lg p-5 bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7] border border-[#FDE68A]">
-          <h3 className="text-[15px] font-semibold text-[#78350F]">
-            Next: post your first internship
-          </h3>
-          <p className="text-[13px] text-[#92400E] leading-relaxed mt-1.5 mb-3 max-w-[56ch]">
-            The project becomes <b>active</b> the moment your first internship is published. A
-            draft with no internships <b>auto-archives after 30 days</b>.
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
+        {isEdit ? (
+          <div className="flex flex-wrap items-center gap-3">
             <Button
               type="submit"
               className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
             >
-              Save &amp; post first internship →
+              {t('saveCta')}
             </Button>
-            <span className="text-[12px] text-[#92400E]">
-              Saves a draft and takes you to step 5.
-            </span>
+            <span className="text-[12px] text-[var(--ink-3)]">{t('saveHint')}</span>
           </div>
-        </div>
+        ) : (
+          <div className="rounded-lg p-5 bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7] border border-[#FDE68A]">
+            <h3 className="text-[15px] font-semibold text-[#78350F]">
+              Next: post your first internship
+            </h3>
+            <p className="text-[13px] text-[#92400E] leading-relaxed mt-1.5 mb-3 max-w-[56ch]">
+              The project becomes <b>active</b> the moment your first internship is published. A
+              draft with no internships <b>auto-archives after 30 days</b>.
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="submit"
+                className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
+              >
+                Save &amp; post first internship →
+              </Button>
+              <span className="text-[12px] text-[#92400E]">
+                Saves a draft and takes you to step 5.
+              </span>
+            </div>
+          </div>
+        )}
       </section>
     </form>
   );

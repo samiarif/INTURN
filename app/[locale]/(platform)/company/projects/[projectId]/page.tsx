@@ -297,6 +297,14 @@ export default async function Page({
             )}
 
             <div className="ml-auto flex items-center gap-2">
+              {isSupervisor && (
+                <Link
+                  href={`/company/projects/${projectId}/edit`}
+                  className="inline-flex items-center gap-1 h-8 px-3 rounded-md text-[12px] font-medium border border-[var(--border-color)] text-[var(--ink-2)] hover:border-[var(--border-strong)] hover:text-[var(--ink)]"
+                >
+                  {t('editProject')}
+                </Link>
+              )}
               <Link
                 href={`/company/projects/${projectId}/internships/new`}
                 className="inline-flex items-center gap-1 h-8 px-3 rounded-md text-[12px] font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
@@ -632,6 +640,14 @@ export default async function Page({
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
+                          {isSupervisor && (
+                            <Link
+                              href={`/company/projects/${projectId}/internships/${i.id}/edit`}
+                              className="text-[12px] font-medium text-[var(--ink-3)] hover:text-[var(--ink)]"
+                            >
+                              {t('editInternship')}
+                            </Link>
+                          )}
                           {i.status === 'draft' && <PublishInternshipButton internshipId={i.id} />}
                           {wsId ? (
                             <Link href={`/company/workspaces/${wsId}`} className="ph-intern-open">

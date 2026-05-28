@@ -55,6 +55,46 @@ export async function createDraftProject(input: {
   return project;
 }
 
+export async function updateProject(input: {
+  projectId: string;
+  name: string;
+  slug: string;
+  brief?: string;
+  actorId: string;
+  startDate?: string;
+  endDate?: string;
+  goals?: string[];
+  phases?: Array<{ name: string; description?: string; fromWeek: number; toWeek: number }>;
+}) {
+  const [updated] = await db
+    .update(projects)
+    .set({
+      name: input.name,
+      slug: input.slug,
+      brief: input.brief,
+      startDate: input.startDate,
+      endDate: input.endDate,
+      // Drop empty strings — goal=[''] is essentially "no goal entered".
+      goals: input.goals?.filter((g) => g.trim().length > 0),
+      phases: input.phases?.filter((p) => p.name.trim().length > 0),
+      updatedAt: new Date(),
+    })
+    .where(eq(projects.id, input.projectId))
+    .returning();
+
+  if (!updated) throw new Error('Project not found');
+
+  await recordEvent({
+    type: 'project.updated',
+    actorId: input.actorId,
+    targetType: 'project',
+    targetId: input.projectId,
+    metadata: { name: input.name },
+  });
+
+  return updated;
+}
+
 export async function transitionProjectStatus(input: {
   projectId: string;
   to: ProjectStatus;

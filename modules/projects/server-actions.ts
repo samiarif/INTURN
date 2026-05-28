@@ -7,7 +7,7 @@ import { db } from '@/db';
 import { organizations, projects } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { getUserByClerkId } from '@/modules/profiles/queries';
-import { createDraftProject, transitionProjectStatus } from './service';
+import { createDraftProject, transitionProjectStatus, updateProject } from './service';
 import { projectCreateSchema } from './validators';
 import { getProjectById } from './queries';
 
@@ -66,6 +66,59 @@ export async function createProjectAction(formData: FormData) {
   });
 
   redirect(`/company/projects/${project.id}`);
+}
+
+export async function updateProjectAction(projectId: string, formData: FormData) {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) throw new Error('Unauthorized');
+  const user = await getUserByClerkId(clerkId);
+  if (!user) throw new Error('User not found');
+
+  const project = await getProjectById(projectId);
+  if (!project) throw new Error('Project not found');
+  // Same authz as create: only a supervisor on the project may edit it.
+  if (!project.supervisorIds?.includes(user.id)) {
+    throw new Error('Only project supervisors can edit this project');
+  }
+
+  // Goals + phases are JSON-encoded into hidden inputs by the client form so
+  // we can keep the existing FormData server-action wiring intact.
+  let goals: unknown;
+  let phases: unknown;
+  try {
+    const goalsRaw = formData.get('goals');
+    const phasesRaw = formData.get('phases');
+    goals = goalsRaw ? JSON.parse(String(goalsRaw)) : undefined;
+    phases = phasesRaw ? JSON.parse(String(phasesRaw)) : undefined;
+  } catch {
+    throw new Error('Invalid form data');
+  }
+
+  const parsed = projectCreateSchema.parse({
+    name: formData.get('name'),
+    slug: formData.get('slug'),
+    brief: formData.get('brief') || undefined,
+    startDate: formData.get('startDate'),
+    endDate: formData.get('endDate'),
+    goals,
+    phases,
+  });
+
+  await updateProject({
+    projectId,
+    name: parsed.name,
+    slug: parsed.slug,
+    brief: parsed.brief,
+    actorId: user.id,
+    startDate: parsed.startDate,
+    endDate: parsed.endDate,
+    goals: parsed.goals,
+    phases: parsed.phases,
+  });
+
+  revalidatePath(`/company/projects/${projectId}`);
+  revalidatePath('/company/projects');
+  redirect(`/company/projects/${projectId}`);
 }
 
 export async function activateProjectAction(projectId: string) {
