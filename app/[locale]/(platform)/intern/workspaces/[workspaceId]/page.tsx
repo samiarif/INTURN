@@ -31,6 +31,7 @@ export default async function Page({
             view="intern"
             basePath={ctx.basePath}
             selectedId={selected}
+            currentUserId={ctx.session.user.id}
           />
         ),
         timeline: <WorkspaceTimelinePage data={ctx.data} view="intern" basePath={ctx.basePath} />,

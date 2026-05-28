@@ -30,6 +30,7 @@ export default async function Page({
             view="supervisor"
             basePath={ctx.basePath}
             selectedId={selected}
+            currentUserId={ctx.session.user.id}
           />
         ),
         timeline: <WorkspaceTimelinePage data={ctx.data} view="supervisor" basePath={ctx.basePath} />,

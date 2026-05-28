@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import type { Deliverable } from '@/db/schema';
 import { WorkspaceMHead } from './m-head';
+import { getDeliverableComments } from '@/modules/comments/queries';
 import type { WorkspaceOverviewData } from '../queries';
 import type { WorkspaceView } from '../types';
 import { DelivDetail } from './deliverables-detail';
@@ -114,11 +115,13 @@ export async function WorkspaceDeliverablesPage({
   view,
   basePath,
   selectedId: selectedIdParam,
+  currentUserId,
 }: {
   data: WorkspaceOverviewData;
   view: WorkspaceView;
   basePath: string;
   selectedId?: string;
+  currentUserId: string;
 }) {
   const items = data.deliverables;
   // Server component; Date.now() runs once per request, which is what we want
@@ -137,9 +140,10 @@ export async function WorkspaceDeliverablesPage({
     (selectedIdParam && items.find((d) => d.id === selectedIdParam)) || preferred;
   const selectedIdx = selected ? items.findIndex((d) => d.id === selected.id) : -1;
 
-  const [t, locale] = await Promise.all([
+  const [t, locale, selectedComments] = await Promise.all([
     getTranslations('workspace.deliverables.master'),
     getLocale(),
+    selected ? getDeliverableComments(selected.id) : Promise.resolve([]),
   ]);
 
   return (
@@ -174,6 +178,8 @@ export async function WorkspaceDeliverablesPage({
               role={view === 'intern' ? 'intern' : 'supervisor'}
               data={data}
               locale={locale}
+              comments={selectedComments}
+              currentUserId={currentUserId}
             />
           ) : (
             <div className="dv-detail">
