@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { getTranslations, getLocale } from 'next-intl/server';
-import { listRecentAuditLogs, type AuditLogFilter } from '@/modules/audit/queries';
+import { listAuditLogPage, type AuditLogFilter } from '@/modules/audit/queries';
 import { StatusPill, type StatusTone } from '@/components/status-pill';
+
+const PAGE_SIZE = 50;
 
 function toneForAction(action: string): StatusTone {
   if (action.startsWith('report.')) return 'warn';
@@ -23,19 +25,34 @@ const FILTER_OPTIONS: Array<{ key: string; prefix?: string }> = [
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ action?: string }>;
+  searchParams: Promise<{ action?: string; page?: string }>;
 }) {
   const sp = await searchParams;
   const activeFilter = sp.action ?? 'all';
+  const page = Math.max(1, Number(sp.page ?? '1') || 1);
   const filter: AuditLogFilter = {};
   const matched = FILTER_OPTIONS.find((o) => o.key === activeFilter);
   if (matched?.prefix) filter.actionPrefix = matched.prefix;
 
-  const [rows, t, locale] = await Promise.all([
-    listRecentAuditLogs(100, filter),
+  const [result, t, locale] = await Promise.all([
+    listAuditLogPage(page, PAGE_SIZE, filter),
     getTranslations('admin.audit'),
     getLocale(),
   ]);
+  const { rows, hasMore } = result;
+
+  // Pagination + export hrefs carry the active action filter.
+  const pageHref = (p: number): string => {
+    const params = new URLSearchParams();
+    if (activeFilter !== 'all') params.set('action', activeFilter);
+    if (p > 1) params.set('page', String(p));
+    const qs = params.toString();
+    return `/admin/audit${qs ? `?${qs}` : ''}`;
+  };
+  const exportHref =
+    activeFilter !== 'all'
+      ? `/api/admin/audit/export?action=${activeFilter}`
+      : '/api/admin/audit/export';
 
   const filterChipLabels: Record<string, string> = {
     all: locale === 'fr' ? 'Toutes' : 'All',
@@ -47,7 +64,16 @@ export default async function Page({
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8 md:p-8">
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">{t('title')}</h1>
+      <div className="flex items-start justify-between gap-4 mb-2">
+        <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
+        <a
+          href={exportHref}
+          download
+          className="shrink-0 h-9 px-3 inline-flex items-center rounded-md text-[13px] font-medium border border-[var(--border-color)] bg-[var(--surface)] hover:bg-[var(--surface-muted)]"
+        >
+          {t('exportCsv')}
+        </a>
+      </div>
       <p className="text-[14px] text-[var(--ink-3)] mb-6">{t('subtitle')}</p>
 
       <div className="flex items-center gap-1 mb-6 flex-wrap">
@@ -102,6 +128,32 @@ export default async function Page({
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {(page > 1 || hasMore) && (
+        <div className="flex items-center justify-between mt-6 text-sm">
+          {page > 1 ? (
+            <Link
+              href={pageHref(page - 1)}
+              className="text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+            >
+              {t('previous')}
+            </Link>
+          ) : (
+            <span />
+          )}
+          <span className="text-[var(--ink-3)]">{t('page', { n: page })}</span>
+          {hasMore ? (
+            <Link
+              href={pageHref(page + 1)}
+              className="text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+            >
+              {t('next')}
+            </Link>
+          ) : (
+            <span />
+          )}
         </div>
       )}
     </div>
