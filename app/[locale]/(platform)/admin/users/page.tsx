@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { listAdminUsers, getAdminUserStats } from '@/modules/admin/users/queries';
+import { getSession } from '@/modules/auth/session';
 import { StatusPill } from '@/components/status-pill';
 import { ToggleSuspendButton } from './toggle-suspend-button';
+import { RoleSelect } from './role-select';
 
 export default async function Page({
   searchParams,
@@ -14,7 +16,7 @@ export default async function Page({
   const status = sp.status as 'active' | 'suspended' | undefined;
   const search = sp.q?.trim();
 
-  const [rows, stats, t, locale] = await Promise.all([
+  const [rows, stats, t, locale, session] = await Promise.all([
     listAdminUsers(100, {
       role: role && ['intern', 'company', 'admin'].includes(role) ? role : undefined,
       suspended: status === 'active' || status === 'suspended' ? status : undefined,
@@ -23,6 +25,7 @@ export default async function Page({
     getAdminUserStats(),
     getTranslations('admin.users'),
     getLocale(),
+    getSession(),
   ]);
 
   const roleChips: Array<{ key: 'all' | 'intern' | 'company' | 'admin'; label: string; count?: number }> = [
@@ -114,7 +117,7 @@ export default async function Page({
         </div>
       ) : (
         <div className="border border-[var(--border-color)] rounded-md overflow-x-auto bg-[var(--surface)]">
-          <table className="w-full text-sm min-w-[720px]">
+          <table className="w-full text-sm min-w-[820px]">
             <thead className="bg-[var(--surface-muted)] text-left">
               <tr>
                 <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colUser')}</th>
@@ -122,6 +125,7 @@ export default async function Page({
                 <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colExtra')}</th>
                 <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colJoined')}</th>
                 <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colStatus')}</th>
+                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colRoleControl')}</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -129,9 +133,12 @@ export default async function Page({
               {rows.map((u) => (
                 <tr key={u.id} className="border-t border-[var(--border-color)]">
                   <td className="px-4 py-3">
-                    <div className="font-medium">
-                      {(u.firstName ?? '') + ' ' + (u.lastName ?? '')}
-                    </div>
+                    <Link
+                      href={`/admin/users/${u.id}`}
+                      className="font-medium hover:text-[var(--brand-700)] hover:underline"
+                    >
+                      {(u.firstName ?? '') + ' ' + (u.lastName ?? '') || u.email}
+                    </Link>
                     <div className="text-[12px] text-[var(--ink-3)] break-all">{u.email}</div>
                   </td>
                   <td className="px-4 py-3">
@@ -166,6 +173,14 @@ export default async function Page({
                     ) : (
                       <StatusPill tone="success">{t('statusActive')}</StatusPill>
                     )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <RoleSelect
+                      userId={u.id}
+                      role={u.role}
+                      userLabel={u.email}
+                      isSelf={u.id === session?.user.id}
+                    />
                   </td>
                   <td className="px-4 py-3 text-right">
                     {u.role !== 'admin' && (

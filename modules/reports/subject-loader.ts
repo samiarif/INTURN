@@ -8,6 +8,12 @@ export type SubjectSummary = {
   label: string;
   href: string | null;
   detail: string | null;
+  /**
+   * Populated only when the subject is a user (directly, via subjectType
+   * 'user'). Lets the admin report-detail page surface a "Suspend user"
+   * action against the offending account. Null for internship/org subjects.
+   */
+  user: { id: string; email: string; role: string | null; suspended: boolean } | null;
 };
 
 export async function loadSubject(
@@ -16,31 +22,41 @@ export async function loadSubject(
 ): Promise<SubjectSummary> {
   if (type === 'internship') {
     const [row] = await db.select().from(internships).where(eq(internships.id, id)).limit(1);
-    if (!row) return { exists: false, label: 'Deleted internship', href: null, detail: null };
+    if (!row)
+      return { exists: false, label: 'Deleted internship', href: null, detail: null, user: null };
     return {
       exists: true,
       label: row.title,
       href: `/internships/${row.id}`,
       detail: `${row.sector ?? ''} · status: ${row.status ?? 'draft'}`,
+      user: null,
     };
   }
   if (type === 'organization') {
     const [row] = await db.select().from(organizations).where(eq(organizations.id, id)).limit(1);
-    if (!row) return { exists: false, label: 'Deleted organization', href: null, detail: null };
+    if (!row)
+      return { exists: false, label: 'Deleted organization', href: null, detail: null, user: null };
     return {
       exists: true,
       label: row.name,
       href: `/admin/verifications/${row.id}`,
       detail: `${row.city ?? row.country ?? ''} · ${row.verificationStatus}`,
+      user: null,
     };
   }
   // user
   const [row] = await db.select().from(users).where(eq(users.id, id)).limit(1);
-  if (!row) return { exists: false, label: 'Deleted user', href: null, detail: null };
+  if (!row) return { exists: false, label: 'Deleted user', href: null, detail: null, user: null };
   return {
     exists: true,
     label: `${row.firstName ?? ''} ${row.lastName ?? ''}`.trim() || row.email,
-    href: null,
+    href: `/admin/users/${row.id}`,
     detail: `${row.email} · role: ${row.role ?? '—'}`,
+    user: {
+      id: row.id,
+      email: row.email,
+      role: row.role,
+      suspended: Boolean(row.suspendedAt),
+    },
   };
 }

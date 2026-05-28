@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getReportById } from '@/modules/reports/queries';
 import { loadSubject } from '@/modules/reports/subject-loader';
 import { ResolveReportForm } from './resolve-form';
+import { SuspendUserButton } from './suspend-user-button';
 import type { ReportSubjectType } from '@/modules/reports/server-actions';
 
 const REASON_LABEL: Record<string, string> = {
@@ -53,6 +54,15 @@ export default async function Page({ params }: { params: Promise<{ reportId: str
           <p className="text-[13px] text-[var(--danger)] mt-1">
             Subject no longer exists in the database.
           </p>
+        )}
+        {subject.user && subject.user.role !== 'admin' && (
+          <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
+            <SuspendUserButton
+              userId={subject.user.id}
+              isSuspended={subject.user.suspended}
+              userLabel={subject.user.email}
+            />
+          </div>
         )}
       </section>
 
