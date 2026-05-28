@@ -942,7 +942,8 @@
       "reviewHeading": "Ready to save?",
       "reviewSubheading": "Your changes go live as soon as you save.",
       "saveCta": "Save changes",
-      "saveHint": "Returns you to the project hub."
+      "saveHint": "Returns you to the project hub.",
+      "reorderPhase": "Drag to reorder phase"
     }
   },
   "internships": {

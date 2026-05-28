@@ -942,7 +942,8 @@
       "reviewHeading": "Prêt à enregistrer ?",
       "reviewSubheading": "Vos modifications sont appliquées dès l'enregistrement.",
       "saveCta": "Enregistrer les modifications",
-      "saveHint": "Vous ramène au hub du projet."
+      "saveHint": "Vous ramène au hub du projet.",
+      "reorderPhase": "Glisser pour réordonner la phase"
     }
   },
   "internships": {

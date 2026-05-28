@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { GripVertical, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,6 +14,23 @@ import {
   updateProjectAction,
 } from '@/modules/projects/server-actions';
 import type { Project } from '@/db/schema';
+import {
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 function slugify(name: string): string {
   return name
@@ -26,7 +43,12 @@ function slugify(name: string): string {
 const today = () => new Date().toISOString().slice(0, 10);
 
 type Mode = 'hybrid' | 'virtual' | 'on-site';
-type Phase = { name: string; description: string; fromWeek: number; toWeek: number };
+type Phase = { id: string; name: string; description: string; fromWeek: number; toWeek: number };
+
+let _phaseCounter = 0;
+function newPhaseId() {
+  return `ph-${++_phaseCounter}`;
+}
 
 const MODE_OPTIONS: Array<{ value: Mode; label: string; sub: string }> = [
   { value: 'hybrid', label: 'Hybrid', sub: 'On-site + remote' },
@@ -37,7 +59,7 @@ const MODE_OPTIONS: Array<{ value: Mode; label: string; sub: string }> = [
 const ON_SITE_DAY_OPTIONS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 const DEFAULT_PHASES: Phase[] = [
-  { name: '', description: '', fromWeek: 1, toWeek: 4 },
+  { id: newPhaseId(), name: '', description: '', fromWeek: 1, toWeek: 4 },
 ];
 
 const MS_PER_WEEK = 1000 * 60 * 60 * 24 * 7;
@@ -78,6 +100,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
   const [phases, setPhases] = useState<Phase[]>(
     initialProject?.phases && initialProject.phases.length > 0
       ? initialProject.phases.map((p) => ({
+          id: newPhaseId(),
           name: p.name,
           description: p.description ?? '',
           fromWeek: p.fromWeek,
@@ -111,12 +134,31 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
     if (phases.length >= 12) return;
     const last = phases[phases.length - 1];
     const from = last ? Math.min(last.toWeek, duration) : 1;
-    setPhases([...phases, { name: '', description: '', fromWeek: from, toWeek: Math.min(from + 2, duration) }]);
+    setPhases([...phases, { id: newPhaseId(), name: '', description: '', fromWeek: from, toWeek: Math.min(from + 2, duration) }]);
   }
 
   function removePhase(i: number) {
     setPhases(phases.filter((_, j) => j !== i));
   }
+
+  const phaseSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const onPhaseDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      setPhases((prev) => {
+        const oldIndex = prev.findIndex((p) => p.id === active.id);
+        const newIndex = prev.findIndex((p) => p.id === over.id);
+        if (oldIndex === -1 || newIndex === -1) return prev;
+        return arrayMove(prev, oldIndex, newIndex);
+      });
+    },
+    [],
+  );
 
   // Goals + phases JSON-encoded into hidden inputs so the existing
   // FormData-driven server action stays simple.
@@ -405,81 +447,30 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             these to show progress.
           </p>
 
-          <div className="space-y-1.5">
-            {phases.map((p, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-[24px_minmax(0,1fr)_70px_70px_28px] gap-2 items-center p-2 border border-[var(--border-color)] rounded-md bg-[var(--surface)]"
-              >
-                <button
-                  type="button"
-                  className="text-[var(--ink-4)] cursor-grab flex items-center justify-center h-8"
-                  aria-label="Reorder phase"
-                  title="Drag to reorder (coming soon)"
-                >
-                  <GripVertical className="h-4 w-4" />
-                </button>
-                <div className="space-y-1 min-w-0">
-                  <Input
-                    value={p.name}
-                    onChange={(e) => updatePhase(i, { name: e.target.value })}
-                    placeholder={
-                      i === 0
-                        ? 'Discovery & audit'
-                        : i === 1
-                          ? 'Explore & moodboard'
-                          : i === 2
-                            ? 'System build'
-                            : 'Handoff'
-                    }
-                    aria-label="Phase name"
-                    className="h-8 text-[13px] font-medium"
+          <DndContext
+            sensors={phaseSensors}
+            collisionDetection={closestCenter}
+            onDragEnd={onPhaseDragEnd}
+          >
+            <SortableContext
+              items={phases.map((p) => p.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-1.5">
+                {phases.map((p, i) => (
+                  <SortablePhaseRow
+                    key={p.id}
+                    phase={p}
+                    index={i}
+                    duration={duration}
+                    reorderLabel={t('reorderPhase')}
+                    onUpdate={(patch) => updatePhase(i, patch)}
+                    onRemove={() => removePhase(i)}
                   />
-                  <Input
-                    value={p.description}
-                    onChange={(e) => updatePhase(i, { description: e.target.value })}
-                    placeholder="Short note (optional)"
-                    aria-label="Phase description"
-                    className="h-7 text-[12px] text-[var(--ink-3)]"
-                  />
-                </div>
-                <Input
-                  type="number"
-                  min={1}
-                  max={duration}
-                  value={p.fromWeek}
-                  onChange={(e) =>
-                    updatePhase(i, {
-                      fromWeek: Math.max(1, Math.min(duration, Number(e.target.value) || 1)),
-                    })
-                  }
-                  aria-label="From week"
-                  className="h-8 text-[12px] text-center"
-                />
-                <Input
-                  type="number"
-                  min={1}
-                  max={duration}
-                  value={p.toWeek}
-                  onChange={(e) =>
-                    updatePhase(i, {
-                      toWeek: Math.max(1, Math.min(duration, Number(e.target.value) || 1)),
-                    })
-                  }
-                  aria-label="To week"
-                  className="h-8 text-[12px] text-center"
-                />
-                <button
-                  type="button"
-                  onClick={() => removePhase(i)}
-                  className="flex items-center justify-center text-[var(--ink-4)] hover:text-[var(--ink-2)] h-8"
-                  aria-label="Remove phase"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+                ))}
               </div>
-            ))}
-          </div>
+            </SortableContext>
+          </DndContext>
 
           <div className="mt-3 flex items-center gap-3">
             <button
@@ -554,6 +545,113 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         )}
       </section>
     </form>
+  );
+}
+
+// ---- SortablePhaseRow -------------------------------------------------------
+// Hoisted outside ProjectCreateForm so React sees a stable component identity.
+
+type SortablePhaseRowProps = {
+  phase: Phase;
+  index: number;
+  duration: number;
+  reorderLabel: string;
+  onUpdate: (patch: Partial<Phase>) => void;
+  onRemove: () => void;
+};
+
+function SortablePhaseRow({ phase, index, duration, reorderLabel, onUpdate, onRemove }: SortablePhaseRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: phase.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : undefined,
+  };
+
+  const namePlaceholder =
+    index === 0
+      ? 'Discovery & audit'
+      : index === 1
+        ? 'Explore & moodboard'
+        : index === 2
+          ? 'System build'
+          : 'Handoff';
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="grid grid-cols-[24px_minmax(0,1fr)_70px_70px_28px] gap-2 items-center p-2 border border-[var(--border-color)] rounded-md bg-[var(--surface)]"
+    >
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        className="text-[var(--ink-4)] cursor-grab active:cursor-grabbing flex items-center justify-center h-8 touch-none"
+        aria-label={reorderLabel}
+        aria-roledescription="sortable phase"
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      <div className="space-y-1 min-w-0">
+        <Input
+          value={phase.name}
+          onChange={(e) => onUpdate({ name: e.target.value })}
+          placeholder={namePlaceholder}
+          aria-label="Phase name"
+          className="h-8 text-[13px] font-medium"
+        />
+        <Input
+          value={phase.description}
+          onChange={(e) => onUpdate({ description: e.target.value })}
+          placeholder="Short note (optional)"
+          aria-label="Phase description"
+          className="h-7 text-[12px] text-[var(--ink-3)]"
+        />
+      </div>
+      <Input
+        type="number"
+        min={1}
+        max={duration}
+        value={phase.fromWeek}
+        onChange={(e) =>
+          onUpdate({
+            fromWeek: Math.max(1, Math.min(duration, Number(e.target.value) || 1)),
+          })
+        }
+        aria-label="From week"
+        className="h-8 text-[12px] text-center"
+      />
+      <Input
+        type="number"
+        min={1}
+        max={duration}
+        value={phase.toWeek}
+        onChange={(e) =>
+          onUpdate({
+            toWeek: Math.max(1, Math.min(duration, Number(e.target.value) || 1)),
+          })
+        }
+        aria-label="To week"
+        className="h-8 text-[12px] text-center"
+      />
+      <button
+        type="button"
+        onClick={onRemove}
+        className="flex items-center justify-center text-[var(--ink-4)] hover:text-[var(--ink-2)] h-8"
+        aria-label="Remove phase"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
   );
 }
 
