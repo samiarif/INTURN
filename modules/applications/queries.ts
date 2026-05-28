@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { applications, internships, profiles, users } from '@/db/schema';
+import { applications, internships, organizations, profiles, users } from '@/db/schema';
 import { eq, inArray, desc } from 'drizzle-orm';
 
 export async function getApplicationsByApplicant(applicantId: string) {
@@ -48,6 +48,15 @@ export async function getApplicationById(id: string) {
     .where(eq(applications.id, id))
     .limit(1);
   return row ?? null;
+}
+
+/**
+ * Fetch organizations by a set of IDs — used on the intern dashboard to
+ * display org info alongside recent applications.
+ */
+export async function getOrganizationsByIds(ids: string[]) {
+  if (ids.length === 0) return [];
+  return db.select().from(organizations).where(inArray(organizations.id, ids));
 }
 
 export async function getApplicationsByIds(ids: string[]) {

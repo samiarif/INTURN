@@ -8,18 +8,15 @@
 // Server component, no client state.
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getLocale, getTranslations } from 'next-intl/server';
-import { and, eq, gte, inArray } from 'drizzle-orm';
+import { getTranslations } from 'next-intl/server';
+import { eq } from 'drizzle-orm';
 import { db } from '@/db';
-import {
-  organizations,
-  applications,
-  internships,
-  workspaces,
-  tasks,
-} from '@/db/schema';
+import { organizations } from '@/db/schema';
 import { getSession } from '@/modules/auth/session';
-import { getProjectsByOrganization } from '@/modules/projects/queries';
+import {
+  getProjectsByOrganization,
+  listCompanyProjectsWithStats,
+} from '@/modules/projects/queries';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -68,53 +65,12 @@ export default async function Page({
 
   // ------ Fan-out: internships + workspace rollups + apps count. ------
   const now = new Date();
-  const weekAgo = new Date(now.getTime() - 7 * MS_PER_DAY);
 
-  const [internshipsList, t, locale] = await Promise.all([
-    projectIds.length > 0
-      ? db.select().from(internships).where(inArray(internships.projectId, projectIds))
-      : Promise.resolve([] as Array<typeof internships.$inferSelect>),
-    getTranslations('projects.index'),
-    getLocale(),
-  ]);
-
-  const internshipIds = internshipsList.map((i) => i.id);
-
-  // Workspaces under those internships — we need them to roll task counts up
-  // by project and to compute the "active" stat tile.
-  const workspaceRows = internshipIds.length > 0
-    ? await db
-        .select({
-          id: workspaces.id,
-          internshipId: workspaces.internshipId,
-          status: workspaces.status,
-        })
-        .from(workspaces)
-        .where(inArray(workspaces.internshipId, internshipIds))
-    : [];
-  const workspaceIds = workspaceRows.map((w) => w.id);
-
-  // Tasks across all org workspaces — single fan-out, then rolled up per
-  // project below. New apps in the last 7d for the "Applications" tile.
-  const [taskRows, appsThisWeek] = await Promise.all([
-    workspaceIds.length > 0
-      ? db
-          .select({ status: tasks.status, workspaceId: tasks.workspaceId })
-          .from(tasks)
-          .where(inArray(tasks.workspaceId, workspaceIds))
-      : Promise.resolve([] as Array<{ status: string | null; workspaceId: string }>),
-    internshipIds.length > 0
-      ? db
-          .select({ id: applications.id })
-          .from(applications)
-          .where(
-            and(
-              inArray(applications.internshipId, internshipIds),
-              gte(applications.createdAt, weekAgo),
-            ),
-          )
-      : Promise.resolve([] as Array<{ id: string }>),
-  ]);
+  const [{ internshipsList, workspaceRows, taskRows, appsThisWeek }, t] =
+    await Promise.all([
+      listCompanyProjectsWithStats(projectIds),
+      getTranslations('projects.index'),
+    ]);
 
   // ------ Roll the workspace bits up to (project, intern avatars, task counts). ------
   const internshipToProject = new Map<string, string>();
@@ -393,9 +349,6 @@ export default async function Page({
         </div>
       )}
 
-      {/* Locale prop is read for future date formatting — kept here so the
-          read isn't dropped by the TS dead-code checker. */}
-      <span className="sr-only" data-locale={locale} />
     </div>
   );
 }

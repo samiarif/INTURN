@@ -1,13 +1,10 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { inArray } from 'drizzle-orm';
-import { db } from '@/db';
-import { organizations } from '@/db/schema';
 import { getSession } from '@/modules/auth/session';
 import { getProfileByUserId } from '@/modules/profiles/queries';
 import { getInternSidebarData } from '@/modules/workspace/queries';
-import { getApplicationsByApplicant } from '@/modules/applications/queries';
+import { getApplicationsByApplicant, getOrganizationsByIds } from '@/modules/applications/queries';
 import { listPublishedInternships } from '@/modules/internships/queries';
 import { listInternBookmarks } from '@/modules/bookmarks/queries';
 import { InternshipCard, type InternshipCardStrings } from '@/components/marketplace/internship-card';
@@ -89,13 +86,9 @@ export default async function Page() {
           .slice(0, 3)
       : recommendedAll.slice(0, 3);
 
-  // Org lookup for the applications list (same trick as the apps page —
-  // avoid mutating the shared query signature).
+  // Org lookup for the applications list.
   const recentOrgIds = [...new Set(recentApplications.map((r) => r.internship.organizationId))];
-  const orgs =
-    recentOrgIds.length > 0
-      ? await db.select().from(organizations).where(inArray(organizations.id, recentOrgIds))
-      : [];
+  const orgs = await getOrganizationsByIds(recentOrgIds);
   const orgsById = new Map(orgs.map((o) => [o.id, o]));
 
   // Greeting + eyebrow line based on viewer's locale clock.
