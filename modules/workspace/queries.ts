@@ -10,8 +10,10 @@ import {
   events,
   profiles,
   projects,
+  workspaceNotes,
+  type WorkspaceNote,
 } from '@/db/schema';
-import { desc, eq, inArray, sql, or } from 'drizzle-orm';
+import { desc, eq, inArray, sql, or, and } from 'drizzle-orm';
 import type { SidebarData } from './types';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -287,3 +289,23 @@ export const getSupervisorSidebarData = cache(async (supervisorUserId: string): 
     }),
   };
 });
+
+/**
+ * Author-private notes for a workspace, newest first.
+ * Wrapped in React cache so the same (workspaceId, authorId) pair pays one
+ * DB round-trip per RSC render tree.
+ */
+export const listMyWorkspaceNotes = cache(
+  async (workspaceId: string, authorId: string): Promise<WorkspaceNote[]> => {
+    return db
+      .select()
+      .from(workspaceNotes)
+      .where(
+        and(
+          eq(workspaceNotes.workspaceId, workspaceId),
+          eq(workspaceNotes.authorId, authorId),
+        ),
+      )
+      .orderBy(desc(workspaceNotes.createdAt));
+  },
+);

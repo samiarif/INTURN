@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeDaysRemaining, computeWeekOfTotal } from '../queries';
+import { computeDaysRemaining, computeWeekOfTotal, listMyWorkspaceNotes } from '../queries';
 
 describe('workspace derived fields', () => {
   it('computes days remaining', () => {
@@ -32,5 +32,11 @@ describe('workspace derived fields', () => {
 
   it('returns 0 / total when startDate is null', () => {
     expect(computeWeekOfTotal(null, 12)).toEqual({ current: 0, total: 12 });
+  });
+});
+
+describe('listMyWorkspaceNotes export', () => {
+  it('is exported as a function', () => {
+    expect(typeof listMyWorkspaceNotes).toBe('function');
   });
 });
