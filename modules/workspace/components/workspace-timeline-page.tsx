@@ -43,8 +43,6 @@ export async function WorkspaceTimelinePage({
     <>
       <WorkspaceMHead
         view={view}
-        basePath={basePath}
-        activeTab="timeline"
         internFirstName={data.intern?.firstName ?? null}
         internLastName={data.intern?.lastName ?? null}
         internshipTitle={data.internship?.title ?? ''}

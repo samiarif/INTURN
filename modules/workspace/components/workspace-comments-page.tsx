@@ -20,8 +20,6 @@ export async function WorkspaceCommentsPage({
     <>
       <WorkspaceMHead
         view={view}
-        basePath={basePath}
-        activeTab="comments"
         internFirstName={data.intern?.firstName ?? null}
         internLastName={data.intern?.lastName ?? null}
         internshipTitle={data.internship?.title ?? ''}

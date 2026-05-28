@@ -10,8 +10,6 @@ export function WorkspaceOverview({ shell }: { shell: WorkspaceShell }) {
     <>
       <WorkspaceMHead
         view={shell.view}
-        basePath={shell.basePath}
-        activeTab="overview"
         internFirstName={s.internFirstName}
         internLastName={s.internLastName}
         internshipTitle={s.internshipTitle}

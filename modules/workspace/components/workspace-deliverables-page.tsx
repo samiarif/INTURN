@@ -577,8 +577,6 @@ export async function WorkspaceDeliverablesPage({
     <>
       <WorkspaceMHead
         view={view}
-        basePath={basePath}
-        activeTab="deliverables"
         internFirstName={data.intern?.firstName ?? null}
         internLastName={data.intern?.lastName ?? null}
         internshipTitle={data.internship?.title ?? ''}
@@ -595,7 +593,7 @@ export async function WorkspaceDeliverablesPage({
           <DelivList
             items={items}
             selectedId={selected?.id ?? null}
-            hrefFor={(id) => `${basePath}/deliverables?selected=${id}`}
+            hrefFor={(id) => `${basePath}?tab=deliverables&selected=${id}`}
             now={now}
           />
           {selected && selectedIdx >= 0 ? (

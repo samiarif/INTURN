@@ -18,8 +18,6 @@ export function WorkspaceTasksPage({
     <>
       <WorkspaceMHead
         view={view}
-        basePath={basePath}
-        activeTab="tasks"
         internFirstName={data.intern?.firstName ?? null}
         internLastName={data.intern?.lastName ?? null}
         internshipTitle={data.internship?.title ?? ''}
