@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
+import { cache } from 'react';
 import { getSession } from '@/modules/auth/session';
 import { canViewWorkspace } from './service';
 import {
@@ -64,10 +65,10 @@ export type WorkspacePageData = {
  * workspace_id, both indexed) + one sidebar query, all in parallel. ~3-4
  * fast roundtrips total before the shell is paintable.
  */
-export async function loadWorkspaceShell(
+export const loadWorkspaceShell = cache(async (
   workspaceId: string,
   view: WorkspaceView,
-): Promise<WorkspaceShell> {
+): Promise<WorkspaceShell> => {
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
@@ -205,7 +206,7 @@ export async function loadWorkspaceShell(
       deliverableCount,
     },
   };
-}
+});
 
 /**
  * Heavy loader: full workspace overview (tasks, deliverables, events,
@@ -215,7 +216,7 @@ export async function loadWorkspaceShell(
  *
  * Re-runs authz — defense in depth if a caller forgets the shell pass.
  */
-export async function loadWorkspaceData(workspaceId: string): Promise<WorkspaceOverviewData> {
+export const loadWorkspaceData = cache(async (workspaceId: string): Promise<WorkspaceOverviewData> => {
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
@@ -230,7 +231,7 @@ export async function loadWorkspaceData(workspaceId: string): Promise<WorkspaceO
     notFound();
   }
   return data;
-}
+});
 
 /**
  * Non-streaming loader for tabs (tasks, deliverables, comments, check-in).

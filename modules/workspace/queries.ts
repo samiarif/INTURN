@@ -32,7 +32,7 @@ export function computeWeekOfTotal(
   return { current: Math.min(durationWeeks, Math.max(1, elapsed)), total: durationWeeks };
 }
 
-export async function getWorkspaceOverview(workspaceId: string) {
+export const getWorkspaceOverview = cache(async (workspaceId: string) => {
   const [workspace] = await db
     .select()
     .from(workspaces)
@@ -117,7 +117,7 @@ export async function getWorkspaceOverview(workspaceId: string) {
     deliverables: workspaceDeliverables,
     events: recentEvents,
   };
-}
+});
 
 export type WorkspaceOverviewData = NonNullable<Awaited<ReturnType<typeof getWorkspaceOverview>>>;
 
@@ -243,14 +243,12 @@ export const getSupervisorSidebarData = cache(async (supervisorUserId: string): 
 
   const allProjects = supervisedProjects.map((row) => row.projects);
   const orgIds = [...new Set(allProjects.map((p) => p.organizationId))];
-  const allInternships = await db
-    .select()
-    .from(internships)
-    .where(inArray(internships.organizationId, orgIds));
-  const allWorkspaces = await db
-    .select()
-    .from(workspaces)
-    .where(inArray(workspaces.organizationId, orgIds));
+  // allInternships and allWorkspaces both depend only on orgIds — run in parallel.
+  const [allInternships, allWorkspaces] = await Promise.all([
+    db.select().from(internships).where(inArray(internships.organizationId, orgIds)),
+    db.select().from(workspaces).where(inArray(workspaces.organizationId, orgIds)),
+  ]);
+  // allInterns depends on internIds derived from allWorkspaces — must stay sequential.
   const internIds = allWorkspaces.map((w) => w.internId);
   const allInterns =
     internIds.length > 0 ? await db.select().from(users).where(inArray(users.id, internIds)) : [];
