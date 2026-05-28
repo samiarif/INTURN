@@ -89,6 +89,59 @@ export async function updateInternship(input: {
   return updated;
 }
 
+/**
+ * Move an internship to a new lifecycle status (S2-B). Authz is the caller's
+ * job — both the COMPANY actions (project-supervisor check) and any ADMIN path
+ * funnel through here so the DB write + event recording stay in one place.
+ *
+ * Distinct from publishInternship, which carries publish-only guards
+ * (org-verified gate, project draft→active auto-transition). This is the plain
+ * status setter used for unpublish (published→draft) and close
+ * (published|draft→closed).
+ */
+export async function setInternshipStatus(input: {
+  internshipId: string;
+  status: 'draft' | 'published' | 'closed' | 'archived';
+  actorId: string;
+}) {
+  const [existing] = await db
+    .select()
+    .from(internships)
+    .where(eq(internships.id, input.internshipId))
+    .limit(1);
+  if (!existing) throw new Error('Internship not found');
+  if (existing.status === input.status) return existing;
+
+  const [updated] = await db
+    .update(internships)
+    .set({ status: input.status, updatedAt: new Date() })
+    .where(eq(internships.id, input.internshipId))
+    .returning();
+
+  // Pick the most specific event type for the destination status so the audit
+  // trail reads cleanly; fall back to the generic one for any other move.
+  const eventType =
+    input.status === 'closed'
+      ? 'internship.closed'
+      : input.status === 'draft' && existing.status === 'published'
+        ? 'internship.unpublished'
+        : 'internship.status_changed';
+
+  await recordEvent({
+    type: eventType,
+    actorId: input.actorId,
+    targetType: 'internship',
+    targetId: input.internshipId,
+    metadata: {
+      title: existing.title,
+      previousStatus: existing.status,
+      newStatus: input.status,
+    },
+  });
+
+  return updated;
+}
+
 export async function publishInternship(input: { internshipId: string; actorId: string }) {
   const [existing] = await db
     .select()

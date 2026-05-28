@@ -22,6 +22,10 @@ import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { getInternshipsByProject } from '@/modules/internships/queries';
 import { PublishInternshipButton } from './_publish-button';
+import {
+  CloseInternshipButton,
+  UnpublishInternshipButton,
+} from './_lifecycle-buttons';
 import { EditGoalsPhasesDialog } from '@/modules/projects/components/edit-goals-phases-dialog';
 
 // ---------------------------------------------------------------------------
@@ -97,6 +101,7 @@ export default async function Page({
   if (!session) redirect('/sign-in');
   const { user, role } = session;
   const t = await getTranslations('projectHub');
+  const tStatus = await getTranslations('company.internshipStatus');
   const { published } = await searchParams;
 
   const { projectId } = await params;
@@ -640,15 +645,32 @@ export default async function Page({
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          {isSupervisor && (
-                            <Link
-                              href={`/company/projects/${projectId}/internships/${i.id}/edit`}
-                              className="text-[12px] font-medium text-[var(--ink-3)] hover:text-[var(--ink)]"
-                            >
-                              {t('editInternship')}
-                            </Link>
+                          {/* Status-appropriate lifecycle controls (S2-B).
+                              draft → Edit + Publish; published → Edit +
+                              Unpublish + Close; closed/archived → muted label. */}
+                          {isSupervisor &&
+                            (i.status === 'draft' || i.status === 'published') && (
+                              <Link
+                                href={`/company/projects/${projectId}/internships/${i.id}/edit`}
+                                className="text-[12px] font-medium text-[var(--ink-3)] hover:text-[var(--ink)]"
+                              >
+                                {t('editInternship')}
+                              </Link>
+                            )}
+                          {isSupervisor && i.status === 'draft' && (
+                            <PublishInternshipButton internshipId={i.id} />
                           )}
-                          {i.status === 'draft' && <PublishInternshipButton internshipId={i.id} />}
+                          {isSupervisor && i.status === 'published' && (
+                            <>
+                              <UnpublishInternshipButton internshipId={i.id} />
+                              <CloseInternshipButton internshipId={i.id} />
+                            </>
+                          )}
+                          {(i.status === 'closed' || i.status === 'archived') && (
+                            <span className="text-[12px] font-medium text-[var(--ink-4)]">
+                              {tStatus('closedLabel')}
+                            </span>
+                          )}
                           {wsId ? (
                             <Link href={`/company/workspaces/${wsId}`} className="ph-intern-open">
                               {t('openWorkspace')}

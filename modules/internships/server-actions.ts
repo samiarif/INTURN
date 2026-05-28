@@ -4,7 +4,12 @@ import { redirect } from 'next/navigation';
 import { revalidatePath, updateTag } from 'next/cache';
 import { requireSession, requireActiveSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
-import { createInternship, publishInternship, updateInternship } from './service';
+import {
+  createInternship,
+  publishInternship,
+  setInternshipStatus,
+  updateInternship,
+} from './service';
 import { MARKETPLACE_TAG, getInternshipById } from './queries';
 import { internshipFormSchema } from './validators';
 
@@ -129,5 +134,60 @@ export async function updateInternshipAction(internshipId: string, formData: For
 export async function publishInternshipAction(internshipId: string) {
   const { user } = await requireActiveSession();
   await publishInternship({ internshipId, actorId: user.id });
+  updateTag(MARKETPLACE_TAG);
+}
+
+/**
+ * Resolve an internship + its project and assert the caller is a project
+ * supervisor. Mirrors createInternshipAction / updateInternshipAction's authz
+ * so company-side lifecycle actions stay consistent. Returns both rows so the
+ * caller can revalidate the right project path.
+ */
+async function requireSupervisorOfInternship(internshipId: string, userId: string) {
+  const internship = await getInternshipById(internshipId);
+  if (!internship) throw new Error('Internship not found');
+  if (!internship.projectId) throw new Error('Internship has no project');
+
+  const project = await getProjectById(internship.projectId);
+  if (!project) throw new Error('Project not found');
+  if (!project.supervisorIds?.includes(userId)) {
+    throw new Error('Only project supervisors can manage this internship');
+  }
+  return { internship, project };
+}
+
+/**
+ * Company-side unpublish: published → draft. Pulls the listing out of the
+ * marketplace but keeps it editable. Distinct from the ADMIN moderation
+ * unpublish (which archives) — different authz, different terminal status.
+ */
+export async function companyUnpublishInternshipAction(internshipId: string) {
+  const { user } = await requireActiveSession();
+  const { internship } = await requireSupervisorOfInternship(internshipId, user.id);
+  if (internship.status !== 'published') {
+    throw new Error('Only published internships can be unpublished');
+  }
+
+  await setInternshipStatus({ internshipId, status: 'draft', actorId: user.id });
+
+  revalidatePath(`/company/projects/${internship.projectId}`);
+  updateTag(MARKETPLACE_TAG);
+}
+
+/**
+ * Company-side close: published | draft → closed. No longer accepting
+ * applicants and removed from the marketplace. Terminal-ish (Reopen is out of
+ * scope for S2-B).
+ */
+export async function closeInternshipAction(internshipId: string) {
+  const { user } = await requireActiveSession();
+  const { internship } = await requireSupervisorOfInternship(internshipId, user.id);
+  if (internship.status !== 'published' && internship.status !== 'draft') {
+    throw new Error('Only published or draft internships can be closed');
+  }
+
+  await setInternshipStatus({ internshipId, status: 'closed', actorId: user.id });
+
+  revalidatePath(`/company/projects/${internship.projectId}`);
   updateTag(MARKETPLACE_TAG);
 }

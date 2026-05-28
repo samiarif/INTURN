@@ -22,7 +22,8 @@
     "users": "Users",
     "audit": "Audit",
     "account": "Account",
-    "menu": "Main menu"
+    "menu": "Main menu",
+    "workspaces": "Workspaces"
   },
   "notifications": {
     "label": "Notifications",
@@ -1347,6 +1348,33 @@
       "successCta": "View record",
       "alreadyExistsHint": "An active record exists. Issuing a new one revokes the previous one.",
       "minReviewError": "Review must be at least 40 characters."
+    }
+  },
+  "company": {
+    "internshipStatus": {
+      "unpublish": "Unpublish",
+      "unpublishing": "Unpublishing…",
+      "unpublishConfirm": "Unpublish this internship? It will be removed from the marketplace and returned to draft so you can edit it.",
+      "close": "Close",
+      "closing": "Closing…",
+      "closeConfirm": "Close this internship? It will stop accepting applicants and be removed from the marketplace. This cannot be undone.",
+      "closedLabel": "Closed"
+    },
+    "workspaces": {
+      "title": "Workspaces",
+      "subtitle": "Every active and completed internship workspace across your organisations.",
+      "statusActive": "Active",
+      "statusCompleted": "Completed",
+      "statusCancelled": "Cancelled",
+      "intern": "Intern",
+      "project": "Project",
+      "dates": "Dates",
+      "noProject": "No project",
+      "noDates": "No dates set",
+      "open": "Open workspace",
+      "emptyTitle": "No workspaces yet",
+      "emptyBody": "Workspaces appear here once you accept an applicant into one of your internships.",
+      "emptyCta": "Go to projects"
     }
   }
 }

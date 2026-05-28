@@ -22,7 +22,8 @@
     "users": "Utilisateurs",
     "audit": "Audit",
     "account": "Compte",
-    "menu": "Menu principal"
+    "menu": "Menu principal",
+    "workspaces": "Espaces de travail"
   },
   "notifications": {
     "label": "Notifications",
@@ -1347,6 +1348,33 @@
       "successCta": "Voir l'attestation",
       "alreadyExistsHint": "Une attestation active existe. En délivrer une nouvelle révoque l'ancienne.",
       "minReviewError": "L'évaluation doit faire au moins 40 caractères."
+    }
+  },
+  "company": {
+    "internshipStatus": {
+      "unpublish": "Dépublier",
+      "unpublishing": "Dépublication…",
+      "unpublishConfirm": "Dépublier ce stage ? Il sera retiré de la marketplace et repassé en brouillon pour que vous puissiez le modifier.",
+      "close": "Clôturer",
+      "closing": "Clôture…",
+      "closeConfirm": "Clôturer ce stage ? Il n'acceptera plus de candidatures et sera retiré de la marketplace. Cette action est irréversible.",
+      "closedLabel": "Clôturé"
+    },
+    "workspaces": {
+      "title": "Espaces de travail",
+      "subtitle": "Tous les espaces de stage, actifs et terminés, de vos organisations.",
+      "statusActive": "Actif",
+      "statusCompleted": "Terminé",
+      "statusCancelled": "Annulé",
+      "intern": "Stagiaire",
+      "project": "Projet",
+      "dates": "Dates",
+      "noProject": "Aucun projet",
+      "noDates": "Aucune date définie",
+      "open": "Ouvrir l'espace",
+      "emptyTitle": "Aucun espace de travail",
+      "emptyBody": "Les espaces de travail apparaissent ici une fois que vous acceptez un candidat dans l'un de vos stages.",
+      "emptyCta": "Voir les projets"
     }
   }
 }
