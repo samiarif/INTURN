@@ -9,6 +9,7 @@ import {
 import { InternshipCard, type InternshipCardStrings } from '@/components/marketplace/internship-card';
 import { MarketplaceFilters } from '@/components/marketplace/marketplace-filters';
 import { MarketplaceFiltersCollapse } from '@/components/marketplace/marketplace-filters-collapse';
+import { MatchExplainer } from '@/components/marketplace/match-explainer';
 import { getSession } from '@/modules/auth/session';
 import { getBookmarkedSet } from '@/modules/bookmarks/queries';
 import { getProfileByUserId } from '@/modules/profiles/queries';
@@ -45,6 +46,7 @@ type Search = {
   dur?: string;
   lang?: string;
   skill?: string;
+  city?: string;
   page?: string;
 };
 
@@ -68,6 +70,7 @@ export default async function Page({
   const language =
     params.lang === 'fr' || params.lang === 'en' || params.lang === 'ar' ? params.lang : undefined;
   const skill = params.skill?.trim() || undefined;
+  const city = params.city?.trim() || undefined;
   const page = Math.max(1, Number(params.page ?? '1') || 1);
   const pageSize = 20;
 
@@ -83,6 +86,7 @@ export default async function Page({
       duration,
       language,
       skill,
+      city,
       limit: pageSize + 1,
       offset: (page - 1) * pageSize,
     }),
@@ -143,8 +147,15 @@ export default async function Page({
     : null;
   const showMatchBand = Boolean(internSkills) && matchedCount > 0;
 
+  // Skill breakdown for the "Why these →" explainer. The top match's
+  // `haveSkills` is the intersecting set; missing = required skills not in it.
+  const topMatchHave = topMatch ? [...(topMatch.row.haveSkills ?? new Set<string>())] : [];
+  const topMatchMissing = topMatch
+    ? (topMatch.row.internship.skills ?? []).filter((s) => !topMatch.row.haveSkills?.has(s))
+    : [];
+
   const hasActiveFilters = Boolean(
-    sector || locationType || duration || language || skill || paid !== 'all' || search,
+    sector || locationType || duration || language || skill || city || paid !== 'all' || search,
   );
 
   return (
@@ -196,7 +207,8 @@ export default async function Page({
               (locationType ? 1 : 0) +
               (duration ? 1 : 0) +
               (language ? 1 : 0) +
-              (skill ? 1 : 0)
+              (skill ? 1 : 0) +
+              (city ? 1 : 0)
             }
           >
             <MarketplaceFilters
@@ -208,6 +220,7 @@ export default async function Page({
                 duration,
                 language,
                 skill,
+                city,
               }}
               sectors={sectors}
               counts={facetCounts}
@@ -242,9 +255,27 @@ export default async function Page({
                   })}
                 </div>
               </div>
-              <span className="more" aria-hidden>
-                {t('whyThese')} →
-              </span>
+              <MatchExplainer
+                haveSkills={topMatchHave}
+                missingSkills={topMatchMissing}
+                strings={{
+                  trigger: t('whyThese'),
+                  heading: t('whyHeading'),
+                  intro: t('whyIntro', {
+                    top: topMatch.row.organization.name,
+                    role: topMatch.row.internship.title,
+                    pct: topMatch.score,
+                  }),
+                  matchLine: t('whyMatchLine', {
+                    have: topMatchHave.length,
+                    total: topMatchHave.length + topMatchMissing.length,
+                  }),
+                  haveLabel: t('whyHaveLabel'),
+                  missingLabel: t('whyMissingLabel'),
+                  allMatched: t('whyAllMatched'),
+                  close: t('whyClose'),
+                }}
+              />
             </div>
           ) : null}
 
@@ -273,7 +304,7 @@ export default async function Page({
             {page > 1 ? (
               <Link
                 href={buildPaginationHref(
-                  { search, paid, sector, locationType, duration, language, skill },
+                  { search, paid, sector, locationType, duration, language, skill, city },
                   page - 1,
                 )}
                 className="text-[var(--brand-600)] hover:text-[var(--brand-700)]"
@@ -287,7 +318,7 @@ export default async function Page({
             {hasNext ? (
               <Link
                 href={buildPaginationHref(
-                  { search, paid, sector, locationType, duration, language, skill },
+                  { search, paid, sector, locationType, duration, language, skill, city },
                   page + 1,
                 )}
                 className="text-[var(--brand-600)] hover:text-[var(--brand-700)]"
@@ -318,6 +349,7 @@ function buildPaginationHref(
     duration?: string;
     language?: string;
     skill?: string;
+    city?: string;
   },
   page: number,
 ): string {
@@ -328,6 +360,7 @@ function buildPaginationHref(
   if (filters.locationType) sp.set('loc', filters.locationType);
   if (filters.duration) sp.set('dur', filters.duration);
   if (filters.language) sp.set('lang', filters.language);
+  if (filters.city) sp.set('city', filters.city);
   if (filters.paid && filters.paid !== 'all') sp.set('paid', filters.paid);
   if (page > 1) sp.set('page', String(page));
   const s = sp.toString();
