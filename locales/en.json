@@ -704,6 +704,8 @@
   },
   "projectHub": {
     "addInternship": "+ Add internship",
+    "editProject": "Edit project",
+    "editInternship": "Edit",
     "projectPhases": "Project phases",
     "addGoals": "+ Add goals",
     "editGoals": "Edit goals",
@@ -884,6 +886,23 @@
       "emptyAll": "No projects yet — create your first one to get started.",
       "emptyDrafts": "No drafts. Start a new project to draft one.",
       "emptyArchived": "Nothing archived yet."
+    },
+    "edit": {
+      "heading": "Edit project",
+      "subheading": "Update the project's name, brief, schedule, goals, and phases. Changes apply across every workspace under this project.",
+      "reviewHeading": "Ready to save?",
+      "reviewSubheading": "Your changes go live as soon as you save.",
+      "saveCta": "Save changes",
+      "saveHint": "Returns you to the project hub."
+    }
+  },
+  "internships": {
+    "edit": {
+      "heading": "Edit internship",
+      "subheading": "Update this role's details. Saving won't change whether it's published.",
+      "deliverablesHeading": "What will they deliver?",
+      "saveCta": "Save changes",
+      "back": "← Back"
     }
   },
   "errors": {

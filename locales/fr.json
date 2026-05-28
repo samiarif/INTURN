@@ -704,6 +704,8 @@
   },
   "projectHub": {
     "addInternship": "+ Ajouter un stage",
+    "editProject": "Modifier le projet",
+    "editInternship": "Modifier",
     "projectPhases": "Phases du projet",
     "addGoals": "+ Ajouter des objectifs",
     "editGoals": "Modifier les objectifs",
@@ -884,6 +886,23 @@
       "emptyAll": "Aucun projet — créez votre premier pour démarrer.",
       "emptyDrafts": "Aucun brouillon. Démarrez un nouveau projet.",
       "emptyArchived": "Rien d'archivé pour l'instant."
+    },
+    "edit": {
+      "heading": "Modifier le projet",
+      "subheading": "Mettez à jour le nom, le résumé, le calendrier, les objectifs et les phases du projet. Les changements s'appliquent à tous les espaces de travail de ce projet.",
+      "reviewHeading": "Prêt à enregistrer ?",
+      "reviewSubheading": "Vos modifications sont appliquées dès l'enregistrement.",
+      "saveCta": "Enregistrer les modifications",
+      "saveHint": "Vous ramène au hub du projet."
+    }
+  },
+  "internships": {
+    "edit": {
+      "heading": "Modifier le stage",
+      "subheading": "Mettez à jour les détails de ce poste. L'enregistrement ne change pas son état de publication.",
+      "deliverablesHeading": "Que vont-ils livrer ?",
+      "saveCta": "Enregistrer les modifications",
+      "back": "← Retour"
     }
   },
   "errors": {
