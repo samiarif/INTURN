@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { Deliverable } from '@/db/schema';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -43,12 +44,18 @@ function buildMeta(d: Deliverable): string {
   return 'Upcoming';
 }
 
-export function DeliverablesMini({ deliverables }: { deliverables: Deliverable[] }) {
+export function DeliverablesMini({
+  deliverables,
+  basePath,
+}: {
+  deliverables: Deliverable[];
+  basePath: string;
+}) {
   return (
     <div className="ws-card">
       <div className="ws-card-head">
         <h3>Deliverables</h3>
-        <a className="ws-link">All versions →</a>
+        <Link href={`${basePath}?tab=deliverables`} className="ws-link">All versions →</Link>
       </div>
       <div className="ws-deliv-list">
         {deliverables.map((d) => {

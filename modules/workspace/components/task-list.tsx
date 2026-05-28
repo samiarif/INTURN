@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import type { Task } from '@/db/schema';
 
@@ -54,9 +55,11 @@ function formatDue(
 export async function TaskList({
   tasks,
   view,
+  basePath,
 }: {
   tasks: Task[];
   view: 'intern' | 'supervisor';
+  basePath: string;
 }) {
   const [t, tCols, locale] = await Promise.all([
     getTranslations('workspace.tasksBoard'),
@@ -69,7 +72,7 @@ export async function TaskList({
     <div className="ws-card">
       <div className="ws-card-head">
         <h3>{view === 'intern' ? t('thisWeek') : 'Tasks · this week'}</h3>
-        <a className="ws-link">See all {tasks.length} →</a>
+        <Link href={`${basePath}?tab=tasks`} className="ws-link">See all {tasks.length} →</Link>
       </div>
       <div className="ws-tasks">
         {tasks.map((task) => {

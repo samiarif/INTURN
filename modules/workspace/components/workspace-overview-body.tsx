@@ -25,13 +25,17 @@ export async function WorkspaceOverviewBody({
   view: WorkspaceView;
 }) {
   const [data, locale] = await Promise.all([loadWorkspaceData(workspaceId), getLocale()]);
+  const basePath =
+    view === 'intern'
+      ? `/intern/workspaces/${workspaceId}`
+      : `/company/workspaces/${workspaceId}`;
   return (
     <div className="ws-content">
       <div className="ws-col-main">
         <BriefCard data={data} view={view} />
         <StatTiles data={data} view={view} locale={locale} />
-        <TaskList tasks={data.tasks} view={view} />
-        <DeliverablesMini deliverables={data.deliverables} />
+        <TaskList tasks={data.tasks} view={view} basePath={basePath} />
+        <DeliverablesMini deliverables={data.deliverables} basePath={basePath} />
         <ActivityFeed events={data.events} actors={buildActorLookup(data)} />
       </div>
       <div className="ws-col-side">
