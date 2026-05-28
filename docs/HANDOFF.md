@@ -1,14 +1,44 @@
-# inturn — Session Handoff (2026-05-27, Sprint D + Legal + GDPR + 7-round UX sweep)
+# inturn — Session Handoff (updated 2026-05-28 — Completeness Sprints S1–S4)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
-## TL;DR — Where we are
+## TL;DR — Where we are (2026-05-28)
 
-- **Live in prod** at https://inturn.vercel.app. Custom domain inturn-hub.com **not yet wired**.
-- **Full first-time loop works end-to-end**: intern signs up → completes profile → browses marketplace (filtered + bookmarkable + match-scored) → applies → company reviews + accepts → workspace auto-created with Overview/Tasks/Deliverables/Comments/Activity/Timeline tabs + weekly check-in with AI draft → end of internship → supervisor issues PDF record with shareable link.
-- **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres + Clerk auth + Tailwind v4 + shadcn/ui (new-york) + next-intl 4 (FR default / EN with `as-needed` prefix) + Vitest 4 + Vercel hosting + @react-pdf/renderer + Resend (transactional email) + Anthropic SDK (Claude Sonnet 4.5).
-- **Branch**: `sprint-b-phase-1-closure` carries Sprint A + B + C + 3 design implementations + **Sprint D complete (D1-D8)** + Legal pages + Cookie banner + Account/GDPR. 133/133 tests green, typecheck + lint + build all clean as of `1f7d475`.
-- **Sprint D fully shipped**. Sprint E remaining: Sentry observability, Stripe scaffolding (flag-gated), Twilio WhatsApp, bundle analyzer. Plans at `docs/superpowers/plans/2026-05-{24,25}-*.md`.
+- **Branch/state:** everything is merged to **`main`** at commit **`9cee725`**. All feature/sprint branches deleted — `main` is the single source of truth. **276 tests pass** (+2 opt-in integration tests skipped by default); typecheck + lint + production build all clean.
+- **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres (neon-http) + Clerk auth + Tailwind v4 + shadcn/ui + next-intl 4 (FR default / EN `as-needed`) + Vitest 4 + Vercel + @react-pdf/renderer + Resend + Anthropic SDK.
+- **Full loop works end-to-end:** intern signs up → profile → marketplace (filtered/bookmarked/match-scored, real city facet, "Why these" explainer) → apply → company reviews + accepts → workspace (sidebar shell + instant `?tab=` switching: Overview/Tasks/Deliverables/Timeline/Comments + check-in) → supervisor reviews + issues PDF record with public share link.
+- **Shell:** the platform now uses a **240px left sidebar** (not the old top header) on all `/intern`,`/company`,`/admin`,`/marketplace`,`/account` routes; mobile = drawer. Marketing pages keep their own header (intentional).
+
+### ⚠️ Two things to never forget
+1. **`DEV_AUTH_BYPASS` must NOT be set in Vercel production** — it bypasses all auth. It's a local-dev-only flag (`.env.local`) that lets `/dev/login` impersonate seeded users without reaching Clerk.
+2. **Local dev network quirk:** Sam's network blocks IPv6/Cloudflare, so Clerk + Neon are unreachable normally. Mitigations live in code: `--dns-result-order=ipv4first` (in the `dev` script), a Neon fetch retry with a 10s per-attempt timeout (`db/index.ts`), and the dev-auth bypass. A first page-load after idle may take ~10s (cold-start retry) then stabilize — that's expected, not a wedge.
+
+## Completeness Sprints S1–S4 (this session, 2026-05-28)
+
+**Why:** a functional-completeness audit (read every interactive element's code, not HTTP 200) found the platform was ~70% wired with a **silent production-breaker: the "Publish to marketplace" button only saved a draft**. Four sprints closed the gap. Audit + plan: `docs/SPRINT_PLAN_COMPLETENESS.md`.
+
+- **S1 — Core loop:** fixed the publish stub (now really publishes, guarded by 3 regression tests); wired Assign-task, both check-in buttons, the broken rail check-in link, overview "See all"/"All versions" links; let interns create tasks. New features: **Workspace Notes** (author-private), **Nudge** (supervisor→intern notification+email, 24h rate-limit), **Deliverable share links** (`/deliverables/[token]` public view). Schema migration `0013` (workspace_notes + deliverables.share_token).
+- **S2 — Lifecycle & management:** **edit project** + **edit internship** (reuse create forms in edit mode); **unpublish/close** internship; **company workspaces index** (`/company/workspaces`); admin **suspend-from-report**, **role change** (DB + best-effort Clerk sync), **user detail page**, **audit pagination + CSV export**.
+- **S3 — UX completeness:** deliverable detail **sub-tabs** (Brief/Comments/Activity) now real; marketplace **"Why these" match explainer** popover; **real city facet filter**; **clickable dashboard stat tiles**; **notification preferences** (honored by the dispatcher) + **persisted theme** (FOUC-safe; language pref persisted, cross-device redirect deferred); **phase drag-reorder**. Schema migration `0014` (users: theme_pref/locale_pref/notify_email/notify_in_app).
+- **S4 — Hardening:** confirmed `acceptApplication` is already crash-safe (workspace-first ordering) and locked it with tests; **fixed the dev-server Neon wedge** (per-attempt 10s fetch timeout in `db/index.ts` — was hanging ~54s); +55 unit tests (deliverables state-machine extracted to `modules/deliverables/state-machine.ts`, dispatcher pref logic); 2 opt-in self-cleaning DB integration tests (`pnpm test:integration`, gated on `DB_INTEGRATION=1`); removed ~190 lines dead `.ws-side*` CSS; rewrote `db/migrations/README.md`.
+
+### Deferred (documented, not lost)
+- **`'use cache'` / Cache Components** adoption — needs app-wide `cacheComponents: true` which would force Suspense-wrapping 20+ auth pages; marketplace already cached via `unstable_cache`. NOTE comment in `modules/internships/queries.ts`. Revisit as a dedicated PPR effort.
+- **Integration tests in CI** — currently opt-in/local; wiring into CI needs an ephemeral Neon branch (create→migrate→`DB_INTEGRATION=1`→drop).
+- **Language cross-device redirect** — `locale_pref` is persisted but not yet consumed as a post-login redirect.
+- **Community likes + nested replies** (P12) — deferred to a future engagement sprint.
+- **Drizzle journal drift** — `db/migrations/meta/` is gitignored & not authoritative; migrations are hand-rolled idempotent SQL run by `scripts/migrate.ts`. See `db/migrations/README.md`.
+
+## How to run + test locally
+1. `cd inturn && pnpm dev` (the `dev` script sets `--dns-result-order=ipv4first`).
+2. Open `http://localhost:3000/dev/login` — pick a seeded persona:
+   - intern `sami.arif@thog.io`, company `dazzsemi@gmail.com`, admin `hellowemakeitgrow@gmail.com`.
+3. Verify commands: `pnpm tsc --noEmit` · `pnpm lint` · `pnpm vitest run` (276) · `pnpm build`.
+
+## What's next (not started)
+The dev roadmap (`docs/DEV_ROADMAP.md`, 70 items) Phase 1 is done. Untouched: **Phase 2 — AI moat** (E8 AI matching, E9 candidate summary, E10 mock interview, E11 deliverable feedback, E12 check-in synthesizer, E13 brief expander, E14 task suggestions), then engagement loops, university product, trust-at-scale, **Arabic + RTL** (E38/E39 — big addressable-market unlock for Tunisia). The earlier strategist review is in `docs/PRODUCT_STRATEGY.md`.
+
+---
 
 ## Sprint D shipped (2026-05-26 to 2026-05-27)
 

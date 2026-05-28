@@ -1,5 +1,8 @@
 # Inturn — Path to Production-Ready (Completeness Sprints)
 
+> ✅ **STATUS: ALL FOUR SPRINTS (S1–S4) SHIPPED & MERGED TO `main` as of 2026-05-28 (commit `9cee725`).**
+> See `docs/HANDOFF.md` for the as-built record + what's deferred. This doc is the original plan, kept for reference.
+
 **Date:** 2026-05-28
 **Author:** Claude (paired with Sam)
 **Premise:** A functional-completeness audit (read every interactive element's
