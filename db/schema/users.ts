@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -13,6 +13,14 @@ export const users = pgTable('users', {
    * and refuses. UI shows a banner so the user knows their account is
    * restricted. */
   suspendedAt: timestamp('suspended_at'),
+  /** Account-level appearance + notification preferences (settings). Theme
+   * and locale are nullable = "no explicit choice yet" (fall back to the
+   * cookie / URL). The two notify_* toggles are master per-channel switches
+   * honored by the notification dispatcher. */
+  themePref: text('theme_pref', { enum: ['light', 'dark', 'system'] }),
+  localePref: text('locale_pref', { enum: ['en', 'fr'] }),
+  notifyEmail: boolean('notify_email').default(true).notNull(),
+  notifyInApp: boolean('notify_in_app').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
