@@ -3,10 +3,7 @@ import { db } from '@/db';
 import { deliverables, type DeliverableRevision } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
-import {
-  isValidDeliverableTransition,
-  type DeliverableStatus,
-} from './state-machine';
+import { nextDeliverableState, type DeliverableStatus } from './state-machine';
 
 /**
  * URL-safe 24-byte token — same scheme as records' share tokens
@@ -69,13 +66,11 @@ export async function submitDeliverable(input: {
   if (!current) throw new Error('Deliverable not found');
 
   const from = (current.status ?? 'draft') as DeliverableStatus;
-  if (!isValidDeliverableTransition(from, 'submitted')) {
-    throw new Error(`Cannot submit from status ${from}`);
-  }
-
-  // Bump version on resubmit (revision-requested → submitted = new version)
+  // Pure resolver owns both the transition guard and the version-bump rule
+  // (revision-requested → submitted = a new version).
+  const next = nextDeliverableState({ status: from, version: current.version }, 'submit');
   const isResubmit = from === 'revision-requested';
-  const nextVersion = isResubmit ? current.version + 1 : current.version;
+  const nextVersion = next.version;
 
   // Push the just-rejected (or first-submitted) snapshot into history before
   // overwriting the current row with the new submission. We only push when
@@ -148,9 +143,7 @@ export async function approveDeliverable(input: { deliverableId: string; actorId
     .limit(1);
   if (!current) throw new Error('Deliverable not found');
   const from = (current.status ?? 'draft') as DeliverableStatus;
-  if (!isValidDeliverableTransition(from, 'approved')) {
-    throw new Error(`Cannot approve from status ${from}`);
-  }
+  nextDeliverableState({ status: from, version: current.version }, 'approve');
 
   await db
     .update(deliverables)
@@ -178,9 +171,7 @@ export async function requestRevision(input: {
     .limit(1);
   if (!current) throw new Error('Deliverable not found');
   const from = (current.status ?? 'draft') as DeliverableStatus;
-  if (!isValidDeliverableTransition(from, 'revision-requested')) {
-    throw new Error(`Cannot request revision from status ${from}`);
-  }
+  nextDeliverableState({ status: from, version: current.version }, 'request-revision');
 
   await db
     .update(deliverables)
