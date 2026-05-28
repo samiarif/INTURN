@@ -37,6 +37,8 @@ type ListFilters = {
   duration?: 'short' | 'medium' | 'long';
   language?: 'fr' | 'en' | 'ar';
   skill?: string;
+  /** Exact match against the listing org's `organizations.city`. */
+  city?: string;
   limit?: number;
   offset?: number;
 };
@@ -67,6 +69,9 @@ async function queryPublishedInternships(filters: ListFilters) {
   if (filters.sector) conditions.push(eq(internships.sector, filters.sector));
   if (filters.locationType) conditions.push(eq(internships.locationType, filters.locationType));
   if (filters.language) conditions.push(eq(internships.language, filters.language));
+  // City is a facet on the listing's org (organizations.city), filtered with
+  // an exact match so it stays in sync with computeFacetCounts' city buckets.
+  if (filters.city) conditions.push(eq(organizations.city, filters.city));
   if (filters.duration === 'short') {
     conditions.push(lt(internships.duration, 8));
   } else if (filters.duration === 'medium') {
@@ -108,6 +113,7 @@ export async function listPublishedInternships(filters: ListFilters = {}) {
       filters.duration ?? '',
       filters.language ?? '',
       filters.skill ?? '',
+      filters.city ?? '',
       String(filters.limit ?? 20),
       String(filters.offset ?? 0),
     ],

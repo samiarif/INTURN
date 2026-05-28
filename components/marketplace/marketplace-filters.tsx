@@ -10,6 +10,7 @@ export type MarketplaceFiltersState = {
   duration?: 'short' | 'medium' | 'long';
   language?: 'fr' | 'en' | 'ar';
   skill?: string;
+  city?: string;
   page?: number;
 };
 
@@ -27,6 +28,7 @@ function buildHref(state: MarketplaceFiltersState, overrides: Partial<Marketplac
   if (next.locationType) sp.set('loc', next.locationType);
   if (next.duration) sp.set('dur', next.duration);
   if (next.language) sp.set('lang', next.language);
+  if (next.city) sp.set('city', next.city);
   if (next.paid && next.paid !== 'all') sp.set('paid', next.paid);
   // Always reset to page 1 when filters change.
   const s = sp.toString();
@@ -144,18 +146,18 @@ export async function MarketplaceFilters({
       {topCities.length > 0 ? (
         <div className="ex-filt">
           <h4>{t('location')}</h4>
-          {topCities.map(([city, n]) => (
-            <FilterRow
-              // City filter isn't wired to query state yet — render as a
-              // search shortcut into the `q` param so clicking still does
-              // something useful and the count makes sense.
-              key={city}
-              href={buildHref(state, { search: city })}
-              label={city}
-              count={n}
-              active={state.search?.toLowerCase() === city.toLowerCase()}
-            />
-          ))}
+          {topCities.map(([city, n]) => {
+            const active = state.city === city;
+            return (
+              <FilterRow
+                key={city}
+                href={buildHref(state, { city: active ? undefined : city })}
+                label={city}
+                count={n}
+                active={active}
+              />
+            );
+          })}
         </div>
       ) : null}
 
