@@ -51,7 +51,7 @@ export function RailIntern({ data }: { data: WorkspaceOverviewData }) {
         <h4>Weekly check-in</h4>
         <p>Inturn drafts it from your activity — you edit and send.</p>
         <Link
-          href={`/intern/workspaces/${data.workspace.id}/check-in`}
+          href={`/intern/workspaces/${data.workspace.id}?tab=check-in`}
           className="ws-btn-w"
           style={{ textDecoration: 'none' }}
         >
