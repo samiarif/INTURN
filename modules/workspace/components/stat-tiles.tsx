@@ -1,3 +1,4 @@
+import { TrendingUp } from 'lucide-react';
 import type { WorkspaceOverviewData } from '../queries';
 import { computeDaysRemaining } from '../queries';
 
@@ -98,7 +99,7 @@ export function StatTiles({
           <small>{view === 'intern' ? 'logged' : '/ 100'}</small>
         </div>
         <div className="ws-stat-foot good">
-          <span className="arrow-up">↗</span>{' '}
+          <TrendingUp size={12} strokeWidth={2.25} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 2 }} />{' '}
           {view === 'intern'
             ? `${data.events.length} total this internship`
             : activityScore >= 70

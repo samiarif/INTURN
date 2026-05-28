@@ -166,7 +166,8 @@
   margin-bottom: 14px;
 }
 .ws-mhead-title {
-  font-size: 22px; font-weight: 600; letter-spacing: -0.02em;
+  font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 23px; font-weight: 600; letter-spacing: -0.03em;
   color: var(--ink);
 }
 .ws-mhead-badge {
@@ -218,13 +219,30 @@
 .ws-col-main { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .ws-col-side { display: flex; flex-direction: column; gap: 16px; }
 
+/* One orchestrated reveal on load — staggered rise of the overview sections.
+ * `ui-rise` keyframe + tokens live in globals.css. */
+@media (prefers-reduced-motion: no-preference) {
+  .ws-col-main > *, .ws-col-side > * {
+    animation: ui-rise var(--dur-base) var(--ease-out) both;
+  }
+  .ws-col-main > *:nth-child(1) { animation-delay: 30ms; }
+  .ws-col-main > *:nth-child(2) { animation-delay: 80ms; }
+  .ws-col-main > *:nth-child(3) { animation-delay: 130ms; }
+  .ws-col-main > *:nth-child(4) { animation-delay: 180ms; }
+  .ws-col-main > *:nth-child(5) { animation-delay: 230ms; }
+  .ws-col-side > * { animation-delay: 120ms; }
+}
+
 /* =================== CARDS =================== */
 .ws-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
   padding: 18px 20px;
+  box-shadow: var(--elev-card);
+  transition: box-shadow var(--dur-base) var(--ease-out);
 }
+.ws-card:hover { box-shadow: var(--elev-card-hover); }
 .ws-card-head {
   display: flex; align-items: center; gap: 10px;
   margin-bottom: 14px;
@@ -251,15 +269,16 @@
 /* Hero brief card */
 .ws-brief {
   background: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 22px 24px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 24px 26px;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 24px;
   align-items: center;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--elev-card);
 }
 .ws-brief::before {
   content: "";
@@ -274,7 +293,8 @@
   margin-bottom: 6px;
 }
 .ws-brief-title {
-  font-size: 26px; font-weight: 600; letter-spacing: -0.025em;
+  font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 28px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1;
   color: var(--ink);
   margin-bottom: 8px;
   text-wrap: balance;
@@ -327,24 +347,45 @@
 }
 .ws-stat {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 15px 17px;
   display: flex; flex-direction: column; gap: 4px;
-  min-height: 88px;
+  min-height: 92px;
   justify-content: center;
+  box-shadow: var(--elev-card);
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out);
 }
+/* A whisper of brand on the top edge — ties the tiles to the identity */
+.ws-stat::before {
+  content: "";
+  position: absolute; inset: 0 0 auto 0; height: 2px;
+  background: var(--brand-gradient);
+  opacity: 0; transition: opacity var(--dur-base) var(--ease-out);
+}
+.ws-stat:hover {
+  box-shadow: var(--elev-card-hover);
+  transform: translateY(-2px);
+  border-color: transparent;
+}
+.ws-stat:hover::before { opacity: 0.9; }
 .ws-stat-label {
-  font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.04em;
+  font-family: var(--font-mono), 'Geist Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em;
   color: var(--ink-3); text-transform: uppercase;
 }
 .ws-stat-value {
   display: flex; align-items: baseline; gap: 6px;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 .ws-stat-value b {
-  font-size: 26px; font-weight: 600; letter-spacing: -0.025em;
+  font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 30px; font-weight: 600; letter-spacing: -0.03em; line-height: 1;
   color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 .ws-stat-value small {
   font-size: 12px; color: var(--ink-3);

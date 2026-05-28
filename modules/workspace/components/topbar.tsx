@@ -1,5 +1,6 @@
 import '../workspace.css';
 import { getTranslations } from 'next-intl/server';
+import { Search, Inbox, CircleHelp } from 'lucide-react';
 
 export type Crumb = { label: string; bold?: boolean };
 
@@ -42,16 +43,16 @@ export async function WorkspaceTopBar({
       </div>
       <div className="ws-tb-actions">
         <div className="ws-tb-search">
-          <span style={{ opacity: 0.5 }}>🔍</span>
+          <Search size={14} className="ws-tb-search-ico" />
           <span>{t('search')}</span>
           <span className="kbd">{t('keyboardShortcut')}</span>
         </div>
         <button className="ws-tb-icon" aria-label={t('inbox')}>
-          <span style={{ fontSize: 14 }}>📬</span>
+          <Inbox size={15} strokeWidth={1.75} />
           <span className="badge-dot" />
         </button>
         <button className="ws-tb-icon" aria-label={t('help')}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600 }}>?</span>
+          <CircleHelp size={15} strokeWidth={1.75} />
         </button>
       </div>
     </div>

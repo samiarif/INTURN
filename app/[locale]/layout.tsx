@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Bricolage_Grotesque } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { ClerkProvider } from '@clerk/nextjs';
 import { NextIntlClientProvider } from 'next-intl';
@@ -22,6 +22,15 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+// Display face for headings + hero numerals. Bricolage Grotesque is warm and
+// characterful (vs. the generic Inter/Geist-everywhere look) while staying
+// crisp enough to sit next to Geist body text. Variable weight 400–800.
+const bricolage = Bricolage_Grotesque({
+  variable: '--font-display',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
 });
 
 export const metadata: Metadata = {
@@ -84,7 +93,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${themeClass}`.trim()}
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${themeClass}`.trim()}
     >
       <body className="font-sans antialiased">
         {skipClerk ? (

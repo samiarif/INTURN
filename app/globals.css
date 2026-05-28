@@ -9,7 +9,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-heading: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-display), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   /* Workshop brand tokens — bridge to Tailwind v4 */
   --color-brand-50: var(--brand-50);
   --color-brand-100: var(--brand-100);
@@ -168,6 +169,43 @@
   --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px 0 rgba(15, 23, 42, 0.04);
   --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.1);
   --shadow-lg: 0 12px 32px -10px rgba(15, 23, 42, 0.18);
+
+  /* ── Elevation system (UI-elevation pass) ─────────────────────────────
+   * Layered, low-opacity shadows for a crisp "lifted off the page" feel
+   * (Linear/Stripe-grade) instead of a single flat border. `--elev-card`
+   * is the resting state; `--elev-card-hover` adds a brand-tinted lift. */
+  --elev-card:
+    0 1px 2px -1px rgba(15, 23, 42, 0.06),
+    0 2px 6px -2px rgba(15, 23, 42, 0.05);
+  --elev-card-hover:
+    0 2px 4px -2px rgba(15, 23, 42, 0.08),
+    0 8px 20px -6px rgba(91, 33, 182, 0.14);
+  --elev-pop:
+    0 4px 10px -3px rgba(15, 23, 42, 0.12),
+    0 12px 28px -8px rgba(15, 23, 42, 0.16);
+  /* Hairline that reads sharper than a 1px border on hi-dpi */
+  --hairline: rgba(15, 23, 42, 0.07);
+
+  /* ── Motion ────────────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+}
+
+/* Staggered entrance for elevated surfaces — one orchestrated reveal on
+ * load reads as "crafted" without scattering micro-animations everywhere.
+ * Respects reduced-motion. */
+@keyframes ui-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ui-rise { animation: ui-rise var(--dur-base) var(--ease-out) both; }
+  .ui-rise-1 { animation-delay: 40ms; }
+  .ui-rise-2 { animation-delay: 90ms; }
+  .ui-rise-3 { animation-delay: 140ms; }
+  .ui-rise-4 { animation-delay: 190ms; }
 }
 
 .dark {
