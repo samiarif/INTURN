@@ -16,10 +16,14 @@ import {
 import { ChipInput } from '@/components/chip-input';
 import { WizardStepsInline } from '@/components/ui/wizard-steps-inline';
 import { DraftBanner } from '@/components/ui/draft-banner';
-import { createInternshipAction } from '@/modules/internships/server-actions';
+import {
+  createInternshipAction,
+  updateInternshipAction,
+} from '@/modules/internships/server-actions';
 import { TemplatePicker } from '@/modules/internships/components/template-picker';
 import { useTranslations } from 'next-intl';
 import type { InternshipTemplate } from '@/lib/internship-templates';
+import type { Internship } from '@/db/schema';
 
 const SECTORS = [
   'Design',
@@ -52,6 +56,27 @@ const DEFAULT_DELIVERABLES: Deliverable[] = [
   { name: '', description: '', dueWeek: 12 },
 ];
 
+const COMPENSATION_UNITS = ['TND / month', 'TND / week', 'EUR / month'] as const;
+
+/**
+ * The internship row stores compensation as a single string, e.g.
+ * "800 TND / month". Split it back into the amount + unit the form's
+ * two controls expect. Falls back to sensible defaults on anything
+ * unexpected so an odd legacy value never breaks the edit screen.
+ */
+function splitCompensation(raw: string | null | undefined): {
+  amount: string;
+  unit: (typeof COMPENSATION_UNITS)[number];
+} {
+  const value = (raw ?? '').trim();
+  if (!value) return { amount: '800', unit: 'TND / month' };
+  const match = value.match(/^(\S+)\s+(.*)$/);
+  if (!match) return { amount: value, unit: 'TND / month' };
+  const [, amount, rest] = match;
+  const unit = COMPENSATION_UNITS.find((u) => u === rest) ?? 'TND / month';
+  return { amount, unit };
+}
+
 export function PostInternshipForm({
   projectId,
   projectName,
@@ -59,6 +84,7 @@ export function PostInternshipForm({
   orgName,
   orgLocation,
   supervisorName,
+  initialInternship,
 }: {
   projectId: string;
   projectName: string;
@@ -66,26 +92,48 @@ export function PostInternshipForm({
   orgName: string;
   orgLocation: string;
   supervisorName: string;
+  initialInternship?: Internship;
 }) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [sector, setSector] = useState('Design');
-  const [skills, setSkills] = useState<string[]>([]);
-  const [duration, setDuration] = useState(12);
-  const [internCount, setInternCount] = useState(1);
-  const [locationType, setLocationType] = useState<Mode>('hybrid');
-  const [location, setLocation] = useState(orgLocation);
-  const [language, setLanguage] = useState<'fr' | 'en' | 'ar'>('fr');
-  const [isPaid, setIsPaid] = useState(true);
-  const [compensation, setCompensation] = useState('800');
-  const [compensationUnit, setCompensationUnit] = useState('TND / month');
+  const isEdit = Boolean(initialInternship);
+  const tEdit = useTranslations('internships.edit');
+  const seededComp = splitCompensation(initialInternship?.compensation);
+
+  const [title, setTitle] = useState(initialInternship?.title ?? '');
+  const [description, setDescription] = useState(initialInternship?.description ?? '');
+  const [sector, setSector] = useState(initialInternship?.sector ?? 'Design');
+  const [skills, setSkills] = useState<string[]>(initialInternship?.skills ?? []);
+  const [duration, setDuration] = useState(initialInternship?.duration ?? 12);
+  const [internCount, setInternCount] = useState(initialInternship?.internCount ?? 1);
+  const [locationType, setLocationType] = useState<Mode>(
+    (initialInternship?.locationType as Mode | null) ?? 'hybrid',
+  );
+  const [location, setLocation] = useState(initialInternship?.location ?? orgLocation);
+  const [language, setLanguage] = useState<'fr' | 'en' | 'ar'>(
+    (initialInternship?.language as 'fr' | 'en' | 'ar' | null) ?? 'fr',
+  );
+  const [isPaid, setIsPaid] = useState(initialInternship?.isPaid ?? true);
+  const [compensation, setCompensation] = useState(seededComp.amount);
+  const [compensationUnit, setCompensationUnit] = useState<string>(seededComp.unit);
   const [deadline, setDeadline] = useState(() => {
+    if (initialInternship?.deadline) return initialInternship.deadline;
     const d = new Date();
     d.setDate(d.getDate() + 21);
     return d.toISOString().slice(0, 10);
   });
-  const [deliverables, setDeliverables] = useState<Deliverable[]>(DEFAULT_DELIVERABLES);
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [deliverables, setDeliverables] = useState<Deliverable[]>(
+    initialInternship?.deliverables && initialInternship.deliverables.length > 0
+      ? initialInternship.deliverables.map((d) => ({
+          name: d.name,
+          description: d.description ?? '',
+          dueWeek: d.dueWeek,
+        }))
+      : DEFAULT_DELIVERABLES,
+  );
+  const [questions, setQuestions] = useState<Question[]>(
+    initialInternship?.customQuestions ?? [],
+  );
+  // `visibility` isn't persisted on the internship row, so in edit mode it
+  // simply defaults to public — it doesn't round-trip from the create form.
   const [visibility, setVisibility] = useState<Visibility>('public');
   const tTpl = useTranslations('internshipTemplates');
 
@@ -148,7 +196,9 @@ export function PostInternshipForm({
     setQuestions([...questions, { question: '', required: false }]);
   }
 
-  const boundAction = createInternshipAction.bind(null, projectId);
+  const boundAction = isEdit
+    ? updateInternshipAction.bind(null, initialInternship!.id)
+    : createInternshipAction.bind(null, projectId);
   const combinedCompensation = isPaid ? `${compensation} ${compensationUnit}` : '';
 
   return (
@@ -168,15 +218,18 @@ export function PostInternshipForm({
       <input type="hidden" name="compensation" value={combinedCompensation} />
       <input type="hidden" name="visibility" value={visibility} />
 
-      <DraftBanner
-        title="Draft mode"
-        message={`saving here won't publish — ${projectName} stays private until you hit Publish.`}
-      />
+      {!isEdit && (
+        <DraftBanner
+          title="Draft mode"
+          message={`saving here won't publish — ${projectName} stays private until you hit Publish.`}
+        />
+      )}
 
       {/* Templates picker — only shown when title is blank to avoid
           overwriting work in progress. Companies looking at a fresh
-          internship form get an instant scaffold to start from. */}
-      {title.trim().length === 0 && <TemplatePicker onPick={applyTemplate} />}
+          internship form get an instant scaffold to start from. Never
+          shown in edit mode (would clobber the loaded internship). */}
+      {!isEdit && title.trim().length === 0 && <TemplatePicker onPick={applyTemplate} />}
 
       <WizardStepsInline
         steps={[
@@ -195,12 +248,19 @@ export function PostInternshipForm({
           <section id="role" className="space-y-5 scroll-mt-24">
             <header>
               <h1 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
-                Add an internship to{' '}
-                <span className="text-[var(--brand-600)]">{projectName}</span>
+                {isEdit ? (
+                  tEdit('heading')
+                ) : (
+                  <>
+                    Add an internship to{' '}
+                    <span className="text-[var(--brand-600)]">{projectName}</span>
+                  </>
+                )}
               </h1>
               <p className="text-[14px] text-[var(--ink-3)] mt-1">
-                One role, one set of deliverables. You can add more roles to this project
-                anytime — research, copywriting, dev support, etc.
+                {isEdit
+                  ? tEdit('subheading')
+                  : 'One role, one set of deliverables. You can add more roles to this project anytime — research, copywriting, dev support, etc.'}
               </p>
             </header>
 
@@ -668,21 +728,30 @@ export function PostInternshipForm({
                 onClick={() => window.history.back()}
                 className="text-[var(--ink-3)]"
               >
-                ← Back
+                {isEdit ? tEdit('back') : '← Back'}
               </Button>
-              <div className="flex gap-2">
-                <Button type="submit" variant="outline" name="intent" value="draft">
-                  Save as draft
-                </Button>
+              {isEdit ? (
                 <Button
                   type="submit"
-                  name="intent"
-                  value="publish"
                   className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
                 >
-                  Publish to marketplace →
+                  {tEdit('saveCta')}
                 </Button>
-              </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Button type="submit" variant="outline" name="intent" value="draft">
+                    Save as draft
+                  </Button>
+                  <Button
+                    type="submit"
+                    name="intent"
+                    value="publish"
+                    className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
+                  >
+                    Publish to marketplace →
+                  </Button>
+                </div>
+              )}
             </div>
           </section>
         </div>

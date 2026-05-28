@@ -47,6 +47,48 @@ export async function createInternship(input: {
   return created;
 }
 
+export async function updateInternship(input: {
+  internshipId: string;
+  data: InternshipFormInput;
+  actorId: string;
+}) {
+  // Edits never touch `status` — publish/unpublish is a separate lifecycle
+  // action (S2-B). We only rewrite the editable content fields.
+  const [updated] = await db
+    .update(internships)
+    .set({
+      title: input.data.title,
+      description: input.data.description,
+      sector: input.data.sector,
+      skills: input.data.skills,
+      duration: input.data.duration,
+      locationType: input.data.locationType,
+      location: input.data.location,
+      isPaid: input.data.isPaid,
+      compensation: input.data.compensation,
+      internCount: input.data.internCount,
+      language: input.data.language,
+      deadline: input.data.deadline,
+      customQuestions: input.data.customQuestions,
+      deliverables: input.data.deliverables?.filter((d) => d.name.trim().length > 0),
+      updatedAt: new Date(),
+    })
+    .where(eq(internships.id, input.internshipId))
+    .returning();
+
+  if (!updated) throw new Error('Internship not found');
+
+  await recordEvent({
+    type: 'internship.updated',
+    actorId: input.actorId,
+    targetType: 'internship',
+    targetId: input.internshipId,
+    metadata: { title: input.data.title },
+  });
+
+  return updated;
+}
+
 export async function publishInternship(input: { internshipId: string; actorId: string }) {
   const [existing] = await db
     .select()
