@@ -9,6 +9,7 @@ import { routing } from '@/i18n/routing';
 import { frFR, enUS } from '@clerk/localizations';
 import { CookieBanner } from '@/components/cookie-banner';
 import { isDevAuthBypassed } from '@/lib/dev-auth';
+import { getSession } from '@/modules/auth/session';
 import '../globals.css';
 
 const clerkLocales = { fr: frFR, en: enUS };
@@ -41,8 +42,30 @@ export default async function LocaleLayout({
   }
 
   const messages = (await import(`@/locales/${locale}.json`)).default;
-  const theme = (await cookies()).get('inturn-theme')?.value;
-  const themeClass = theme === 'dark' ? 'dark' : '';
+
+  // No-flash theme: the cookie is the source of truth and is applied to the
+  // server-rendered <html class> before paint (no FOUC). P10 cross-device
+  // hydration: when the cookie is ABSENT (a fresh device) and the logged-in
+  // user has a saved themePref, fall back to that pref for the SSR class so
+  // their preference follows them. This stays FOUC-safe — the class is still
+  // decided server-side, never on the client. Guarded so an auth/DB hiccup
+  // (e.g. the dev-bypass offline path where auth() throws) never breaks the
+  // layout; we just render the default theme in that case.
+  const themeCookie = (await cookies()).get('inturn-theme')?.value;
+  let resolvedTheme: 'light' | 'dark' | undefined =
+    themeCookie === 'dark' ? 'dark' : themeCookie === 'light' ? 'light' : undefined;
+  if (!resolvedTheme) {
+    try {
+      const session = await getSession();
+      const pref = session?.user.themePref;
+      // 'system' has no deterministic server value — leave it to the client
+      // matchMedia default; only an explicit light/dark hydrates the SSR class.
+      if (pref === 'dark' || pref === 'light') resolvedTheme = pref;
+    } catch {
+      // ignore — render default theme
+    }
+  }
+  const themeClass = resolvedTheme === 'dark' ? 'dark' : '';
 
   // Dev-only bypass: when DEV_AUTH_BYPASS=1 we skip <ClerkProvider> so
   // it doesn't hang on the bootstrap fetch to api.clerk.com (which is

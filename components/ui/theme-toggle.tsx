@@ -8,6 +8,11 @@ function readTheme(): 'light' | 'dark' {
   if (typeof document === 'undefined') return 'light';
   const cookie = document.cookie.split('; ').find((c) => c.startsWith(`${COOKIE_KEY}=`));
   if (cookie) return cookie.split('=')[1] === 'dark' ? 'dark' : 'light';
+  // No cookie yet: trust the server-rendered <html class>. The layout sets it
+  // from the cookie OR (on a fresh device) the user's saved themePref, so this
+  // keeps the toggle's "current" in sync with what's actually painted. Falls
+  // back to the OS preference only when the class is unset too.
+  if (document.documentElement.classList.contains('dark')) return 'dark';
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
