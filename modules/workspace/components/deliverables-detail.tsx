@@ -4,6 +4,8 @@ import { Avatar } from '@/components/avatar';
 import { DelivReviewBar } from './deliv-review-bar';
 import { DelivUploadZone } from './deliv-upload-zone';
 import { ShareLinkButton } from './share-link-button';
+import { DelivDetailTabs } from './deliverables-detail-tabs';
+import type { CommentWithAuthor } from '@/modules/comments/queries';
 import type { WorkspaceOverviewData } from '../queries';
 
 function fmtDateLong(d: Date | string | null, locale: string): string {
@@ -30,6 +32,19 @@ function pillVariantFor(status: DeliverableStatusLite): PillVariant {
   if (status === 'approved') return 'approved';
   if (status === 'revision-requested') return 'changes';
   return 'draft';
+}
+
+type StatusKey =
+  | 'statusInReview'
+  | 'statusApproved'
+  | 'statusChangesRequested'
+  | 'statusDraft';
+
+function statusKeyFor(status: DeliverableStatusLite): StatusKey {
+  if (status === 'submitted') return 'statusInReview';
+  if (status === 'approved') return 'statusApproved';
+  if (status === 'revision-requested') return 'statusChangesRequested';
+  return 'statusDraft';
 }
 
 function pillText(
@@ -209,12 +224,16 @@ export async function DelivDetail({
   role,
   data,
   locale,
+  comments,
+  currentUserId,
 }: {
   deliverable: Deliverable;
   idx: number;
   role: 'intern' | 'supervisor';
   data: WorkspaceOverviewData;
   locale: string;
+  comments: CommentWithAuthor[];
+  currentUserId: string;
 }) {
   const t = await getTranslations('workspace.deliverables.master');
   const status = (deliverable.status ?? 'draft') as DeliverableStatusLite;
@@ -321,6 +340,37 @@ export async function DelivDetail({
   const dueLabel = deliverable.dueDate ? fmtDateLong(deliverable.dueDate, locale) : null;
   const eyebrowLabel = t('eyebrowRequired');
 
+  // ── Brief: deliverable.description, augmented by the internship's
+  // deliverable spec (defined at creation) matched by title. ──────────
+  const specEntry =
+    data.internship?.deliverables?.find(
+      (d) => d.name.trim().toLowerCase() === deliverable.title.trim().toLowerCase(),
+    ) ?? null;
+  const briefText = deliverable.description ?? specEntry?.description ?? null;
+  const briefDueWeek = specEntry?.dueWeek ?? null;
+
+  // ── Activity: revision history rendered as a timeline. ──────────────
+  type ActivityRow = {
+    version: number;
+    authorName: string;
+    when: string;
+    status: DeliverableStatusLite;
+    note: string | null;
+    review: { state: 'approved' | 'changes'; text: string; reviewerName: string } | null;
+  };
+  const activityRows: ActivityRow[] = stack
+    .map((v) => ({
+      version: v.version,
+      authorName: v.authorName,
+      when: v.whenLabel,
+      status: v.status,
+      note: v.note,
+      review: v.review
+        ? { state: v.review.state, text: v.review.text, reviewerName: v.review.reviewerName }
+        : null,
+    }))
+    .sort((a, b) => b.version - a.version);
+
   return (
     <section className="dv-detail" aria-labelledby={`dv-title-${deliverable.id}`}>
       <div className="dv-detail-head">
@@ -374,58 +424,111 @@ export async function DelivDetail({
         </div>
       </div>
 
-      <div className="dv-detail-tabs">
-        <span className="dv-detail-tab active">
-          {t('versionsTab')} <span className="count">{totalVersions}</span>
-        </span>
-        <span className="dv-detail-tab">{t('briefTab')}</span>
-        <span className="dv-detail-tab">{t('commentsTab')}</span>
-        <span className="dv-detail-tab">{t('activityTab')}</span>
-      </div>
+      <DelivDetailTabs
+        versionsCount={totalVersions}
+        commentsCount={comments.length}
+        workspaceId={data.workspace.id}
+        deliverableId={deliverable.id}
+        currentUserId={currentUserId}
+        commentsPlaceholder={t('commentsPlaceholder')}
+        commentsEmpty={t('commentsEmpty')}
+        versions={
+          <div className="dv-body">
+            {role === 'supervisor' && status === 'submitted' && (
+              <DelivReviewBar
+                deliverableId={deliverable.id}
+                submitterName={ownerName}
+                whenLabel={
+                  deliverable.submittedAt ? relativeWhen(deliverable.submittedAt) : ''
+                }
+                note={reviewBarNote}
+              />
+            )}
 
-      <div className="dv-body">
-        {role === 'supervisor' && status === 'submitted' && (
-          <DelivReviewBar
-            deliverableId={deliverable.id}
-            submitterName={ownerName}
-            whenLabel={
-              deliverable.submittedAt ? relativeWhen(deliverable.submittedAt) : ''
-            }
-            note={reviewBarNote}
-          />
-        )}
+            {role === 'intern' && status !== 'approved' && (
+              <DelivUploadZone
+                deliverableId={deliverable.id}
+                nextVersion={status === 'draft' ? currentVersion : currentVersion + 1}
+              />
+            )}
 
-        {role === 'intern' && status !== 'approved' && (
-          <DelivUploadZone
-            deliverableId={deliverable.id}
-            nextVersion={
-              status === 'draft' ? currentVersion : currentVersion + 1
-            }
-          />
-        )}
-
-        {stack.map((v) => (
-          <Version
-            key={`${deliverable.id}-${v.version}-${v.active ? 'cur' : 'hist'}`}
-            version={v.version}
-            active={v.active}
-            authorName={v.authorName}
-            whenLabel={v.whenLabel}
-            status={v.status}
-            note={v.note}
-            files={v.files}
-            review={v.review}
-            belowFiles={
-              role === 'intern' && v.active && v.status === 'submitted' ? (
-                <div className="dv-waiting">
-                  <span className="dot" aria-hidden />
-                  <span>{t('supervisorWaitingForReview')}</span>
-                </div>
-              ) : null
-            }
-          />
-        ))}
-      </div>
+            {stack.map((v) => (
+              <Version
+                key={`${deliverable.id}-${v.version}-${v.active ? 'cur' : 'hist'}`}
+                version={v.version}
+                active={v.active}
+                authorName={v.authorName}
+                whenLabel={v.whenLabel}
+                status={v.status}
+                note={v.note}
+                files={v.files}
+                review={v.review}
+                belowFiles={
+                  role === 'intern' && v.active && v.status === 'submitted' ? (
+                    <div className="dv-waiting">
+                      <span className="dot" aria-hidden />
+                      <span>{t('supervisorWaitingForReview')}</span>
+                    </div>
+                  ) : null
+                }
+              />
+            ))}
+          </div>
+        }
+        brief={
+          <div className="dv-body">
+            {briefText ? (
+              <div className="dv-brief">
+                {briefDueWeek !== null && (
+                  <div className="dv-brief-meta">{t('briefDueWeek', { n: briefDueWeek })}</div>
+                )}
+                <p className="dv-brief-text">{briefText}</p>
+              </div>
+            ) : (
+              <div className="dv-tab-empty">{t('briefEmpty')}</div>
+            )}
+          </div>
+        }
+        activity={
+          <div className="dv-body">
+            {activityRows.length === 0 ? (
+              <div className="dv-tab-empty">{t('activityEmpty')}</div>
+            ) : (
+              <ol className="dv-activity">
+                {activityRows.map((row) => (
+                  <li key={`act-${deliverable.id}-${row.version}`} className="dv-activity-item">
+                    <span className="dv-activity-dot" aria-hidden />
+                    <div className="dv-activity-body">
+                      <div className="dv-activity-head">
+                        <b>v{row.version}</b> · {t(statusKeyFor(row.status))}
+                      </div>
+                      <div className="dv-activity-meta">
+                        {t('submittedBy', { name: row.authorName })} · {row.when}
+                      </div>
+                      {row.note && (
+                        <div className="dv-activity-note">&ldquo;{row.note}&rdquo;</div>
+                      )}
+                      {row.review && (
+                        <div className="dv-activity-review">
+                          <span className="pill">
+                            {row.review.state === 'approved'
+                              ? t('statusApproved')
+                              : t('statusChangesRequested')}
+                          </span>
+                          <span>
+                            {row.review.reviewerName}: &ldquo;{row.review.text}&rdquo;
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        }
+        comments={comments}
+      />
 
       {/* Hidden link target lets the page anchor-scroll to the detail on
           small viewports after a list selection. */}
