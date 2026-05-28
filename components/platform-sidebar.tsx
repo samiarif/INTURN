@@ -51,9 +51,10 @@ export function PlatformSidebar({
       ]
     : role === 'company'
     ? [
-        { href: '/company/dashboard', label: tNav('dashboard') },
-        { href: '/company/projects',  label: tNav('projects') },
-        { href: '/marketplace',       label: tNav('browse') },
+        { href: '/company/dashboard',  label: tNav('dashboard') },
+        { href: '/company/projects',   label: tNav('projects') },
+        { href: '/company/workspaces', label: tNav('workspaces') },
+        { href: '/marketplace',        label: tNav('browse') },
         accountItem,
       ]
     : role === 'admin'

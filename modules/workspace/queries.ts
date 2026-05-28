@@ -290,6 +290,53 @@ export const getSupervisorSidebarData = cache(async (supervisorUserId: string): 
   };
 });
 
+export type CompanyWorkspaceRow = {
+  id: string;
+  status: 'active' | 'completed' | 'cancelled' | null;
+  internFirstName: string | null;
+  internLastName: string | null;
+  internshipTitle: string;
+  projectTitle: string | null;
+  startDate: string | null;
+  endDate: string | null;
+};
+
+/**
+ * All workspaces belonging to organizations owned by `ownerUserId` (the company
+ * user) — feeds the /company/workspaces index (M4). Mirrors the workspace →
+ * internship → organization → project join used in getInternSidebarData, but
+ * pivots on organizations.ownerId instead of workspaces.internId, and joins the
+ * intern's user row for the display name.
+ *
+ * Ordering: active workspaces first (active → others), then newest by createdAt.
+ */
+export async function listCompanyWorkspaces(
+  ownerUserId: string,
+): Promise<CompanyWorkspaceRow[]> {
+  return db
+    .select({
+      id: workspaces.id,
+      status: workspaces.status,
+      internFirstName: users.firstName,
+      internLastName: users.lastName,
+      internshipTitle: internships.title,
+      projectTitle: projects.name,
+      startDate: workspaces.startDate,
+      endDate: workspaces.endDate,
+    })
+    .from(workspaces)
+    .innerJoin(organizations, eq(organizations.id, workspaces.organizationId))
+    .innerJoin(internships, eq(internships.id, workspaces.internshipId))
+    .innerJoin(users, eq(users.id, workspaces.internId))
+    .leftJoin(projects, eq(projects.id, internships.projectId))
+    .where(eq(organizations.ownerId, ownerUserId))
+    .orderBy(
+      // Active first; everything else after. Then newest workspace first.
+      sql`case when ${workspaces.status} = 'active' then 0 else 1 end`,
+      desc(workspaces.createdAt),
+    );
+}
+
 /**
  * Author-private notes for a workspace, newest first.
  * Wrapped in React cache so the same (workspaceId, authorId) pair pays one
