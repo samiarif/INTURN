@@ -366,6 +366,16 @@
       "errorGeneric": "Could not save note. Please try again.",
       "errorEmpty": "Note cannot be empty."
     },
+    "nudge": {
+      "trigger": "Send a nudge",
+      "title": "Send a nudge",
+      "placeholder": "Optional message…",
+      "send": "Send",
+      "cancel": "Cancel",
+      "sent": "Nudge sent",
+      "rateLimited": "You already nudged today.",
+      "errorGeneric": "Could not send nudge. Please try again."
+    },
     "deliverables": {
       "uploadNew": "Upload new",
       "approve": "Approve",

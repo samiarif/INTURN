@@ -366,6 +366,16 @@
       "errorGeneric": "Impossible d'enregistrer la note. Réessayez.",
       "errorEmpty": "La note ne peut pas être vide."
     },
+    "nudge": {
+      "trigger": "Envoyer un rappel",
+      "title": "Envoyer un rappel",
+      "placeholder": "Message optionnel…",
+      "send": "Envoyer",
+      "cancel": "Annuler",
+      "sent": "Rappel envoyé",
+      "rateLimited": "Vous avez déjà envoyé un rappel aujourd'hui.",
+      "errorGeneric": "Impossible d'envoyer le rappel. Réessayez."
+    },
     "deliverables": {
       "uploadNew": "Téléverser",
       "approve": "Approuver",

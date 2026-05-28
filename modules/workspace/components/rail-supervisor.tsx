@@ -1,6 +1,7 @@
 import type { WorkspaceOverviewData } from '../queries';
 import { ScheduleCheckInButton } from './schedule-check-in';
 import { IssueRecordButton } from '@/modules/records/components/issue-record-button';
+import { NudgeButton } from './nudge-button';
 import { findActiveRecordByWorkspace } from '@/modules/records/queries';
 import { getLocale } from 'next-intl/server';
 import { formatTimeAgo, hoursSince, type FormatLocale } from '@/lib/format-time';
@@ -170,9 +171,7 @@ export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) 
           <b>Quiet flag · informational</b>
           <br />
           No activity from {internName} {formatTimeAgo(new Date(lastInternEvent.createdAt), locale)}.{' '}
-          <a className="ws-link" style={{ color: '#92400E', textDecoration: 'underline' }}>
-            Send a nudge
-          </a>
+          <NudgeButton workspaceId={data.workspace.id} />
         </div>
       )}
     </>
