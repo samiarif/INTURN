@@ -80,10 +80,19 @@ export async function issueRecordAction(input: {
   return { ok: true, recordId: record.id, shareToken: record.shareToken };
 }
 
-export async function revokeRecordAction(recordId: string): Promise<{ ok: boolean }> {
+export type RevokeRecordResult =
+  | { ok: true }
+  | { ok: false; error: string };
+
+export async function revokeRecordAction(recordId: string): Promise<RevokeRecordResult> {
   const session = await requireSession();
-  if (session.role !== 'admin') return { ok: false };
-  await revokeRecord(recordId);
+  if (session.role !== 'admin') return { ok: false, error: 'forbidden' };
+  try {
+    await revokeRecord(recordId);
+  } catch (e) {
+    console.error('[records/revoke] failed:', e);
+    return { ok: false, error: 'revoke_failed' };
+  }
   revalidatePath('/intern/records');
   return { ok: true };
 }
