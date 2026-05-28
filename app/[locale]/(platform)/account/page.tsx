@@ -5,6 +5,8 @@ import { db } from '@/db';
 import { profiles, organizations } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { DeleteAccountSection } from './delete-account-section';
+import { NotificationPrefsSection } from './notification-prefs-section';
+import { AppearancePrefsSection } from './appearance-prefs-section';
 
 export default async function Page() {
   const session = await requireSession();
@@ -103,6 +105,13 @@ export default async function Page() {
           </div>
         </section>
       )}
+
+      <NotificationPrefsSection
+        initialEmail={session.user.notifyEmail}
+        initialInApp={session.user.notifyInApp}
+      />
+
+      <AppearancePrefsSection />
 
       <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-4">
         <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">

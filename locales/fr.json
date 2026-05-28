@@ -1023,6 +1023,24 @@
       "label": "Compte restreint",
       "body": "Votre compte est actuellement suspendu. Vous pouvez naviguer mais ne pouvez plus postuler, publier ni commenter.",
       "contactSupport": "Contacter le support →"
+    },
+    "notifications": {
+      "section": "Notifications",
+      "intro": "Choisissez comment vous souhaitez être informé. Ces réglages s'appliquent à tous les types de notifications.",
+      "email": "Notifications par e-mail",
+      "emailHint": "Mises à jour de candidature, rappels de point hebdomadaire et relances par e-mail.",
+      "inApp": "Notifications dans l'application",
+      "inAppHint": "Afficher les notifications dans le menu cloche lorsque vous êtes connecté.",
+      "saved": "Enregistré",
+      "error": "Impossible d'enregistrer vos préférences. Veuillez réessayer."
+    },
+    "appearance": {
+      "section": "Apparence",
+      "intro": "Le thème et la langue sont enregistrés sur votre compte et vous suivent sur vos nouveaux appareils.",
+      "theme": "Thème",
+      "light": "Clair",
+      "dark": "Sombre",
+      "language": "Langue"
     }
   },
   "community": {

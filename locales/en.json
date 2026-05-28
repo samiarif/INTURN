@@ -1023,6 +1023,24 @@
       "label": "Account restricted",
       "body": "Your account is currently suspended. You can still browse but cannot apply, post, or comment.",
       "contactSupport": "Contact support →"
+    },
+    "notifications": {
+      "section": "Notifications",
+      "intro": "Choose how you want to hear from us. These apply to all notification types.",
+      "email": "Email notifications",
+      "emailHint": "Application updates, check-in reminders, and nudges by email.",
+      "inApp": "In-app notifications",
+      "inAppHint": "Show notifications in the bell menu while you're signed in.",
+      "saved": "Saved",
+      "error": "Couldn't save your preferences. Please try again."
+    },
+    "appearance": {
+      "section": "Appearance",
+      "intro": "Theme and language are saved to your account and follow you to new devices.",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "language": "Language"
     }
   },
   "community": {

@@ -99,23 +99,29 @@ export async function sendNudgeAction(
     });
 
     // Fire-and-forget email — failure is caught and logged, never thrown.
+    // Honor the recipient's master email toggle (P9). The in-app nudge above
+    // is always created: it carries the rate-limit marker and is the primary
+    // payload of this deliberate, rate-limited action; only the email channel
+    // is suppressible here. `notifyEmail` defaults to true (migration 0014).
     try {
-      const locale = await localeFor(workspace.internId);
-      const tpl = nudgeTemplate({
-        internName: row.intern.firstName ?? 'there',
-        supervisorName,
-        workspaceTitle: row.internship.title,
-        workspaceId,
-        message: trimmedMessage,
-        locale,
-      });
-      await sendEmail({
-        to: row.intern.email,
-        subject: tpl.subject,
-        text: tpl.text,
-        html: tpl.html,
-        tags: [{ name: 'type', value: 'nudge' }],
-      });
+      if (row.intern.notifyEmail ?? true) {
+        const locale = await localeFor(workspace.internId);
+        const tpl = nudgeTemplate({
+          internName: row.intern.firstName ?? 'there',
+          supervisorName,
+          workspaceTitle: row.internship.title,
+          workspaceId,
+          message: trimmedMessage,
+          locale,
+        });
+        await sendEmail({
+          to: row.intern.email,
+          subject: tpl.subject,
+          text: tpl.text,
+          html: tpl.html,
+          tags: [{ name: 'type', value: 'nudge' }],
+        });
+      }
     } catch (emailErr) {
       // Email is best-effort. The in-app notification was already created.
       // This path triggers locally when RESEND_API_KEY is unset — degrade

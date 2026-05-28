@@ -1,11 +1,63 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
+import { eq } from 'drizzle-orm';
 import { auth } from '@/lib/server-auth';
 import { clerkClient } from '@clerk/nextjs/server';
+import { db } from '@/db';
+import { users } from '@/db/schema';
 import { requireSession } from '@/modules/auth/session';
 import { recordAuditLog } from '@/modules/audit/service';
 import { hardDeleteUserData } from './service';
+
+/**
+ * Persist the user's master notification channel toggles (P9).
+ * These are honored by modules/notifications/dispatcher.ts on the next
+ * dispatch. Returns { ok } so the client can surface a saved state.
+ */
+export async function updateNotificationPrefsAction(input: {
+  notifyEmail: boolean;
+  notifyInApp: boolean;
+}): Promise<{ ok: boolean }> {
+  const session = await requireSession();
+  await db
+    .update(users)
+    .set({
+      notifyEmail: input.notifyEmail,
+      notifyInApp: input.notifyInApp,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, session.user.id));
+  revalidatePath('/account');
+  return { ok: true };
+}
+
+/**
+ * Persist appearance preferences (P10): theme and/or locale. Best-effort —
+ * the UI toggle (cookie write / URL navigation) is the source of truth for
+ * the immediate, no-flash change; this just records the choice on the user
+ * row so a new device can pick it up. Wrapped in try/catch so a failed
+ * write never blocks the toggle. Returns { ok } for callers that care.
+ */
+export async function updateAppearancePrefsAction(input: {
+  theme?: 'light' | 'dark' | 'system';
+  locale?: 'en' | 'fr';
+}): Promise<{ ok: boolean }> {
+  try {
+    const session = await requireSession();
+    const patch: Partial<typeof users.$inferInsert> = { updatedAt: new Date() };
+    if (input.theme) patch.themePref = input.theme;
+    if (input.locale) patch.localePref = input.locale;
+    // Nothing to persist beyond the timestamp — skip the round-trip.
+    if (!input.theme && !input.locale) return { ok: true };
+    await db.update(users).set(patch).where(eq(users.id, session.user.id));
+    return { ok: true };
+  } catch (err) {
+    console.error('[account/appearance] persist failed (non-fatal):', err);
+    return { ok: false };
+  }
+}
 
 /**
  * Hard-delete the user's local data + Clerk identity.

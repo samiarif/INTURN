@@ -63,6 +63,23 @@ async function localeFor(userId: string): Promise<'fr' | 'en'> {
   return row?.pref === 'en' ? 'en' : 'fr';
 }
 
+/**
+ * Recipient's master notification channel preferences (P9). Each dispatch
+ * path already loads the recipient's full users row, so we read the toggles
+ * straight off it — no extra query. Defaults are `true` (set NOT NULL DEFAULT
+ * true in migration 0014), so users who never touched settings keep getting
+ * everything; this gate only suppresses a channel a user explicitly turned
+ * off. `notifyInApp=false` skips the in-app notification row; `notifyEmail=false`
+ * skips the transactional email. The two are independent.
+ */
+type NotifyPrefs = { notifyInApp: boolean; notifyEmail: boolean };
+function prefsFor(recipient: NotifyPrefs): NotifyPrefs {
+  return {
+    notifyInApp: recipient.notifyInApp ?? true,
+    notifyEmail: recipient.notifyEmail ?? true,
+  };
+}
+
 async function onApplicationCreated(event: DispatchInput): Promise<void> {
   if (!event.targetId) return;
 
@@ -93,31 +110,37 @@ async function onApplicationCreated(event: DispatchInput): Promise<void> {
     `${row.applicant.firstName ?? ''} ${row.applicant.lastName ?? ''}`.trim() || 'Someone';
 
   for (const sup of supervisors) {
-    await db.insert(notifications).values({
-      recipientId: sup.id,
-      type: 'application.received',
-      body: `${applicantName} applied to ${row.internship.title}`,
-      href: row.project
-        ? `/company/projects/${row.project.id}/applications/${row.app.id}`
-        : `/company/applications/${row.app.id}`,
-      metadata: { applicationId: row.app.id, internshipId: row.internship.id },
-    });
+    const prefs = prefsFor(sup);
 
-    const locale = await localeFor(sup.id);
-    const tpl = applicationReceivedTemplate({
-      supervisorName: sup.firstName ?? 'Supervisor',
-      internshipTitle: row.internship.title,
-      applicantName,
-      applicationId: row.app.id,
-      locale,
-    });
-    await sendEmail({
-      to: sup.email,
-      subject: tpl.subject,
-      text: tpl.text,
-      html: tpl.html,
-      tags: [{ name: 'type', value: 'application.received' }],
-    });
+    if (prefs.notifyInApp) {
+      await db.insert(notifications).values({
+        recipientId: sup.id,
+        type: 'application.received',
+        body: `${applicantName} applied to ${row.internship.title}`,
+        href: row.project
+          ? `/company/projects/${row.project.id}/applications/${row.app.id}`
+          : `/company/applications/${row.app.id}`,
+        metadata: { applicationId: row.app.id, internshipId: row.internship.id },
+      });
+    }
+
+    if (prefs.notifyEmail) {
+      const locale = await localeFor(sup.id);
+      const tpl = applicationReceivedTemplate({
+        supervisorName: sup.firstName ?? 'Supervisor',
+        internshipTitle: row.internship.title,
+        applicantName,
+        applicationId: row.app.id,
+        locale,
+      });
+      await sendEmail({
+        to: sup.email,
+        subject: tpl.subject,
+        text: tpl.text,
+        html: tpl.html,
+        tags: [{ name: 'type', value: 'application.received' }],
+      });
+    }
   }
 }
 
@@ -149,34 +172,39 @@ async function onApplicationStatusChanged(event: DispatchInput): Promise<void> {
 
   const applicantName =
     `${row.applicant.firstName ?? ''} ${row.applicant.lastName ?? ''}`.trim() || 'there';
+  const prefs = prefsFor(row.applicant);
 
-  await db.insert(notifications).values({
-    recipientId: row.applicant.id,
-    type: 'application.status',
-    body: `Your application to ${row.internship.title} was ${newStatus}`,
-    href: `/intern/applications/${row.app.id}`,
-    metadata: {
+  if (prefs.notifyInApp) {
+    await db.insert(notifications).values({
+      recipientId: row.applicant.id,
+      type: 'application.status',
+      body: `Your application to ${row.internship.title} was ${newStatus}`,
+      href: `/intern/applications/${row.app.id}`,
+      metadata: {
+        applicationId: row.app.id,
+        internshipId: row.internship.id,
+        to: newStatus,
+      },
+    });
+  }
+
+  if (prefs.notifyEmail) {
+    const locale = await localeFor(row.applicant.id);
+    const tpl = applicationStatusTemplate({
+      applicantName,
+      internshipTitle: row.internship.title,
+      status: newStatus as ApplicationStatusForEmail,
       applicationId: row.app.id,
-      internshipId: row.internship.id,
-      to: newStatus,
-    },
-  });
-
-  const locale = await localeFor(row.applicant.id);
-  const tpl = applicationStatusTemplate({
-    applicantName,
-    internshipTitle: row.internship.title,
-    status: newStatus as ApplicationStatusForEmail,
-    applicationId: row.app.id,
-    locale,
-  });
-  await sendEmail({
-    to: row.applicant.email,
-    subject: tpl.subject,
-    text: tpl.text,
-    html: tpl.html,
-    tags: [{ name: 'type', value: 'application.status' }],
-  });
+      locale,
+    });
+    await sendEmail({
+      to: row.applicant.email,
+      subject: tpl.subject,
+      text: tpl.text,
+      html: tpl.html,
+      tags: [{ name: 'type', value: 'application.status' }],
+    });
+  }
 }
 
 async function onApplicationAccepted(event: DispatchInput): Promise<void> {
@@ -204,27 +232,32 @@ async function onCheckinDue(event: DispatchInput): Promise<void> {
     .where(eq(workspaces.id, event.targetId))
     .limit(1);
   if (!row) return;
+  const prefs = prefsFor(row.intern);
 
-  await db.insert(notifications).values({
-    recipientId: row.intern.id,
-    type: 'checkin.due',
-    body: `Weekly check-in due for ${row.internship.title}`,
-    href: `/intern/workspaces/${row.workspace.id}/check-in`,
-    metadata: { workspaceId: row.workspace.id },
-  });
+  if (prefs.notifyInApp) {
+    await db.insert(notifications).values({
+      recipientId: row.intern.id,
+      type: 'checkin.due',
+      body: `Weekly check-in due for ${row.internship.title}`,
+      href: `/intern/workspaces/${row.workspace.id}/check-in`,
+      metadata: { workspaceId: row.workspace.id },
+    });
+  }
 
-  const locale = await localeFor(row.intern.id);
-  const tpl = checkInReminderTemplate({
-    internName: row.intern.firstName ?? 'there',
-    workspaceTitle: row.internship.title,
-    workspaceId: row.workspace.id,
-    locale,
-  });
-  await sendEmail({
-    to: row.intern.email,
-    subject: tpl.subject,
-    text: tpl.text,
-    html: tpl.html,
-    tags: [{ name: 'type', value: 'checkin.due' }],
-  });
+  if (prefs.notifyEmail) {
+    const locale = await localeFor(row.intern.id);
+    const tpl = checkInReminderTemplate({
+      internName: row.intern.firstName ?? 'there',
+      workspaceTitle: row.internship.title,
+      workspaceId: row.workspace.id,
+      locale,
+    });
+    await sendEmail({
+      to: row.intern.email,
+      subject: tpl.subject,
+      text: tpl.text,
+      html: tpl.html,
+      tags: [{ name: 'type', value: 'checkin.due' }],
+    });
+  }
 }
