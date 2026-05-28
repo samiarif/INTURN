@@ -18,7 +18,8 @@ export async function listOrganizationsByVerification(
     .from(organizations)
     .innerJoin(users, eq(users.id, organizations.ownerId))
     .where(inArray(organizations.verificationStatus, statuses))
-    .orderBy(isQueue ? asc(organizations.createdAt) : desc(organizations.createdAt));
+    .orderBy(isQueue ? asc(organizations.createdAt) : desc(organizations.createdAt))
+    .limit(500);
 }
 
 export async function getOrganizationDetail(orgId: string) {
