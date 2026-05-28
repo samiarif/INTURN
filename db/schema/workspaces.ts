@@ -26,6 +26,7 @@ export const workspaces = pgTable(
     index('workspaces_intern_idx').on(table.internId),
     index('workspaces_organization_idx').on(table.organizationId),
     index('workspaces_internship_idx').on(table.internshipId),
+    index('workspaces_status_idx').on(table.status),
   ],
 );
 

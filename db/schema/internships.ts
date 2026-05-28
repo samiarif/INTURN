@@ -56,6 +56,7 @@ export const internships = pgTable(
     searchVector: tsvector('search_vector'),
   },
   (table) => [
+    index('internships_organization_idx').on(table.organizationId),
     index('internships_project_idx').on(table.projectId),
     // Marketplace listing: WHERE status = 'published' ORDER BY created_at DESC
     index('internships_status_created_idx').on(table.status, sql`created_at DESC`),

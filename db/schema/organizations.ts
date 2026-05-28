@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, boolean, index } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 export const organizations = pgTable('organizations', {
@@ -25,7 +25,10 @@ export const organizations = pgTable('organizations', {
     .notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+},
+(table) => [
+  index('organizations_owner_idx').on(table.ownerId),
+]);
 
 export type Organization = typeof organizations.$inferSelect;
 export type NewOrganization = typeof organizations.$inferInsert;
