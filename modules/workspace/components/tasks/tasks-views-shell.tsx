@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import type { Task } from '@/db/schema';
 import {
   parseFilterParam,
@@ -10,8 +11,13 @@ import {
   type SortKey,
 } from '@/modules/workspace/utils/task-view-state';
 import { TasksBoardView } from './tasks-board-view';
-import { TasksListView } from './tasks-list-view';
-import { TasksCalendarView } from './tasks-calendar-view';
+
+const TasksListView = dynamic(() =>
+  import('./tasks-list-view').then((m) => ({ default: m.TasksListView })),
+);
+const TasksCalendarView = dynamic(() =>
+  import('./tasks-calendar-view').then((m) => ({ default: m.TasksCalendarView })),
+);
 
 type Props = {
   tasks: Task[];

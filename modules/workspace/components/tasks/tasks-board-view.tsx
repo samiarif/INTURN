@@ -25,10 +25,15 @@ import {
   derivePhasesFromTasks,
   type SortKey,
 } from '@/modules/workspace/utils/task-view-state';
+import dynamic from 'next/dynamic';
 import { TaskColumn } from './task-column';
 import { formatDue, type DueInfo } from './task-card';
-import { AddTaskModal } from '../add-task-modal';
 import { TaskToolbar } from './task-toolbar';
+
+const AddTaskModal = dynamic(
+  () => import('../add-task-modal').then((m) => ({ default: m.AddTaskModal })),
+  { ssr: false },
+);
 
 type TaskWithMeta = Task & { needsReview?: boolean; comments?: number; attachments?: number };
 
