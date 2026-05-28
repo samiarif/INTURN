@@ -27,7 +27,7 @@ import {
 } from '@/modules/workspace/utils/task-view-state';
 import dynamic from 'next/dynamic';
 import { TaskColumn } from './task-column';
-import { formatDue, type DueInfo } from './task-card';
+import { type DueInfo } from './task-card';
 import { TaskToolbar } from './task-toolbar';
 
 const AddTaskModal = dynamic(

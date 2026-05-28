@@ -22,7 +22,14 @@ export function PlatformMobileTopStrip(props: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => { setOpen(false); }, [pathname]);
+  // Close the drawer on navigation. React's documented "reset state when
+  // a dependency changes" pattern (during render, not an effect) — avoids
+  // the set-state-in-effect rule and the extra commit an effect would add.
+  const [prevPath, setPrevPath] = useState(pathname);
+  if (pathname !== prevPath) {
+    setPrevPath(pathname);
+    setOpen(false);
+  }
 
   useEffect(() => {
     if (!open) return;

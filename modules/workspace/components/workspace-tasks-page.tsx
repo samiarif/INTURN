@@ -6,11 +6,12 @@ import type { WorkspaceView } from '../types';
 export function WorkspaceTasksPage({
   data,
   view,
-  basePath,
 }: {
   data: WorkspaceOverviewData;
   view: WorkspaceView;
-  basePath: string;
+  // basePath retained in callers for API symmetry; unused since the
+  // workspace consolidated to a single route with ?tab= switching.
+  basePath?: string;
 }) {
   const internName =
     `${data.intern?.firstName ?? ''} ${data.intern?.lastName ?? ''}`.trim() || 'the intern';

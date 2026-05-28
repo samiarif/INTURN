@@ -7,12 +7,13 @@ import type { WorkspaceView } from '../types';
 export async function WorkspaceCommentsPage({
   data,
   view,
-  basePath,
   currentUserId,
 }: {
   data: WorkspaceOverviewData;
   view: WorkspaceView;
-  basePath: string;
+  // basePath retained in callers for API symmetry; unused since the
+  // workspace consolidated to a single route with ?tab= switching.
+  basePath?: string;
   currentUserId: string;
 }) {
   const comments = await getWorkspaceComments(data.workspace.id);

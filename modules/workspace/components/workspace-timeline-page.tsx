@@ -29,11 +29,12 @@ function groupByDay(rows: TimelineRow[]): Array<{ day: string; rows: TimelineRow
 export async function WorkspaceTimelinePage({
   data,
   view,
-  basePath,
 }: {
   data: WorkspaceOverviewData;
   view: WorkspaceView;
-  basePath: string;
+  // basePath retained in callers for API symmetry; unused since the
+  // workspace consolidated to a single route with ?tab= switching.
+  basePath?: string;
 }) {
   const t = await getTranslations('workspace.timeline');
   const rows = await getWorkspaceTimeline(data.workspace.id);

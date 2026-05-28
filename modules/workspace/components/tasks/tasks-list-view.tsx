@@ -27,6 +27,11 @@ export function TasksListView({ tasks, view }: Props) {
   const params = useSearchParams();
   const sort = params.get('sort') ?? 'due';
 
+  // Read once per render to bucket "created" relative times. Date.now is
+  // impure; intentional here — fresh value per render is what we want.
+  // eslint-disable-next-line react-hooks/purity
+  const now = Date.now();
+
   function setSort(k: string) {
     const next = new URLSearchParams(params);
     if (k === 'due') next.delete('sort');
@@ -41,7 +46,7 @@ export function TasksListView({ tasks, view }: Props) {
   }
 
   function formatRelative(d: Date): string {
-    const diff = Date.now() - d.getTime();
+    const diff = now - d.getTime();
     const days = Math.floor(diff / 86400_000);
     if (days < 1) return t('relativeToday');
     if (days < 7) return t('relativeDays', { n: days });
