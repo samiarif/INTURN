@@ -10,6 +10,7 @@ export function WorkspaceOverview({ shell }: { shell: WorkspaceShell }) {
     <>
       <WorkspaceMHead
         view={shell.view}
+        workspaceId={shell.workspaceId}
         internFirstName={s.internFirstName}
         internLastName={s.internLastName}
         internshipTitle={s.internshipTitle}

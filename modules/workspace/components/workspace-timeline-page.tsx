@@ -44,6 +44,7 @@ export async function WorkspaceTimelinePage({
     <>
       <WorkspaceMHead
         view={view}
+        workspaceId={data.workspace.id}
         internFirstName={data.intern?.firstName ?? null}
         internLastName={data.intern?.lastName ?? null}
         internshipTitle={data.internship?.title ?? ''}

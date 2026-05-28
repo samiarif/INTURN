@@ -1,5 +1,6 @@
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getLocale } from 'next-intl/server';
 import { WorkspaceTabBar } from './tab-bar';
+import { MHeadActions } from './m-head-actions';
 
 function formatDateRange(start: Date | null, end: Date | null, locale: string): string {
   if (!start || !end) return '';
@@ -13,6 +14,7 @@ function formatDateRange(start: Date | null, end: Date | null, locale: string): 
 
 export async function WorkspaceMHead({
   view,
+  workspaceId,
   internFirstName,
   internLastName,
   internshipTitle,
@@ -22,6 +24,7 @@ export async function WorkspaceMHead({
   deliverableCount,
 }: {
   view: 'intern' | 'supervisor';
+  workspaceId: string;
   internFirstName: string | null;
   internLastName: string | null;
   internshipTitle: string;
@@ -30,11 +33,7 @@ export async function WorkspaceMHead({
   taskCount: number;
   deliverableCount: number;
 }) {
-  const [tCheckIn, tSchedule, locale] = await Promise.all([
-    getTranslations('workspace.checkIn'),
-    getTranslations('workspace.schedule'),
-    getLocale(),
-  ]);
+  const locale = await getLocale();
 
   // Note: "Welcome back, {name}", "● ACTIVE", "Add note", "Assign task"
   // do not have plan-vetted FR translations — left as-is until namespace expands.
@@ -56,21 +55,7 @@ export async function WorkspaceMHead({
           </span>
         )}
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          {view === 'intern' ? (
-            <>
-              <button className="ws-btn ghost tiny">{tCheckIn('title')} →</button>
-              <button className="ws-btn brand tiny">
-                <span className="plus">+</span> Add note
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="ws-btn ghost tiny">{tSchedule('title')}</button>
-              <button className="ws-btn brand tiny">
-                <span className="plus">+</span> Assign task
-              </button>
-            </>
-          )}
+          <MHeadActions view={view} workspaceId={workspaceId} />
         </div>
       </div>
       <WorkspaceTabBar
