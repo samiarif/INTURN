@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { db } from '@/db';
 import { deliverables, type DeliverableRevision } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -6,6 +7,51 @@ import {
   isValidDeliverableTransition,
   type DeliverableStatus,
 } from './state-machine';
+
+/**
+ * URL-safe 24-byte token — same scheme as records' share tokens
+ * (`randomBytes(24).toString('base64url')`). Collisions are astronomically
+ * unlikely; the `share_token` column has a unique index so we retry on the
+ * rare clash.
+ */
+function generateShareToken(): string {
+  return randomBytes(24).toString('base64url');
+}
+
+/**
+ * Idempotently ensure a deliverable has a public share token. Returns the
+ * existing token if one is already set, otherwise generates + persists a new
+ * one. Retries up to 3 times on the (vanishingly rare) unique-index clash.
+ *
+ * NO auth here — callers (the server action) do authz before invoking this.
+ */
+export async function ensureDeliverableShareToken(deliverableId: string): Promise<string> {
+  const [current] = await db
+    .select({ shareToken: deliverables.shareToken })
+    .from(deliverables)
+    .where(eq(deliverables.id, deliverableId))
+    .limit(1);
+  if (!current) throw new Error('Deliverable not found');
+  if (current.shareToken) return current.shareToken;
+
+  let lastErr: unknown = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const token = generateShareToken();
+    try {
+      const [updated] = await db
+        .update(deliverables)
+        .set({ shareToken: token, updatedAt: new Date() })
+        .where(eq(deliverables.id, deliverableId))
+        .returning({ shareToken: deliverables.shareToken });
+      return updated.shareToken ?? token;
+    } catch (e: unknown) {
+      lastErr = e;
+      const msg = e instanceof Error ? e.message : String(e);
+      if (!msg.includes('share_token')) throw e;
+    }
+  }
+  throw lastErr ?? new Error('Failed to set share token after 3 attempts');
+}
 
 export async function submitDeliverable(input: {
   deliverableId: string;
