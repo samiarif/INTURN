@@ -3,17 +3,32 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { requireSession } from '@/modules/auth/session';
 import { listInternBookmarks } from '@/modules/bookmarks/queries';
-import { InternshipCard } from '@/components/marketplace/internship-card';
+import { InternshipCard, type InternshipCardStrings } from '@/components/marketplace/internship-card';
 
 export default async function SavedPage() {
   const session = await requireSession();
   if (session.role !== 'intern') redirect('/');
 
-  const [rows, tBookmarks, tApps] = await Promise.all([
+  const [rows, tBookmarks, tApps, tMarketplace, tCard] = await Promise.all([
     listInternBookmarks(session.user.id),
     getTranslations('bookmarks'),
     getTranslations('applications'),
+    getTranslations('marketplace'),
+    getTranslations('card'),
   ]);
+
+  const cardStrings: InternshipCardStrings = {
+    saveLabel: tBookmarks('saveLabel'),
+    removeLabel: tBookmarks('removeLabel'),
+    matchPill: (n: number) => tMarketplace('matchPill', { n }),
+    paidPaid: tMarketplace('paid.paid'),
+    paidUnpaid: tMarketplace('paid.unpaid'),
+    durationWeeks: (n: number) => tCard('durationWeeks', { n }),
+    deadlineToday: tCard('deadlineToday'),
+    deadlineInDays: (n: number) => tCard('deadlineInDays', { n }),
+    closed: tCard('closed'),
+    rolling: tCard('rolling'),
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
@@ -50,6 +65,7 @@ export default async function SavedPage() {
               internship={internship}
               organization={organization}
               bookmarked
+              strings={cardStrings}
             />
           ))}
         </div>

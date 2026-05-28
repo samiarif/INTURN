@@ -10,7 +10,7 @@ import { getInternSidebarData } from '@/modules/workspace/queries';
 import { getApplicationsByApplicant } from '@/modules/applications/queries';
 import { listPublishedInternships } from '@/modules/internships/queries';
 import { listInternBookmarks } from '@/modules/bookmarks/queries';
-import { InternshipCard } from '@/components/marketplace/internship-card';
+import { InternshipCard, type InternshipCardStrings } from '@/components/marketplace/internship-card';
 import { orgMark } from '@/lib/avatar';
 import { ProfileCompletenessWidget } from '@/components/profile-completeness-widget';
 import { computeProfileCompleteness } from '@/modules/profiles/service';
@@ -44,7 +44,7 @@ export default async function Page() {
     redirect('/onboarding/intern/basics');
   }
 
-  const [profile, sidebarData, applicationRows, recommendedAll, bookmarkRows, tApps, tDash, locale] =
+  const [profile, sidebarData, applicationRows, recommendedAll, bookmarkRows, tApps, tDash, locale, tMarketplace, tCard] =
     await Promise.all([
       Promise.resolve(earlyProfile),
       getInternSidebarData(user.id),
@@ -54,7 +54,22 @@ export default async function Page() {
       getTranslations('applications'),
       getTranslations('dash.intern'),
       getLocale(),
+      getTranslations('marketplace'),
+      getTranslations('card'),
     ]);
+
+  const cardStrings: InternshipCardStrings = {
+    saveLabel: '',
+    removeLabel: '',
+    matchPill: (n: number) => tMarketplace('matchPill', { n }),
+    paidPaid: tMarketplace('paid.paid'),
+    paidUnpaid: tMarketplace('paid.unpaid'),
+    durationWeeks: (n: number) => tCard('durationWeeks', { n }),
+    deadlineToday: tCard('deadlineToday'),
+    deadlineInDays: (n: number) => tCard('deadlineInDays', { n }),
+    closed: tCard('closed'),
+    rolling: tCard('rolling'),
+  };
 
   const workspaces = sidebarData.role === 'intern' ? sidebarData.activeWorkspaces : [];
   const recentApplications = applicationRows.slice(0, 5);
@@ -329,6 +344,7 @@ export default async function Page() {
                 key={internship.id}
                 internship={internship}
                 organization={organization}
+                strings={cardStrings}
               />
             ))}
           </div>

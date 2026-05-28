@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
 import type { Internship, Organization } from '@/db/schema';
 import { toggleBookmarkAction } from '@/modules/bookmarks/actions';
 import { orgMark } from '@/lib/avatar';
@@ -16,12 +15,26 @@ const LOCATION_LABEL: Record<string, string> = {
   hybrid: 'Hybrid',
 };
 
-export async function InternshipCard({
+export type InternshipCardStrings = {
+  saveLabel: string;
+  removeLabel: string;
+  matchPill: (n: number) => string;
+  paidPaid: string;
+  paidUnpaid: string;
+  durationWeeks: (n: number) => string;
+  deadlineToday: string;
+  deadlineInDays: (n: number) => string;
+  closed: string;
+  rolling: string;
+};
+
+export function InternshipCard({
   internship,
   organization,
   bookmarked,
   match,
   haveSkills,
+  strings,
 }: {
   internship: Internship;
   organization: Organization;
@@ -44,13 +57,10 @@ export async function InternshipCard({
    * `undefined` to skip the highlighting entirely.
    */
   haveSkills?: Set<string>;
+  /** Pre-resolved translation strings. Required. */
+  strings: InternshipCardStrings;
 }) {
   const deadline = daysUntil(internship.deadline);
-  const [tBookmarks, tMarketplace, tCard] = await Promise.all([
-    getTranslations('bookmarks'),
-    getTranslations('marketplace'),
-    getTranslations('card'),
-  ]);
   const { initials, tone } = orgMark(organization.name, organization.id);
 
   // Cap skills to keep cards even-height. "Have" skills bubble to the front
@@ -73,10 +83,10 @@ export async function InternshipCard({
     deadline === null
       ? null
       : deadline < 0
-        ? tCard('closed')
+        ? strings.closed
         : deadline === 0
-          ? tCard('deadlineToday')
-          : tCard('deadlineInDays', { n: deadline });
+          ? strings.deadlineToday
+          : strings.deadlineInDays(deadline);
 
   // Match tiers — `>= 85` is the visual promotion threshold (purple ring +
   // gradient top edge). `>= 70` is "mid" (cyan pill). Below that the pill
@@ -103,7 +113,7 @@ export async function InternshipCard({
         >
           <button
             type="submit"
-            aria-label={bookmarked ? tBookmarks('removeLabel') : tBookmarks('saveLabel')}
+            aria-label={bookmarked ? strings.removeLabel : strings.saveLabel}
             className="h-8 w-8 rounded-full bg-[var(--surface)]/95 border border-[var(--border-color)] flex items-center justify-center text-[15px] leading-none hover:border-[var(--brand-300)] hover:text-[var(--brand-500)] transition-colors"
             style={{ color: bookmarked ? 'var(--brand-500)' : 'var(--ink-3)' }}
           >
@@ -139,9 +149,9 @@ export async function InternshipCard({
             <span
               className={`ex-card-match${matchClass}`}
               style={{ position: 'absolute', top: 16, right: bookmarked !== undefined ? 56 : 16 }}
-              aria-label={tMarketplace('matchPill', { n: match })}
+              aria-label={strings.matchPill(match)}
             >
-              {tMarketplace('matchPill', { n: match })}
+              {strings.matchPill(match)}
             </span>
           ) : null}
         </div>
@@ -155,18 +165,18 @@ export async function InternshipCard({
           ) : internship.isPaid ? (
             <span className="inline-flex items-center gap-1.5">
               <span aria-hidden className="text-[var(--success)]">{'●'}</span>
-              <b className="font-semibold text-[var(--ink)]">{tMarketplace('paid.paid')}</b>
+              <b className="font-semibold text-[var(--ink)]">{strings.paidPaid}</b>
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 text-[var(--ink-3)]">
               <span aria-hidden>{'○'}</span>
-              {tMarketplace('paid.unpaid')}
+              {strings.paidUnpaid}
             </span>
           )}
           {internship.duration ? (
             <span className="inline-flex items-center gap-1.5">
               <span aria-hidden className="text-[var(--ink-4)]">{'⏱'}</span>
-              {tCard('durationWeeks', { n: internship.duration })}
+              {strings.durationWeeks(internship.duration)}
             </span>
           ) : null}
           {locationDetail ? (
@@ -200,7 +210,7 @@ export async function InternshipCard({
             className="font-mono text-[11px] tracking-wide"
             style={{ color: deadlineUrgent ? 'var(--warning)' : 'var(--ink-3)' }}
           >
-            {deadlineText ?? tCard('rolling')}
+            {deadlineText ?? strings.rolling}
           </span>
           <span
             aria-hidden

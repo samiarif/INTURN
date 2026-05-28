@@ -6,7 +6,7 @@ import {
   listMarketplaceSectors,
   computeFacetCounts,
 } from '@/modules/internships/queries';
-import { InternshipCard } from '@/components/marketplace/internship-card';
+import { InternshipCard, type InternshipCardStrings } from '@/components/marketplace/internship-card';
 import { MarketplaceFilters } from '@/components/marketplace/marketplace-filters';
 import { MarketplaceFiltersCollapse } from '@/components/marketplace/marketplace-filters-collapse';
 import { getSession } from '@/modules/auth/session';
@@ -74,7 +74,7 @@ export default async function Page({
   const session = await getSession();
   const profile = session?.role === 'intern' ? await getProfileByUserId(session.user.id) : null;
 
-  const [results, sectors, facetCounts, t] = await Promise.all([
+  const [results, sectors, facetCounts, t, tBookmarks, tCard] = await Promise.all([
     listPublishedInternships({
       search,
       paid,
@@ -89,7 +89,22 @@ export default async function Page({
     listMarketplaceSectors(),
     computeFacetCounts(),
     getTranslations('marketplace'),
+    getTranslations('bookmarks'),
+    getTranslations('card'),
   ]);
+
+  const cardStrings: InternshipCardStrings = {
+    saveLabel: tBookmarks('saveLabel'),
+    removeLabel: tBookmarks('removeLabel'),
+    matchPill: (n: number) => t('matchPill', { n }),
+    paidPaid: t('paid.paid'),
+    paidUnpaid: t('paid.unpaid'),
+    durationWeeks: (n: number) => tCard('durationWeeks', { n }),
+    deadlineToday: tCard('deadlineToday'),
+    deadlineInDays: (n: number) => tCard('deadlineInDays', { n }),
+    closed: tCard('closed'),
+    rolling: tCard('rolling'),
+  };
 
   const hasNext = results.length > pageSize;
   const rows = results.slice(0, pageSize);
@@ -248,6 +263,7 @@ export default async function Page({
                   bookmarked={bookmarkedSet ? bookmarkedSet.has(internship.id) : undefined}
                   match={match}
                   haveSkills={haveSkills}
+                  strings={cardStrings}
                 />
               ))}
             </div>
