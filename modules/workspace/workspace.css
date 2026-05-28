@@ -150,171 +150,6 @@
   overflow: hidden;
 }
 
-/* =================== SIDEBAR =================== */
-.ws-side {
-  width: 256px;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  flex: 0 0 256px;
-  overflow-y: auto;
-}
-.ws-side-section {
-  padding: 16px 12px 4px;
-}
-.ws-side-section h6 {
-  font-family: 'Geist Mono', monospace;
-  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--ink-4);
-  padding: 0 10px 8px;
-  font-weight: 500;
-}
-.ws-side-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 6px 10px;
-  border-radius: var(--radius);
-  font-size: 13.5px; color: var(--ink-2);
-  cursor: pointer;
-  height: 32px;
-}
-.ws-side-item:hover { background: var(--surface-muted); }
-.ws-side-item.active {
-  background: var(--brand-50);
-  color: var(--brand-600);
-  font-weight: 500;
-}
-.ws-side-item .ico {
-  width: 16px; height: 16px;
-  border-radius: 3px;
-  background: var(--ink-4);
-  opacity: 0.5;
-  display: inline-block;
-}
-.ws-side-item.active .ico { background: var(--brand); opacity: 1; }
-.ws-side-item .count {
-  margin-left: auto;
-  font-family: 'Geist Mono', monospace;
-  font-size: 11px;
-  padding: 1px 6px;
-  background: var(--surface-muted);
-  color: var(--ink-3);
-  border-radius: 999px;
-  border: 1px solid var(--border);
-}
-.ws-side-item.active .count { background: var(--brand); color: #fff; border-color: var(--brand); }
-.ws-side-item.has-dot::before {
-  content: ""; width: 6px; height: 6px;
-  background: var(--brand);
-  border-radius: 999px;
-}
-
-.ws-side-sub {
-  padding: 2px 10px 2px 30px;
-  font-size: 13px;
-  color: var(--ink-3);
-  display: flex; align-items: center;
-  border-radius: var(--radius);
-  height: 28px;
-  cursor: pointer;
-  gap: 8px;
-}
-.ws-side-sub:hover { background: var(--surface-muted); }
-.ws-side-sub.active { color: var(--brand-600); background: var(--brand-50); font-weight: 500; }
-.ws-side-sub .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--ink-4); flex-shrink: 0; }
-.ws-side-sub.live .dot { background: var(--success); }
-.ws-side-sub.done .dot { background: var(--ink-4); opacity: 0.4; }
-.ws-side-sub .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-/* v0.2 — Project group inside the sidebar */
-.ws-side-project {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 10px 4px;
-  margin-top: 4px;
-  font-size: 12.5px;
-  color: var(--ink-2);
-  font-weight: 500;
-  cursor: pointer;
-}
-.ws-side-project .chev {
-  width: 6px; height: 6px;
-  border-right: 1.5px solid var(--ink-3);
-  border-bottom: 1.5px solid var(--ink-3);
-  transform: rotate(45deg);
-}
-.ws-side-project .ico-proj {
-  width: 14px; height: 14px;
-  border-radius: 3px;
-  background: var(--brand-50);
-  border: 1px solid var(--brand-100);
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: 'Geist Mono', monospace; font-size: 8.5px; color: var(--brand-600);
-  font-weight: 600;
-  flex-shrink: 0;
-}
-.ws-side-project .truncate {
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  flex: 1;
-}
-.ws-side-project .meta {
-  font-family: 'Geist Mono', monospace; font-size: 10px;
-  color: var(--ink-4); letter-spacing: 0.04em;
-  flex-shrink: 0;
-}
-.ws-side-project.draft { color: var(--ink-3); }
-.ws-side-project.draft .ico-proj { background: #FFFBEB; border-color: #FDE68A; color: #92400E; }
-
-/* The project's internship/workspace children indent further */
-.ws-side-project + .ws-side-sub,
-.ws-side-sub.in-proj {
-  padding-left: 38px;
-  position: relative;
-}
-.ws-side-sub.in-proj::before {
-  content: ""; position: absolute;
-  left: 22px; top: 0; bottom: 0;
-  width: 1px;
-  background: var(--border);
-}
-.ws-side-sub.in-proj.last::before {
-  bottom: 50%;
-}
-.ws-side-sub.in-proj::after {
-  content: ""; position: absolute;
-  left: 22px; top: 50%;
-  width: 8px; height: 1px;
-  background: var(--border);
-}
-
-/* Project hub quick link */
-.ws-side-projhub {
-  display: flex; align-items: center; gap: 6px;
-  margin-left: 38px;
-  padding: 4px 10px;
-  font-size: 11.5px;
-  color: var(--brand-600);
-  text-decoration: none;
-  border-radius: 4px;
-  font-family: 'Geist Mono', monospace;
-  letter-spacing: 0.04em;
-}
-.ws-side-projhub:hover { background: var(--brand-50); }
-
-.ws-side-footer {
-  margin-top: auto;
-  padding: 12px;
-  border-top: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-}
-.ws-side-footer-avatar {
-  width: 28px; height: 28px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #DDD6FE, #C7D2FE);
-  color: var(--brand-600);
-  display: inline-flex; align-items: center; justify-content: center;
-  font-weight: 600; font-size: 11px;
-}
-.ws-side-footer-name { font-size: 13px; font-weight: 500; }
-.ws-side-footer-org { font-size: 11.5px; color: var(--ink-3); }
 
 /* =================== MAIN =================== */
 .ws-main {
@@ -814,8 +649,8 @@
 .ws-note b { color: #92400E; }
 
 /* Scrollbars off (the canvas hides them via the design canvas itself, this is belt-and-braces) */
-.ws .ws-main::-webkit-scrollbar, .ws .ws-side::-webkit-scrollbar { display: none; }
-.ws .ws-main, .ws .ws-side { scrollbar-width: none; }
+.ws .ws-main::-webkit-scrollbar { display: none; }
+.ws .ws-main { scrollbar-width: none; }
 
 /* ==========================================================================
  * Tasks board — kanban CSS pasted from docs/design-bundle/project/mocks/tasks-board.css
@@ -1233,9 +1068,6 @@
  * ========================================================================== */
 @media (max-width: 768px) {
   /* Workspace shell ----------------------------------------------------- */
-  .ws-side {
-    display: none;
-  }
   .ws-tb-brand {
     width: auto;
     border-right: none;
@@ -1375,35 +1207,11 @@
   }
 }
 
-/* ────────────────────────── responsive: drawer override ──────────────────
- * Real class names in JSX: `.ws-side` (sidebar), `.tb-board` (tasks board),
- * `.ws-stat` (stat tile), `.ws-tb-search`, `.ws-tb-crumbs`. The earlier
- * 768px block in this file hides .ws-side outright; we override that with
- * a slide-in drawer pattern when SidebarTrigger sets data-mobile-open=true.
+/* ────────────────────────── responsive: tablet ───────────────────────────
+ * The workspace's internal sidebar (and its mobile slide-in drawer) was
+ * removed — the platform sidebar's own mobile drawer handles nav now.
  * ──────────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  /* Override the earlier `.ws-side { display: none }` with a drawer. */
-  .ws-side {
-    display: flex !important;
-    position: fixed;
-    inset: 52px auto 0 0; /* below the 52px topbar */
-    width: 280px;
-    transform: translateX(-100%);
-    transition: transform 200ms ease-out;
-    z-index: 40;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.12);
-    background: var(--surface);
-    overflow-y: auto;
-  }
-  .ws-side[data-mobile-open="true"] {
-    transform: translateX(0);
-  }
-
-  /* Hamburger trigger only shows on mobile */
-  .ws-topbar-mobile-trigger {
-    display: inline-flex !important;
-  }
-
   /* Tasks board (real class is .tb-board): 2 cols at tablet */
   .tb-board {
     grid-template-columns: repeat(2, 1fr);
@@ -1432,21 +1240,6 @@
   }
   .ws-stat-value b {
     font-size: 20px;
-  }
-}
-
-/* Backdrop for the mobile drawer (rendered as sibling by SidebarTrigger).
-   Hidden by default, shown when data-mobile-open=true AND we're on mobile. */
-.ws-sidebar-backdrop {
-  display: none;
-}
-@media (max-width: 768px) {
-  .ws-sidebar-backdrop[data-mobile-open="true"] {
-    display: block;
-    position: fixed;
-    inset: 52px 0 0 0; /* below topbar */
-    background: rgba(0,0,0,0.4);
-    z-index: 30;
   }
 }
 

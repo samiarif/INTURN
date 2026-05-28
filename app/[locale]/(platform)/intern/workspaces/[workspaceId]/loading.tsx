@@ -11,17 +11,6 @@ export default function Loading() {
         </div>
       </div>
       <div className="ws-body">
-        <aside className="ws-side">
-          <div className="ws-side-section">
-            <h6>General</h6>
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="ws-side-item">
-                <span className="ico" />
-                <div style={{ width: 80, height: 12, background: 'var(--surface-muted)', borderRadius: 4 }} />
-              </div>
-            ))}
-          </div>
-        </aside>
         <main className="ws-main">
           <div className="ws-mhead">
             <div className="ws-mhead-title-row">
