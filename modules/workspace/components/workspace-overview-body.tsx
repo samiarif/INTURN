@@ -6,7 +6,10 @@ import { DeliverablesMini } from './deliverables-mini';
 import { ActivityFeed, type ActorLookup } from './activity-feed';
 import { RailIntern } from './rail-intern';
 import { RailSupervisor } from './rail-supervisor';
+import { NotesCard } from './notes-card';
 import { loadWorkspaceData } from '../page-data';
+import { listMyWorkspaceNotes } from '../queries';
+import { getSession } from '@/modules/auth/session';
 import type { WorkspaceOverviewData } from '../queries';
 import type { WorkspaceView } from '../types';
 
@@ -24,7 +27,16 @@ export async function WorkspaceOverviewBody({
   workspaceId: string;
   view: WorkspaceView;
 }) {
-  const [data, locale] = await Promise.all([loadWorkspaceData(workspaceId), getLocale()]);
+  const [data, locale, session] = await Promise.all([
+    loadWorkspaceData(workspaceId),
+    getLocale(),
+    getSession(),
+  ]);
+
+  const notes = session
+    ? await listMyWorkspaceNotes(workspaceId, session.user.id)
+    : [];
+
   const basePath =
     view === 'intern'
       ? `/intern/workspaces/${workspaceId}`
@@ -40,6 +52,7 @@ export async function WorkspaceOverviewBody({
       </div>
       <div className="ws-col-side">
         {view === 'intern' ? <RailIntern data={data} /> : <RailSupervisor data={data} />}
+        <NotesCard workspaceId={workspaceId} notes={notes} />
       </div>
     </div>
   );

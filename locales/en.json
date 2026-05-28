@@ -355,6 +355,17 @@
       "networkError": "Network error.",
       "rateLimited": "Too many requests. Wait a moment."
     },
+    "notes": {
+      "title": "Notes",
+      "add": "+ Add",
+      "empty": "No notes yet.",
+      "placeholder": "Write a note…",
+      "save": "Save",
+      "cancel": "Cancel",
+      "deleteLabel": "Delete note",
+      "errorGeneric": "Could not save note. Please try again.",
+      "errorEmpty": "Note cannot be empty."
+    },
     "deliverables": {
       "uploadNew": "Upload new",
       "approve": "Approve",

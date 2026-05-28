@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { AddTaskModal } from './add-task-modal';
+import { AddNoteModal } from './add-note-modal';
 import { ScheduleCheckInButton } from './schedule-check-in';
 
 type Props = {
@@ -12,6 +13,7 @@ type Props = {
 
 export function MHeadActions({ view, workspaceId }: Props) {
   const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [noteModalOpen, setNoteModalOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -28,6 +30,13 @@ export function MHeadActions({ view, workspaceId }: Props) {
         <ScheduleCheckInButton workspaceId={workspaceId} trigger="inline-cta" />
         <button
           type="button"
+          className="ws-btn ghost tiny"
+          onClick={() => setNoteModalOpen(true)}
+        >
+          <span className="plus">+</span> Add note
+        </button>
+        <button
+          type="button"
           className="ws-btn brand tiny"
           onClick={() => setTaskModalOpen(true)}
         >
@@ -38,6 +47,12 @@ export function MHeadActions({ view, workspaceId }: Props) {
             workspaceId={workspaceId}
             initialStatus="todo"
             onClose={() => setTaskModalOpen(false)}
+          />
+        )}
+        {noteModalOpen && (
+          <AddNoteModal
+            workspaceId={workspaceId}
+            onClose={() => setNoteModalOpen(false)}
           />
         )}
       </>
@@ -54,10 +69,19 @@ export function MHeadActions({ view, workspaceId }: Props) {
       >
         Weekly check-in →
       </button>
-      {/* + Add note — wired in S1-C */}
-      <button type="button" className="ws-btn brand tiny">
+      <button
+        type="button"
+        className="ws-btn brand tiny"
+        onClick={() => setNoteModalOpen(true)}
+      >
         <span className="plus">+</span> Add note
       </button>
+      {noteModalOpen && (
+        <AddNoteModal
+          workspaceId={workspaceId}
+          onClose={() => setNoteModalOpen(false)}
+        />
+      )}
     </>
   );
 }

@@ -355,6 +355,17 @@
       "networkError": "Erreur réseau.",
       "rateLimited": "Trop de requêtes. Attendez un moment."
     },
+    "notes": {
+      "title": "Notes",
+      "add": "+ Ajouter",
+      "empty": "Aucune note.",
+      "placeholder": "Écrire une note…",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "deleteLabel": "Supprimer la note",
+      "errorGeneric": "Impossible d'enregistrer la note. Réessayez.",
+      "errorEmpty": "La note ne peut pas être vide."
+    },
     "deliverables": {
       "uploadNew": "Téléverser",
       "approve": "Approuver",
