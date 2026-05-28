@@ -3,6 +3,31 @@ import { db } from '@/db';
 import { internships, organizations } from '@/db/schema';
 import { and, desc, eq, inArray, sql, lt, lte, gt, gte } from 'drizzle-orm';
 
+// NOTE [S4-D]: `'use cache'` Cache Components adoption was evaluated for these
+// marketplace reads and deliberately DEFERRED (Next 16.2.6). The audit floated
+// migrating from `unstable_cache` to `'use cache'` + `cacheTag` + `cacheLife`,
+// but per the Next 16 docs (node_modules/next/dist/docs):
+//   1. `'use cache'` requires the APP-WIDE `cacheComponents: true` flag
+//      (cacheComponents.md). That flag inverts the rendering default: every
+//      page becomes dynamic and all data access is excluded from prerenders
+//      unless explicitly cached, with build-time errors for any unhandled
+//      runtime data (migrating-to-cache-components.md; use-cache.md).
+//   2. This app does heavy per-request work behind Clerk — ~21 files call
+//      auth()/currentUser() and getSession() (modules/auth/session.ts) calls
+//      auth() across the dashboard/admin/intern/company trees. Enabling the
+//      flag would force every such route into <Suspense> boundaries or break
+//      `pnpm build`. High blast radius, exactly the failure mode S4-D guards
+//      against.
+//   3. The marketplace page itself is inherently dynamic (awaits searchParams
+//      + getSession + per-user bookmarks), so the page can't be statically
+//      prerendered regardless — only these query helpers are cacheable, and
+//      they ALREADY are, via unstable_cache below.
+//   4. `unstable_cache` is NOT deprecated in 16.2.6 — it's the documented model
+//      for apps not on Cache Components (caching-without-cache-components.md).
+// To adopt later: enable cacheComponents app-wide, audit + <Suspense>-wrap all
+// 20+ dynamic/auth pages, then swap these helpers to `'use cache'`. Invalidation
+// already uses the Cache-Components `updateTag(MARKETPLACE_TAG)` API in
+// server-actions.ts, so that side is forward-compatible.
 export const MARKETPLACE_TAG = 'marketplace-internships';
 
 export async function getInternshipById(id: string) {
