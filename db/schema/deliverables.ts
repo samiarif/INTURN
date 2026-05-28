@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, date, jsonb, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, date, jsonb, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { workspaces } from './workspaces';
 import { tasks } from './tasks';
 
@@ -43,12 +43,14 @@ export const deliverables = pgTable(
       .$type<DeliverableRevision[]>()
       .default([])
       .notNull(),
+    shareToken: text('share_token'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
   (table) => [
     index('deliverables_workspace_status_idx').on(table.workspaceId, table.status),
     index('deliverables_task_idx').on(table.taskId),
+    uniqueIndex('deliverables_share_token_idx').on(table.shareToken),
   ],
 );
 

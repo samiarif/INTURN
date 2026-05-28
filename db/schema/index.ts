@@ -40,3 +40,8 @@ export {
   type CommunityComment,
   type NewCommunityComment,
 } from './community';
+export {
+  workspaceNotes,
+  type WorkspaceNote,
+  type NewWorkspaceNote,
+} from './workspace-notes';
