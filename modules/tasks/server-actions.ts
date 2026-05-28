@@ -11,6 +11,12 @@ import type { TaskStatus } from './state-machine';
 export async function moveTaskAction(input: { taskId: string; to: TaskStatus }) {
   const [task] = await db.select().from(tasks).where(eq(tasks.id, input.taskId)).limit(1);
   if (!task) throw new Error('Task not found');
+  // Security: loadWorkspaceAccess re-validates the session user against
+  // task.workspaceId on every call (via canViewWorkspace), so the two-step
+  // fetch-then-authorize is safe — there is no exploitable window between the
+  // task SELECT and the auth check because authorization is re-derived from the
+  // current session, not from any cached state. The subsequent write targets
+  // taskId (immutable), not workspaceId.
   const { session, workspace } = await loadWorkspaceAccess(task.workspaceId);
 
   await moveTask({ taskId: input.taskId, to: input.to, actorId: session.user.id });
@@ -93,7 +99,10 @@ export async function updateTaskAction(
   const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1);
   if (!task) return { ok: false, error: 'not_found' };
 
-  // loadWorkspaceAccess throws Unauthorized/Forbidden — let it propagate.
+  // Security: loadWorkspaceAccess re-validates the session user against
+  // task.workspaceId on every call — the two-step fetch-then-authorize is
+  // safe. Write targets taskId (immutable). Throws Unauthorized/Forbidden if
+  // the caller cannot access this workspace.
   const { workspace } = await loadWorkspaceAccess(task.workspaceId);
 
   await db.update(tasks).set({ ...patch, updatedAt: new Date() }).where(eq(tasks.id, taskId));
@@ -114,6 +123,8 @@ export async function deleteTaskAction(taskId: string): Promise<DeleteTaskAction
   const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1);
   if (!task) return { ok: false, error: 'not_found' };
 
+  // Security: loadWorkspaceAccess re-validates the session user against
+  // task.workspaceId on every call — safe for the same reason as above.
   const { session, workspace } = await loadWorkspaceAccess(task.workspaceId);
   // Delete is supervisor-only — interns can edit/move but not destroy.
   if (session.role !== 'company' && session.role !== 'admin') {
