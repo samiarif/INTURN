@@ -671,11 +671,13 @@ export function PostInternshipForm({
                 ← Back
               </Button>
               <div className="flex gap-2">
-                <Button type="submit" variant="outline">
+                <Button type="submit" variant="outline" name="intent" value="draft">
                   Save as draft
                 </Button>
                 <Button
                   type="submit"
+                  name="intent"
+                  value="publish"
                   className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
                 >
                   Publish to marketplace →

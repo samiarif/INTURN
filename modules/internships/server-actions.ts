@@ -46,12 +46,28 @@ export async function createInternshipAction(projectId: string, formData: FormDa
     deliverables,
   });
 
-  await createInternship({
+  const created = await createInternship({
     projectId,
     organizationId: project.organizationId,
     data: parsed,
     actorId: user.id,
   });
+
+  const intent = formData.get('intent');
+  if (intent === 'publish') {
+    let publishBlocked = false;
+    try {
+      await publishInternship({ internshipId: created.id, actorId: user.id });
+      updateTag(MARKETPLACE_TAG);
+    } catch {
+      // Org not verified / suspended — draft is saved, publish blocked.
+      publishBlocked = true;
+    }
+    if (publishBlocked) {
+      redirect(`/company/projects/${projectId}?published=blocked`);
+    }
+    redirect(`/company/projects/${projectId}?published=1`);
+  }
 
   redirect(`/company/projects/${projectId}`);
 }

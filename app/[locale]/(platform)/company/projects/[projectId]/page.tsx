@@ -86,11 +86,18 @@ const INTERNSHIP_STATUS_STYLE: Record<string, string> = {
   archived: 'bg-[var(--surface-muted)] text-[var(--ink-4)]',
 };
 
-export default async function Page({ params }: { params: Promise<{ projectId: string }> }) {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ projectId: string }>;
+  searchParams: Promise<{ published?: string }>;
+}) {
   const session = await getSession();
   if (!session) redirect('/sign-in');
   const { user, role } = session;
   const t = await getTranslations('projectHub');
+  const { published } = await searchParams;
 
   const { projectId } = await params;
   const project = await getProjectById(projectId);
@@ -253,6 +260,19 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
   return (
     <div className="bg-[var(--bg)] min-h-screen">
       <div className="max-w-[1280px] mx-auto px-7 pt-6 pb-20">
+        {/* =============== Publish banner =============== */}
+        {published === '1' && (
+          <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[#ECFDF5] border border-[#A7F3D0] text-[#15803D] text-[13.5px] font-medium">
+            <span className="w-2 h-2 rounded-full bg-[#15803D] flex-shrink-0" />
+            Internship published to the marketplace.
+          </div>
+        )}
+        {published === 'blocked' && (
+          <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[#FFFBEB] border border-[#FDE68A] text-[#78350F] text-[13.5px] font-medium">
+            <span className="w-2 h-2 rounded-full bg-[#F59E0B] flex-shrink-0" />
+            Saved as draft. Your organization must be verified before you can publish.
+          </div>
+        )}
         {/* =============== Title bar =============== */}
         <header className="mb-4">
           <div className="flex items-center gap-3 flex-wrap mb-3">
