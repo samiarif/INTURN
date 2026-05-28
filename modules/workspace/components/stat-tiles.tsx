@@ -21,9 +21,11 @@ function truncate(text: string, max: number): string {
 export function StatTiles({
   data,
   view,
+  locale,
 }: {
   data: WorkspaceOverviewData;
   view: 'intern' | 'supervisor';
+  locale: string;
 }) {
   const tasks = data.tasks;
   const openTasks = tasks.filter((t) => t.status !== 'done').length;
@@ -83,7 +85,7 @@ export function StatTiles({
         </div>
         <div className="ws-stat-foot">
           {endDate
-            ? `Ends ${endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`
+            ? `Ends ${endDate.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' })}`
             : '—'}
         </div>
       </div>

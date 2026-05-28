@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import type { Event } from '@/db/schema';
 
 export type ActorLookup = Map<string, { firstName: string | null; lastName: string | null }>;
@@ -34,7 +34,7 @@ function actorName(actorId: string | null, actors: ActorLookup): string {
   return a.firstName ?? a.lastName ?? 'Someone';
 }
 
-function describe(event: Event, actors: ActorLookup): React.ReactNode {
+function describe(event: Event, actors: ActorLookup, locale: string): React.ReactNode {
   const meta = (event.metadata ?? {}) as Record<string, unknown>;
   const who = actorName(event.actorId, actors);
   switch (event.type) {
@@ -83,7 +83,7 @@ function describe(event: Event, actors: ActorLookup): React.ReactNode {
       );
     case 'system.checkin.scheduled': {
       const when = meta.scheduledAt
-        ? new Date(String(meta.scheduledAt)).toLocaleString('en-US', {
+        ? new Date(String(meta.scheduledAt)).toLocaleString(locale, {
             weekday: 'short',
             day: 'numeric',
             month: 'short',
@@ -117,7 +117,10 @@ export async function ActivityFeed({
   events: Event[];
   actors: ActorLookup;
 }) {
-  const t = await getTranslations('workspace.activity');
+  const [t, locale] = await Promise.all([
+    getTranslations('workspace.activity'),
+    getLocale(),
+  ]);
   // "Recent activity" header, "Full timeline →" link, and the per-event
   // copy inside `describe()` (verbs like "submitted", "approved",
   // "commented on", scope words, etc.) are not in the plan namespace and
@@ -139,7 +142,7 @@ export async function ActivityFeed({
                 <span className={`ws-act-bullet ${bullet}`}>
                   <i />
                 </span>
-                <span className="ws-act-text">{describe(e, actors)}</span>
+                <span className="ws-act-text">{describe(e, actors, locale)}</span>
                 <span className="ws-act-time">{timeAgo(new Date(e.createdAt), t)}</span>
               </div>
             );

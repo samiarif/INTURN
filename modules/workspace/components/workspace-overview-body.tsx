@@ -1,3 +1,4 @@
+import { getLocale } from 'next-intl/server';
 import { BriefCard } from './brief-card';
 import { StatTiles } from './stat-tiles';
 import { TaskList } from './task-list';
@@ -23,12 +24,12 @@ export async function WorkspaceOverviewBody({
   workspaceId: string;
   view: WorkspaceView;
 }) {
-  const data = await loadWorkspaceData(workspaceId);
+  const [data, locale] = await Promise.all([loadWorkspaceData(workspaceId), getLocale()]);
   return (
     <div className="ws-content">
       <div className="ws-col-main">
         <BriefCard data={data} view={view} />
-        <StatTiles data={data} view={view} />
+        <StatTiles data={data} view={view} locale={locale} />
         <TaskList tasks={data.tasks} view={view} />
         <DeliverablesMini deliverables={data.deliverables} />
         <ActivityFeed events={data.events} actors={buildActorLookup(data)} />

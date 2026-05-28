@@ -1,11 +1,11 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { WorkspaceTabBar } from './tab-bar';
 
-function formatDateRange(start: Date | null, end: Date | null): string {
+function formatDateRange(start: Date | null, end: Date | null, locale: string): string {
   if (!start || !end) return '';
   const fmt = (d: Date) =>
     d
-      .toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+      .toLocaleDateString(locale, { day: 'numeric', month: 'short' })
       .toUpperCase()
       .replace(/\s/g, ' ');
   return `${fmt(start)} — ${fmt(end)}`;
@@ -30,8 +30,11 @@ export async function WorkspaceMHead({
   taskCount: number;
   deliverableCount: number;
 }) {
-  const tCheckIn = await getTranslations('workspace.checkIn');
-  const tSchedule = await getTranslations('workspace.schedule');
+  const [tCheckIn, tSchedule, locale] = await Promise.all([
+    getTranslations('workspace.checkIn'),
+    getTranslations('workspace.schedule'),
+    getLocale(),
+  ]);
 
   // Note: "Welcome back, {name}", "● ACTIVE", "Add note", "Assign task"
   // do not have plan-vetted FR translations — left as-is until namespace expands.
@@ -40,7 +43,7 @@ export async function WorkspaceMHead({
       ? `Welcome back, ${internFirstName ?? ''}`
       : `${internFirstName ?? ''} ${internLastName ?? ''} · ${internshipTitle.split('—')[0]?.trim() ?? ''}`;
 
-  const range = formatDateRange(startDate, endDate);
+  const range = formatDateRange(startDate, endDate, locale);
 
   return (
     <div className="ws-mhead">

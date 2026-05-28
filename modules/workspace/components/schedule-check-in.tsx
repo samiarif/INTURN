@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,7 @@ export function ScheduleCheckInButton({
   workspaceId: string;
   trigger?: 'inline-cta' | 'inline-btn';
 }) {
+  const locale = useLocale();
   const t = useTranslations('workspace.schedule');
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -85,7 +86,7 @@ export function ScheduleCheckInButton({
             {t('successHeading')}
           </h4>
           <p style={{ fontSize: 13, color: 'var(--ink-3)', marginBottom: 10 }}>
-            {new Date(success.when).toLocaleString('en-US', {
+            {new Date(success.when).toLocaleString(locale, {
               weekday: 'short',
               day: 'numeric',
               month: 'short',

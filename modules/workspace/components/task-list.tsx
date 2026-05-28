@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import type { Task } from '@/db/schema';
 
 const STATUS_LABEL_KEY: Record<string, 'todo' | 'inProgress' | 'review' | 'done'> = {
@@ -20,6 +20,7 @@ type DueInfo = { label: string; urgent?: boolean };
 function formatDue(
   task: Task,
   labels: { done: string; review: string; overdue: string },
+  locale: string,
 ): DueInfo {
   if (task.status === 'done') {
     // Design shows "Done · Mon" / "Done · 2wk ago" — try to derive from updatedAt
@@ -28,7 +29,7 @@ function formatDue(
       const daysAgo = Math.floor((Date.now() - updated.getTime()) / (1000 * 60 * 60 * 24));
       if (daysAgo < 7) {
         return {
-          label: `${labels.done} · ${updated.toLocaleDateString('en-US', { weekday: 'short' })}`,
+          label: `${labels.done} · ${updated.toLocaleDateString(locale, { weekday: 'short' })}`,
         };
       }
       const weeksAgo = Math.floor(daysAgo / 7);
@@ -44,10 +45,10 @@ function formatDue(
   const daysAway = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   if (daysAway < 0) return { label: labels.overdue, urgent: true };
   if (daysAway <= 7) {
-    const day = due.toLocaleDateString('en-US', { weekday: 'short' });
+    const day = due.toLocaleDateString(locale, { weekday: 'short' });
     return { label: `Due ${day}`, urgent: true };
   }
-  return { label: `Due ${due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` };
+  return { label: `Due ${due.toLocaleDateString(locale, { month: 'short', day: 'numeric' })}` };
 }
 
 export async function TaskList({
@@ -57,8 +58,11 @@ export async function TaskList({
   tasks: Task[];
   view: 'intern' | 'supervisor';
 }) {
-  const t = await getTranslations('workspace.tasksBoard');
-  const tCols = await getTranslations('workspace.tasksBoard.columns');
+  const [t, tCols, locale] = await Promise.all([
+    getTranslations('workspace.tasksBoard'),
+    getTranslations('workspace.tasksBoard.columns'),
+    getLocale(),
+  ]);
   // Strings "Tasks · this week", "See all N →", and the bare "Overdue"
   // (no days suffix) are not in the plan namespace and remain English.
   return (
@@ -75,7 +79,7 @@ export async function TaskList({
             done: tCols('done'),
             review: tCols('review'),
             overdue: 'Overdue',
-          });
+          }, locale);
           return (
             <div
               key={task.id}

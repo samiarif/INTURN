@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import type { Deliverable } from '@/db/schema';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,10 +30,10 @@ const STATUS_PILL: Record<string, string> = {
   'revision-requested': 'pill-block',
 };
 
-function fmtDate(d: Date | string | null): string {
+function fmtDate(d: Date | string | null, locale: string): string {
   if (!d) return '';
   const date = new Date(d);
-  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+  return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
 }
 
 function relativeDate(d: Date | string | null): string {
@@ -54,6 +54,7 @@ function DeliverableRow({
   deliverable: Deliverable;
   view: 'intern' | 'supervisor';
 }) {
+  const locale = useLocale();
   const t = useTranslations('workspace.deliverables');
   const tStatus = useTranslations('workspace.deliverables.status');
   const router = useRouter();
@@ -131,7 +132,7 @@ function DeliverableRow({
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'var(--ink-3)', marginBottom: deliverable.fileUrl || deliverable.feedback ? 12 : 0 }}>
             {deliverable.dueDate && (
               <>
-                <span>Due {fmtDate(deliverable.dueDate)}</span>
+                <span>Due {fmtDate(deliverable.dueDate, locale)}</span>
                 <span>·</span>
               </>
             )}

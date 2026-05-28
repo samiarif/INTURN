@@ -2,6 +2,7 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useLocale } from 'next-intl';
 import type { Task } from '@/db/schema';
 import { Avatar } from '@/components/avatar';
 import { TaskCardMenu } from './task-card-menu';
@@ -32,7 +33,7 @@ export type DueInfo =
   | { kind: 'dueSoon'; days: number; weekday: string; urgent: true; overdue: false }
   | { kind: 'dueLater'; date: string; urgent: false; overdue: false };
 
-export function formatDue(task: Task): DueInfo {
+export function formatDue(task: Task, locale: string): DueInfo {
   if (task.status === 'done') return { kind: 'closed', urgent: false, overdue: false };
   if (task.status === 'review') return { kind: 'review', urgent: false, overdue: false };
   if (!task.dueDate) return { kind: 'none', urgent: false, overdue: false };
@@ -40,12 +41,12 @@ export function formatDue(task: Task): DueInfo {
   const days = Math.ceil((due.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
   if (days < 0) return { kind: 'overdue', days: -days, urgent: true, overdue: true };
   if (days <= 3) {
-    const weekday = due.toLocaleDateString('en-US', { weekday: 'short' });
+    const weekday = due.toLocaleDateString(locale, { weekday: 'short' });
     return { kind: 'dueSoon', days, weekday, urgent: true, overdue: false };
   }
   return {
     kind: 'dueLater',
-    date: due.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
+    date: due.toLocaleDateString(locale, { day: 'numeric', month: 'short' }),
     urgent: false,
     overdue: false,
   };
@@ -60,6 +61,7 @@ export type TaskCardProps = {
 };
 
 export function SortableTaskCard({ task, status, view, internName, renderDue }: TaskCardProps) {
+  const locale = useLocale();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: task.id, data: { columnId: status } });
 
@@ -69,7 +71,7 @@ export function SortableTaskCard({ task, status, view, internName, renderDue }: 
     opacity: isDragging ? 0.5 : undefined,
   };
 
-  const due = formatDue(task);
+  const due = formatDue(task, locale);
   const label = deriveLabel(task.tag);
   const showNeedsReview = view === 'supervisor' && status === 'review';
   const cardClass = [
