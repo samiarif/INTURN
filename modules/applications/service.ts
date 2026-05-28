@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { applications, internships, workspaces } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
 
 export type ApplicationStatus =
@@ -109,13 +109,15 @@ export async function updateInternalNotes(input: {
 }
 
 /**
- * Atomic accept: in one transaction, transition the application to 'accepted'
- * AND create the workspace. Either both happen or neither does.
+ * Crash-safe accept: workspace is created FIRST, then the application status
+ * is flipped to 'accepted'. If the process dies between the two writes, the
+ * application remains 'pending' (safe to retry) rather than being left in an
+ * 'accepted' state with no workspace.
+ *
+ * The neon-http driver is stateless HTTP and does not support db.transaction(),
+ * so we rely on write ordering + an idempotency guard instead.
  */
 export async function acceptApplication(input: { applicationId: string; actorId: string }) {
-  // Note: Drizzle's neon-http driver doesn't support transactions natively
-  // (HTTP is stateless). For now we serialize the writes — Sprint 5+ can
-  // upgrade to a pooled connection if needed.
   const [application] = await db
     .select()
     .from(applications)
@@ -135,26 +137,46 @@ export async function acceptApplication(input: { applicationId: string; actorId:
     .limit(1);
   if (!internship) throw new Error('Internship not found');
 
-  await db
-    .update(applications)
-    .set({ status: 'accepted', updatedAt: new Date() })
-    .where(eq(applications.id, input.applicationId));
+  // Idempotency: reuse an existing workspace for this (intern, internship) pair
+  // rather than inserting a duplicate (e.g. a retry after a partial failure).
+  const [existingWorkspace] = await db
+    .select()
+    .from(workspaces)
+    .where(
+      and(
+        eq(workspaces.internId, application.applicantId),
+        eq(workspaces.internshipId, internship.id),
+      ),
+    )
+    .limit(1);
 
   const startDate = new Date();
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + (internship.duration ?? 12) * 7);
 
-  const [workspace] = await db
-    .insert(workspaces)
-    .values({
-      internshipId: internship.id,
-      internId: application.applicantId,
-      organizationId: internship.organizationId,
-      status: 'active',
-      startDate: startDate.toISOString().slice(0, 10),
-      endDate: endDate.toISOString().slice(0, 10),
-    })
-    .returning();
+  // Write 1: create (or reuse) workspace BEFORE flipping application status.
+  // A crash here leaves the application still pending — safe to retry.
+  const workspace =
+    existingWorkspace ??
+    (
+      await db
+        .insert(workspaces)
+        .values({
+          internshipId: internship.id,
+          internId: application.applicantId,
+          organizationId: internship.organizationId,
+          status: 'active',
+          startDate: startDate.toISOString().slice(0, 10),
+          endDate: endDate.toISOString().slice(0, 10),
+        })
+        .returning()
+    )[0];
+
+  // Write 2: only after the workspace exists, mark the application accepted.
+  await db
+    .update(applications)
+    .set({ status: 'accepted', updatedAt: new Date() })
+    .where(eq(applications.id, input.applicationId));
 
   await recordEvent({
     type: 'application.status.changed',
