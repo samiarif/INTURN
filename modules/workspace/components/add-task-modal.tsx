@@ -150,10 +150,11 @@ export function AddTaskModal({ workspaceId, initialStatus, initialTask, onClose 
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }}>
+            <label htmlFor="task-title" style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }}>
               {t('titleLabel')}
             </label>
             <input
+              id="task-title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -172,10 +173,11 @@ export function AddTaskModal({ workspaceId, initialStatus, initialTask, onClose 
           </div>
 
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }}>
+            <label htmlFor="task-description" style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }}>
               {t('descriptionLabel')}
             </label>
             <textarea
+              id="task-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -196,10 +198,11 @@ export function AddTaskModal({ workspaceId, initialStatus, initialTask, onClose 
 
           <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ flex: 1 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }}>
+              <label htmlFor="task-priority" style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }}>
                 {t('priorityLabel')}
               </label>
               <select
+                id="task-priority"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high')}
                 style={{
@@ -218,10 +221,11 @@ export function AddTaskModal({ workspaceId, initialStatus, initialTask, onClose 
               </select>
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }}>
+              <label htmlFor="task-due" style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' }}>
                 {t('dueDateLabel')}
               </label>
               <input
+                id="task-due"
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
