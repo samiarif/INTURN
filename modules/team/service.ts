@@ -142,7 +142,18 @@ export async function acceptInvite(input: {
 // revokeInvite
 // ---------------------------------------------------------------------------
 
-export async function revokeInvite(input: { memberId: string }): Promise<void> {
+export async function revokeInvite(input: { orgId: string; memberId: string }): Promise<void> {
+  const [member] = await db
+    .select()
+    .from(organizationMembers)
+    .where(eq(organizationMembers.id, input.memberId))
+    .limit(1);
+  // Missing row and cross-org row are treated identically — never leak that a
+  // member with this id exists in some other org.
+  if (!member || (member as OrganizationMember).organizationId !== input.orgId) {
+    throw new Error('member_not_found');
+  }
+
   const now = new Date();
   await db
     .update(organizationMembers)
@@ -154,13 +165,15 @@ export async function revokeInvite(input: { memberId: string }): Promise<void> {
 // resendInvite
 // ---------------------------------------------------------------------------
 
-export async function resendInvite(input: { memberId: string }): Promise<{ token: string }> {
+export async function resendInvite(input: { orgId: string; memberId: string }): Promise<{ token: string }> {
   const [existing] = await db
     .select()
     .from(organizationMembers)
     .where(eq(organizationMembers.id, input.memberId))
     .limit(1);
-  if (!existing) throw new Error('member_not_found');
+  if (!existing || (existing as OrganizationMember).organizationId !== input.orgId) {
+    throw new Error('member_not_found');
+  }
 
   const token = makeToken();
   const now = new Date();
@@ -176,7 +189,7 @@ export async function resendInvite(input: { memberId: string }): Promise<{ token
 // removeMember (soft delete)
 // ---------------------------------------------------------------------------
 
-export async function removeMember(input: { memberId: string }): Promise<void> {
+export async function removeMember(input: { orgId: string; memberId: string }): Promise<void> {
   const [member] = await db
     .select()
     .from(organizationMembers)
@@ -185,6 +198,9 @@ export async function removeMember(input: { memberId: string }): Promise<void> {
   if (!member) throw new Error('member_not_found');
 
   const m = member as OrganizationMember;
+  if (m.organizationId !== input.orgId) throw new Error('member_not_found');
+  if (m.role === 'owner') throw new Error('cannot_remove_owner');
+
   const now = new Date();
 
   // Write 1: soft-delete the member
@@ -220,6 +236,7 @@ export async function removeMember(input: { memberId: string }): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export async function setMemberRole(input: {
+  orgId: string;
   memberId: string;
   role: 'admin' | 'supervisor';
 }): Promise<void> {
@@ -230,7 +247,9 @@ export async function setMemberRole(input: {
     .limit(1);
   if (!member) throw new Error('member_not_found');
 
-  if ((member as OrganizationMember).role === 'owner') {
+  const m = member as OrganizationMember;
+  if (m.organizationId !== input.orgId) throw new Error('member_not_found');
+  if (m.role === 'owner') {
     throw new Error('cannot_change_owner');
   }
 

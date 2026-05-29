@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { organizations } from '@/db/schema';
+import { organizations, organizationMembers } from '@/db/schema';
 import { requireActiveSession } from '@/modules/auth/session';
 import { requireOrgRole, ACTIVE_ORG_COOKIE } from './authz';
 import {
@@ -128,7 +128,7 @@ export async function revokeInviteAction(input: {
     const { user } = await requireActiveSession();
     await requireOrgRole(user.id, input.orgId, ['owner', 'admin']);
 
-    await revokeInvite({ memberId: input.memberId });
+    await revokeInvite({ orgId: input.orgId, memberId: input.memberId });
 
     revalidatePath('/company/team');
     return { ok: true };
@@ -149,6 +149,13 @@ export async function resendInviteAction(input: {
     const { user } = await requireActiveSession();
     await requireOrgRole(user.id, input.orgId, ['owner', 'admin']);
 
+    // Resend sends an invite email — share the invite rate-limit bucket so it
+    // can't be used to sidestep the per-user invite cap.
+    const rl = ratelimit('team-invite').limit(user.id);
+    if (!rl.success) {
+      return { ok: false, error: 'rate_limited' };
+    }
+
     const [org] = await db
       .select()
       .from(organizations)
@@ -156,10 +163,9 @@ export async function resendInviteAction(input: {
       .limit(1);
     if (!org) return { ok: false, error: 'org_not_found' };
 
-    const { token } = await resendInvite({ memberId: input.memberId });
+    const { token } = await resendInvite({ orgId: input.orgId, memberId: input.memberId });
 
     // Re-fetch member for email + role to rebuild the email
-    const { organizationMembers } = await import('@/db/schema');
     const [member] = await db
       .select()
       .from(organizationMembers)
@@ -206,7 +212,7 @@ export async function removeMemberAction(input: {
     const { user } = await requireActiveSession();
     await requireOrgRole(user.id, input.orgId, ['owner', 'admin']);
 
-    await removeMember({ memberId: input.memberId });
+    await removeMember({ orgId: input.orgId, memberId: input.memberId });
 
     revalidatePath('/company/team');
     revalidatePath('/company/projects');
@@ -229,7 +235,7 @@ export async function setMemberRoleAction(input: {
     const { user } = await requireActiveSession();
     await requireOrgRole(user.id, input.orgId, ['owner', 'admin']);
 
-    await setMemberRole({ memberId: input.memberId, role: input.role });
+    await setMemberRole({ orgId: input.orgId, memberId: input.memberId, role: input.role });
 
     revalidatePath('/company/team');
     return { ok: true };

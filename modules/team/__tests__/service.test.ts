@@ -357,11 +357,28 @@ describe('acceptInvite', () => {
 // ---------------------------------------------------------------------------
 describe('revokeInvite', () => {
   it('sets status to removed', async () => {
-    await revokeInvite({ memberId: 'member-1' });
+    mocks.selectQueue.push([makeMember({ status: 'invited', organizationId: 'org-1' })]);
+    await revokeInvite({ orgId: 'org-1', memberId: 'member-1' });
     const updateSet = mocks.db.update.mock.results[0]?.value.set;
     expect(updateSet).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'removed' }),
     );
+  });
+
+  it('throws member_not_found when no row found', async () => {
+    mocks.selectQueue.push([]);
+    await expect(
+      revokeInvite({ orgId: 'org-1', memberId: 'missing' }),
+    ).rejects.toThrow('member_not_found');
+    expect(mocks.db.update).not.toHaveBeenCalled();
+  });
+
+  it('throws member_not_found when the member belongs to another org', async () => {
+    mocks.selectQueue.push([makeMember({ status: 'invited', organizationId: 'other-org' })]);
+    await expect(
+      revokeInvite({ orgId: 'org-1', memberId: 'member-1' }),
+    ).rejects.toThrow('member_not_found');
+    expect(mocks.db.update).not.toHaveBeenCalled();
   });
 });
 
@@ -370,11 +387,19 @@ describe('revokeInvite', () => {
 // ---------------------------------------------------------------------------
 describe('resendInvite', () => {
   it('generates a new token and updates the row', async () => {
-    mocks.selectQueue.push([makeMember({ status: 'invited' })]);
-    const { token } = await resendInvite({ memberId: 'member-1' });
+    mocks.selectQueue.push([makeMember({ status: 'invited', organizationId: 'org-1' })]);
+    const { token } = await resendInvite({ orgId: 'org-1', memberId: 'member-1' });
     expect(typeof token).toBe('string');
     expect(token.length).toBeGreaterThan(0);
     expect(mocks.callOrder).toContain('update');
+  });
+
+  it('throws member_not_found when the member belongs to another org', async () => {
+    mocks.selectQueue.push([makeMember({ status: 'invited', organizationId: 'other-org' })]);
+    await expect(
+      resendInvite({ orgId: 'org-1', memberId: 'member-1' }),
+    ).rejects.toThrow('member_not_found');
+    expect(mocks.db.update).not.toHaveBeenCalled();
   });
 });
 
@@ -389,7 +414,7 @@ describe('removeMember', () => {
     // select org projects with supervisorIds
     mocks.selectQueue.push([]); // no projects to patch
 
-    await removeMember({ memberId: 'member-1' });
+    await removeMember({ orgId: 'org-1', memberId: 'member-1' });
 
     const updateSet = mocks.db.update.mock.results[0]?.value.set;
     expect(updateSet).toHaveBeenCalledWith(
@@ -407,7 +432,7 @@ describe('removeMember', () => {
       { id: 'proj-2', supervisorIds: ['user-1'] },
     ]);
 
-    await removeMember({ memberId: 'member-1' });
+    await removeMember({ orgId: 'org-1', memberId: 'member-1' });
 
     // 1 member update + 2 project updates
     expect(mocks.db.update).toHaveBeenCalledTimes(3);
@@ -418,10 +443,34 @@ describe('removeMember', () => {
       makeMember({ status: 'invited', userId: null, organizationId: 'org-1' }),
     ]);
 
-    await removeMember({ memberId: 'member-1' });
+    await removeMember({ orgId: 'org-1', memberId: 'member-1' });
 
     // only the member update
     expect(mocks.db.update).toHaveBeenCalledTimes(1);
+  });
+
+  it('throws cannot_remove_owner when target member is owner', async () => {
+    mocks.selectQueue.push([
+      makeMember({ status: 'active', role: 'owner', organizationId: 'org-1' }),
+    ]);
+
+    await expect(
+      removeMember({ orgId: 'org-1', memberId: 'member-1' }),
+    ).rejects.toThrow('cannot_remove_owner');
+
+    expect(mocks.db.update).not.toHaveBeenCalled();
+  });
+
+  it('throws member_not_found when the member belongs to another org', async () => {
+    mocks.selectQueue.push([
+      makeMember({ status: 'active', role: 'admin', organizationId: 'other-org' }),
+    ]);
+
+    await expect(
+      removeMember({ orgId: 'org-1', memberId: 'member-1' }),
+    ).rejects.toThrow('member_not_found');
+
+    expect(mocks.db.update).not.toHaveBeenCalled();
   });
 });
 
@@ -430,19 +479,19 @@ describe('removeMember', () => {
 // ---------------------------------------------------------------------------
 describe('setMemberRole', () => {
   it('throws cannot_change_owner when target member is owner', async () => {
-    mocks.selectQueue.push([makeMember({ role: 'owner' })]);
+    mocks.selectQueue.push([makeMember({ role: 'owner', organizationId: 'org-1' })]);
 
     await expect(
-      setMemberRole({ memberId: 'member-1', role: 'admin' }),
+      setMemberRole({ orgId: 'org-1', memberId: 'member-1', role: 'admin' }),
     ).rejects.toThrow('cannot_change_owner');
 
     expect(mocks.db.update).not.toHaveBeenCalled();
   });
 
   it('updates role when member is admin', async () => {
-    mocks.selectQueue.push([makeMember({ role: 'admin' })]);
+    mocks.selectQueue.push([makeMember({ role: 'admin', organizationId: 'org-1' })]);
 
-    await setMemberRole({ memberId: 'member-1', role: 'supervisor' });
+    await setMemberRole({ orgId: 'org-1', memberId: 'member-1', role: 'supervisor' });
 
     const updateSet = mocks.db.update.mock.results[0]?.value.set;
     expect(updateSet).toHaveBeenCalledWith(
@@ -454,8 +503,18 @@ describe('setMemberRole', () => {
     mocks.selectQueue.push([]);
 
     await expect(
-      setMemberRole({ memberId: 'missing', role: 'admin' }),
+      setMemberRole({ orgId: 'org-1', memberId: 'missing', role: 'admin' }),
     ).rejects.toThrow('member_not_found');
+  });
+
+  it('throws member_not_found when the member belongs to another org', async () => {
+    mocks.selectQueue.push([makeMember({ role: 'admin', organizationId: 'other-org' })]);
+
+    await expect(
+      setMemberRole({ orgId: 'org-1', memberId: 'member-1', role: 'admin' }),
+    ).rejects.toThrow('member_not_found');
+
+    expect(mocks.db.update).not.toHaveBeenCalled();
   });
 });
 
