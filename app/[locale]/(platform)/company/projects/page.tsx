@@ -9,10 +9,8 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { eq } from 'drizzle-orm';
-import { db } from '@/db';
-import { organizations } from '@/db/schema';
 import { getSession } from '@/modules/auth/session';
+import { getCurrentOrg } from '@/modules/team/authz';
 import {
   getProjectsByOrganization,
   listCompanyProjectsWithStats,
@@ -52,12 +50,9 @@ export default async function Page({
     (params.status as 'all' | 'active' | 'draft' | 'archived' | undefined) ??
     (showArchived ? 'archived' : 'all');
 
-  const [org] = await db
-    .select()
-    .from(organizations)
-    .where(eq(organizations.ownerId, session.user.id))
-    .limit(1);
-  if (!org) redirect('/onboarding/company');
+  const current = await getCurrentOrg(session.user.id);
+  if (!current) redirect('/onboarding/company');
+  const org = current.org;
 
   // ------ Pull the project set up front. ------
   const allProjects = await getProjectsByOrganization(org.id);

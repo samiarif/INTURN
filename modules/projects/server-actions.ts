@@ -4,9 +4,10 @@ import { auth } from '@/lib/server-auth';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
-import { organizations, projects } from '@/db/schema';
+import { projects } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { getUserByClerkId } from '@/modules/profiles/queries';
+import { getCurrentOrg } from '@/modules/team/authz';
 import { createDraftProject, transitionProjectStatus, updateProject } from './service';
 import { projectCreateSchema } from './validators';
 import { getProjectById } from './queries';
@@ -17,14 +18,11 @@ export async function createProjectAction(formData: FormData) {
   const user = await getUserByClerkId(clerkId);
   if (!user) throw new Error('User not found');
 
-  const [org] = await db
-    .select()
-    .from(organizations)
-    .where(eq(organizations.ownerId, user.id))
-    .limit(1);
-  if (!org) {
+  const current = await getCurrentOrg(user.id);
+  if (!current) {
     redirect('/onboarding/company');
   }
+  const org = current.org;
   if (org.verificationStatus !== 'verified') {
     throw new Error('Your organization must be verified before creating projects');
   }

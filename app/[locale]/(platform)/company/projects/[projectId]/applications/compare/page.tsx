@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
+import { canViewProject } from '@/modules/team/authz';
 import { getApplicationsByIds } from '@/modules/applications/queries';
 import { StatusPill, toneForApplicationStatus } from '@/components/status-pill';
 
@@ -20,7 +21,7 @@ export default async function Page({
   const { projectId } = await params;
   const project = await getProjectById(projectId);
   if (!project) notFound();
-  if (role !== 'admin' && !project.supervisorIds?.includes(user.id)) notFound();
+  if (!(await canViewProject(user.id, role, project))) notFound();
 
   const sp = await searchParams;
   const idList = (sp.ids ?? '').split(',').filter(Boolean).slice(0, 4);

@@ -1,9 +1,7 @@
 import { auth } from '@/lib/server-auth';
 import { redirect } from 'next/navigation';
-import { db } from '@/db';
-import { organizations } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 import { getUserByClerkId } from '@/modules/profiles/queries';
+import { getCurrentOrg } from '@/modules/team/authz';
 import { ProjectCreateForm } from './form';
 
 export default async function Page() {
@@ -12,12 +10,9 @@ export default async function Page() {
   const user = await getUserByClerkId(clerkId);
   if (!user) redirect('/sign-in');
 
-  const [org] = await db
-    .select()
-    .from(organizations)
-    .where(eq(organizations.ownerId, user.id))
-    .limit(1);
-  if (!org) redirect('/onboarding/company');
+  const current = await getCurrentOrg(user.id);
+  if (!current) redirect('/onboarding/company');
+  const org = current.org;
 
   return (
     <div className="max-w-3xl mx-auto p-6 sm:p-8">

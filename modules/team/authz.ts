@@ -30,6 +30,23 @@ export function canManageOrg(role: MemberRole | null | undefined): boolean {
   return role === 'owner' || role === 'admin';
 }
 
+/**
+ * May this user view a single project? Allowed when the user is platform staff
+ * (`globalRole === 'admin'`), an assigned supervisor on the project, or an
+ * org-level owner/admin of the project's organization. Short-circuits the first
+ * two cases without a DB read; only the org-manager check queries membership.
+ */
+export async function canViewProject(
+  userId: string,
+  globalRole: string | null | undefined,
+  project: { organizationId: string; supervisorIds: string[] | null },
+): Promise<boolean> {
+  if (globalRole === 'admin') return true;
+  if (project.supervisorIds?.includes(userId)) return true;
+  const m = await getActiveMembership(userId, project.organizationId);
+  return canManageOrg(m?.role);
+}
+
 export async function getCurrentOrg(userId: string): Promise<{ org: Organization; role: MemberRole; memberships: ViewerMembership[] } | null> {
   const memberships = await getViewerMemberships(userId);
   if (memberships.length === 0) return null;

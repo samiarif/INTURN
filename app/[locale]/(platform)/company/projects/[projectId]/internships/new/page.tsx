@@ -4,6 +4,7 @@ import { organizations } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
+import { canViewProject } from '@/modules/team/authz';
 import { PostInternshipForm } from './form';
 
 export default async function Page({
@@ -18,7 +19,7 @@ export default async function Page({
   const { projectId } = await params;
   const project = await getProjectById(projectId);
   if (!project) notFound();
-  if (role !== 'admin' && !project.supervisorIds?.includes(user.id)) notFound();
+  if (!(await canViewProject(user.id, role, project))) notFound();
 
   const [org] = await db
     .select()

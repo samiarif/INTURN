@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
+import { canViewProject } from '@/modules/team/authz';
 import { getApplicationById } from '@/modules/applications/queries';
 import { NotesEditor } from './_notes';
 import { StatusPipeline } from './_status-pipeline';
@@ -21,7 +22,7 @@ export default async function Page({
   const { projectId, applicationId, locale } = await params;
   const project = await getProjectById(projectId);
   if (!project) notFound();
-  if (role !== 'admin' && !project.supervisorIds?.includes(user.id)) notFound();
+  if (!(await canViewProject(user.id, role, project))) notFound();
 
   const data = await getApplicationById(applicationId);
   if (!data) notFound();

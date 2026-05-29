@@ -14,7 +14,6 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { and, eq, gte, inArray, desc } from 'drizzle-orm';
 import { db } from '@/db';
 import {
-  organizations,
   applications,
   workspaces,
   tasks,
@@ -23,6 +22,7 @@ import {
   users,
 } from '@/db/schema';
 import { getUserByClerkId } from '@/modules/profiles/queries';
+import { getCurrentOrg } from '@/modules/team/authz';
 import { getProjectsByOrganization } from '@/modules/projects/queries';
 import { getInternshipsByProjectIds } from '@/modules/internships/queries';
 import { Clock } from 'lucide-react';
@@ -83,12 +83,9 @@ export default async function Page() {
   const user = await getUserByClerkId(clerkId);
   if (!user) redirect('/sign-in');
 
-  const [org] = await db
-    .select()
-    .from(organizations)
-    .where(eq(organizations.ownerId, user.id))
-    .limit(1);
-  if (!org) redirect('/onboarding/company');
+  const current = await getCurrentOrg(user.id);
+  if (!current) redirect('/onboarding/company');
+  const org = current.org;
 
   // ------ First pass: project + internship rollup (fk-only). ------
   const projects = await getProjectsByOrganization(org.id);

@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
+import { canViewProject } from '@/modules/team/authz';
 import { getApplicationsByProject } from '@/modules/applications/queries';
 import { InboxClient } from './_inbox-client';
 
@@ -16,7 +17,7 @@ export default async function Page({
   const { projectId } = await params;
   const project = await getProjectById(projectId);
   if (!project) notFound();
-  if (role !== 'admin' && !project.supervisorIds?.includes(user.id)) notFound();
+  if (!(await canViewProject(user.id, role, project))) notFound();
 
   const rows = await getApplicationsByProject(projectId);
 

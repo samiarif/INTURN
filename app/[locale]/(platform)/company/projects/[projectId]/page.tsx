@@ -115,7 +115,16 @@ export default async function Page({
   const { projectId } = await params;
   const project = await getProjectById(projectId);
   if (!project) notFound();
-  if (role !== 'admin' && !project.supervisorIds?.includes(user.id)) notFound();
+  // Membership drives both the view-guard (org owners/admins may view, not just
+  // assigned supervisors) and the manage-supervisors affordance below — fetch
+  // once here, ahead of the guard, and reuse it for `canManageSupervisors`.
+  const viewerMembership = await getActiveMembership(user.id, project.organizationId);
+  if (
+    role !== 'admin' &&
+    !project.supervisorIds?.includes(user.id) &&
+    !canManageOrg(viewerMembership?.role)
+  )
+    notFound();
   const isSupervisor = project.supervisorIds?.includes(user.id) ?? role === 'admin';
 
   const internships = await getInternshipsByProject(projectId);
@@ -129,7 +138,6 @@ export default async function Page({
     supervisorUsers,
     organization,
     recentEvents,
-    viewerMembership,
   ] = await Promise.all([
       internshipIds.length > 0
         ? db
@@ -179,7 +187,6 @@ export default async function Page({
           .orderBy(desc(events.createdAt))
           .limit(8);
       })(),
-      getActiveMembership(user.id, project.organizationId),
     ]);
 
   // ------ Second batch (depends on the workspace ids). ------
