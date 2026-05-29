@@ -8,7 +8,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Search, List as ListIcon, LayoutGrid } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { canManageOrg } from '@/modules/team/authz';
+import { canManageOrg } from '@/modules/team/roles';
 import type { MemberRole } from '@/db/schema';
 import type { OrgIntern } from '@/modules/team/queries';
 import { cn } from '@/lib/utils';

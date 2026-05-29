@@ -3,6 +3,13 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { organizationMembers, organizations } from '@/db/schema';
 import type { MemberRole, OrganizationMember, Organization } from '@/db/schema';
+import { canManageOrg } from './roles';
+
+// Re-exported so existing server-side importers can keep `import { canManageOrg }
+// from '@/modules/team/authz'`. The implementation lives in the client-safe
+// roles.ts (no next/headers) so Client Components can import it without leaking
+// this module's server-only deps into the browser bundle.
+export { canManageOrg };
 
 export const ACTIVE_ORG_COOKIE = 'inturn-active-org';
 
@@ -24,10 +31,6 @@ export async function getActiveMembership(userId: string, orgId: string): Promis
       eq(organizationMembers.status, 'active'),
     )).limit(1);
   return (m as OrganizationMember) ?? null;
-}
-
-export function canManageOrg(role: MemberRole | null | undefined): boolean {
-  return role === 'owner' || role === 'admin';
 }
 
 /**
