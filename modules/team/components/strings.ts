@@ -45,6 +45,11 @@ export const TEAM_STR = {
     actionResend: "Renvoyer l'invitation",
     actionRevoke: "Révoquer l'invitation",
     rowActions: 'Actions',
+    // Manage-supervisors (project hub)
+    manageSupervisors: 'Gérer les encadrants',
+    supervisorsHint: 'Affectez des membres pour encadrer ce projet.',
+    noEligibleMembers: 'Aucun membre éligible. Invitez des encadrants depuis la page Équipe.',
+    done: 'Terminé',
     // Intern row
     openWorkspace: "Ouvrir l'espace",
     supervisedBy: 'Encadré par',
@@ -104,6 +109,11 @@ export const TEAM_STR = {
     actionResend: 'Resend invite',
     actionRevoke: 'Revoke invite',
     rowActions: 'Actions',
+    // Manage-supervisors (project hub)
+    manageSupervisors: 'Manage supervisors',
+    supervisorsHint: 'Assign members to supervise this project.',
+    noEligibleMembers: 'No eligible members yet. Invite supervisors from the Team page.',
+    done: 'Done',
     // Intern row
     openWorkspace: 'Open workspace',
     supervisedBy: 'Supervised by',

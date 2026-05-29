@@ -20,8 +20,14 @@ import {
   events,
 } from '@/db/schema';
 import { getSession } from '@/modules/auth/session';
-import { getProjectById } from '@/modules/projects/queries';
+import { getProjectById, getProjectsByOrganization } from '@/modules/projects/queries';
 import { getInternshipsByProject } from '@/modules/internships/queries';
+import { getActiveMembership, canManageOrg } from '@/modules/team/authz';
+import { getOrgMembers } from '@/modules/team/queries';
+import {
+  ProjectSupervisors,
+  type SupervisorCandidate,
+} from '@/modules/projects/components/project-supervisors';
 import { PublishInternshipButton } from './_publish-button';
 import {
   CloseInternshipButton,
@@ -117,8 +123,14 @@ export default async function Page({
   const supervisorIds = project.supervisorIds ?? [];
 
   // ------ Fan-out (everything is independent here). ------
-  const [applicationCounts, workspaceRows, supervisorUsers, organization, recentEvents] =
-    await Promise.all([
+  const [
+    applicationCounts,
+    workspaceRows,
+    supervisorUsers,
+    organization,
+    recentEvents,
+    viewerMembership,
+  ] = await Promise.all([
       internshipIds.length > 0
         ? db
             .select({ internshipId: applications.internshipId, count: applications.id })
@@ -167,6 +179,7 @@ export default async function Page({
           .orderBy(desc(events.createdAt))
           .limit(8);
       })(),
+      getActiveMembership(user.id, project.organizationId),
     ]);
 
   // ------ Second batch (depends on the workspace ids). ------
@@ -263,6 +276,47 @@ export default async function Page({
     allTasks.length === 0
       ? 100
       : Math.round(((allTasks.length - openTasks + reviewTasks) / allTasks.length) * 100);
+
+  // ------ Manage-supervisors affordance (org owner/admin only). ------
+  // setSupervisorProjectsAction is user-centric (replaces a member's full set),
+  // so the toggle UI needs each candidate's current org-wide project ids. We
+  // only fetch the candidate set + project map for managers — supervisors never
+  // see this control, so the common path skips these extra reads.
+  const canManageSupervisors = canManageOrg(viewerMembership?.role);
+  let supervisorCandidates: SupervisorCandidate[] = [];
+  const supervisorProjectIdsByUser: Record<string, string[]> = {};
+  if (canManageSupervisors) {
+    const [orgMembers, orgProjects] = await Promise.all([
+      getOrgMembers(project.organizationId),
+      getProjectsByOrganization(project.organizationId),
+    ]);
+    const eligible = orgMembers.filter(
+      (m) =>
+        m.status === 'active' &&
+        !!m.userId &&
+        (m.role === 'owner' || m.role === 'admin' || m.role === 'supervisor'),
+    );
+    const candidateIds = eligible.map((m) => m.userId as string);
+    const candidateUsers =
+      candidateIds.length > 0
+        ? await db.select().from(users).where(inArray(users.id, candidateIds))
+        : [];
+    const nameById = new Map(
+      candidateUsers.map((u) => [
+        u.id,
+        [u.firstName, u.lastName].filter(Boolean).join(' ').trim(),
+      ]),
+    );
+    supervisorCandidates = eligible.map((m) => {
+      const userId = m.userId as string;
+      return { userId, name: nameById.get(userId) || m.email, role: m.role };
+    });
+    for (const p of orgProjects) {
+      for (const uid of p.supervisorIds ?? []) {
+        (supervisorProjectIdsByUser[uid] ??= []).push(p.id);
+      }
+    }
+  }
 
   return (
     <div className="bg-[var(--bg)] min-h-screen">
@@ -778,7 +832,19 @@ export default async function Page({
 
             {/* Supervisors & team */}
             <div className="ph-team-card">
-              <h4>{t('supervisors')}</h4>
+              <div className="flex items-center gap-2">
+                <h4>{t('supervisors')}</h4>
+                {canManageSupervisors ? (
+                  <ProjectSupervisors
+                    orgId={project.organizationId}
+                    projectId={project.id}
+                    supervisorIds={supervisorIds}
+                    candidates={supervisorCandidates}
+                    projectIdsByUserId={supervisorProjectIdsByUser}
+                    triggerClassName="ml-auto text-caption text-[var(--ink-3)] hover:text-[var(--brand-700)] hover:underline"
+                  />
+                ) : null}
+              </div>
               <div className="ph-team-list">
                 {supervisorUsers.map((s, idx) => (
                   <div key={s.id} className="ph-team-member">
