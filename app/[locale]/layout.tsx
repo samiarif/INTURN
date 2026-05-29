@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import { cookies } from 'next/headers';
 import { ClerkProvider } from '@clerk/nextjs';
 import { NextIntlClientProvider } from 'next-intl';
@@ -24,11 +25,17 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-// NOTE: a distinctive display face (e.g. Bricolage Grotesque) was tried via
-// next/font/google, but this network blocks Google's font CDN at compile time
-// and hangs every page. Until we self-host a woff2 (download on a permissive
-// network → next/font/local), --font-display falls back to Geist in globals.css
-// so the display *styling* (size/weight/tracking/tabular-nums) still applies.
+// Distinctive display face — Bricolage Grotesque, self-hosted via next/font/local
+// (woff2 vendored in app/fonts/). We deliberately DON'T use next/font/google: this
+// network blocks Google's font CDN at compile time and it hung every page. The
+// vendored woff2 needs zero network at build. Exposes --font-bricolage, which
+// globals.css maps onto --font-display / --font-heading (Geist stays the body face).
+const bricolage = localFont({
+  src: '../fonts/bricolage-grotesque-var.woff2',
+  variable: '--font-bricolage',
+  weight: '200 800',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'inturn',
@@ -90,7 +97,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${themeClass}`.trim()}
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${themeClass}`.trim()}
     >
       <body className="font-sans antialiased">
         {skipClerk ? (

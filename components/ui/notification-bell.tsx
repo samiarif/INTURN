@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { Bell } from 'lucide-react';
 import type { Notification } from '@/db/schema';
 import { markAsReadAction, markAllAsReadAction } from '@/modules/notifications/actions';
 
@@ -58,7 +59,7 @@ export function NotificationBell({
         aria-label={unread > 0 ? `${label} (${unread} unread)` : label}
         className="h-9 w-9 inline-flex items-center justify-center rounded-md border border-[var(--border-color)] bg-[var(--surface)] hover:border-[var(--border-strong)] relative"
       >
-        <span aria-hidden style={{ fontSize: 15 }}>🔔</span>
+        <Bell size={17} strokeWidth={2} className="text-[var(--ink-2)]" aria-hidden />
         {unread > 0 && (
           <span
             style={{

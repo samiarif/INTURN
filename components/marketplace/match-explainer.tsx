@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Check, X } from 'lucide-react';
 
 export type MatchExplainerStrings = {
   /** Trigger label, e.g. "Why these". An arrow is appended by the component. */
@@ -115,13 +116,13 @@ export function MatchExplainer({
                   border: 'none',
                   cursor: 'pointer',
                   color: 'var(--ink-3)',
-                  fontSize: 15,
+                  display: 'inline-flex',
                   lineHeight: 1,
                   padding: 0,
                   marginTop: -2,
                 }}
               >
-                <span aria-hidden>×</span>
+                <X size={15} strokeWidth={2.25} aria-hidden />
               </button>
             </div>
 
@@ -159,9 +160,7 @@ export function MatchExplainer({
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {haveSkills.map((s) => (
                     <span key={s} className="ex-skill" data-have="true">
-                      <span aria-hidden style={{ fontSize: 9, fontWeight: 700, marginRight: 3 }}>
-                        ✓
-                      </span>
+                      <Check size={11} strokeWidth={3} aria-hidden style={{ marginRight: 3 }} />
                       {s}
                     </span>
                   ))}
