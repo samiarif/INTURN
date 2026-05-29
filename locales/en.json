@@ -23,7 +23,8 @@
     "audit": "Audit",
     "account": "Account",
     "menu": "Main menu",
-    "workspaces": "Workspaces"
+    "workspaces": "Workspaces",
+    "team": "Team"
   },
   "notifications": {
     "label": "Notifications",
