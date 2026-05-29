@@ -12,15 +12,8 @@ import { orgMark } from '@/lib/avatar';
 import { ProfileCompletenessWidget } from '@/components/profile-completeness-widget';
 import { computeProfileCompleteness } from '@/modules/profiles/service';
 import { FteChecklist } from '@/components/fte-checklist';
-
-const STATUS_STYLE: Record<string, string> = {
-  new: 'bg-[#EFF6FF] text-[#1D4ED8]',
-  reviewed: 'bg-[var(--surface-muted)] text-[var(--ink-2)]',
-  shortlisted: 'bg-[var(--brand-50)] text-[var(--brand-600)]',
-  interview: 'bg-[#FFFBEB] text-[#92400E]',
-  accepted: 'bg-[#ECFDF5] text-[#15803D]',
-  rejected: 'bg-[#FEF2F2] text-[#B91C1C]',
-};
+import { StatusPill, toneForApplicationStatus } from '@/components/status-pill';
+import { ArrowRight } from 'lucide-react';
 
 const STATUS_KEYS = new Set(['new', 'reviewed', 'shortlisted', 'interview', 'accepted', 'rejected']);
 
@@ -123,16 +116,16 @@ export default async function Page() {
     <div className="max-w-5xl mx-auto p-8">
       {/* Welcome band ---------------------------------------------------- */}
       <div
-        className="relative overflow-hidden rounded-xl border border-[var(--border-color)] bg-[var(--surface)] px-8 py-7 mb-6"
+        className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-color)] bg-[var(--surface)] shadow-[var(--elev-card)] px-8 py-7 mb-6"
         style={{
           backgroundImage:
             'radial-gradient(circle at 12% 50%, color-mix(in srgb, var(--brand-500) 8%, transparent), transparent 50%), radial-gradient(circle at 88% 30%, color-mix(in srgb, var(--accent-500) 10%, transparent), transparent 50%)',
         }}
       >
-        <div className="font-mono text-[11px] tracking-[0.06em] uppercase text-[var(--ink-3)] mb-2">
+        <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
           {eyebrow}
         </div>
-        <h1 className="text-[28px] font-semibold tracking-tight text-[var(--ink)] mb-1">
+        <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)] mb-1">
           {greeting},{' '}
           <span
             className="bg-clip-text text-transparent"
@@ -144,7 +137,7 @@ export default async function Page() {
             {user.firstName ?? 'there'}
           </span>
         </h1>
-        <p className="text-[14px] text-[var(--ink-2)] max-w-[58ch] leading-relaxed">
+        <p className="text-body text-[var(--ink-2)] max-w-[58ch]">
           {tDash('subtitle')}
         </p>
       </div>
@@ -182,28 +175,28 @@ export default async function Page() {
           label={tDash('statsApplications')}
           value={applicationRows.length}
           suffix={tDash('statsActive')}
-          accentClass="bg-[var(--brand-50)]"
+          accentClass="bg-[var(--surface-brand-tint)]"
           href="/intern/applications"
         />
         <StatTile
           label={tDash('statsBookmarks')}
           value={bookmarkRows.length}
           suffix={tDash('statsItems')}
-          accentClass="bg-[#FCE7F3]"
+          accentClass="bg-[var(--surface-accent-tint)]"
           href="/intern/saved"
         />
         <StatTile
           label={tDash('statsWorkspaces')}
           value={workspaces.length}
           suffix={tDash('statsActive')}
-          accentClass="bg-[#CCFBF1]"
+          accentClass="bg-[var(--surface-brand-tint)]"
         />
       </div>
 
       {/* Workspaces ----------------------------------------------------- */}
       <section className="mb-10">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[15px] font-semibold tracking-tight">{tDash('workspacesTitle')}</h2>
+          <h2 className="text-heading">{tDash('workspacesTitle')}</h2>
         </div>
         {workspaces.length === 0 ? (
           <div className="border border-dashed border-[var(--border-color)] rounded-lg p-8 text-center bg-[var(--surface)]">
@@ -224,13 +217,13 @@ export default async function Page() {
                 className="group block border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-4 hover:border-[var(--border-strong)] hover:shadow-sm transition-all"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="font-medium text-[14px] text-[var(--ink)] tracking-tight">
+                  <div className="text-label text-[var(--ink)]">
                     {w.label}
                   </div>
                   <span
                     className={`inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.06em] uppercase font-semibold px-2 py-0.5 rounded-full ${
                       w.live
-                        ? 'bg-[#ECFDF5] text-[var(--success)]'
+                        ? 'bg-[var(--status-success-bg)] text-[var(--status-success-ink)]'
                         : 'bg-[var(--surface-muted)] text-[var(--ink-3)]'
                     }`}
                   >
@@ -251,13 +244,13 @@ export default async function Page() {
       {/* Recent applications -------------------------------------------- */}
       <section className="mb-10">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[15px] font-semibold tracking-tight">
+          <h2 className="text-heading">
             {tDash('recentApplicationsTitle')}
           </h2>
           {applicationRows.length > 0 && (
             <Link
               href="/intern/applications"
-              className="text-[12.5px] text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+              className="text-caption text-[var(--brand-600)] hover:text-[var(--brand-700)]"
             >
               {tDash('seeAll', { n: applicationRows.length })}
             </Link>
@@ -298,18 +291,16 @@ export default async function Page() {
                     {initials}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-[14px] truncate">{internship.title}</div>
+                    <div className="text-label text-[var(--ink)] truncate">{internship.title}</div>
                     {org?.name && (
-                      <div className="text-[12px] text-[var(--ink-3)] mt-0.5 truncate">
+                      <div className="text-caption text-[var(--ink-3)] mt-0.5 truncate">
                         {org.name}
                       </div>
                     )}
                   </div>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10.5px] font-mono font-semibold tracking-[0.06em] uppercase ${STATUS_STYLE[status] ?? STATUS_STYLE.new}`}
-                  >
+                  <StatusPill tone={toneForApplicationStatus(status)}>
                     {statusLabel}
-                  </span>
+                  </StatusPill>
                 </Link>
               );
             })}
@@ -320,10 +311,10 @@ export default async function Page() {
       {/* Recommended ---------------------------------------------------- */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[15px] font-semibold tracking-tight">{tDash('recommendedTitle')}</h2>
+          <h2 className="text-heading">{tDash('recommendedTitle')}</h2>
           <Link
             href="/marketplace"
-            className="text-[12.5px] text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+            className="text-caption text-[var(--brand-600)] hover:text-[var(--brand-700)]"
           >
             {tDash('browseAll')}
           </Link>
@@ -369,13 +360,13 @@ function StatTile({
         aria-hidden
         className={`absolute top-3 right-3 w-7 h-7 rounded-md ${accentClass}`}
       />
-      <div className="font-mono text-[10.5px] tracking-[0.06em] uppercase text-[var(--ink-3)] mb-1">
+      <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-1">
         {label}
       </div>
-      <div className="text-[24px] font-semibold tracking-tight text-[var(--ink)] leading-none">
+      <div className="text-title text-[var(--ink)]">
         {value}
         {suffix && (
-          <span className="font-normal text-[12.5px] text-[var(--ink-3)] ml-1.5 tracking-normal">
+          <span className="font-normal text-caption text-[var(--ink-3)] ml-1.5 tracking-normal">
             {suffix}
           </span>
         )}
@@ -392,9 +383,9 @@ function StatTile({
         {inner}
         <span
           aria-hidden
-          className="absolute bottom-3 right-3 text-[var(--ink-4)] group-hover:text-[var(--brand-500)] group-hover:translate-x-0.5 transition-all text-[13px]"
+          className="absolute bottom-3 right-3 text-[var(--ink-4)] group-hover:text-[var(--brand-500)] group-hover:translate-x-0.5 transition-all"
         >
-          →
+          <ArrowRight size={14} strokeWidth={2.25} />
         </span>
       </Link>
     );

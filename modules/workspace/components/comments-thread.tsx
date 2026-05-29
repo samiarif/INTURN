@@ -3,8 +3,10 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { MessageSquare, Send } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   addCommentAction,
   deleteCommentAction,
@@ -68,8 +70,8 @@ export function CommentsThread({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div className="ws-card" style={{ padding: 16 }}>
+    <div className="flex flex-col gap-4">
+      <Card padding="default">
         <label htmlFor="comment-body" className="sr-only">
           {placeholder ?? t('placeholder')}
         </label>
@@ -87,8 +89,8 @@ export function CommentsThread({
             }
           }}
         />
-        <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>
+        <div className="mt-2.5 flex items-center justify-between gap-3">
+          <span className="text-caption font-mono text-[var(--ink-4)]">
             ⌘/Ctrl + Enter · {body.length} / 4000
           </span>
           <Button
@@ -97,24 +99,31 @@ export function CommentsThread({
             onClick={submit}
             className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
           >
+            <Send aria-hidden />
             {pending ? 'Sending…' : t('post')}
           </Button>
         </div>
-      </div>
+      </Card>
 
       {comments.length === 0 ? (
-        <div className="ws-card" style={{ textAlign: 'center', padding: 32 }}>
-          <p style={{ color: 'var(--ink-3)', fontSize: 13 }}>{emptyMessage ?? t('empty')}</p>
-        </div>
+        <Card padding="lg" className="flex flex-col items-center gap-2.5 text-center">
+          <MessageSquare
+            size={26}
+            strokeWidth={1.75}
+            className="text-[var(--ink-4)]"
+            aria-hidden
+          />
+          <p className="text-body text-[var(--ink-3)]">{emptyMessage ?? t('empty')}</p>
+        </Card>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="flex flex-col gap-2.5">
           {comments.map(({ comment, author }) => {
             const isAuthor = author.id === currentUserId;
             return (
-              <div
+              <Card
                 key={comment.id}
-                className="ws-card"
-                style={{ padding: 16, display: 'grid', gridTemplateColumns: '36px 1fr', gap: 12, alignItems: 'flex-start' }}
+                padding="default"
+                className="grid grid-cols-[36px_1fr] items-start gap-3"
               >
                 <Avatar
                   name={`${author.firstName ?? ''} ${author.lastName ?? ''}`.trim()}
@@ -123,12 +132,12 @@ export function CommentsThread({
                   size="md"
                   title={`${author.firstName ?? ''} ${author.lastName ?? ''}`.trim()}
                 />
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontWeight: 500, color: 'var(--ink)' }}>
+                <div className="min-w-0">
+                  <div className="mb-1 flex items-baseline gap-2">
+                    <span className="font-medium text-[var(--ink)]">
                       {author.firstName} {author.lastName}
                     </span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink-3)' }}>
+                    <span className="text-caption font-mono text-[var(--ink-3)]">
                       {timeAgo(comment.createdAt, tActivity)}
                     </span>
                     {isAuthor && (
@@ -136,26 +145,17 @@ export function CommentsThread({
                         type="button"
                         onClick={() => remove(comment.id)}
                         disabled={pending}
-                        style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--ink-3)', cursor: 'pointer' }}
-                        className="hover:text-[var(--danger)]"
+                        className="ml-auto cursor-pointer text-caption text-[var(--ink-4)] transition-colors hover:text-[var(--danger)]"
                       >
                         {t('delete')}
                       </button>
                     )}
                   </div>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      color: 'var(--ink-2)',
-                      lineHeight: 1.5,
-                      whiteSpace: 'pre-line',
-                      wordBreak: 'break-word',
-                    }}
-                  >
+                  <p className="text-body whitespace-pre-line break-words text-[var(--ink-2)]">
                     {comment.body}
                   </p>
                 </div>
-              </div>
+              </Card>
             );
           })}
         </div>

@@ -115,7 +115,7 @@ export function ProfileBasicsForm({
           onChange={setUniversity}
           placeholder="Select university…"
         />
-        <p className="text-[12px] text-[var(--ink-3)] mt-1">{t('universityHelper')}</p>
+        <p className="text-caption text-[var(--ink-3)] mt-1">{t('universityHelper')}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -155,7 +155,7 @@ export function ProfileBasicsForm({
           onChange={(e) => setCity(e.target.value)}
           required
         />
-        <p className="text-[12px] text-[var(--ink-3)] mt-1">{t('cityHelper')}</p>
+        <p className="text-caption text-[var(--ink-3)] mt-1">{t('cityHelper')}</p>
       </div>
 
       <div>
@@ -166,7 +166,7 @@ export function ProfileBasicsForm({
             onClick={() => setPreferredLanguage('fr')}
             className={
               preferredLanguage === 'fr'
-                ? 'px-3 py-1 rounded-[4px] font-medium bg-white shadow-sm'
+                ? 'px-3 py-1 rounded-[4px] font-medium bg-[var(--surface)] shadow-sm'
                 : 'px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
             }
           >
@@ -177,14 +177,14 @@ export function ProfileBasicsForm({
             onClick={() => setPreferredLanguage('en')}
             className={
               preferredLanguage === 'en'
-                ? 'px-3 py-1 rounded-[4px] font-medium bg-white shadow-sm'
+                ? 'px-3 py-1 rounded-[4px] font-medium bg-[var(--surface)] shadow-sm'
                 : 'px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
             }
           >
             English
           </button>
         </div>
-        <p className="text-[12px] text-[var(--ink-3)] mt-1">{t('preferredLanguageHelper')}</p>
+        <p className="text-caption text-[var(--ink-3)] mt-1">{t('preferredLanguageHelper')}</p>
       </div>
 
       <div className="flex justify-between pt-2">

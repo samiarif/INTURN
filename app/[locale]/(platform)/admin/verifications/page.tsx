@@ -1,7 +1,18 @@
 import Link from 'next/link';
+import { Check } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { listOrganizationsByVerification } from '@/modules/admin/queries';
 import { StatusPill, toneForVerificationStatus } from '@/components/status-pill';
+import { PageHeader } from '@/components/ui/page-header';
+import { FilterChips } from '@/components/ui/filter-chips';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 export default async function Page({
   searchParams,
@@ -31,77 +42,70 @@ export default async function Page({
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8 md:p-8">
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-6">{t('subtitle')}</p>
-      <div className="flex items-center gap-1 mb-6 flex-wrap">
-        {(['pending', 'verified', 'suspended', 'all'] as const).map((s) => (
-          <Link
-            key={s}
-            href={`/admin/verifications?status=${s}`}
-            className={
-              statusFilter === s
-                ? 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--ink)] text-white'
-                : 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
-            }
-          >
-            {filterLabels[s]}
-          </Link>
-        ))}
-      </div>
+      <PageHeader title={t('title')} description={t('subtitle')} className="mb-6" />
+      <FilterChips
+        className="mb-6"
+        activeKey={statusFilter}
+        items={(['pending', 'verified', 'suspended', 'all'] as const).map((s) => ({
+          key: s,
+          label: filterLabels[s],
+          href: `/admin/verifications?status=${s}`,
+        }))}
+      />
       {rows.length === 0 ? (
-        <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
+        <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-caption text-[var(--ink-3)]">
           {t('empty')}
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-md overflow-x-auto bg-[var(--surface)]">
-          <table className="w-full text-sm min-w-[640px]">
-            <thead className="bg-[var(--surface-muted)] text-left">
-              <tr>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('company')}</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('owner')}</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('rne')}</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('status')}</th>
-                <th className="px-4 py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden">
+          <Table className="min-w-[640px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('company')}</TableHead>
+                <TableHead>{t('owner')}</TableHead>
+                <TableHead>{t('rne')}</TableHead>
+                <TableHead>{t('status')}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {rows.map(({ organization, owner }) => (
-                <tr key={organization.id} className="border-t border-[var(--border-color)]">
-                  <td className="px-4 py-3">
-                    <div className="font-medium">{organization.name}</div>
-                    <div className="text-[12px] text-[var(--ink-3)]">{organization.city ?? organization.country ?? '—'}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="text-[13px]">{owner.firstName} {owner.lastName}</div>
-                    <div className="text-[12px] text-[var(--ink-3)]">{owner.email}</div>
-                  </td>
-                  <td className="px-4 py-3">
+                <TableRow key={organization.id}>
+                  <TableCell>
+                    <div className="font-medium text-[var(--ink)]">{organization.name}</div>
+                    <div className="text-caption text-[var(--ink-3)]">{organization.city ?? organization.country ?? '—'}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div>{owner.firstName} {owner.lastName}</div>
+                    <div className="text-caption text-[var(--ink-3)]">{owner.email}</div>
+                  </TableCell>
+                  <TableCell>
                     {organization.rneUrl ? (
-                      <span className="text-[var(--success)] text-[12px]">✓</span>
+                      <Check size={15} strokeWidth={2.5} className="text-[var(--success)]" aria-label="RNE provided" />
                     ) : (
-                      <span className="text-[var(--ink-4)] text-[12px]">—</span>
+                      <span className="text-caption text-[var(--ink-4)]">—</span>
                     )}
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell>
                     <StatusPill tone={toneForVerificationStatus(organization.verificationStatus)}>
                       {tStatus(
                         (organization.verificationStatus ?? 'draft') as
                           | 'draft' | 'pending' | 'verified' | 'suspended',
                       )}
                     </StatusPill>
-                  </td>
-                  <td className="px-4 py-3 text-right">
+                  </TableCell>
+                  <TableCell className="text-right">
                     <Link
                       href={`/admin/verifications/${organization.id}`}
-                      className="text-[var(--brand-600)] hover:text-[var(--brand-700)] text-sm"
+                      className="text-label text-[var(--brand-600)] hover:text-[var(--brand-700)]"
                     >
                       {t('review')}
                     </Link>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

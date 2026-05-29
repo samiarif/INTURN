@@ -160,8 +160,8 @@ export default async function Page({
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[var(--ink-3)] mb-6">{t('subtitle')}</p>
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('title')}</h1>
+      <p className="text-body text-[var(--ink-3)] mb-6">{t('subtitle')}</p>
 
       <form className="mb-6" action="/marketplace">
         <div className="flex flex-wrap items-center gap-3">

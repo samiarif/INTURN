@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getReportById } from '@/modules/reports/queries';
 import { loadSubject } from '@/modules/reports/subject-loader';
@@ -26,32 +27,34 @@ export default async function Page({ params }: { params: Promise<{ reportId: str
     <div className="max-w-3xl mx-auto p-8">
       <Link
         href="/admin/reports"
-        className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-block"
+        className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-flex items-center gap-1.5"
       >
-        ← Back to reports
+        <ArrowLeft size={14} strokeWidth={2} aria-hidden />
+        Back to reports
       </Link>
-      <h1 className="text-2xl font-semibold tracking-tight mb-1">Report {reportId.slice(0, 8)}</h1>
-      <p className="text-[13px] text-[var(--ink-3)] mb-6">
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-1">Report {reportId.slice(0, 8)}</h1>
+      <p className="text-caption text-[var(--ink-3)] mb-6">
         {row.report.subjectType} · {REASON_LABEL[row.report.reason]} ·{' '}
         {new Date(row.report.createdAt).toLocaleString()}
       </p>
 
       <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5 mb-4">
-        <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-2">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-2">
           Subject
         </h2>
         <p className="font-semibold mb-1">{subject.label}</p>
-        {subject.detail && <p className="text-[13px] text-[var(--ink-3)] mb-2">{subject.detail}</p>}
+        {subject.detail && <p className="text-caption text-[var(--ink-3)] mb-2">{subject.detail}</p>}
         {subject.href && (
           <Link
             href={subject.href}
-            className="inline-block text-[13px] text-[var(--brand-700)] hover:underline"
+            className="inline-flex items-center gap-1.5 text-caption text-[var(--brand-700)] hover:underline"
           >
-            Open subject →
+            Open subject
+            <ArrowRight size={14} strokeWidth={2} aria-hidden />
           </Link>
         )}
         {!subject.exists && (
-          <p className="text-[13px] text-[var(--danger)] mt-1">
+          <p className="text-caption text-[var(--danger)] mt-1">
             Subject no longer exists in the database.
           </p>
         )}
@@ -67,23 +70,23 @@ export default async function Page({ params }: { params: Promise<{ reportId: str
       </section>
 
       <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5 mb-4">
-        <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-2">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-2">
           Report body
         </h2>
-        <p className="text-[14px] leading-relaxed whitespace-pre-wrap">{row.report.body}</p>
-        <p className="text-[12px] text-[var(--ink-3)] mt-4">
+        <p className="text-body leading-relaxed whitespace-pre-wrap">{row.report.body}</p>
+        <p className="text-caption text-[var(--ink-3)] mt-4">
           Reported by {row.reporter?.email ?? 'deleted user'}
         </p>
       </section>
 
       {row.report.status !== 'open' && row.report.resolution && (
         <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface-muted)] p-5 mb-4">
-          <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--ink-3)] mb-2">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
             Resolution · {row.report.status}
           </h2>
-          <p className="text-[14px] whitespace-pre-wrap">{row.report.resolution}</p>
+          <p className="text-body whitespace-pre-wrap">{row.report.resolution}</p>
           {row.report.resolvedAt && (
-            <p className="text-[12px] text-[var(--ink-3)] mt-2">
+            <p className="text-caption text-[var(--ink-3)] mt-2">
               {new Date(row.report.resolvedAt).toLocaleString()}
             </p>
           )}

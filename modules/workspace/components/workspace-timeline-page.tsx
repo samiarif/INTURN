@@ -58,20 +58,28 @@ export async function WorkspaceTimelinePage({
         style={{ gridTemplateColumns: '1fr', paddingTop: 20, paddingBottom: 40, maxWidth: 760, margin: '0 auto', width: '100%' }}
       >
         {rows.length === 0 ? (
-          <div className="border border-dashed border-[var(--border-color)] rounded-lg p-12 text-center">
-            <p className="text-[var(--ink-2)] font-medium">{t('empty')}</p>
-            <p className="text-[var(--ink-3)] text-sm mt-1">{t('emptySub')}</p>
+          <div className="border border-dashed border-[var(--border-color)] rounded-[var(--radius-lg)] p-12 text-center">
+            <p className="text-heading text-[var(--ink-2)]">{t('empty')}</p>
+            <p className="text-body text-[var(--ink-3)] mt-1">{t('emptySub')}</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-7">
             {grouped.map(({ day, rows }) => (
               <section key={day}>
-                <h3 className="text-xs font-medium uppercase tracking-wide text-[var(--ink-3)] mb-2">
+                <h3 className="text-eyebrow uppercase text-[var(--ink-3)] mb-3">
                   {fmtDay(new Date(day))}
                 </h3>
-                <ul className="space-y-2 border-l-2 border-[var(--border-color)] pl-4">
+                <ul className="space-y-3 border-l border-[var(--border-color)] pl-5">
                   {rows.map((r) => (
-                    <li key={r.id} className="text-sm text-[var(--ink-2)]">
+                    <li key={r.id} className="relative text-body text-[var(--ink-2)]">
+                      <span
+                        aria-hidden
+                        className={`absolute top-2 -left-5 size-1.5 -translate-x-1/2 rounded-full ring-2 ring-[var(--surface)] ${
+                          r.kind === 'milestone'
+                            ? 'bg-[var(--brand-500)]'
+                            : 'bg-[var(--border-strong)]'
+                        }`}
+                      />
                       {r.kind === 'milestone' ? (
                         <span className="font-medium text-[var(--ink)]">{r.label}</span>
                       ) : (

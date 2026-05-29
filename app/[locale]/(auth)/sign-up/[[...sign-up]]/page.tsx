@@ -17,10 +17,10 @@ export default function SignUpPage() {
       </header>
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <h1 className="text-2xl font-semibold tracking-tight text-center mb-2">
+          <h1 className="text-display font-[family-name:var(--font-display)] text-center mb-2">
             Create your Inturn account
           </h1>
-          <p className="text-sm text-[var(--ink-3)] text-center mb-8">
+          <p className="text-body text-[var(--ink-3)] text-center mb-8">
             One profile. Apply once. Work in dedicated workspaces.
           </p>
           <SignUp

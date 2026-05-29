@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Upload, Check } from 'lucide-react';
 import { FileDrop } from '@/components/file-drop';
 import { submitDeliverableAction } from '@/modules/deliverables/server-actions';
 
@@ -56,7 +57,7 @@ export function DelivUploadZone({
         style={{ width: '100%', textAlign: 'left' }}
       >
         <div className="icon" aria-hidden>
-          ↑
+          <Upload size={18} strokeWidth={2} />
         </div>
         <div className="text">
           <div className="title">{t('dropFilesTitle', { n: nextVersion })}</div>
@@ -109,10 +110,11 @@ export function DelivUploadZone({
             fontSize: 13,
             display: 'flex',
             alignItems: 'center',
-            gap: 12,
+            gap: 8,
           }}
         >
-          <span>✓ {staged.fileName}</span>
+          <Check size={14} strokeWidth={2.5} aria-hidden style={{ flexShrink: 0, color: 'var(--success)' }} />
+          <span>{staged.fileName}</span>
         </div>
       )}
       <div style={{ marginTop: 10 }}>

@@ -56,12 +56,12 @@ export function StatusPipeline({
               onClick={() => transitionTo(step.value)}
               className={
                 isCurrent
-                  ? 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--ink)] text-white'
+                  ? 'px-3 py-1.5 rounded-full text-label bg-[var(--ink)] text-white'
                   : isPast
-                    ? 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--surface-muted)] text-[var(--ink-3)]'
+                    ? 'px-3 py-1.5 rounded-full text-label bg-[var(--surface-muted)] text-[var(--ink-3)]'
                     : canTransition
-                      ? 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
-                      : 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] opacity-50 cursor-not-allowed'
+                      ? 'px-3 py-1.5 rounded-full text-label bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
+                      : 'px-3 py-1.5 rounded-full text-label bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] opacity-50 cursor-not-allowed'
               }
             >
               {step.label}
@@ -74,7 +74,7 @@ export function StatusPipeline({
           type="button"
           disabled={pending}
           onClick={() => transitionTo('rejected')}
-          className="text-[13px] text-[var(--danger)] hover:underline"
+          className="text-label text-[var(--danger)] hover:underline"
         >
           Reject application
         </button>

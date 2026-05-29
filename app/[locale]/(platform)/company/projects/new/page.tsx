@@ -22,8 +22,8 @@ export default async function Page() {
   return (
     <div className="max-w-3xl mx-auto p-6 sm:p-8">
       {org.verificationStatus !== 'verified' && (
-        <div className="border border-[#FDE68A] bg-[#FFFBEB] text-[#78350F] rounded-md p-3 text-[12.5px] mb-6">
-          <b className="text-[#92400E] block mb-1">
+        <div className="border border-[color-mix(in_srgb,var(--status-warn-ink)_30%,transparent)] bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)] rounded-md p-3 text-caption mb-6">
+          <b className="text-[var(--status-warn-ink)] font-semibold block mb-1">
             Your organization is awaiting verification
           </b>
           You can draft a project, but you won&apos;t be able to publish internships from it

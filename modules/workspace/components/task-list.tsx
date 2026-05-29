@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { ListChecks } from 'lucide-react';
 import type { Task } from '@/db/schema';
 
 const STATUS_LABEL_KEY: Record<string, 'todo' | 'inProgress' | 'review' | 'done'> = {
@@ -71,6 +72,7 @@ export async function TaskList({
   return (
     <div className="ws-card">
       <div className="ws-card-head">
+        <ListChecks size={16} strokeWidth={2.25} className="ws-hico" />
         <h3>{view === 'intern' ? t('thisWeek') : 'Tasks · this week'}</h3>
         <Link href={`${basePath}?tab=tasks`} className="ws-link">See all {tasks.length} →</Link>
       </div>

@@ -40,8 +40,8 @@ export default async function Page() {
             { id: 'done', label: tSteps('done.step'), state: 'todo' },
           ]}
         />
-        <h1 className="text-2xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-        <p className="text-[14px] text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
+        <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('title')}</h1>
+        <p className="text-body text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
         <ProfileSkillsForm
           initial={{
             skills: ctx.profile.skills ?? [],

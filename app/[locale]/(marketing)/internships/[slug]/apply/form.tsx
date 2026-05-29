@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -54,7 +55,7 @@ export function ApplyForm({
 
       <div className="flex justify-end pt-2 border-t border-[var(--border-color)]">
         <Button type="submit" className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]">
-          Submit application →
+          Submit application<ArrowRight aria-hidden />
         </Button>
       </div>
     </form>

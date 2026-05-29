@@ -3,6 +3,16 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { listAdminUsers, getAdminUserStats } from '@/modules/admin/users/queries';
 import { getSession } from '@/modules/auth/session';
 import { StatusPill } from '@/components/status-pill';
+import { PageHeader } from '@/components/ui/page-header';
+import { FilterChips } from '@/components/ui/filter-chips';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { ToggleSuspendButton } from './toggle-suspend-button';
 import { RoleSelect } from './role-select';
 
@@ -55,8 +65,7 @@ export default async function Page({
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 md:p-8">
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-6">{t('subtitle')}</p>
+      <PageHeader title={t('title')} description={t('subtitle')} className="mb-6" />
 
       <form action="/admin/users" method="get" className="mb-4 flex items-center gap-2">
         {role && <input type="hidden" name="role" value={role} />}
@@ -70,78 +79,65 @@ export default async function Page({
         />
         <button
           type="submit"
-          className="h-9 px-3 rounded-md text-sm font-medium bg-[var(--ink)] text-white"
+          className="h-9 px-3 rounded-md text-label font-medium bg-[var(--ink)] text-[var(--surface)]"
         >
           {t('searchSubmit')}
         </button>
       </form>
 
-      <div className="flex items-center gap-1 mb-2 flex-wrap">
-        {roleChips.map((c) => (
-          <Link
-            key={c.key}
-            href={chipHref({ role: c.key })}
-            className={
-              (role ?? 'all') === c.key
-                ? 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--ink)] text-white inline-flex items-center gap-1.5'
-                : 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)] inline-flex items-center gap-1.5'
-            }
-          >
-            {c.label}
-            {c.count !== undefined && (
-              <span className="text-[11px] font-mono opacity-75">{c.count}</span>
-            )}
-          </Link>
-        ))}
-      </div>
+      <FilterChips
+        className="mb-2"
+        activeKey={role ?? 'all'}
+        items={roleChips.map((c) => ({
+          key: c.key,
+          label: c.label,
+          count: c.count,
+          href: chipHref({ role: c.key }),
+        }))}
+      />
 
-      <div className="flex items-center gap-1 mb-6 flex-wrap">
-        {statusChips.map((c) => (
-          <Link
-            key={c.key}
-            href={chipHref({ status: c.key })}
-            className={
-              (status ?? 'all') === c.key
-                ? 'px-3 py-1.5 rounded-full text-[12px] font-medium bg-[var(--ink-2)] text-white'
-                : 'px-3 py-1.5 rounded-full text-[12px] font-medium bg-transparent text-[var(--ink-3)] hover:text-[var(--ink)]'
-            }
-          >
-            {c.label}
-          </Link>
-        ))}
-      </div>
+      <FilterChips
+        variant="ghost"
+        className="mb-6"
+        activeKey={status ?? 'all'}
+        items={statusChips.map((c) => ({
+          key: c.key,
+          label: c.label,
+          href: chipHref({ status: c.key }),
+        }))}
+      />
 
       {rows.length === 0 ? (
         <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
           {t('empty')}
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-md overflow-x-auto bg-[var(--surface)]">
-          <table className="w-full text-sm min-w-[820px]">
-            <thead className="bg-[var(--surface-muted)] text-left">
-              <tr>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colUser')}</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colRole')}</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colExtra')}</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colJoined')}</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colStatus')}</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('colRoleControl')}</th>
-                <th className="px-4 py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden">
+          <Table className="min-w-[820px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('colUser')}</TableHead>
+                <TableHead>{t('colRole')}</TableHead>
+                <TableHead>{t('colExtra')}</TableHead>
+                <TableHead>{t('colJoined')}</TableHead>
+                <TableHead>{t('colStatus')}</TableHead>
+                <TableHead>{t('colRoleControl')}</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {rows.map((u) => (
-                <tr key={u.id} className="border-t border-[var(--border-color)]">
-                  <td className="px-4 py-3">
+                <TableRow key={u.id}>
+                  <TableCell>
                     <Link
                       href={`/admin/users/${u.id}`}
-                      className="font-medium hover:text-[var(--brand-700)] hover:underline"
+                      className="font-medium text-[var(--ink)] hover:text-[var(--brand-700)] hover:underline"
                     >
                       {(u.firstName ?? '') + ' ' + (u.lastName ?? '') || u.email}
                     </Link>
-                    <div className="text-[12px] text-[var(--ink-3)] break-all">{u.email}</div>
-                  </td>
-                  <td className="px-4 py-3">
+                    <div className="text-caption text-[var(--ink-3)] break-all">{u.email}</div>
+                  </TableCell>
+                  <TableCell>
                     {u.role ? (
                       <StatusPill
                         tone={
@@ -152,37 +148,37 @@ export default async function Page({
                           | 'roleIntern' | 'roleCompany' | 'roleAdmin')}
                       </StatusPill>
                     ) : (
-                      <span className="text-[var(--ink-4)] text-[12px]">—</span>
+                      <span className="text-caption text-[var(--ink-4)]">—</span>
                     )}
-                  </td>
-                  <td className="px-4 py-3 text-[13px] text-[var(--ink-3)]">
+                  </TableCell>
+                  <TableCell className="text-caption text-[var(--ink-3)]">
                     {u.role === 'company' && u.orgName
                       ? u.orgName
                       : u.role === 'intern' && u.profile?.university
                         ? u.profile.university
                         : '—'}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-[12px] text-[var(--ink-3)] whitespace-nowrap">
+                  </TableCell>
+                  <TableCell className="font-mono text-caption text-[var(--ink-3)] whitespace-nowrap">
                     {new Date(u.createdAt).toLocaleDateString(
                       locale === 'fr' ? 'fr-FR' : 'en-US',
                     )}
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell>
                     {u.suspendedAt ? (
                       <StatusPill tone="danger">{t('statusSuspended')}</StatusPill>
                     ) : (
                       <StatusPill tone="success">{t('statusActive')}</StatusPill>
                     )}
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell>
                     <RoleSelect
                       userId={u.id}
                       role={u.role}
                       userLabel={u.email}
                       isSelf={u.id === session?.user.id}
                     />
-                  </td>
-                  <td className="px-4 py-3 text-right">
+                  </TableCell>
+                  <TableCell className="text-right">
                     {u.role !== 'admin' && (
                       <ToggleSuspendButton
                         userId={u.id}
@@ -190,11 +186,11 @@ export default async function Page({
                         userLabel={u.email}
                       />
                     )}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

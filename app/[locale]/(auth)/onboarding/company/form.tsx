@@ -145,13 +145,13 @@ export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
           maxLength={280}
           rows={4}
         />
-        <p className="text-[12px] text-[var(--ink-3)] mt-1">
+        <p className="text-caption text-[var(--ink-3)] mt-1">
           {description.length} / 280 · {t('descriptionHelper')}
         </p>
       </div>
 
-      <div className="border border-[#FDE68A] bg-[#FFFBEB] text-[#78350F] rounded-md p-3 text-[12.5px]">
-        <b className="text-[#92400E] block mb-1">{t('verificationTitle')}</b>
+      <div className="border border-[var(--status-warn-ink)]/20 bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)] rounded-md p-3 text-caption">
+        <b className="block mb-1 font-semibold">{t('verificationTitle')}</b>
         <span>{t('verificationBody')}</span>
       </div>
 
@@ -166,7 +166,7 @@ export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
           onUploaded={(r) => setRneUrl(r.url)}
           helper={t('rneHelper')}
         />
-        {rneUrl && <p className="text-[12px] text-[var(--success)] mt-1">RNE uploaded</p>}
+        {rneUrl && <p className="text-caption text-[var(--success)] mt-1">RNE uploaded</p>}
       </div>
 
       <div className="flex justify-between pt-2">

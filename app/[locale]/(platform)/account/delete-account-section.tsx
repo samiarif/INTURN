@@ -29,30 +29,30 @@ export function DeleteAccountSection({ email }: { email: string }) {
   }
 
   return (
-    <section className="border border-[#FCA5A5] rounded-lg bg-[#FEF2F2] p-6">
-      <h2 className="text-[11px] uppercase tracking-wider font-mono text-[#B91C1C] mb-3">
+    <section className="border border-[var(--status-danger-border)] rounded-lg bg-[var(--status-danger-bg)] p-6">
+      <h2 className="text-eyebrow font-mono uppercase text-[var(--status-danger-ink)] mb-3">
         {t('section')}
       </h2>
-      <p className="text-[14px] text-[var(--ink-2)] mb-4">{t('intro')}</p>
+      <p className="text-body text-[var(--ink-2)] mb-4">{t('intro')}</p>
       {!expanded ? (
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium border border-[#FCA5A5] text-[#B91C1C] hover:bg-[#FEE2E2]"
+          className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium border border-[var(--status-danger-border)] text-[var(--status-danger-ink)] hover:bg-[var(--status-danger-bg)]"
         >
           {t('cta')}
         </button>
       ) : (
         <div className="flex flex-col gap-3">
-          <p className="text-[13px] text-[var(--ink-2)]">{t('confirmInstruction', { email })}</p>
+          <p className="text-caption text-[var(--ink-2)]">{t('confirmInstruction', { email })}</p>
           <input
             type="email"
             value={confirmEmail}
             onChange={(e) => setConfirmEmail(e.target.value)}
             placeholder={email}
-            className="w-full px-3 py-2 rounded-md border border-[#FCA5A5] bg-white text-[14px]"
+            className="w-full px-3 py-2 rounded-md border border-[var(--status-danger-border)] bg-[var(--surface)] text-body"
           />
-          {error && <p className="text-[13px] text-[#B91C1C]">{error}</p>}
+          {error && <p className="text-caption text-[var(--status-danger-ink)]">{error}</p>}
           <div className="flex items-center gap-2 justify-end">
             <button
               type="button"

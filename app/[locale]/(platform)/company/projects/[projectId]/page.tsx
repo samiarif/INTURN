@@ -4,6 +4,7 @@
 // All literals here are scope-cut English; TODO i18n when this stops being
 // the only design-polished hub view.
 import Link from 'next/link';
+import { Milestone, Users, Plus } from 'lucide-react';
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { inArray, eq, desc } from 'drizzle-orm';
@@ -79,13 +80,14 @@ function computeCurrentPhase(
 
 const STATUS_BADGE_STYLE: Record<string, string> = {
   draft: 'bg-[var(--surface-muted)] text-[var(--ink-3)] border-[var(--border-color)]',
-  active: 'bg-[#ECFDF5] text-[#15803D] border-[#A7F3D0]',
+  active:
+    'bg-[var(--status-success-bg)] text-[var(--status-success-ink)] border-[color-mix(in_srgb,var(--status-success-ink)_28%,transparent)]',
   archived: 'bg-[var(--surface-muted)] text-[var(--ink-4)] border-[var(--border-color)]',
 };
 
 const INTERNSHIP_STATUS_STYLE: Record<string, string> = {
   draft: 'bg-[var(--surface-muted)] text-[var(--ink-3)]',
-  published: 'bg-[#ECFDF5] text-[#15803D]',
+  published: 'bg-[var(--status-success-bg)] text-[var(--status-success-ink)]',
   closed: 'bg-[var(--surface-muted)] text-[var(--ink-4)]',
   archived: 'bg-[var(--surface-muted)] text-[var(--ink-4)]',
 };
@@ -267,35 +269,35 @@ export default async function Page({
       <div className="max-w-[1280px] mx-auto px-7 pt-6 pb-20">
         {/* =============== Publish banner =============== */}
         {published === '1' && (
-          <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[#ECFDF5] border border-[#A7F3D0] text-[#15803D] text-[13.5px] font-medium">
-            <span className="w-2 h-2 rounded-full bg-[#15803D] flex-shrink-0" />
+          <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[var(--status-success-bg)] border border-[color-mix(in_srgb,var(--status-success-ink)_28%,transparent)] text-[var(--status-success-ink)] text-label font-medium">
+            <span className="w-2 h-2 rounded-full bg-[var(--status-success-ink)] flex-shrink-0" />
             Internship published to the marketplace.
           </div>
         )}
         {published === 'blocked' && (
-          <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[#FFFBEB] border border-[#FDE68A] text-[#78350F] text-[13.5px] font-medium">
-            <span className="w-2 h-2 rounded-full bg-[#F59E0B] flex-shrink-0" />
+          <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[var(--status-warn-bg)] border border-[color-mix(in_srgb,var(--status-warn-ink)_30%,transparent)] text-[var(--status-warn-ink)] text-label font-medium">
+            <span className="w-2 h-2 rounded-full bg-[var(--status-warn-ink)] flex-shrink-0" />
             Saved as draft. Your organization must be verified before you can publish.
           </div>
         )}
         {/* =============== Title bar =============== */}
         <header className="mb-4">
           <div className="flex items-center gap-3 flex-wrap mb-3">
-            <h1 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
+            <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)]">
               {project.name}
             </h1>
             <span
-              className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium font-mono uppercase tracking-wider border ${
+              className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-eyebrow font-mono uppercase border ${
                 STATUS_BADGE_STYLE[project.status]
               }`}
             >
               {project.status === 'active' && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#15803D]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success-ink)]" />
               )}
               {project.status}
             </span>
             {startDate && endDate && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono text-[var(--ink-3)] bg-[var(--surface)] border border-[var(--border-color)]">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-eyebrow font-mono text-[var(--ink-3)] bg-[var(--surface)] border border-[var(--border-color)]">
                 {formatDateShort(startDate)} — {formatDateShort(endDate)}
                 {durationWeeks ? ` · ${durationWeeks} WK` : ''}
               </span>
@@ -305,14 +307,14 @@ export default async function Page({
               {isSupervisor && (
                 <Link
                   href={`/company/projects/${projectId}/edit`}
-                  className="inline-flex items-center gap-1 h-8 px-3 rounded-md text-[12px] font-medium border border-[var(--border-color)] text-[var(--ink-2)] hover:border-[var(--border-strong)] hover:text-[var(--ink)]"
+                  className="inline-flex items-center gap-1 h-8 px-3 rounded-md text-label border border-[var(--border-color)] text-[var(--ink-2)] hover:border-[var(--border-strong)] hover:text-[var(--ink)]"
                 >
                   {t('editProject')}
                 </Link>
               )}
               <Link
                 href={`/company/projects/${projectId}/internships/new`}
-                className="inline-flex items-center gap-1 h-8 px-3 rounded-md text-[12px] font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+                className="inline-flex items-center gap-1 h-8 px-3 rounded-md text-label bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
               >
                 {t('addInternship')}
               </Link>
@@ -371,7 +373,7 @@ export default async function Page({
                   </>
                 ) : (
                   <div className="mb-4 flex items-center gap-3">
-                    <span className="text-[12px] text-[var(--ink-3)] italic">{t('noGoals')}</span>
+                    <span className="text-caption text-[var(--ink-3)] italic">{t('noGoals')}</span>
                     {isSupervisor && (
                       <EditGoalsPhasesDialog
                         projectId={project.id}
@@ -439,17 +441,26 @@ export default async function Page({
             {phases.length > 0 ? (
               <section className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface)] p-5">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-[14.5px] font-semibold text-[var(--ink)]">{t('projectPhases')}</h3>
+                  <Milestone size={16} strokeWidth={2.25} className="text-[var(--brand-600)] shrink-0" />
+                  <h3 className="text-heading text-[var(--ink)] font-[family-name:var(--font-display)]">
+                    {t('projectPhases')}
+                  </h3>
                   {isSupervisor && (
                     <EditGoalsPhasesDialog
                       projectId={project.id}
                       mode="phases"
                       initialPhases={phases}
-                      trigger={{ label: t('editPhases'), className: 'text-[11.5px] text-[var(--ink-3)] hover:text-[var(--brand-700)] hover:underline' }}
+                      trigger={{ label: t('editPhases'), className: 'text-caption text-[var(--ink-3)] hover:text-[var(--brand-700)] hover:underline' }}
                     />
                   )}
-                  <span className="ml-auto font-mono text-[11px] tracking-wider uppercase text-[var(--ink-3)]">
-                    PHASE {currentPhaseIdx + 1} OF {phases.length} · ON TRACK
+                  <span className="ml-auto inline-flex items-center gap-2.5">
+                    <span className="text-eyebrow font-mono uppercase text-[var(--ink-4)]">
+                      PHASE {currentPhaseIdx + 1} OF {phases.length}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--status-success-bg)] text-[var(--status-success-ink)] text-[10.5px] font-semibold uppercase tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success-ink)]" />
+                      On track
+                    </span>
                   </span>
                 </div>
                 <div
@@ -481,7 +492,7 @@ export default async function Page({
                 </div>
               </section>
             ) : (
-              <section className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-color)] bg-[var(--surface)] p-5 text-center text-[13px] text-[var(--ink-3)]">
+              <section className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-color)] bg-[var(--surface)] p-5 text-center text-caption text-[var(--ink-3)]">
                 <div>{t('noPhases')}</div>
                 {isSupervisor && (
                   <div className="mt-2">
@@ -538,19 +549,20 @@ export default async function Page({
             {/* ----- Internships roster ----- */}
             <section className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface)] p-5">
               <div className="flex items-center gap-2 mb-3">
-                <h3 className="text-[14.5px] font-semibold text-[var(--ink)]">
+                <Users size={16} strokeWidth={2.25} className="text-[var(--brand-600)] shrink-0" />
+                <h3 className="text-heading text-[var(--ink)] font-[family-name:var(--font-display)]">
                   {t('internships')}
                 </h3>
                 <Link
                   href={`/company/projects/${projectId}/applications`}
-                  className="ml-auto text-[12.5px] text-[var(--ink-3)] hover:text-[var(--ink)] inline-flex items-center gap-1"
+                  className="ml-auto text-caption text-[var(--ink-3)] hover:text-[var(--ink)] inline-flex items-center gap-1"
                 >
                   {t('viewApplications')}
                 </Link>
               </div>
 
               {internships.length === 0 ? (
-                <div className="text-center py-8 text-[13px] text-[var(--ink-3)]">
+                <div className="text-center py-8 text-caption text-[var(--ink-3)]">
                   {t('noInternships')}
                 </div>
               ) : (
@@ -644,7 +656,7 @@ export default async function Page({
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="ph-intern-actions">
                           {/* Status-appropriate lifecycle controls (S2-B).
                               draft → Edit + Publish; published → Edit +
                               Unpublish + Close; closed/archived → muted label. */}
@@ -652,7 +664,7 @@ export default async function Page({
                             (i.status === 'draft' || i.status === 'published') && (
                               <Link
                                 href={`/company/projects/${projectId}/internships/${i.id}/edit`}
-                                className="text-[12px] font-medium text-[var(--ink-3)] hover:text-[var(--ink)]"
+                                className="text-label text-[var(--ink-3)] hover:text-[var(--ink)]"
                               >
                                 {t('editInternship')}
                               </Link>
@@ -667,7 +679,7 @@ export default async function Page({
                             </>
                           )}
                           {(i.status === 'closed' || i.status === 'archived') && (
-                            <span className="text-[12px] font-medium text-[var(--ink-4)]">
+                            <span className="text-label text-[var(--ink-4)]">
                               {tStatus('closedLabel')}
                             </span>
                           )}
@@ -694,8 +706,8 @@ export default async function Page({
                 href={`/company/projects/${projectId}/internships/new`}
                 className="ph-add-intern"
               >
-                <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-[var(--surface-muted)] text-[var(--ink-2)] text-[13px] leading-none">
-                  +
+                <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-[var(--surface-muted)] text-[var(--ink-2)]">
+                  <Plus size={11} strokeWidth={2.5} aria-hidden />
                 </span>
                 Add another internship under this project
               </Link>
@@ -874,16 +886,16 @@ function StatTile({
           : 'text-[var(--ink-3)]';
   return (
     <div className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface)] px-4 py-3.5 min-h-[88px] flex flex-col justify-center gap-1">
-      <div className="font-mono text-[11px] tracking-wider uppercase text-[var(--ink-3)]">
+      <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)]">
         {label}
       </div>
       <div className="flex items-baseline gap-1.5 mt-0.5">
-        <span className="text-[26px] font-semibold tracking-tight text-[var(--ink)]">{value}</span>
+        <span className="text-title text-[var(--ink)]">{value}</span>
         {sublabel && (
-          <span className="text-[12px] text-[var(--ink-3)] font-medium">{sublabel}</span>
+          <span className="text-caption text-[var(--ink-3)] font-medium">{sublabel}</span>
         )}
       </div>
-      {footer && <div className={`text-[11.5px] mt-0.5 ${footerColor}`}>{footer}</div>}
+      {footer && <div className={`text-caption mt-0.5 ${footerColor}`}>{footer}</div>}
     </div>
   );
 }

@@ -29,27 +29,27 @@ export default async function Page({
 
   return (
     <article className="max-w-3xl mx-auto px-6 py-12">
-      <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-3)] mb-2">
+      <p className="font-mono text-eyebrow uppercase text-[var(--ink-3)] mb-2">
         {t('eyebrow')}
       </p>
-      <h1 className="text-4xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[var(--ink-3)] mb-2">{t('subtitle')}</p>
-      <p className="text-[13px] text-[var(--ink-3)] mb-10">
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('title')}</h1>
+      <p className="text-body text-[var(--ink-3)] mb-2">{t('subtitle')}</p>
+      <p className="text-caption text-[var(--ink-3)] mb-10">
         {t('lastUpdated', { date: '2026-05-26' })}
       </p>
       <div className="space-y-8">
         {sections.map((s, i) => (
           <section key={i}>
-            <h2 className="text-lg font-semibold mb-2 text-[var(--ink)]">
+            <h2 className="text-heading mb-2 text-[var(--ink)]">
               {String(i + 1).padStart(2, '0')}. {s.heading}
             </h2>
-            <p className="text-[15px] text-[var(--ink-2)] leading-relaxed whitespace-pre-line">
+            <p className="text-body text-[var(--ink-2)] leading-relaxed whitespace-pre-line">
               {s.body}
             </p>
           </section>
         ))}
       </div>
-      <p className="text-[13px] text-[var(--ink-3)] mt-12 pt-8 border-t border-[var(--border-color)]">
+      <p className="text-caption text-[var(--ink-3)] mt-12 pt-8 border-t border-[var(--border-color)]">
         {t('contactFootnote')}
       </p>
     </article>

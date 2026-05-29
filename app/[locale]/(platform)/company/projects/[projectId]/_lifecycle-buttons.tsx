@@ -37,7 +37,7 @@ export function UnpublishInternshipButton({ internshipId }: { internshipId: stri
       type="button"
       onClick={onClick}
       disabled={pending}
-      className="text-[12px] font-medium text-[var(--ink-3)] hover:text-[var(--ink)] disabled:opacity-60"
+      className="text-label text-[var(--ink-3)] hover:text-[var(--ink)] disabled:opacity-60"
     >
       {pending ? t('unpublishing') : t('unpublish')}
     </button>
@@ -66,7 +66,7 @@ export function CloseInternshipButton({ internshipId }: { internshipId: string }
       type="button"
       onClick={onClick}
       disabled={pending}
-      className="text-[12px] font-medium text-[var(--ink-3)] hover:text-[var(--danger)] disabled:opacity-60"
+      className="text-label text-[var(--ink-3)] hover:text-[var(--danger)] disabled:opacity-60"
     >
       {pending ? t('closing') : t('close')}
     </button>

@@ -43,8 +43,10 @@ export default async function SavedPage() {
           {tApps('tabSaved')}
         </span>
       </nav>
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">{tBookmarks('savedTitle')}</h1>
-      <p className="text-[var(--ink-3)] mb-8">{tBookmarks('savedDescription')}</p>
+      <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)] mb-2">
+        {tBookmarks('savedTitle')}
+      </h1>
+      <p className="text-body text-[var(--ink-3)] mb-8">{tBookmarks('savedDescription')}</p>
 
       {rows.length === 0 ? (
         <div className="border border-dashed border-[var(--border-color)] rounded-lg p-12 text-center">

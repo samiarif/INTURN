@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { auth } from '@/lib/server-auth';
 import { getTranslations } from 'next-intl/server';
@@ -70,11 +71,11 @@ export default async function Page({
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
-      <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
+      <div className="font-mono text-eyebrow text-[var(--ink-3)] uppercase mb-2">
         {organization.name} · {organization.city ?? organization.country ?? ''}
       </div>
-      <h1 className="text-3xl font-semibold tracking-tight mb-4">{internship.title}</h1>
-      <div className="flex flex-wrap items-center gap-3 text-[13px] text-[var(--ink-3)] mb-8">
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-4">{internship.title}</h1>
+      <div className="flex flex-wrap items-center gap-3 text-caption text-[var(--ink-3)] mb-8">
         {internship.duration && <span>{t('weeks', { n: internship.duration })}</span>}
         <span>·</span>
         <span className="capitalize">{internship.locationType}</span>
@@ -98,13 +99,13 @@ export default async function Page({
         <span className="uppercase">{internship.language}</span>
       </div>
 
-      <section className="prose prose-slate max-w-none mb-10 text-[15px] leading-relaxed text-[var(--ink-2)] whitespace-pre-line">
+      <section className="prose prose-slate max-w-none mb-10 text-body leading-relaxed text-[var(--ink-2)] whitespace-pre-line">
         {internship.description}
       </section>
 
       {internship.skills && internship.skills.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
             {t('skills')}
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -122,10 +123,10 @@ export default async function Page({
 
       {internship.customQuestions && internship.customQuestions.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
             {t('applicationQuestions')}
           </h2>
-          <ul className="space-y-2 text-[14px] text-[var(--ink-2)]">
+          <ul className="space-y-2 text-body text-[var(--ink-2)]">
             {internship.customQuestions.map((q, i) => (
               <li key={i} className="flex items-start gap-2">
                 <span className="text-[var(--ink-4)] font-mono text-[12px] mt-1">
@@ -143,18 +144,19 @@ export default async function Page({
 
       {organization.description && (
         <section className="mb-10 pb-10 border-b border-[var(--border-color)]">
-          <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
             {t('about', { org: organization.name })}
           </h2>
-          <p className="text-[14px] text-[var(--ink-2)] leading-relaxed">{organization.description}</p>
+          <p className="text-body text-[var(--ink-2)] leading-relaxed">{organization.description}</p>
           {organization.website && (
             <a
               href={organization.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[13px] text-[var(--brand-600)] hover:text-[var(--brand-700)] mt-2 inline-block"
+              className="text-caption text-[var(--brand-600)] hover:text-[var(--brand-700)] mt-2 inline-flex items-center gap-1"
             >
-              {organization.website} ↗
+              {organization.website}
+              <ArrowUpRight size={13} strokeWidth={2} aria-hidden />
             </a>
           )}
         </section>
@@ -169,7 +171,7 @@ export default async function Page({
         </Link>
         <Link
           href="/marketplace"
-          className="text-[14px] text-[var(--ink-3)] hover:text-[var(--ink)]"
+          className="text-body text-[var(--ink-3)] hover:text-[var(--ink)]"
         >
           {t('back')}
         </Link>

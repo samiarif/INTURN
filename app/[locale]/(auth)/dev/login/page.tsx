@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { isDevAuthBypassed } from '@/lib/dev-auth';
 import { devLoginAction } from '@/modules/auth/dev-actions';
 import { Avatar } from '@/components/avatar';
+import { TriangleAlert } from 'lucide-react';
 
 const SAM_EMAILS = [
   'hellowemakeitgrow@gmail.com',
@@ -41,11 +42,12 @@ export default async function DevLoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-[var(--bg)]">
       <div className="max-w-md w-full">
         <div className="mb-8 text-center">
-          <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)] text-[11px] font-mono uppercase tracking-wider mb-3">
-            ⚠ Dev mode
+          <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)] text-eyebrow font-mono uppercase mb-3">
+            <TriangleAlert size={12} strokeWidth={2.5} aria-hidden />
+            Dev mode
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">Sign in as…</h1>
-          <p className="text-[var(--ink-3)] text-sm">
+          <h1 className="text-display font-[family-name:var(--font-display)] mb-2">Sign in as…</h1>
+          <p className="text-[var(--ink-3)] text-body">
             Dev-only bypass — Clerk skipped. Picks any seeded user and sets a signed cookie.
             Disable by removing <code className="font-mono">DEV_AUTH_BYPASS=1</code> from{' '}
             <code className="font-mono">.env.local</code>.
@@ -67,9 +69,9 @@ export default async function DevLoginPage() {
                     <Avatar name={name} email={u.email} size="md" />
                     <div className="min-w-0 flex-1">
                       <div className="font-semibold text-[var(--ink)] truncate">{name}</div>
-                      <div className="text-[12px] text-[var(--ink-3)] truncate">{u.email}</div>
+                      <div className="text-caption text-[var(--ink-3)] truncate">{u.email}</div>
                     </div>
-                    <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--surface-muted)] text-[var(--ink-2)] flex-shrink-0">
+                    <span className="font-mono text-eyebrow uppercase px-2 py-0.5 rounded bg-[var(--surface-muted)] text-[var(--ink-2)] flex-shrink-0">
                       {u.role}
                     </span>
                   </button>
@@ -80,7 +82,7 @@ export default async function DevLoginPage() {
         </ul>
 
         {seeded.every((u) => u === null) && (
-          <p className="mt-6 text-center text-[13px] text-[var(--danger)]">
+          <p className="mt-6 text-center text-caption text-[var(--danger)]">
             None of the Sam-test emails are in the DB. Run <code className="font-mono">pnpm db:seed</code> first.
           </p>
         )}

@@ -8,6 +8,7 @@ import { DeletePostButton } from './delete-post-button';
 import { ReportButton } from '@/modules/reports/components/report-button';
 import { Avatar } from '@/components/avatar';
 import { formatTimeAgo, type FormatLocale } from '@/lib/format-time';
+import { ArrowLeft } from 'lucide-react';
 
 export default async function Page({ params }: { params: Promise<{ postId: string }> }) {
   const session = await requireSession();
@@ -29,12 +30,13 @@ export default async function Page({ params }: { params: Promise<{ postId: strin
     <div className="max-w-3xl mx-auto px-6 py-10">
       <Link
         href="/intern/community"
-        className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-block"
+        className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-flex items-center gap-1.5"
       >
-        ← {t('backToFeed')}
+        <ArrowLeft size={14} strokeWidth={2.25} aria-hidden />
+        {t('backToFeed')}
       </Link>
 
-      <article className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-6">
+      <article className="border border-[var(--border-color)] rounded-[var(--radius-lg)] bg-[var(--surface)] shadow-[var(--elev-card)] p-6 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <Avatar
             name={authorName}
@@ -43,8 +45,8 @@ export default async function Page({ params }: { params: Promise<{ postId: strin
             size="md"
           />
           <div className="min-w-0 flex-1">
-            <p className="font-medium text-[14px]">{authorName}</p>
-            <p className="text-[12px] text-[var(--ink-3)]">
+            <p className="text-label text-[var(--ink)]">{authorName}</p>
+            <p className="text-caption text-[var(--ink-3)]">
               {formatTimeAgo(new Date(post.post.createdAt), locale as FormatLocale)}
             </p>
           </div>
@@ -53,19 +55,21 @@ export default async function Page({ params }: { params: Promise<{ postId: strin
             <ReportButton subjectType="user" subjectId={post.post.authorId} />
           </div>
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight mb-3">{post.post.title}</h1>
-        <div className="text-[15px] text-[var(--ink-2)] leading-relaxed whitespace-pre-wrap">
+        <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)] mb-3">
+          {post.post.title}
+        </h1>
+        <div className="text-body text-[var(--ink-2)] whitespace-pre-wrap">
           {post.post.body}
         </div>
       </article>
 
       <section>
-        <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-4">
+        <h2 className="text-eyebrow uppercase font-mono text-[var(--brand-700)] mb-4">
           {t('replies', { count: comments.length })}
         </h2>
 
         {comments.length === 0 ? (
-          <p className="text-[14px] text-[var(--ink-3)] mb-6 italic">{t('noReplies')}</p>
+          <p className="text-body text-[var(--ink-3)] mb-6 italic">{t('noReplies')}</p>
         ) : (
           <ul className="space-y-4 mb-6">
             {comments.map(({ comment, author }) => {
@@ -84,12 +88,12 @@ export default async function Page({ params }: { params: Promise<{ postId: strin
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-                      <span className="font-medium text-[13px]">{name}</span>
-                      <span className="text-[11px] text-[var(--ink-3)]">
+                      <span className="text-label text-[var(--ink)]">{name}</span>
+                      <span className="text-caption text-[var(--ink-3)]">
                         {formatTimeAgo(new Date(comment.createdAt), locale as FormatLocale)}
                       </span>
                     </div>
-                    <p className="text-[14px] text-[var(--ink-2)] whitespace-pre-wrap">
+                    <p className="text-body text-[var(--ink-2)] whitespace-pre-wrap">
                       {comment.body}
                     </p>
                   </div>
@@ -101,7 +105,7 @@ export default async function Page({ params }: { params: Promise<{ postId: strin
 
         {canComment && <AddCommentForm postId={postId} />}
         {!canComment && (
-          <p className="text-[13px] text-[var(--ink-3)] italic mt-4">{t('readOnly')}</p>
+          <p className="text-caption text-[var(--ink-3)] italic mt-4">{t('readOnly')}</p>
         )}
       </section>
     </div>

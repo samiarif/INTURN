@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getTranslations, getLocale } from 'next-intl/server';
+import { ArrowRight, ExternalLink, Star } from 'lucide-react';
 import { requireSession } from '@/modules/auth/session';
 import { listRecordsForIntern } from '@/modules/records/queries';
 
@@ -16,8 +17,10 @@ export default async function InternRecordsPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">{t('eyebrow')}</h1>
-      <p className="text-[var(--ink-3)] mb-8">
+      <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)] mb-2">
+        {t('eyebrow')}
+      </h1>
+      <p className="text-body text-[var(--ink-3)] mb-8">
         {locale === 'fr'
           ? 'Vos attestations de fin de stage. Partagez le lien avec de futurs recruteurs.'
           : 'Your end-of-internship records. Share the link with future employers.'}
@@ -35,9 +38,10 @@ export default async function InternRecordsPage() {
           </p>
           <Link
             href="/marketplace"
-            className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
           >
-            {locale === 'fr' ? 'Parcourir les stages →' : 'Browse internships →'}
+            {locale === 'fr' ? 'Parcourir les stages' : 'Browse internships'}
+            <ArrowRight size={14} strokeWidth={2.25} aria-hidden />
           </Link>
         </div>
       ) : (
@@ -49,13 +53,16 @@ export default async function InternRecordsPage() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-wider text-[var(--brand-700)] font-mono mb-1">
+                  <p className="text-eyebrow uppercase text-[var(--brand-700)] font-mono mb-1">
                     {r.snapshot.organization.name}
                   </p>
-                  <h2 className="text-lg font-semibold mb-1 truncate" title={r.snapshot.internship.title}>
+                  <h2
+                    className="text-heading font-[family-name:var(--font-display)] mb-1 truncate"
+                    title={r.snapshot.internship.title}
+                  >
                     {r.snapshot.internship.title}
                   </h2>
-                  <p className="text-sm text-[var(--ink-3)]">
+                  <p className="text-caption text-[var(--ink-3)]">
                     {new Date(r.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                       day: '2-digit',
                       month: 'long',
@@ -64,17 +71,23 @@ export default async function InternRecordsPage() {
                   </p>
                 </div>
                 {r.snapshot.signature.rating && (
-                  <div className="text-amber-500 text-sm whitespace-nowrap">
-                    {'★'.repeat(r.snapshot.signature.rating)}
+                  <div
+                    className="flex items-center gap-0.5 text-amber-500 whitespace-nowrap"
+                    aria-label={`${r.snapshot.signature.rating}/5`}
+                  >
+                    {Array.from({ length: r.snapshot.signature.rating }).map((_, i) => (
+                      <Star key={i} size={14} fill="currentColor" strokeWidth={0} aria-hidden />
+                    ))}
                   </div>
                 )}
               </div>
               <div className="flex gap-2 mt-4">
                 <Link
                   href={`/${locale}/records/${r.shareToken}`}
-                  className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+                  className="inline-flex items-center gap-1.5 justify-center h-9 px-3 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
                 >
-                  {t('shareLink')} ↗
+                  {t('shareLink')}
+                  <ExternalLink size={14} strokeWidth={2.25} aria-hidden />
                 </Link>
                 <a
                   href={`/api/records/${r.id}/pdf`}

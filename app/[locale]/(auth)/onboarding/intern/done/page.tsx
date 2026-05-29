@@ -21,8 +21,8 @@ export default async function Page() {
         <WizardProgress step={3} total={3} label={tSteps('done.step')} />
         <div className="flex flex-col items-center text-center pt-8">
           <GradientStar size="lg" />
-          <h1 className="text-2xl font-semibold tracking-tight mt-6 mb-2">{t('title')}</h1>
-          <p className="text-[var(--ink-3)] max-w-sm mb-8">{t('subtitle')}</p>
+          <h1 className="text-display font-[family-name:var(--font-display)] mt-6 mb-2">{t('title')}</h1>
+          <p className="text-body text-[var(--ink-3)] max-w-sm mb-8">{t('subtitle')}</p>
           <Link
             href="/intern/dashboard"
             className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"

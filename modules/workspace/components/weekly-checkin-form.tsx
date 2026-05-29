@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Check, AlertTriangle, ArrowRight, Sparkles } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import {
@@ -56,9 +57,24 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
   if (submitted) {
     return (
       <div className="ws-card" style={{ textAlign: 'center', padding: 32 }}>
-        <div style={{ fontSize: 32, marginBottom: 6 }}>✓</div>
-        <h3 style={{ fontSize: 17, fontWeight: 600, marginBottom: 4 }}>Check-in sent</h3>
-        <p style={{ color: 'var(--ink-3)', fontSize: 13 }}>
+        <div
+          aria-hidden
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 44,
+            height: 44,
+            borderRadius: '50%',
+            background: 'var(--status-success-bg)',
+            color: 'var(--status-success-ink)',
+            marginBottom: 10,
+          }}
+        >
+          <Check size={22} strokeWidth={2.5} />
+        </div>
+        <h3 className="text-heading" style={{ marginBottom: 4 }}>Check-in sent</h3>
+        <p className="text-caption" style={{ color: 'var(--ink-3)' }}>
           Your supervisor will see this in the timeline and dashboard.
         </p>
       </div>
@@ -75,7 +91,10 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
           disabled={generating}
           className="ws-btn ghost tiny"
         >
-          {generating ? 'Drafting…' : source === 'ai' ? `${t('regenerate')} ✨` : 'Generate draft ✨'}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <Sparkles size={13} strokeWidth={2} aria-hidden />
+            {generating ? 'Drafting…' : source === 'ai' ? t('regenerate') : 'Generate draft'}
+          </span>
         </button>
       </div>
       {source && (
@@ -90,9 +109,14 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
             border: `1px solid ${source === 'ai' ? 'var(--brand-100)' : 'var(--border-color)'}`,
           }}
         >
-          {source === 'ai'
-            ? `✨ ${t('draftedByAi')}`
-            : 'Template draft (no AI key configured). Edit anything before sending.'}
+          {source === 'ai' ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Sparkles size={13} strokeWidth={2} aria-hidden />
+              {t('draftedByAi')}
+            </span>
+          ) : (
+            'Template draft (no AI key configured). Edit anything before sending.'
+          )}
         </div>
       )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -100,7 +124,9 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
           <label
             htmlFor="checkin-shipped"
             style={{
-              display: 'block',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
               fontSize: 12,
               fontFamily: 'var(--font-mono)',
               textTransform: 'uppercase',
@@ -109,7 +135,8 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
               marginBottom: 6,
             }}
           >
-            ✓ {t('shipped')}
+            <Check size={13} strokeWidth={2.5} aria-hidden style={{ color: 'var(--status-success-ink)' }} />
+            {t('shipped')}
           </label>
           <Textarea
             id="checkin-shipped"
@@ -123,7 +150,9 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
           <label
             htmlFor="checkin-stuck"
             style={{
-              display: 'block',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
               fontSize: 12,
               fontFamily: 'var(--font-mono)',
               textTransform: 'uppercase',
@@ -132,7 +161,8 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
               marginBottom: 6,
             }}
           >
-            ⚠ {t('stuck')}
+            <AlertTriangle size={13} strokeWidth={2.5} aria-hidden style={{ color: 'var(--warning)' }} />
+            {t('stuck')}
           </label>
           <Textarea
             id="checkin-stuck"
@@ -146,7 +176,9 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
           <label
             htmlFor="checkin-next"
             style={{
-              display: 'block',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
               fontSize: 12,
               fontFamily: 'var(--font-mono)',
               textTransform: 'uppercase',
@@ -155,7 +187,8 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
               marginBottom: 6,
             }}
           >
-            → {t('next')}
+            <ArrowRight size={13} strokeWidth={2.5} aria-hidden style={{ color: 'var(--brand-600)' }} />
+            {t('next')}
           </label>
           <Textarea
             id="checkin-next"

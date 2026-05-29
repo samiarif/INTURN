@@ -36,7 +36,7 @@ export function NewPostForm() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <label className="text-[12px] font-semibold text-[var(--ink)] mb-1 block">
+        <label className="text-label text-[var(--ink)] mb-1 block">
           {t('titleLabel')}
         </label>
         <input
@@ -44,12 +44,12 @@ export function NewPostForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t('titlePlaceholder')}
-          className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-[15px]"
+          className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-body"
         />
-        <p className="text-[11px] text-[var(--ink-3)] mt-1">{title.length}/6 min</p>
+        <p className="text-caption text-[var(--ink-3)] mt-1">{title.length}/6 min</p>
       </div>
       <div>
-        <label className="text-[12px] font-semibold text-[var(--ink)] mb-1 block">
+        <label className="text-label text-[var(--ink)] mb-1 block">
           {t('bodyLabel')}
         </label>
         <textarea
@@ -57,11 +57,11 @@ export function NewPostForm() {
           onChange={(e) => setBody(e.target.value)}
           rows={10}
           placeholder={t('bodyPlaceholder')}
-          className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-[14px] font-sans resize-y"
+          className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-body font-sans resize-y"
         />
-        <p className="text-[11px] text-[var(--ink-3)] mt-1">{body.length}/20 min</p>
+        <p className="text-caption text-[var(--ink-3)] mt-1">{body.length}/20 min</p>
       </div>
-      {error && <p className="text-[13px] text-[var(--danger)]">{error}</p>}
+      {error && <p className="text-caption text-[var(--danger)]">{error}</p>}
       <div className="flex justify-end">
         <button
           type="button"

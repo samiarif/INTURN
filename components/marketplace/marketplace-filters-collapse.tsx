@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { ListFilter, Plus, Minus } from 'lucide-react';
 
 /**
  * Mobile collapse wrapper for the marketplace filter rail.
@@ -35,9 +36,7 @@ export function MarketplaceFiltersCollapse({
         aria-controls="marketplace-filters-panel"
       >
         <span className="inline-flex items-center gap-2">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-            <path d="M2 3h10M3.5 7h7M5 11h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+          <ListFilter size={14} strokeWidth={2} aria-hidden />
           {label}
           {activeCount > 0 && (
             <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-[var(--brand-500)] text-white text-[11px] font-semibold">
@@ -45,8 +44,8 @@ export function MarketplaceFiltersCollapse({
             </span>
           )}
         </span>
-        <span className="text-[var(--ink-3)]" aria-hidden>
-          {open ? '−' : '+'}
+        <span className="inline-flex text-[var(--ink-3)]" aria-hidden>
+          {open ? <Minus size={16} strokeWidth={2} /> : <Plus size={16} strokeWidth={2} />}
         </span>
       </button>
       <div

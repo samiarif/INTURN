@@ -49,8 +49,8 @@ export function SuspendUserButton({
       disabled={pending}
       className={
         isSuspended
-          ? 'px-3 py-1.5 rounded-md text-[13px] font-medium border border-[var(--border-color)] hover:bg-[var(--surface-muted)] disabled:opacity-60'
-          : 'px-3 py-1.5 rounded-md text-[13px] font-medium border border-[#FCA5A5] text-[#B91C1C] hover:bg-[#FEF2F2] disabled:opacity-60'
+          ? 'px-3 py-1.5 rounded-md text-label font-medium border border-[var(--border-color)] hover:bg-[var(--surface-muted)] disabled:opacity-60'
+          : 'px-3 py-1.5 rounded-md text-label font-medium border border-[var(--status-danger-border)] text-[var(--status-danger-ink)] hover:bg-[var(--status-danger-bg)] disabled:opacity-60'
       }
     >
       {pending ? '…' : isSuspended ? t('reactivateUser') : t('suspendUser')}

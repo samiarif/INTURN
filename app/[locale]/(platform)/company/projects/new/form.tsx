@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { GripVertical, X } from 'lucide-react';
+import { ArrowRight, GripVertical, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -208,10 +208,10 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
       {/* ---- Section: Basics ---------------------------------------- */}
       <section id="basics" className="space-y-6 scroll-mt-24">
         <header>
-          <h2 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
+          <h2 className="text-title text-[var(--ink)]">
             {isEdit ? t('heading') : 'Create a new project'}
           </h2>
-          <p className="text-[14px] text-[var(--ink-3)] mt-1">
+          <p className="text-body text-[var(--ink-3)] mt-1">
             {isEdit
               ? t('subheading')
               : 'Projects group your internships. One project = one piece of work; one or more interns work on it together in their own workspaces.'}
@@ -234,7 +234,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             placeholder="Brand audit & system refresh"
             required
           />
-          <p className="text-[12px] text-[var(--ink-3)] mt-1">
+          <p className="text-caption text-[var(--ink-3)] mt-1">
             Visible internally and to applicants once internships go live.
           </p>
         </div>
@@ -254,7 +254,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             pattern="[a-z0-9-]+"
             required
           />
-          <p className="text-[12px] text-[var(--ink-3)] mt-1">
+          <p className="text-caption text-[var(--ink-3)] mt-1">
             Used in URLs. Lowercase letters, digits, hyphens only.
           </p>
         </div>
@@ -271,7 +271,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             placeholder="A full-funnel audit of Acme's brand and a refreshed system delivered as Figma library + guidelines. Designed for two parallel interns over 12 weeks."
             required
           />
-          <p className="text-[12px] text-[var(--ink-3)] mt-1">
+          <p className="text-caption text-[var(--ink-3)] mt-1">
             2–3 sentences. This becomes the brief at the top of every workspace under this
             project.
           </p>
@@ -301,10 +301,10 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
                     onChange={() => setMode(opt.value)}
                     className="sr-only"
                   />
-                  <b className="block text-[13px] font-semibold text-[var(--ink)] mb-0.5">
+                  <b className="block text-label font-semibold text-[var(--ink)] mb-0.5">
                     {opt.label}
                   </b>
-                  <span className="text-[11.5px] text-[var(--ink-3)]">{opt.sub}</span>
+                  <span className="text-caption text-[var(--ink-3)]">{opt.sub}</span>
                 </label>
               );
             })}
@@ -321,7 +321,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Tunis · Lac 2"
               />
-              <p className="text-[12px] text-[var(--ink-3)] mt-1">
+              <p className="text-caption text-[var(--ink-3)] mt-1">
                 Hybrid &amp; on-site projects only.
               </p>
             </div>
@@ -337,8 +337,8 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
                       onClick={() => toggleDay(day)}
                       className={
                         selected
-                          ? 'px-3 py-1.5 rounded-md text-[12.5px] font-medium bg-[var(--ink)] text-white border border-[var(--ink)]'
-                          : 'px-3 py-1.5 rounded-md text-[12.5px] font-medium bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
+                          ? 'px-3 py-1.5 rounded-md text-label bg-[var(--ink)] text-white border border-[var(--ink)]'
+                          : 'px-3 py-1.5 rounded-md text-label bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
                       }
                     >
                       {day}
@@ -377,7 +377,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
               onChange={(e) => setDuration(Math.max(4, Math.min(52, Number(e.target.value) || 12)))}
               required
             />
-            <p className="text-[12px] text-[var(--ink-3)] mt-1">
+            <p className="text-caption text-[var(--ink-3)] mt-1">
               Internships can run shorter, never longer. Ends {endDate}.
             </p>
             <input type="hidden" name="endDate" value={endDate} />
@@ -388,10 +388,10 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
       {/* ---- Section: Goals + phases -------------------------------- */}
       <section id="goals" className="space-y-6 scroll-mt-24 pt-2 border-t border-[var(--border-color)]">
         <header className="pt-6">
-          <h2 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
+          <h2 className="text-title text-[var(--ink)]">
             What does success look like?
           </h2>
-          <p className="text-[14px] text-[var(--ink-3)] mt-1">
+          <p className="text-body text-[var(--ink-3)] mt-1">
             3 short statements. These appear in every workspace under this project — interns
             read them on day 1, supervisors revisit them at every check-in.
           </p>
@@ -422,7 +422,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
               />
             ))}
           </div>
-          <p className="text-[12px] text-[var(--ink-3)] mt-1.5">
+          <p className="text-caption text-[var(--ink-3)] mt-1.5">
             Limit is 3. If you can&apos;t say it in 3, you don&apos;t know it yet.
           </p>
         </div>
@@ -432,17 +432,17 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             <div className="w-full border-t border-[var(--border-color)]" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-[var(--background)] px-2 text-[10.5px] uppercase tracking-wider font-mono text-[var(--ink-3)]">
+            <span className="bg-[var(--background)] px-2 text-eyebrow uppercase font-mono text-[var(--ink-3)]">
               then · optional
             </span>
           </div>
         </div>
 
         <div>
-          <h3 className="text-[16px] font-semibold tracking-tight text-[var(--ink)]">
+          <h3 className="text-heading text-[var(--ink)]">
             Project phases
           </h3>
-          <p className="text-[13px] text-[var(--ink-3)] mt-1 mb-3">
+          <p className="text-caption text-[var(--ink-3)] mt-1 mb-3">
             Sketch the project arc. You can edit or skip — the Hub&apos;s phase strip uses
             these to show progress.
           </p>
@@ -477,11 +477,11 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
               type="button"
               onClick={addPhase}
               disabled={phases.length >= 12}
-              className="text-[12.5px] font-medium text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
+              className="text-label text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
             >
               + Add phase
             </button>
-            <span className="text-[12px] text-[var(--ink-3)]">· Skip this section</span>
+            <span className="text-caption text-[var(--ink-3)]">· Skip this section</span>
           </div>
         </div>
       </section>
@@ -489,10 +489,10 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
       {/* ---- Section: Review ---------------------------------------- */}
       <section id="review" className="space-y-4 scroll-mt-24 pt-2 border-t border-[var(--border-color)]">
         <header className="pt-6">
-          <h2 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
+          <h2 className="text-title text-[var(--ink)]">
             {isEdit ? t('reviewHeading') : 'Ready to save?'}
           </h2>
-          <p className="text-[14px] text-[var(--ink-3)] mt-1">
+          <p className="text-body text-[var(--ink-3)] mt-1">
             {isEdit
               ? t('reviewSubheading')
               : 'The project goes live the moment you post your first internship — until then, nobody outside your org sees it.'}
@@ -519,14 +519,14 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             >
               {t('saveCta')}
             </Button>
-            <span className="text-[12px] text-[var(--ink-3)]">{t('saveHint')}</span>
+            <span className="text-caption text-[var(--ink-3)]">{t('saveHint')}</span>
           </div>
         ) : (
-          <div className="rounded-lg p-5 bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7] border border-[#FDE68A]">
-            <h3 className="text-[15px] font-semibold text-[#78350F]">
+          <div className="rounded-lg p-5 bg-[var(--status-warn-bg)] border border-[color-mix(in_srgb,var(--status-warn-ink)_30%,transparent)]">
+            <h3 className="text-heading text-[var(--status-warn-ink)]">
               Next: post your first internship
             </h3>
-            <p className="text-[13px] text-[#92400E] leading-relaxed mt-1.5 mb-3 max-w-[56ch]">
+            <p className="text-caption text-[var(--status-warn-ink)] leading-relaxed mt-1.5 mb-3 max-w-[56ch]">
               The project becomes <b>active</b> the moment your first internship is published. A
               draft with no internships <b>auto-archives after 30 days</b>.
             </p>
@@ -535,9 +535,10 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
                 type="submit"
                 className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
               >
-                Save &amp; post first internship →
+                Save &amp; post first internship
+                <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
               </Button>
-              <span className="text-[12px] text-[#92400E]">
+              <span className="text-caption text-[var(--status-warn-ink)]">
                 Saves a draft and takes you to step 5.
               </span>
             </div>
@@ -614,7 +615,7 @@ function SortablePhaseRow({ phase, index, duration, reorderLabel, onUpdate, onRe
           onChange={(e) => onUpdate({ description: e.target.value })}
           placeholder="Short note (optional)"
           aria-label="Phase description"
-          className="h-7 text-[12px] text-[var(--ink-3)]"
+          className="h-7 text-caption text-[var(--ink-3)]"
         />
       </div>
       <Input
@@ -661,10 +662,10 @@ function SortablePhaseRow({ phase, index, duration, reorderLabel, onUpdate, onRe
 function SummaryRow({ k, children }: { k: string; children: React.ReactNode }) {
   return (
     <div className="grid grid-cols-[110px_minmax(0,1fr)] gap-4 items-baseline">
-      <div className="font-mono uppercase tracking-wider text-[10.5px] text-[var(--ink-3)]">
+      <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)]">
         {k}
       </div>
-      <div className="text-[13.5px] text-[var(--ink)] leading-relaxed">{children}</div>
+      <div className="text-body text-[var(--ink)] leading-relaxed">{children}</div>
     </div>
   );
 }

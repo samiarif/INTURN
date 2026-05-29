@@ -62,20 +62,20 @@ export function ResolveReportForm({
 
   return (
     <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5">
-      <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+      <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
         Triage
       </h2>
 
       {status !== 'open' ? (
         <div className="flex items-center justify-between">
-          <p className="text-[13px] text-[var(--ink-3)]">
+          <p className="text-caption text-[var(--ink-3)]">
             This report is {status}. Re-open to make changes.
           </p>
           <button
             type="button"
             onClick={reopen}
             disabled={pending}
-            className="px-3 py-1.5 rounded-md text-[13px] font-medium border border-[var(--border-color)] hover:bg-[var(--surface-muted)]"
+            className="px-3 py-1.5 rounded-md text-label font-medium border border-[var(--border-color)] hover:bg-[var(--surface-muted)]"
           >
             Re-open
           </button>
@@ -89,14 +89,14 @@ export function ResolveReportForm({
             placeholder="What did you do about it? (e.g. unpublished internship, contacted org, no action)"
             className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-sm resize-y"
           />
-          {error && <p className="text-[13px] text-[var(--danger)]">{error}</p>}
+          {error && <p className="text-caption text-[var(--danger)]">{error}</p>}
           <div className="flex items-center gap-2 flex-wrap">
             {subjectType === 'internship' && subjectExists && (
               <button
                 type="button"
                 onClick={unpublishSubject}
                 disabled={pending}
-                className="px-3 py-1.5 rounded-md text-[13px] font-medium border border-[#FCA5A5] text-[#B91C1C] hover:bg-[#FEF2F2]"
+                className="px-3 py-1.5 rounded-md text-label font-medium border border-[var(--status-danger-border)] text-[var(--status-danger-ink)] hover:bg-[var(--status-danger-bg)]"
               >
                 Unpublish internship
               </button>
@@ -106,7 +106,7 @@ export function ResolveReportForm({
               type="button"
               onClick={() => submit('reviewed')}
               disabled={pending}
-              className="px-3 py-1.5 rounded-md text-[13px] font-medium border border-[var(--border-color)] hover:bg-[var(--surface-muted)]"
+              className="px-3 py-1.5 rounded-md text-label font-medium border border-[var(--border-color)] hover:bg-[var(--surface-muted)]"
             >
               Mark reviewed
             </button>
@@ -114,7 +114,7 @@ export function ResolveReportForm({
               type="button"
               onClick={() => submit('resolved')}
               disabled={pending}
-              className="px-3 py-1.5 rounded-md text-[13px] font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+              className="px-3 py-1.5 rounded-md text-label font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
             >
               {pending ? 'Saving…' : 'Resolve'}
             </button>

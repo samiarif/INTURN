@@ -39,8 +39,8 @@ export function ToggleSuspendButton({
       disabled={pending}
       className={
         isSuspended
-          ? 'text-[13px] font-medium text-[var(--status-success-ink)] hover:underline disabled:opacity-60'
-          : 'text-[13px] font-medium text-[var(--status-danger-ink)] hover:underline disabled:opacity-60'
+          ? 'text-label font-medium text-[var(--status-success-ink)] hover:underline disabled:opacity-60'
+          : 'text-label font-medium text-[var(--status-danger-ink)] hover:underline disabled:opacity-60'
       }
     >
       {pending ? '…' : isSuspended ? t('unsuspend') : t('suspend')}

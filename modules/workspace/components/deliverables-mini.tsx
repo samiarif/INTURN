@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Package } from 'lucide-react';
 import type { Deliverable } from '@/db/schema';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -54,6 +55,7 @@ export function DeliverablesMini({
   return (
     <div className="ws-card">
       <div className="ws-card-head">
+        <Package size={16} strokeWidth={2.25} className="ws-hico" />
         <h3>Deliverables</h3>
         <Link href={`${basePath}?tab=deliverables`} className="ws-link">All versions →</Link>
       </div>

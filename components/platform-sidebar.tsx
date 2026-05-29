@@ -3,6 +3,22 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import {
+  LayoutDashboard,
+  Send,
+  Bookmark,
+  Award,
+  MessagesSquare,
+  Compass,
+  Settings,
+  FolderKanban,
+  Briefcase,
+  ShieldCheck,
+  Flag,
+  Users,
+  ScrollText,
+  type LucideIcon,
+} from 'lucide-react';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
@@ -38,33 +54,33 @@ export function PlatformSidebar({
   // bearings across the whole platform. The workspace's own shell
   // (topbar + tab-bar) sits inside the main content area.
 
-  const accountItem = { href: '/account', label: tNav('account') };
-  const navItems = role === 'intern'
+  const accountItem = { href: '/account', label: tNav('account'), icon: Settings };
+  const navItems: { href: string; label: string; icon: LucideIcon }[] = role === 'intern'
     ? [
-        { href: '/intern/dashboard',     label: tNav('dashboard') },
-        { href: '/intern/applications',  label: tNav('applications') },
-        { href: '/intern/saved',         label: tNav('saved') },
-        { href: '/intern/records',       label: tNav('records') },
-        { href: '/intern/community',     label: tNav('community') },
-        { href: '/marketplace',          label: tNav('browse') },
+        { href: '/intern/dashboard',     label: tNav('dashboard'),    icon: LayoutDashboard },
+        { href: '/intern/applications',  label: tNav('applications'), icon: Send },
+        { href: '/intern/saved',         label: tNav('saved'),        icon: Bookmark },
+        { href: '/intern/records',       label: tNav('records'),      icon: Award },
+        { href: '/intern/community',     label: tNav('community'),    icon: MessagesSquare },
+        { href: '/marketplace',          label: tNav('browse'),       icon: Compass },
         accountItem,
       ]
     : role === 'company'
     ? [
-        { href: '/company/dashboard',  label: tNav('dashboard') },
-        { href: '/company/projects',   label: tNav('projects') },
-        { href: '/company/workspaces', label: tNav('workspaces') },
-        { href: '/marketplace',        label: tNav('browse') },
+        { href: '/company/dashboard',  label: tNav('dashboard'),  icon: LayoutDashboard },
+        { href: '/company/projects',   label: tNav('projects'),   icon: FolderKanban },
+        { href: '/company/workspaces', label: tNav('workspaces'), icon: Briefcase },
+        { href: '/marketplace',        label: tNav('browse'),     icon: Compass },
         accountItem,
       ]
     : role === 'admin'
     ? [
-        { href: '/admin/dashboard',     label: tNav('dashboard') },
-        { href: '/admin/verifications', label: tNav('verifications') },
-        { href: '/admin/reports',       label: tNav('reports') },
-        { href: '/admin/users',         label: tNav('users') },
-        { href: '/admin/audit',         label: tNav('audit') },
-        { href: '/marketplace',         label: tNav('browse') },
+        { href: '/admin/dashboard',     label: tNav('dashboard'),     icon: LayoutDashboard },
+        { href: '/admin/verifications', label: tNav('verifications'), icon: ShieldCheck },
+        { href: '/admin/reports',       label: tNav('reports'),       icon: Flag },
+        { href: '/admin/users',         label: tNav('users'),         icon: Users },
+        { href: '/admin/audit',         label: tNav('audit'),         icon: ScrollText },
+        { href: '/marketplace',         label: tNav('browse'),        icon: Compass },
         accountItem,
       ]
     : [];
@@ -80,29 +96,48 @@ export function PlatformSidebar({
       aria-label={tA11y('mainNavigation')}
       className={`${forceVisible ? 'flex' : 'hidden md:flex'} flex-col w-[240px] h-screen sticky top-0 border-r border-[var(--border-color)] bg-[var(--surface)]`}
     >
-      <Link href={`/${role}/dashboard`} className="flex items-center gap-2 px-4 py-4 border-b border-[var(--border-color)]">
+      <Link
+        href={`/${role}/dashboard`}
+        className="flex items-center gap-2.5 px-4 py-[18px] border-b border-[var(--border-color)]"
+      >
         <GradientStar size="md" />
-        <span className="font-semibold text-[17px] tracking-tight">Inturn</span>
+        <span className="text-[19px] font-bold tracking-tight text-[var(--ink)] font-[family-name:var(--font-display)]">
+          Inturn
+        </span>
       </Link>
 
       <nav aria-label={tA11y('primaryNav')} className="flex-1 overflow-y-auto py-3">
-        <ul className="flex flex-col">
-          {navItems.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                aria-current={isActive(item.href) ? 'page' : undefined}
-                className={
-                  'block px-4 py-2 text-[14px] border-l-2 ' +
-                  (isActive(item.href)
-                    ? 'text-[var(--ink)] font-medium bg-[var(--brand-50)] border-[var(--brand-500)]'
-                    : 'text-[var(--ink-2)] border-transparent hover:bg-[var(--surface-muted)] hover:text-[var(--ink)]')
-                }
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+        <ul className="flex flex-col gap-0.5">
+          {navItems.map((item) => {
+            const active = isActive(item.href);
+            const Icon = item.icon;
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={
+                    'group flex items-center gap-3 mx-2 px-3 py-2 rounded-lg text-[14.5px] transition-colors ' +
+                    (active
+                      ? 'bg-[var(--brand-50)] text-[var(--brand-700)] font-semibold'
+                      : 'text-[var(--ink-2)] font-medium hover:bg-[var(--surface-muted)] hover:text-[var(--ink)]')
+                  }
+                >
+                  <Icon
+                    size={18}
+                    strokeWidth={active ? 2.4 : 2}
+                    className={
+                      'shrink-0 ' +
+                      (active
+                        ? 'text-[var(--brand-600)]'
+                        : 'text-[var(--ink-4)] group-hover:text-[var(--ink-2)]')
+                    }
+                  />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 

@@ -2,6 +2,16 @@ import Link from 'next/link';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { listAuditLogPage, type AuditLogFilter } from '@/modules/audit/queries';
 import { StatusPill, type StatusTone } from '@/components/status-pill';
+import { PageHeader } from '@/components/ui/page-header';
+import { FilterChips } from '@/components/ui/filter-chips';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 const PAGE_SIZE = 50;
 
@@ -64,70 +74,67 @@ export default async function Page({
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8 md:p-8">
-      <div className="flex items-start justify-between gap-4 mb-2">
-        <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
-        <a
-          href={exportHref}
-          download
-          className="shrink-0 h-9 px-3 inline-flex items-center rounded-md text-[13px] font-medium border border-[var(--border-color)] bg-[var(--surface)] hover:bg-[var(--surface-muted)]"
-        >
-          {t('exportCsv')}
-        </a>
-      </div>
-      <p className="text-[14px] text-[var(--ink-3)] mb-6">{t('subtitle')}</p>
-
-      <div className="flex items-center gap-1 mb-6 flex-wrap">
-        {FILTER_OPTIONS.map((o) => (
-          <Link
-            key={o.key}
-            href={o.key === 'all' ? '/admin/audit' : `/admin/audit?action=${o.key}`}
-            className={
-              activeFilter === o.key
-                ? 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--ink)] text-white'
-                : 'px-3 py-1.5 rounded-full text-[13px] font-medium bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
-            }
+      <PageHeader
+        title={t('title')}
+        description={t('subtitle')}
+        className="mb-6"
+        actions={
+          <a
+            href={exportHref}
+            download
+            className="shrink-0 h-9 px-3 inline-flex items-center rounded-md text-label font-medium border border-[var(--border-color)] bg-[var(--surface)] hover:bg-[var(--surface-muted)]"
           >
-            {filterChipLabels[o.key]}
-          </Link>
-        ))}
-      </div>
+            {t('exportCsv')}
+          </a>
+        }
+      />
+
+      <FilterChips
+        className="mb-6"
+        activeKey={activeFilter}
+        items={FILTER_OPTIONS.map((o) => ({
+          key: o.key,
+          label: filterChipLabels[o.key],
+          href: o.key === 'all' ? '/admin/audit' : `/admin/audit?action=${o.key}`,
+        }))}
+      />
 
       {rows.length === 0 ? (
         <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
           {t('empty')}
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-x-auto">
-          <table className="w-full text-[13px] min-w-[640px]">
-            <thead>
-              <tr className="border-b border-[var(--border-color)] text-left text-[var(--ink-3)]">
-                <th className="px-4 py-3 font-medium uppercase tracking-wider text-[11px]">{t('time')}</th>
-                <th className="px-4 py-3 font-medium uppercase tracking-wider text-[11px]">{t('actor')}</th>
-                <th className="px-4 py-3 font-medium uppercase tracking-wider text-[11px]">{t('action')}</th>
-                <th className="px-4 py-3 font-medium uppercase tracking-wider text-[11px]">{t('target')}</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden">
+          <Table className="min-w-[640px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('time')}</TableHead>
+                <TableHead>{t('actor')}</TableHead>
+                <TableHead>{t('action')}</TableHead>
+                <TableHead>{t('target')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {rows.map(({ log, actor }) => (
-                <tr key={log.id} className="border-b border-[var(--border-color)] last:border-b-0">
-                  <td className="px-4 py-3 text-[var(--ink-3)] whitespace-nowrap">
+                <TableRow key={log.id}>
+                  <TableCell className="text-caption text-[var(--ink-3)] whitespace-nowrap">
                     {new Date(log.createdAt).toLocaleString(locale === 'fr' ? 'fr-FR' : 'en-US')}
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell>
                     {actor?.email ?? <span className="italic text-[var(--ink-3)]">—</span>}
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell>
                     <StatusPill tone={toneForAction(log.action)} mono>
                       {log.action}
                     </StatusPill>
-                  </td>
-                  <td className="px-4 py-3 text-[var(--ink-3)] font-mono text-[12px]">
+                  </TableCell>
+                  <TableCell className="font-mono text-caption text-[var(--ink-3)]">
                     {log.targetType}/{log.targetId?.slice(0, 8) ?? '—'}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
 

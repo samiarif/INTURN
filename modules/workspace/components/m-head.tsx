@@ -48,7 +48,10 @@ export async function WorkspaceMHead({
     <div className="ws-mhead">
       <div className="ws-mhead-title-row">
         <h1 className="ws-mhead-title">{title}</h1>
-        <span className="ws-mhead-badge live">● ACTIVE</span>
+        <span className="ws-mhead-badge live">
+          <span className="ws-live-dot" aria-hidden />
+          ACTIVE
+        </span>
         {range && (
           <span className="ws-mhead-badge mono" style={{ fontFamily: 'var(--font-mono)' }}>
             {range}

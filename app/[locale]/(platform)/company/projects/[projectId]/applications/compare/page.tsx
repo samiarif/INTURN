@@ -43,15 +43,15 @@ export default async function Page({
       <div className="mb-2">
         <Link
           href={`/company/projects/${projectId}/applications`}
-          className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)]"
+          className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)]"
         >
           {t('back')}
         </Link>
       </div>
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-2">
         {t('title', { count: apps.length })}
       </h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
+      <p className="text-body text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
       {/* Mobile (<sm): single column scroll. sm-md: 2 col. lg+: N columns
           side-by-side, where N is the number of selected candidates (capped at 4). */}
       <div
@@ -64,13 +64,13 @@ export default async function Page({
             key={application.id}
             className="border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)]"
           >
-            <div className="font-mono text-[10.5px] text-[var(--ink-3)] uppercase tracking-wider mb-1">
+            <div className="text-eyebrow font-mono text-[var(--ink-3)] uppercase mb-1">
               {internship.title}
             </div>
-            <h2 className="text-lg font-semibold tracking-tight mb-1">
+            <h2 className="text-heading mb-1">
               {applicant.firstName} {applicant.lastName}
             </h2>
-            <div className="text-[13px] text-[var(--ink-3)] mb-3">
+            <div className="text-caption text-[var(--ink-3)] mb-3">
               {profile?.university ?? '—'} · {profile?.yearOfStudy ?? '—'} · {profile?.fieldOfStudy ?? '—'}
             </div>
             <div className="mb-4">
@@ -79,7 +79,7 @@ export default async function Page({
               </StatusPill>
             </div>
             <div className="mb-4">
-              <div className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-2">
+              <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
                 {t('skills')}
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -102,7 +102,7 @@ export default async function Page({
             </div>
             {(profile?.roles ?? []).length > 0 && (
               <div className="mb-4">
-                <div className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-2">
+                <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
                   {t('roles')}
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -119,10 +119,10 @@ export default async function Page({
             )}
             {application.coverNote && (
               <div className="mb-4">
-                <div className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-1">
+                <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-1">
                   {t('coverNote')}
                 </div>
-                <p className="text-[13px] text-[var(--ink-2)] line-clamp-4">
+                <p className="text-body text-[var(--ink-2)] line-clamp-4">
                   {application.coverNote}
                 </p>
               </div>

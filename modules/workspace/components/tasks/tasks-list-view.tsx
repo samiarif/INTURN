@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { ArrowUp } from 'lucide-react';
 import type { Task } from '@/db/schema';
 import { TaskCardMenu } from './task-card-menu';
 import type { SortKey } from '@/modules/workspace/utils/task-view-state';
@@ -69,9 +70,10 @@ export function TasksListView({ tasks, view }: Props) {
                       type="button"
                       onClick={() => setSort(c.key)}
                       aria-label={t(c.tk)}
-                      style={{ background: 'transparent', border: 0, padding: 0, font: 'inherit', cursor: 'pointer', color: 'var(--ink)' }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: 0, padding: 0, font: 'inherit', cursor: 'pointer', color: isActive ? 'var(--brand-600)' : 'var(--ink)' }}
                     >
-                      {t(c.tk)} {isActive ? '↑' : ''}
+                      {t(c.tk)}
+                      {isActive && <ArrowUp size={12} strokeWidth={2.5} aria-hidden />}
                     </button>
                   ) : (
                     t(c.tk)

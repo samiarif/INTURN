@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { ArrowRight, Check, ExternalLink } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -65,7 +66,10 @@ export function ScheduleCheckInButton({
     if (!open) {
       return (
         <button type="button" onClick={() => setOpen(true)} className="ws-btn-w">
-          {t('title')} →
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            {t('title')}
+            <ArrowRight size={14} strokeWidth={2.25} aria-hidden />
+          </span>
         </button>
       );
     }
@@ -81,8 +85,23 @@ export function ScheduleCheckInButton({
     >
       {success ? (
         <div style={{ textAlign: 'center', padding: '12px 0' }}>
-          <div style={{ fontSize: 24, marginBottom: 4 }}>✓</div>
-          <h4 style={{ color: 'var(--ink)', fontWeight: 600, marginBottom: 4 }}>
+          <div
+            aria-hidden
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              background: 'var(--status-success-bg)',
+              color: 'var(--status-success-ink)',
+              marginBottom: 8,
+            }}
+          >
+            <Check size={18} strokeWidth={2.5} />
+          </div>
+          <h4 className="text-heading" style={{ color: 'var(--ink)', marginBottom: 4 }}>
             {t('successHeading')}
           </h4>
           <p style={{ fontSize: 13, color: 'var(--ink-3)', marginBottom: 10 }}>
@@ -99,9 +118,10 @@ export function ScheduleCheckInButton({
             target="_blank"
             rel="noopener noreferrer"
             className="ws-btn brand"
-            style={{ display: 'inline-flex', textDecoration: 'none' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
           >
-            {t('linkLabel')} ↗
+            {t('linkLabel')}
+            <ExternalLink size={14} strokeWidth={2.25} aria-hidden />
           </a>
         </div>
       ) : (

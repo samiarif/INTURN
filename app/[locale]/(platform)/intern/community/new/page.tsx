@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { requireSession } from '@/modules/auth/session';
 import { redirect } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import { NewPostForm } from './new-post-form';
 
 export default async function Page() {
@@ -14,12 +15,15 @@ export default async function Page() {
     <div className="max-w-2xl mx-auto px-6 py-10">
       <Link
         href="/intern/community"
-        className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-block"
+        className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-flex items-center gap-1.5"
       >
-        ← {t('backToFeed')}
+        <ArrowLeft size={14} strokeWidth={2.25} aria-hidden />
+        {t('backToFeed')}
       </Link>
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
+      <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)] mb-2">
+        {t('title')}
+      </h1>
+      <p className="text-body text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
       <NewPostForm />
     </div>
   );

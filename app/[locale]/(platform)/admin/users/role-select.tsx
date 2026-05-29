@@ -52,7 +52,7 @@ export function RoleSelect({
 
   if (isSelf) {
     return (
-      <span className="text-[12px] text-[var(--ink-4)] italic" title={t('roleSelfHint')}>
+      <span className="text-caption text-[var(--ink-4)] italic" title={t('roleSelfHint')}>
         {t('roleSelf')}
       </span>
     );

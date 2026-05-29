@@ -20,7 +20,7 @@ export function DeletePostButton({ postId }: { postId: string }) {
       type="button"
       onClick={onDelete}
       disabled={pending}
-      className="text-[12px] text-[var(--ink-3)] hover:text-[var(--danger)]"
+      className="text-caption text-[var(--ink-3)] hover:text-[var(--danger)]"
     >
       {pending ? t('deleting') : t('delete')}
     </button>

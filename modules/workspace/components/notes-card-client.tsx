@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { StickyNote, X } from 'lucide-react';
 import { deleteNoteAction } from '@/modules/notes/server-actions';
 import { AddNoteModal } from './add-note-modal';
 import { formatTimeAgo, type FormatLocale } from '@/lib/format-time';
@@ -32,18 +33,19 @@ function DeleteNoteButton({ noteId }: { noteId: string }) {
       onClick={handleDelete}
       aria-label={t('deleteLabel')}
       title={t('deleteLabel')}
+      className="transition-colors hover:text-[var(--danger)]"
       style={{
         background: 'none',
         border: 'none',
         cursor: 'pointer',
         color: 'var(--ink-4)',
-        fontSize: 16,
+        display: 'inline-flex',
+        alignItems: 'center',
         padding: '2px 4px',
-        lineHeight: 1,
         flexShrink: 0,
       }}
     >
-      ×
+      <X size={14} strokeWidth={2.25} aria-hidden />
     </button>
   );
 }
@@ -63,7 +65,10 @@ export function NotesCardClient({ workspaceId, notes, locale }: Props) {
             marginBottom: 8,
           }}
         >
-          <h4 style={{ margin: 0 }}>{t('title')}</h4>
+          <h4 style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+            <StickyNote size={15} strokeWidth={2.25} style={{ color: 'var(--brand-600)', flexShrink: 0 }} />
+            {t('title')}
+          </h4>
           <button
             type="button"
             className="ws-btn ghost tiny"

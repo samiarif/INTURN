@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -247,7 +247,7 @@ export function PostInternshipForm({
           {/* ---- Role + skills ----------------------------------------- */}
           <section id="role" className="space-y-5 scroll-mt-24">
             <header>
-              <h1 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
+              <h1 className="text-title text-[var(--ink)]">
                 {isEdit ? (
                   tEdit('heading')
                 ) : (
@@ -257,7 +257,7 @@ export function PostInternshipForm({
                   </>
                 )}
               </h1>
-              <p className="text-[14px] text-[var(--ink-3)] mt-1">
+              <p className="text-body text-[var(--ink-3)] mt-1">
                 {isEdit
                   ? tEdit('subheading')
                   : 'One role, one set of deliverables. You can add more roles to this project anytime — research, copywriting, dev support, etc.'}
@@ -277,7 +277,7 @@ export function PostInternshipForm({
                   placeholder="Visual designer"
                   required
                 />
-                <p className="text-[12px] text-[var(--ink-3)] mt-1">
+                <p className="text-caption text-[var(--ink-3)] mt-1">
                   This is what interns search for — be specific.
                 </p>
               </div>
@@ -312,7 +312,7 @@ export function PostInternshipForm({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What this intern owns — concrete, specific. Different from the project description."
               />
-              <p className="text-[12px] text-[var(--ink-3)] mt-1">
+              <p className="text-caption text-[var(--ink-3)] mt-1">
                 What this intern owns. Different from the project description — be concrete
                 about scope.
               </p>
@@ -323,7 +323,7 @@ export function PostInternshipForm({
                 <Label>
                   Slots <span className="text-[var(--danger)]">*</span>
                 </Label>
-                <div className="inline-flex items-center w-full rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-[13px] mt-1.5">
+                <div className="inline-flex items-center w-full rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-label mt-1.5">
                   {SLOT_OPTIONS.map((n) => {
                     const selected = internCount === n;
                     return (
@@ -343,7 +343,7 @@ export function PostInternshipForm({
                   })}
                 </div>
                 <input type="hidden" name="internCount" value={internCount} />
-                <p className="text-[12px] text-[var(--ink-3)] mt-1">
+                <p className="text-caption text-[var(--ink-3)] mt-1">
                   How many interns work this role in parallel.
                 </p>
               </div>
@@ -369,7 +369,7 @@ export function PostInternshipForm({
                   }
                   required
                 />
-                <p className="text-[12px] text-[var(--ink-3)] mt-1">
+                <p className="text-caption text-[var(--ink-3)] mt-1">
                   Can&apos;t exceed project length.
                 </p>
               </div>
@@ -399,10 +399,10 @@ export function PostInternshipForm({
                         onChange={() => setLocationType(opt.value)}
                         className="sr-only"
                       />
-                      <b className="block text-[13px] font-semibold text-[var(--ink)] mb-0.5">
+                      <b className="block text-label font-semibold text-[var(--ink)] mb-0.5">
                         {opt.label}
                       </b>
-                      <span className="text-[11.5px] text-[var(--ink-3)]">{opt.sub}</span>
+                      <span className="text-caption text-[var(--ink-3)]">{opt.sub}</span>
                     </label>
                   );
                 })}
@@ -454,7 +454,7 @@ export function PostInternshipForm({
                 max={12}
                 placeholder="Add a skill"
               />
-              <p className="text-[12px] text-[var(--ink-3)] mt-1">
+              <p className="text-caption text-[var(--ink-3)] mt-1">
                 Used to surface this listing in marketplace search. Don&apos;t gate —
                 preferred &gt; required.
               </p>
@@ -465,7 +465,7 @@ export function PostInternshipForm({
                 Compensation <span className="text-[var(--danger)]">*</span>
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr_220px] gap-3 items-stretch mt-1.5">
-                <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-[13px]">
+                <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-label">
                   <button
                     type="button"
                     onClick={() => setIsPaid(true)}
@@ -512,7 +512,7 @@ export function PostInternshipForm({
                   </SelectContent>
                 </Select>
               </div>
-              <p className="text-[12px] text-[var(--ink-3)] mt-1">
+              <p className="text-caption text-[var(--ink-3)] mt-1">
                 Inturn shows this on the listing. Hiding pay is not allowed for paid roles.
               </p>
             </div>
@@ -538,10 +538,10 @@ export function PostInternshipForm({
             className="space-y-5 scroll-mt-24 pt-6 border-t border-[var(--border-color)]"
           >
             <header>
-              <h2 className="text-[22px] font-semibold tracking-tight text-[var(--ink)]">
+              <h2 className="text-title text-[var(--ink)]">
                 What will they deliver?
               </h2>
-              <p className="text-[14px] text-[var(--ink-3)] mt-1">
+              <p className="text-body text-[var(--ink-3)] mt-1">
                 Be specific. Deliverables anchor the workspace — vague briefs lead to drift.
                 Required at post-time, not after.
               </p>
@@ -560,7 +560,7 @@ export function PostInternshipForm({
                     key={i}
                     className="grid grid-cols-[28px_minmax(0,1fr)_88px_28px] gap-2 items-start p-2.5 border border-[var(--border-color)] rounded-md bg-[var(--surface)]"
                   >
-                    <span className="font-mono text-[11px] font-semibold text-[var(--brand-700)] bg-[#DDD6FE] w-7 h-7 rounded flex items-center justify-center mt-0.5">
+                    <span className="font-mono text-[11px] font-semibold text-[var(--brand-700)] bg-[var(--brand-100)] w-7 h-7 rounded flex items-center justify-center mt-0.5">
                       D{i + 1}
                     </span>
                     <div className="space-y-1 min-w-0">
@@ -626,11 +626,11 @@ export function PostInternshipForm({
                   type="button"
                   onClick={addDeliverable}
                   disabled={deliverables.length >= 10}
-                  className="text-[12.5px] font-medium text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
+                  className="text-label text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
                 >
                   + Add deliverable
                 </button>
-                <span className="text-[12px] text-[var(--ink-3)]">Min 3 · max 10</span>
+                <span className="text-caption text-[var(--ink-3)]">Min 3 · max 10</span>
               </div>
             </div>
 
@@ -666,7 +666,7 @@ export function PostInternshipForm({
                       aria-label={`Question ${i + 1}`}
                       className="h-9"
                     />
-                    <label className="inline-flex items-center gap-1.5 text-[12px] text-[var(--ink-3)] whitespace-nowrap">
+                    <label className="inline-flex items-center gap-1.5 text-caption text-[var(--ink-3)] whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={q.required}
@@ -695,7 +695,7 @@ export function PostInternshipForm({
                 type="button"
                 onClick={addQuestion}
                 disabled={questions.length >= 3}
-                className="mt-2 text-[12.5px] font-medium text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
+                className="mt-2 text-label text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
               >
                 + Add question {questions.length >= 3 ? '(max 3)' : `(${3 - questions.length} left)`}
               </button>
@@ -728,7 +728,7 @@ export function PostInternshipForm({
                 onClick={() => window.history.back()}
                 className="text-[var(--ink-3)]"
               >
-                {isEdit ? tEdit('back') : '← Back'}
+                {isEdit ? tEdit('back') : <><ArrowLeft size={15} strokeWidth={2.25} aria-hidden />Back</>}
               </Button>
               {isEdit ? (
                 <Button
@@ -748,7 +748,8 @@ export function PostInternshipForm({
                     value="publish"
                     className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
                   >
-                    Publish to marketplace →
+                    Publish to marketplace
+                    <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
                   </Button>
                 </div>
               )}
@@ -761,21 +762,21 @@ export function PostInternshipForm({
             Stacks below on mobile (lg breakpoint).
             ============================================================ */}
         <aside className="space-y-4 lg:sticky lg:top-24 self-start">
-          <div className="font-mono text-[10px] tracking-widest uppercase text-[var(--ink-3)]">
+          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)]">
             Live preview · marketplace card
           </div>
 
           <div className="rounded-xl border border-dashed border-[var(--border-color)] bg-[var(--surface)] p-5">
-            <span className="inline-block font-mono text-[10px] tracking-wider uppercase text-[var(--brand-700)] bg-[#DDD6FE] px-2 py-0.5 rounded mb-2.5 font-medium">
+            <span className="inline-block font-mono text-[10px] tracking-wider uppercase text-[var(--brand-700)] bg-[var(--brand-100)] px-2 py-0.5 rounded mb-2.5 font-medium">
               {sector || 'Discipline'}
             </span>
-            <h3 className="text-[17px] font-semibold tracking-tight text-[var(--ink)] mb-1 leading-snug">
+            <h3 className="text-heading text-[var(--ink)] mb-1 leading-snug">
               {title || 'Role title'} · {projectName}
             </h3>
-            <p className="text-[13px] text-[var(--ink-3)] mb-3">
+            <p className="text-caption text-[var(--ink-3)] mb-3">
               {orgName} · {orgLocation || 'Tunis'}
             </p>
-            <div className="space-y-1 text-[12px] text-[var(--ink-2)] pb-3 mb-3 border-b border-dashed border-[var(--border-color)]">
+            <div className="space-y-1 text-caption text-[var(--ink-2)] pb-3 mb-3 border-b border-dashed border-[var(--border-color)]">
               <div>
                 <b className="font-medium text-[var(--ink)]">{compensationDisplay}</b>{' '}
                 · {isPaid ? 'paid' : 'unpaid'}
@@ -812,23 +813,24 @@ export function PostInternshipForm({
                 </span>
               ) : null}
             </div>
-            <div className="bg-[var(--ink)] text-white rounded-md py-2 px-3 text-center text-[12.5px] font-medium">
-              Apply →
+            <div className="bg-[var(--ink)] text-white rounded-md py-2 px-3 flex items-center justify-center gap-1 text-label">
+              Apply
+              <ArrowRight size={13} strokeWidth={2.25} aria-hidden />
             </div>
           </div>
 
-          <div className="flex items-start gap-3 px-3.5 py-3 rounded-md bg-[#FFFBEB] border border-[#FDE68A]">
-            <span className="w-2 h-2 rounded-full bg-[#F59E0B] flex-shrink-0 mt-1.5" />
-            <div className="text-[12px] text-[#78350F] leading-relaxed">
-              <b className="text-[#92400E] font-semibold block mb-0.5">
+          <div className="flex items-start gap-3 px-3.5 py-3 rounded-md bg-[var(--status-warn-bg)] border border-[color-mix(in_srgb,var(--status-warn-ink)_30%,transparent)]">
+            <span className="w-2 h-2 rounded-full bg-[var(--status-warn-ink)] flex-shrink-0 mt-1.5" />
+            <div className="text-caption text-[var(--status-warn-ink)] leading-relaxed">
+              <b className="text-[var(--status-warn-ink)] font-semibold block mb-0.5">
                 Publishing activates the project.
               </b>
               {projectName} goes from Draft → Active the moment this listing is live.
             </div>
           </div>
 
-          <div className="px-3.5 py-3 rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] text-[12px] text-[var(--ink-2)] leading-relaxed">
-            <b className="text-[var(--ink)] block mb-1 text-[12.5px]">
+          <div className="px-3.5 py-3 rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] text-caption text-[var(--ink-2)] leading-relaxed">
+            <b className="text-label font-semibold text-[var(--ink)] block mb-1">
               What interns see next
             </b>
             · Public landing page with full scope &amp; deliverables
@@ -850,7 +852,7 @@ function SectionDivider({ label }: { label: string }) {
         <div className="w-full border-t border-[var(--border-color)]" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-[var(--background)] px-2 text-[10.5px] uppercase tracking-wider font-mono text-[var(--ink-3)]">
+        <span className="bg-[var(--background)] px-2 text-eyebrow uppercase font-mono text-[var(--ink-3)]">
           {label}
         </span>
       </div>
@@ -887,8 +889,8 @@ function VisibilityChoice({
         aria-hidden
       />
       <div>
-        <b className="text-[13px] font-semibold text-[var(--ink)] block">{title}</b>
-        <span className="text-[12px] text-[var(--ink-3)]">{subtitle}</span>
+        <b className="text-label font-semibold text-[var(--ink)] block">{title}</b>
+        <span className="text-caption text-[var(--ink-3)]">{subtitle}</span>
       </div>
     </label>
   );

@@ -36,11 +36,11 @@ export default async function Page({
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">
-      <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-1">
+      <div className="font-mono text-eyebrow text-[var(--ink-3)] uppercase mb-1">
         {t('eyebrow', { org: organization.name })}
       </div>
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">{internship.title}</h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-8">
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{internship.title}</h1>
+      <p className="text-body text-[var(--ink-3)] mb-8">
         {t('intro', {
           name: fullName,
           university: ctx.profile.university ?? '—',

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
+import { Check } from 'lucide-react';
 import { setVerificationStatusAction } from '@/modules/admin/server-actions';
 import {
   isValidVerificationTransition,
@@ -32,9 +33,10 @@ export function VerificationActions({
           type="button"
           disabled={pending}
           onClick={() => setTo('verified')}
-          className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[#15803D] text-white hover:bg-[#166534] disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[#15803D] text-white hover:bg-[#166534] disabled:opacity-50"
         >
-          ✓ Mark verified
+          <Check size={15} strokeWidth={2.5} aria-hidden />
+          Mark verified
         </button>
       )}
       {isValidVerificationTransition(currentStatus, 'pending') && (

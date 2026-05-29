@@ -24,7 +24,7 @@ export function WithdrawButton({ applicationId }: { applicationId: string }) {
       type="button"
       onClick={onClick}
       disabled={pending}
-      className="text-[13px] text-[var(--ink-3)] hover:text-[var(--danger)] underline underline-offset-2 decoration-dotted disabled:opacity-60"
+      className="text-caption text-[var(--ink-3)] hover:text-[var(--danger)] underline underline-offset-2 decoration-dotted disabled:opacity-60"
     >
       {t('withdraw')}
     </button>

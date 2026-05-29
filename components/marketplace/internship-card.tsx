@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Heart, Clock, MapPin, Check, ArrowRight } from 'lucide-react';
 import type { Internship, Organization } from '@/db/schema';
 import { toggleBookmarkAction } from '@/modules/bookmarks/actions';
 import { orgMark } from '@/lib/avatar';
@@ -114,10 +115,10 @@ export function InternshipCard({
           <button
             type="submit"
             aria-label={bookmarked ? strings.removeLabel : strings.saveLabel}
-            className="h-8 w-8 rounded-full bg-[var(--surface)]/95 border border-[var(--border-color)] flex items-center justify-center text-[15px] leading-none hover:border-[var(--brand-300)] hover:text-[var(--brand-500)] transition-colors"
+            className="h-8 w-8 rounded-full bg-[var(--surface)]/95 border border-[var(--border-color)] flex items-center justify-center hover:border-[var(--brand-300)] hover:text-[var(--brand-500)] transition-colors"
             style={{ color: bookmarked ? 'var(--brand-500)' : 'var(--ink-3)' }}
           >
-            <span aria-hidden>{bookmarked ? '♥' : '♡'}</span>
+            <Heart size={15} strokeWidth={2} aria-hidden fill={bookmarked ? 'currentColor' : 'none'} />
           </button>
         </form>
       )}
@@ -159,29 +160,29 @@ export function InternshipCard({
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-3 text-[12.5px] text-[var(--ink-2)]">
           {internship.isPaid && internship.compensation ? (
             <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden className="text-[var(--success)]">{'●'}</span>
+              <span aria-hidden className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--success)]" />
               <b className="font-semibold text-[var(--ink)]">{internship.compensation}</b>
             </span>
           ) : internship.isPaid ? (
             <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden className="text-[var(--success)]">{'●'}</span>
+              <span aria-hidden className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--success)]" />
               <b className="font-semibold text-[var(--ink)]">{strings.paidPaid}</b>
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 text-[var(--ink-3)]">
-              <span aria-hidden>{'○'}</span>
+              <span aria-hidden className="inline-block w-1.5 h-1.5 rounded-full border border-current opacity-70" />
               {strings.paidUnpaid}
             </span>
           )}
           {internship.duration ? (
             <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden className="text-[var(--ink-4)]">{'⏱'}</span>
+              <Clock size={13} strokeWidth={2} aria-hidden className="text-[var(--ink-4)]" />
               {strings.durationWeeks(internship.duration)}
             </span>
           ) : null}
           {locationDetail ? (
             <span className="inline-flex items-center gap-1.5 min-w-0">
-              <span aria-hidden className="text-[var(--ink-4)]">{'◉'}</span>
+              <MapPin size={13} strokeWidth={2} aria-hidden className="text-[var(--ink-4)] flex-shrink-0" />
               <span className="truncate">{locationDetail}</span>
             </span>
           ) : null}
@@ -197,7 +198,7 @@ export function InternshipCard({
                   className="ex-skill inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--surface-muted)] text-[var(--ink-2)] text-[11.5px] leading-5"
                   data-have={have ? 'true' : undefined}
                 >
-                  {have ? <span aria-hidden style={{ fontSize: 9, fontWeight: 700, marginRight: 3 }}>{'✓'}</span> : null}
+                  {have ? <Check size={11} strokeWidth={3} aria-hidden style={{ marginRight: 3 }} /> : null}
                   {skill}
                 </span>
               );
@@ -212,12 +213,12 @@ export function InternshipCard({
           >
             {deadlineText ?? strings.rolling}
           </span>
-          <span
+          <ArrowRight
+            size={16}
+            strokeWidth={2}
             aria-hidden
             className="text-[var(--ink-3)] group-hover:text-[var(--brand-500)] group-hover:translate-x-0.5 transition-all"
-          >
-            {'→'}
-          </span>
+          />
         </div>
       </Link>
     </article>

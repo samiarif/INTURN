@@ -33,9 +33,9 @@ export function AddCommentForm({ postId }: { postId: string }) {
         onChange={(e) => setBody(e.target.value)}
         rows={4}
         placeholder={t('replyPlaceholder')}
-        className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-[14px] resize-y"
+        className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-body resize-y"
       />
-      {error && <p className="text-[13px] text-[var(--danger)]">{error}</p>}
+      {error && <p className="text-caption text-[var(--danger)]">{error}</p>}
       <div className="flex justify-end">
         <button
           type="button"

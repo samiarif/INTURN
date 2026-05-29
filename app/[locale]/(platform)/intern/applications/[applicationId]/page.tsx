@@ -55,23 +55,25 @@ export default async function Page({
       <div className="mb-2 flex items-center justify-between gap-3">
         <Link
           href="/intern/applications"
-          className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)]"
+          className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)]"
         >
           {t('back')}
         </Link>
         {canWithdraw && <WithdrawButton applicationId={application.id} />}
       </div>
-      <h1 className="text-2xl font-semibold tracking-tight mb-1">{internship.title}</h1>
-      <div className="text-[14px] text-[var(--ink-3)] mb-8">
+      <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)] mb-1">
+        {internship.title}
+      </h1>
+      <div className="text-body text-[var(--ink-3)] mb-8">
         {t('appliedOn', { date: new Date(application.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US') })}
       </div>
 
       <section className="mb-8">
-        <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
           {t('statusLabel')}
         </h2>
         {status === 'rejected' ? (
-          <div className="border border-[#FECACA] bg-[#FEF2F2] text-[#B91C1C] rounded-md p-3 text-[14px] font-medium">
+          <div className="border border-[color-mix(in_srgb,var(--status-danger-ink)_22%,transparent)] bg-[var(--status-danger-bg)] text-[var(--status-danger-ink)] rounded-md p-3 text-label">
             {t('closedLabel')}
           </div>
         ) : (
@@ -84,10 +86,10 @@ export default async function Page({
                   <div
                     className={
                       isCurrent
-                        ? 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--brand-500)] text-white whitespace-nowrap'
+                        ? 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--brand-500)] text-white whitespace-nowrap'
                         : isPast
-                          ? 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--brand-50)] text-[var(--brand-600)] whitespace-nowrap'
-                          : 'px-3 py-1.5 rounded-full text-[12.5px] font-medium bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] whitespace-nowrap'
+                          ? 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--brand-50)] text-[var(--brand-600)] whitespace-nowrap'
+                          : 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] whitespace-nowrap'
                     }
                   >
                     {tStatus(step)}
@@ -114,10 +116,10 @@ export default async function Page({
 
       {application.coverNote && (
         <section className="mb-6">
-          <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-2">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
             {t('yourCoverNote')}
           </h2>
-          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] text-[14px] text-[var(--ink-2)] whitespace-pre-line max-h-[300px] overflow-y-auto">
+          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] text-body text-[var(--ink-2)] whitespace-pre-line max-h-[300px] overflow-y-auto">
             {application.coverNote}
           </div>
         </section>
@@ -125,14 +127,14 @@ export default async function Page({
 
       {application.customAnswers && application.customAnswers.length > 0 && (
         <section>
-          <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
             {t('yourAnswers')}
           </h2>
           <div className="space-y-3">
             {application.customAnswers.map((a, i) => (
               <div key={i} className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)]">
-                <div className="text-[12.5px] text-[var(--ink-3)] mb-1">{a.question}</div>
-                <div className="text-[14px] text-[var(--ink-2)] whitespace-pre-line max-h-[200px] overflow-y-auto">{a.answer}</div>
+                <div className="text-caption text-[var(--ink-3)] mb-1">{a.question}</div>
+                <div className="text-body text-[var(--ink-2)] whitespace-pre-line max-h-[200px] overflow-y-auto">{a.answer}</div>
               </div>
             ))}
           </div>

@@ -39,7 +39,7 @@ export function ProfileSkillsForm({ initial }: { initial?: SkillsInitial }) {
 
       <div>
         <Label>{t('rolesLabel')}</Label>
-        <p className="text-[12px] text-[var(--ink-3)] mb-2">{t('rolesHelper')}</p>
+        <p className="text-caption text-[var(--ink-3)] mb-2">{t('rolesHelper')}</p>
         <RoleChipGrid value={roles} onChange={setRoles} />
       </div>
 
@@ -55,7 +55,7 @@ export function ProfileSkillsForm({ initial }: { initial?: SkillsInitial }) {
           helper={t('cvHelper')}
         />
         {cvUrl && (
-          <p className="text-[12px] text-[var(--success)] mt-1">
+          <p className="text-caption text-[var(--success)] mt-1">
             CV uploaded ·{' '}
             <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="underline">
               view

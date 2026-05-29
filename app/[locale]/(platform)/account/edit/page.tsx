@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { requireSession } from '@/modules/auth/session';
@@ -34,12 +35,13 @@ export default async function Page() {
     <div className="max-w-2xl mx-auto px-6 py-10">
       <Link
         href="/account"
-        className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-block"
+        className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-flex items-center gap-1.5"
       >
-        ← {t('title')}
+        <ArrowLeft size={14} strokeWidth={2} aria-hidden />
+        {t('title')}
       </Link>
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">{t('profile')}</h1>
-      <p className="text-[var(--ink-3)] mb-6">{t('editIntro')}</p>
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('profile')}</h1>
+      <p className="text-body text-[var(--ink-3)] mb-6">{t('editIntro')}</p>
 
       <CvImportButton />
 

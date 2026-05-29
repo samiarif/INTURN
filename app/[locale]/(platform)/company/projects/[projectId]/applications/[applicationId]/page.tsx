@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ExternalLink } from 'lucide-react';
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
@@ -37,19 +38,19 @@ export default async function Page({
       <div className="mb-2">
         <Link
           href={`/company/projects/${projectId}/applications`}
-          className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)]"
+          className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)]"
         >
           {t('back')}
         </Link>
       </div>
-      <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-1">
+      <div className="text-eyebrow font-mono text-[var(--ink-3)] uppercase mb-1">
         {internship.title}
       </div>
       <div className="flex items-center justify-between gap-4 flex-wrap mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-display font-[family-name:var(--font-display)]">
           {applicant.firstName} {applicant.lastName}
         </h1>
-        <span className="font-mono text-[12px] text-[var(--ink-3)]">
+        <span className="text-eyebrow font-mono text-[var(--ink-3)]">
           {t('appliedOn', {
             date: new Date(application.createdAt).toLocaleDateString(
               locale === 'fr' ? 'fr-FR' : 'en-US',
@@ -59,39 +60,39 @@ export default async function Page({
       </div>
 
       <section className="mb-8">
-        <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
           {t('profile')}
         </h2>
         <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)]">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div>
-              <div className="text-[12px] text-[var(--ink-3)]">{t('email')}</div>
+              <div className="text-caption text-[var(--ink-3)]">{t('email')}</div>
               <div className="font-medium break-all">{applicant.email}</div>
             </div>
             <div>
-              <div className="text-[12px] text-[var(--ink-3)]">{t('university')}</div>
+              <div className="text-caption text-[var(--ink-3)]">{t('university')}</div>
               <div className="font-medium">{profile?.university ?? '—'}</div>
             </div>
             <div>
-              <div className="text-[12px] text-[var(--ink-3)]">{t('year')}</div>
+              <div className="text-caption text-[var(--ink-3)]">{t('year')}</div>
               <div className="font-medium">{profile?.yearOfStudy ?? '—'}</div>
             </div>
             <div>
-              <div className="text-[12px] text-[var(--ink-3)]">{t('field')}</div>
+              <div className="text-caption text-[var(--ink-3)]">{t('field')}</div>
               <div className="font-medium">{profile?.fieldOfStudy ?? '—'}</div>
             </div>
             <div>
-              <div className="text-[12px] text-[var(--ink-3)]">{t('city')}</div>
+              <div className="text-caption text-[var(--ink-3)]">{t('city')}</div>
               <div className="font-medium">{profile?.city ?? '—'}</div>
             </div>
             <div>
-              <div className="text-[12px] text-[var(--ink-3)]">{t('language')}</div>
+              <div className="text-caption text-[var(--ink-3)]">{t('language')}</div>
               <div className="font-medium uppercase">{profile?.preferredLanguage ?? '—'}</div>
             </div>
           </div>
           {profile?.skills && profile.skills.length > 0 && (
             <div className="mt-4">
-              <div className="text-[12px] text-[var(--ink-3)] mb-1">{t('skills')}</div>
+              <div className="text-caption text-[var(--ink-3)] mb-1">{t('skills')}</div>
               <div className="flex flex-wrap gap-1.5">
                 {profile.skills.map((s) => (
                   <span
@@ -110,7 +111,7 @@ export default async function Page({
                 href={profile.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[13px] text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+                className="text-label text-[var(--brand-600)] hover:text-[var(--brand-700)]"
               >
                 {t('viewCv')}
               </a>
@@ -124,9 +125,10 @@ export default async function Page({
                   href={l.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[13px] text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+                  className="inline-flex items-center gap-1 text-label text-[var(--brand-600)] hover:text-[var(--brand-700)]"
                 >
-                  {l.platform} ↗
+                  {l.platform}
+                  <ExternalLink size={13} strokeWidth={2.25} aria-hidden />
                 </a>
               ))}
             </div>
@@ -136,10 +138,10 @@ export default async function Page({
 
       {application.coverNote && (
         <section className="mb-8">
-          <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
             {t('coverNote')}
           </h2>
-          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] text-[14px] text-[var(--ink-2)] whitespace-pre-line max-h-[400px] overflow-y-auto">
+          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] text-body text-[var(--ink-2)] whitespace-pre-line max-h-[400px] overflow-y-auto">
             {application.coverNote}
           </div>
         </section>
@@ -147,14 +149,14 @@ export default async function Page({
 
       {customAnswers.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
             {t('applicationAnswers')}
           </h2>
           <div className="space-y-3">
             {customQuestions.map((q, i) => (
               <div key={i} className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)]">
-                <div className="text-[12.5px] text-[var(--ink-3)] mb-1">{q.question}</div>
-                <div className="text-[14px] text-[var(--ink-2)] whitespace-pre-line max-h-[200px] overflow-y-auto">
+                <div className="text-caption text-[var(--ink-3)] mb-1">{q.question}</div>
+                <div className="text-body text-[var(--ink-2)] whitespace-pre-line max-h-[200px] overflow-y-auto">
                   {customAnswers[i]?.answer ?? '—'}
                 </div>
               </div>
@@ -164,7 +166,7 @@ export default async function Page({
       )}
 
       <section className="mb-8">
-        <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
           {t('internalNotes')}
         </h2>
         <NotesEditor
@@ -175,7 +177,7 @@ export default async function Page({
       </section>
 
       <section className="border-t border-[var(--border-color)] pt-6">
-        <h2 className="text-[12px] font-mono uppercase tracking-wider text-[var(--ink-3)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
           {t('pipeline')}
         </h2>
         <StatusPipeline

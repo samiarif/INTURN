@@ -6,6 +6,7 @@
 // index (app/[locale]/(platform)/company/projects/page.tsx) — same .pi-* shell
 // tokens — so the two company index screens read as a set.
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
@@ -32,7 +33,7 @@ function initialsOf(first: string | null, last: string | null): string {
 }
 
 const STATUS_PILL: Record<string, string> = {
-  active: 'bg-[#ECFDF5] text-[#15803D] border-[#A7F3D0]',
+  active: 'bg-[var(--status-success-bg)] text-[var(--status-success-ink)] border-[color-mix(in_srgb,var(--status-success-ink)_28%,transparent)]',
   completed: 'bg-[var(--surface-muted)] text-[var(--ink-3)] border-[var(--border-color)]',
   cancelled: 'bg-[var(--surface-muted)] text-[var(--ink-4)] border-[var(--border-color)]',
 };
@@ -92,7 +93,7 @@ export default async function Page() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[14px] font-semibold text-[var(--ink)] truncate">
+                    <span className="text-label font-semibold text-[var(--ink)] truncate">
                       {name || w.internshipTitle}
                     </span>
                     <span
@@ -101,27 +102,28 @@ export default async function Page() {
                       }`}
                     >
                       {w.status === 'active' && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#15803D]" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success-ink)]" />
                       )}
                       {statusLabel(w.status)}
                     </span>
                   </div>
-                  <div className="text-[12.5px] text-[var(--ink-3)] truncate mt-0.5">
+                  <div className="text-caption text-[var(--ink-3)] truncate mt-0.5">
                     {w.projectTitle ?? t('noProject')}
                     <span className="mx-1.5 text-[var(--ink-4)]">·</span>
                     {w.internshipTitle}
                   </div>
                 </div>
 
-                <div className="hidden sm:block text-[12px] font-mono text-[var(--ink-3)] flex-shrink-0">
+                <div className="hidden sm:block text-caption font-mono text-[var(--ink-3)] flex-shrink-0">
                   {dates}
                 </div>
 
                 <span
                   aria-hidden
-                  className="text-[13px] font-medium text-[var(--ink-3)] group-hover:text-[var(--brand-700)] flex-shrink-0"
+                  className="inline-flex items-center gap-1 text-label text-[var(--ink-3)] group-hover:text-[var(--brand-700)] flex-shrink-0"
                 >
-                  {t('open')} →
+                  {t('open')}
+                  <ArrowRight size={14} strokeWidth={2.25} />
                 </span>
               </Link>
             );

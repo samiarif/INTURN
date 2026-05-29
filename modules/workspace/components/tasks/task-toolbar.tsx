@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Check } from 'lucide-react';
 import type { Task } from '@/db/schema';
 import {
   parseFilterParam,
@@ -208,7 +209,7 @@ function PhaseDropdown({
             borderRadius: 8,
             padding: 4,
             zIndex: 30,
-            boxShadow: '0 8px 24px -8px rgba(0,0,0,0.15)',
+            boxShadow: 'var(--elev-pop)',
           }}
         >
           {phases.map((p) => {
@@ -221,6 +222,9 @@ function PhaseDropdown({
                 type="button"
                 onClick={() => onToggle(p)}
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
                   width: '100%',
                   textAlign: 'left',
                   padding: '6px 10px',
@@ -232,7 +236,16 @@ function PhaseDropdown({
                   color: 'var(--ink)',
                 }}
               >
-                {checked ? '✓ ' : '  '}
+                <Check
+                  size={14}
+                  strokeWidth={2.5}
+                  aria-hidden
+                  style={{
+                    flexShrink: 0,
+                    color: 'var(--brand-600)',
+                    opacity: checked ? 1 : 0,
+                  }}
+                />
                 {p}
               </button>
             );

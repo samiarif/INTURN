@@ -41,7 +41,7 @@ export function NotesEditor({
         rows={5}
         placeholder="Internal notes (never shown to the applicant)…"
       />
-      <p className="text-[12px] text-[var(--ink-3)] mt-1 font-mono">
+      <p className="text-caption text-[var(--ink-3)] mt-1 font-mono">
         {pending
           ? 'Saving…'
           : savedAt

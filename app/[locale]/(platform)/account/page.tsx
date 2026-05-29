@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { requireSession } from '@/modules/auth/session';
 import { db } from '@/db';
@@ -27,14 +28,14 @@ export default async function Page() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[var(--ink-3)] mb-10">{t('subtitle')}</p>
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('title')}</h1>
+      <p className="text-body text-[var(--ink-3)] mb-10">{t('subtitle')}</p>
 
       <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-4">
-        <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
           {t('identity')}
         </h2>
-        <div className="space-y-2 text-[14px]">
+        <div className="space-y-2 text-body">
           <Row label={t('email')} value={session.user.email} />
           <Row
             label={t('name')}
@@ -52,25 +53,25 @@ export default async function Page() {
             )}
           />
         </div>
-        <p className="text-[12px] text-[var(--ink-3)] mt-4">{t('clerkNote')}</p>
+        <p className="text-caption text-[var(--ink-3)] mt-4">{t('clerkNote')}</p>
       </section>
 
       {session.role === 'intern' && profileRow && (
         <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)]">
+            <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)]">
               {t('profile')}
             </h2>
             {editProfileHref && (
               <Link
                 href={editProfileHref}
-                className="text-[13px] text-[var(--brand-700)] hover:underline"
+                className="text-caption text-[var(--brand-700)] hover:underline"
               >
                 {t('edit')}
               </Link>
             )}
           </div>
-          <div className="space-y-2 text-[14px]">
+          <div className="space-y-2 text-body">
             <Row label={t('university')} value={profileRow.university ?? t('notSet')} />
             <Row label={t('fieldOfStudy')} value={profileRow.fieldOfStudy ?? t('notSet')} />
             <Row label={t('city')} value={profileRow.city ?? t('notSet')} />
@@ -82,19 +83,19 @@ export default async function Page() {
       {session.role === 'company' && orgRow && (
         <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)]">
+            <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)]">
               {t('organization')}
             </h2>
             {editProfileHref && (
               <Link
                 href={editProfileHref}
-                className="text-[13px] text-[var(--brand-700)] hover:underline"
+                className="text-caption text-[var(--brand-700)] hover:underline"
               >
                 {t('edit')}
               </Link>
             )}
           </div>
-          <div className="space-y-2 text-[14px]">
+          <div className="space-y-2 text-body">
             <Row label={t('orgName')} value={orgRow.name} />
             <Row label={t('industry')} value={orgRow.industry ?? t('notSet')} />
             <Row label={t('city')} value={orgRow.city ?? orgRow.country ?? t('notSet')} />
@@ -114,10 +115,10 @@ export default async function Page() {
       <AppearancePrefsSection />
 
       <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-4">
-        <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
           {t('dataAndPrivacy')}
         </h2>
-        <p className="text-[13px] text-[var(--ink-3)] mb-4">{t('dataIntro')}</p>
+        <p className="text-caption text-[var(--ink-3)] mb-4">{t('dataIntro')}</p>
         <div className="flex flex-wrap gap-2">
           <a
             href="/api/account/export"
@@ -128,9 +129,10 @@ export default async function Page() {
           </a>
           <Link
             href={`/${locale}/privacy`}
-            className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium text-[var(--ink-2)] hover:text-[var(--ink)]"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium text-[var(--ink-2)] hover:text-[var(--ink)]"
           >
-            {t('readPrivacy')} →
+            {t('readPrivacy')}
+            <ArrowRight size={15} strokeWidth={2} aria-hidden />
           </Link>
         </div>
       </section>
@@ -143,7 +145,7 @@ export default async function Page() {
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-dashed border-[var(--border-color)] pb-1 last:border-b-0">
-      <span className="text-[12px] uppercase tracking-wider text-[var(--ink-3)]">{label}</span>
+      <span className="text-eyebrow uppercase text-[var(--ink-3)]">{label}</span>
       <span className="text-[var(--ink)] text-right">{value}</span>
     </div>
   );

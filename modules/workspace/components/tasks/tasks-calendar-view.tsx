@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Task } from '@/db/schema';
 
 type Props = {
@@ -89,12 +90,28 @@ export function TasksCalendarView({ tasks, view: _view }: Props) {
 
   return (
     <div className="ws-col-main">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12 }}>
-        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{monthLabel}</h3>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 12 }}>
+        <h3 className="text-heading" style={{ margin: 0 }}>{monthLabel}</h3>
         <div style={{ flex: 1 }} />
-        <button type="button" onClick={() => shift(-1)} aria-label={t('prevMonth')}>←</button>
-        <button type="button" onClick={today}>{t('today')}</button>
-        <button type="button" onClick={() => shift(1)} aria-label={t('nextMonth')}>→</button>
+        <button
+          type="button"
+          className="tb-chip"
+          onClick={() => shift(-1)}
+          aria-label={t('prevMonth')}
+          style={{ display: 'inline-flex', alignItems: 'center' }}
+        >
+          <ChevronLeft size={15} strokeWidth={2.25} aria-hidden />
+        </button>
+        <button type="button" className="tb-chip" onClick={today}>{t('today')}</button>
+        <button
+          type="button"
+          className="tb-chip"
+          onClick={() => shift(1)}
+          aria-label={t('nextMonth')}
+          style={{ display: 'inline-flex', alignItems: 'center' }}
+        >
+          <ChevronRight size={15} strokeWidth={2.25} aria-hidden />
+        </button>
       </div>
 
       {undated > 0 && (
@@ -128,8 +145,32 @@ export function TasksCalendarView({ tasks, view: _view }: Props) {
             >
               <div style={{ fontSize: 11, color: 'var(--ink-2)', marginBottom: 2 }}>{d.getDate()}</div>
               {cTasks.slice(0, 3).map((tk) => (
-                <div key={tk.id} style={{ fontSize: 11, padding: '2px 4px', borderRadius: 3, background: 'var(--surface-muted)', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  ● {tk.title}
+                <div
+                  key={tk.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    fontSize: 11,
+                    padding: '2px 5px',
+                    borderRadius: 4,
+                    background: 'var(--surface-muted)',
+                    marginBottom: 2,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    style={{
+                      flexShrink: 0,
+                      width: 5,
+                      height: 5,
+                      borderRadius: '50%',
+                      background: 'var(--brand-500)',
+                    }}
+                  />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{tk.title}</span>
                 </div>
               ))}
               {cTasks.length > 3 && (

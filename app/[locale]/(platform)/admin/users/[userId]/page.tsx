@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
     <div className="max-w-4xl mx-auto px-6 py-8 md:p-8">
       <Link
         href="/admin/users"
-        className="text-[13px] text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-block"
+        className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)] mb-4 inline-block"
       >
         {t('detailBack')}
       </Link>
@@ -51,8 +51,8 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight mb-1">{fullName}</h1>
-          <p className="text-[14px] text-[var(--ink-3)] break-all">{user.email}</p>
+          <h1 className="text-display font-[family-name:var(--font-display)] mb-1">{fullName}</h1>
+          <p className="text-body text-[var(--ink-3)] break-all">{user.email}</p>
           <div className="flex items-center gap-2 mt-2">
             {user.role && <StatusPill tone={roleTone}>{t(roleLabelKey)}</StatusPill>}
             {user.suspendedAt ? (
@@ -66,7 +66,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
 
       {/* Admin actions: reuse M5/M6 controls */}
       <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5 mb-4">
-        <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
           {t('detailActions')}
         </h2>
         <div className="flex flex-wrap items-center gap-4">
@@ -89,11 +89,11 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
       {/* Profile (interns) */}
       {user.role === 'intern' && (
         <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5 mb-4">
-          <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
             {t('detailProfile')}
           </h2>
           {profile ? (
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-[14px]">
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-body">
               {profile.headline && (
                 <DetailRow label={t('detailHeadline')} value={profile.headline} />
               )}
@@ -109,7 +109,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
               )}
             </dl>
           ) : (
-            <p className="text-[13px] text-[var(--ink-3)]">{t('detailNoProfile')}</p>
+            <p className="text-caption text-[var(--ink-3)]">{t('detailNoProfile')}</p>
           )}
         </section>
       )}
@@ -117,7 +117,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
       {/* Organization (companies) */}
       {user.role === 'company' && (
         <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5 mb-4">
-          <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
             {t('detailOrg')}
           </h2>
           {organization ? (
@@ -128,9 +128,9 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
               >
                 {organization.name}
               </Link>
-              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-[14px] mt-2">
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-body mt-2">
                 <div className="flex gap-2 items-center">
-                  <dt className="text-[var(--ink-3)] text-[13px]">{t('detailOrgStatus')}</dt>
+                  <dt className="text-[var(--ink-3)] text-caption">{t('detailOrgStatus')}</dt>
                   <dd>
                     <StatusPill tone={toneForVerificationStatus(organization.verificationStatus)}>
                       {organization.verificationStatus}
@@ -146,29 +146,29 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
               </dl>
             </div>
           ) : (
-            <p className="text-[13px] text-[var(--ink-3)]">{t('detailNoOrg')}</p>
+            <p className="text-caption text-[var(--ink-3)]">{t('detailNoOrg')}</p>
           )}
         </section>
       )}
 
       {/* Applications */}
       <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5 mb-4">
-        <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
           {t('detailApplications')}
         </h2>
         {applications.length === 0 ? (
-          <p className="text-[13px] text-[var(--ink-3)]">{t('detailNoApplications')}</p>
+          <p className="text-caption text-[var(--ink-3)]">{t('detailNoApplications')}</p>
         ) : (
-          <table className="w-full text-[13px]">
+          <table className="w-full text-caption">
             <thead>
               <tr className="text-left text-[var(--ink-3)] border-b border-[var(--border-color)]">
-                <th className="py-2 font-medium uppercase tracking-wider text-[11px]">
+                <th className="py-2 text-eyebrow font-mono uppercase">
                   {t('detailColInternship')}
                 </th>
-                <th className="py-2 font-medium uppercase tracking-wider text-[11px]">
+                <th className="py-2 text-eyebrow font-mono uppercase">
                   {t('detailColStatus')}
                 </th>
-                <th className="py-2 font-medium uppercase tracking-wider text-[11px]">
+                <th className="py-2 text-eyebrow font-mono uppercase">
                   {t('detailColDate')}
                 </th>
               </tr>
@@ -193,7 +193,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
                       {application.status ?? 'new'}
                     </StatusPill>
                   </td>
-                  <td className="py-2 text-[var(--ink-3)] font-mono text-[12px] whitespace-nowrap">
+                  <td className="py-2 text-[var(--ink-3)] font-mono text-caption whitespace-nowrap">
                     {dateFmt(application.createdAt)}
                   </td>
                 </tr>
@@ -205,17 +205,17 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
 
       {/* Workspaces */}
       <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5">
-        <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
           {t('detailWorkspaces')}
         </h2>
         {workspaces.length === 0 ? (
-          <p className="text-[13px] text-[var(--ink-3)]">{t('detailNoWorkspaces')}</p>
+          <p className="text-caption text-[var(--ink-3)]">{t('detailNoWorkspaces')}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {workspaces.map(({ workspace, internship }) => (
               <li
                 key={workspace.id}
-                className="flex items-center justify-between gap-3 text-[14px] border-b border-[var(--border-color)] last:border-b-0 pb-2 last:pb-0"
+                className="flex items-center justify-between gap-3 text-body border-b border-[var(--border-color)] last:border-b-0 pb-2 last:pb-0"
               >
                 <span className="font-medium">{internship?.title ?? '—'}</span>
                 <span className="flex items-center gap-2">
@@ -230,7 +230,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
                   >
                     {workspace.status ?? 'active'}
                   </StatusPill>
-                  <span className="text-[12px] text-[var(--ink-3)] font-mono whitespace-nowrap">
+                  <span className="text-caption text-[var(--ink-3)] font-mono whitespace-nowrap">
                     {dateFmt(workspace.createdAt)}
                   </span>
                 </span>
@@ -246,7 +246,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-2">
-      <dt className="text-[var(--ink-3)] text-[13px] min-w-[110px]">{label}</dt>
+      <dt className="text-[var(--ink-3)] text-caption min-w-[110px]">{label}</dt>
       <dd className="text-[var(--ink)]">{value}</dd>
     </div>
   );

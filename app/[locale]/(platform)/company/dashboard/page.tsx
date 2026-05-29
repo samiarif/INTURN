@@ -25,6 +25,7 @@ import {
 import { getUserByClerkId } from '@/modules/profiles/queries';
 import { getProjectsByOrganization } from '@/modules/projects/queries';
 import { getInternshipsByProjectIds } from '@/modules/internships/queries';
+import { Clock } from 'lucide-react';
 import { CalendarWidget } from '@/components/dashboard/calendar-widget';
 import { FteChecklist } from '@/components/fte-checklist';
 
@@ -485,16 +486,16 @@ export default async function Page() {
             >
               <span
                 aria-hidden
-                className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[var(--status-warn-ink)] text-white text-[14px] font-semibold flex-shrink-0"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[var(--status-warn-ink)] text-white flex-shrink-0"
                 title={tDash('verifyHeading')}
               >
-                ◷
+                <Clock size={16} strokeWidth={2.25} />
               </span>
               <div className="min-w-0">
-                <p className="font-mono uppercase tracking-[0.06em] text-[11.5px] text-[var(--status-warn-ink)] mb-1">
+                <p className="text-eyebrow font-mono uppercase text-[var(--status-warn-ink)] mb-1">
                   {tDash('verifyHeading')} · {tDash('verifySla')}
                 </p>
-                <p className="text-[13.5px] text-[var(--ink-2)] leading-relaxed">
+                <p className="text-body text-[var(--ink-2)] leading-relaxed">
                   {tDash('verifyBody')}
                 </p>
               </div>

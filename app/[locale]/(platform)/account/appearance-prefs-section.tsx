@@ -53,13 +53,13 @@ export function AppearancePrefsSection() {
 
   return (
     <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-4">
-      <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+      <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
         {t('section')}
       </h2>
-      <p className="text-[13px] text-[var(--ink-3)] mb-4">{t('intro')}</p>
+      <p className="text-caption text-[var(--ink-3)] mb-4">{t('intro')}</p>
 
       <div className="flex items-center justify-between gap-4 border-b border-dashed border-[var(--border-color)] py-3">
-        <div className="text-[14px] text-[var(--ink)]">{t('theme')}</div>
+        <div className="text-label text-[var(--ink)]">{t('theme')}</div>
         <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-[13px]">
           <SegButton active={theme === 'light'} onClick={() => setTheme('light')}>
             {t('light')}
@@ -71,7 +71,7 @@ export function AppearancePrefsSection() {
       </div>
 
       <div className="flex items-center justify-between gap-4 py-3">
-        <div className="text-[14px] text-[var(--ink)]">{t('language')}</div>
+        <div className="text-label text-[var(--ink)]">{t('language')}</div>
         <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-[13px]">
           <SegButton active={locale === 'fr'} onClick={() => setLocale('fr')}>
             FR

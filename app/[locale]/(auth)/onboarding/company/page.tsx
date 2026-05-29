@@ -34,8 +34,8 @@ export default async function Page() {
       </header>
       <main className="max-w-3xl mx-auto p-8">
         <WizardProgress step={1} total={1} label={t('step')} />
-        <h1 className="text-2xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-        <p className="text-[14px] text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
+        <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('title')}</h1>
+        <p className="text-body text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
         <CompanyProfileForm
           initial={
             existing

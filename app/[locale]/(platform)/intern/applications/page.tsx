@@ -8,15 +8,8 @@ import { organizations } from '@/db/schema';
 import { getUserByClerkId } from '@/modules/profiles/queries';
 import { getApplicationsByApplicant } from '@/modules/applications/queries';
 import { orgMark } from '@/lib/avatar';
-
-const STATUS_STYLE: Record<string, string> = {
-  new: 'bg-[#EFF6FF] text-[#1D4ED8]',
-  reviewed: 'bg-[var(--surface-muted)] text-[var(--ink-2)]',
-  shortlisted: 'bg-[var(--brand-50)] text-[var(--brand-600)]',
-  interview: 'bg-[#FFFBEB] text-[#92400E]',
-  accepted: 'bg-[#ECFDF5] text-[#15803D]',
-  rejected: 'bg-[#FEF2F2] text-[#B91C1C]',
-};
+import { StatusPill, toneForApplicationStatus } from '@/components/status-pill';
+import { ChevronRight } from 'lucide-react';
 
 const STATUS_KEYS = new Set(['new', 'reviewed', 'shortlisted', 'interview', 'accepted', 'rejected']);
 
@@ -64,13 +57,15 @@ export default async function Page() {
 
       <div className="flex items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight mb-1.5">{tApps('title')}</h1>
-          <p className="text-[13.5px] text-[var(--ink-3)]">
+          <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)] mb-1.5">
+            {tApps('title')}
+          </h1>
+          <p className="text-body text-[var(--ink-3)]">
             {rows.length === 0 ? tApps('subtitleNone') : tApps('subtitleCount', { n: rows.length })}
           </p>
         </div>
         {rows.length > 0 && (
-          <span className="font-mono text-[10.5px] tracking-[0.06em] uppercase text-[var(--ink-3)]">
+          <span className="text-eyebrow font-mono uppercase text-[var(--ink-3)]">
             {tApps('countLabel')} · {rows.length}
           </span>
         )}
@@ -113,29 +108,27 @@ export default async function Page() {
                 </span>
                 <div className="min-w-0 flex-1">
                   {org?.name && (
-                    <div className="font-mono text-[10.5px] text-[var(--ink-3)] uppercase tracking-[0.06em] mb-0.5 truncate">
+                    <div className="text-eyebrow font-mono text-[var(--ink-3)] uppercase mb-0.5 truncate">
                       {org.name}
                     </div>
                   )}
-                  <div className="font-medium text-[14.5px] text-[var(--ink)] tracking-tight truncate">
+                  <div className="text-label text-[var(--ink)] truncate">
                     {internship.title}
                   </div>
-                  <div className="text-[12px] text-[var(--ink-3)] mt-0.5">
+                  <div className="text-caption text-[var(--ink-3)] mt-0.5">
                     {tApps('appliedOn', {
                       date: dateFmt.format(new Date(application.createdAt)),
                     })}
                   </div>
                 </div>
-                <span
-                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10.5px] font-mono font-semibold tracking-[0.06em] uppercase ${STATUS_STYLE[status] ?? STATUS_STYLE.new}`}
-                >
+                <StatusPill tone={toneForApplicationStatus(status)}>
                   {statusLabel}
-                </span>
+                </StatusPill>
                 <span
                   aria-hidden
-                  className="text-[var(--ink-4)] group-hover:text-[var(--brand-500)] group-hover:translate-x-0.5 transition-all text-[18px] leading-none"
+                  className="text-[var(--ink-4)] group-hover:text-[var(--brand-500)] group-hover:translate-x-0.5 transition-all"
                 >
-                  {'›'}
+                  <ChevronRight size={16} strokeWidth={2.25} />
                 </span>
               </Link>
             );

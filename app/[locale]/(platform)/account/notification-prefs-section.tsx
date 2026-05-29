@@ -57,10 +57,10 @@ export function NotificationPrefsSection({
 
   return (
     <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-6 mb-4">
-      <h2 className="text-[11px] uppercase tracking-wider font-mono text-[var(--brand-700)] mb-3">
+      <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
         {t('section')}
       </h2>
-      <p className="text-[13px] text-[var(--ink-3)] mb-4">{t('intro')}</p>
+      <p className="text-caption text-[var(--ink-3)] mb-4">{t('intro')}</p>
       <div className="space-y-1">
         <ToggleRow
           label={t('email')}
@@ -78,9 +78,9 @@ export function NotificationPrefsSection({
         />
       </div>
       {error ? (
-        <p className="text-[13px] text-[#B91C1C] mt-3">{error}</p>
+        <p className="text-caption text-[var(--status-danger-ink)] mt-3">{error}</p>
       ) : saved ? (
-        <p className="text-[13px] text-[var(--ink-3)] mt-3">{t('saved')}</p>
+        <p className="text-caption text-[var(--ink-3)] mt-3">{t('saved')}</p>
       ) : null}
     </section>
   );
@@ -102,8 +102,8 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between gap-4 border-b border-dashed border-[var(--border-color)] py-3 last:border-b-0">
       <div>
-        <div className="text-[14px] text-[var(--ink)]">{label}</div>
-        <div className="text-[12px] text-[var(--ink-3)]">{description}</div>
+        <div className="text-label text-[var(--ink)]">{label}</div>
+        <div className="text-caption text-[var(--ink-3)]">{description}</div>
       </div>
       <button
         type="button"

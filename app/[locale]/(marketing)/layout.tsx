@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { TriangleAlert } from 'lucide-react';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { getSession } from '@/modules/auth/session';
@@ -45,9 +46,9 @@ export default async function MarketingLayout({ children }: { children: React.Re
           ) : devBypassed ? (
             <Link
               href="/dev/login"
-              className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)]"
+              className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)]"
             >
-              ⚠ Dev login
+              <TriangleAlert size={13} strokeWidth={2.5} aria-hidden />Dev login
             </Link>
           ) : (
             <>

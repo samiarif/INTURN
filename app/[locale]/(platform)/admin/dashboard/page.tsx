@@ -3,6 +3,15 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { getAdminStats, listRecentOrganizations } from '@/modules/admin/queries';
 import { countOpenReports } from '@/modules/reports/queries';
 import { StatusPill, toneForVerificationStatus } from '@/components/status-pill';
+import { PageHeader } from '@/components/ui/page-header';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 export default async function Page() {
   const [stats, recent, openReports, t, tStatus, locale] = await Promise.all([
@@ -16,8 +25,7 @@ export default async function Page() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8 md:p-8">
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[14px] text-[var(--ink-3)] mb-8">{t('subtitle')}</p>
+      <PageHeader title={t('title')} description={t('subtitle')} className="mb-8" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         <Link
@@ -28,7 +36,7 @@ export default async function Page() {
               : 'border-[var(--border-color)] bg-[var(--surface)]'
           }`}
         >
-          <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
+          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
             {t('verificationsPending')}
           </div>
           <div
@@ -40,7 +48,7 @@ export default async function Page() {
           >
             {stats.verificationsPending}
           </div>
-          <div className="text-[12px] text-[var(--ink-3)] mt-1">
+          <div className="text-caption text-[var(--ink-3)] mt-1">
             {stats.oldestPendingHours !== null
               ? t('oldestPending', { hours: stats.oldestPendingHours })
               : t('verificationsPendingHelp')}
@@ -50,20 +58,20 @@ export default async function Page() {
           href="/admin/verifications?status=verified"
           className="block border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)] hover:border-[var(--border-strong)]"
         >
-          <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
+          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
             {t('companiesVerified')}
           </div>
           <div className="text-3xl font-semibold tracking-tight">{stats.companiesVerified}</div>
-          <div className="text-[12px] text-[var(--success)] mt-1">
+          <div className="text-caption text-[var(--success)] mt-1">
             {t('recentLast30d', { n: stats.companiesVerifiedRecent })}
           </div>
         </Link>
         <div className="border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)]">
-          <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
+          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
             {t('activeWorkspaces')}
           </div>
           <div className="text-3xl font-semibold tracking-tight">{stats.activeWorkspaces}</div>
-          <div className="text-[12px] text-[var(--success)] mt-1">
+          <div className="text-caption text-[var(--success)] mt-1">
             {t('recentLast30d', { n: stats.activeWorkspacesRecent })}
           </div>
         </div>
@@ -75,63 +83,63 @@ export default async function Page() {
               : 'border-[var(--border-color)] bg-[var(--surface)]'
           }`}
         >
-          <div className="font-mono text-[11px] text-[var(--ink-3)] uppercase tracking-wider mb-2">
+          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
             {t('openReports')}
           </div>
           <div className={`text-3xl font-semibold tracking-tight ${openReports > 0 ? 'text-[var(--status-danger-ink)]' : ''}`}>
             {openReports}
           </div>
-          <div className="text-[12px] text-[var(--ink-3)] mt-1">
+          <div className="text-caption text-[var(--ink-3)] mt-1">
             {openReports > 0 ? t('openReportsNeedsTriage') : t('openReportsAllClear')}
           </div>
         </Link>
       </div>
 
       <section>
-        <h2 className="text-lg font-semibold mb-4">{t('recentOrgs')}</h2>
+        <h2 className="text-heading mb-4">{t('recentOrgs')}</h2>
         {recent.length === 0 ? (
-          <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
+          <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-caption text-[var(--ink-3)]">
             {t('noOrgs')}
           </div>
         ) : (
-          <div className="border border-[var(--border-color)] rounded-md overflow-x-auto bg-[var(--surface)]">
-            <table className="w-full text-sm min-w-[600px]">
-              <thead className="bg-[var(--surface-muted)] text-left">
-                <tr>
-                  <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('company')}</th>
-                  <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('owner')}</th>
-                  <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('status')}</th>
-                  <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-[12px] uppercase tracking-wider">{t('created')}</th>
-                  <th className="px-4 py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden">
+            <Table className="min-w-[600px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('company')}</TableHead>
+                  <TableHead>{t('owner')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('created')}</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {recent.map(({ organization, owner }) => (
-                  <tr key={organization.id} className="border-t border-[var(--border-color)]">
-                    <td className="px-4 py-3 font-medium">{organization.name}</td>
-                    <td className="px-4 py-3 text-[13px]">{owner.email}</td>
-                    <td className="px-4 py-3">
+                  <TableRow key={organization.id}>
+                    <TableCell className="font-medium text-[var(--ink)]">{organization.name}</TableCell>
+                    <TableCell className="text-caption text-[var(--ink-3)]">{owner.email}</TableCell>
+                    <TableCell>
                       <StatusPill tone={toneForVerificationStatus(organization.verificationStatus)}>
                         {tStatus(
                           (organization.verificationStatus ?? 'draft') as
                             | 'draft' | 'pending' | 'verified' | 'suspended',
                         )}
                       </StatusPill>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-[12px] text-[var(--ink-3)]">
+                    </TableCell>
+                    <TableCell className="font-mono text-caption text-[var(--ink-3)]">
                       {new Date(organization.createdAt).toLocaleDateString(
                         locale === 'fr' ? 'fr-FR' : 'en-US',
                       )}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <Link href={`/admin/verifications/${organization.id}`} className="text-[var(--brand-600)] hover:text-[var(--brand-700)] text-sm">
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link href={`/admin/verifications/${organization.id}`} className="text-label text-[var(--brand-600)] hover:text-[var(--brand-700)]">
                         {t('open')}
                       </Link>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         )}
       </section>

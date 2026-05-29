@@ -20,8 +20,8 @@ export default function Error({
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16 text-center">
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">{t('title')}</h1>
-      <p className="text-[var(--ink-3)] mb-6">{t('body')}</p>
+      <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('title')}</h1>
+      <p className="text-body text-[var(--ink-3)] mb-6">{t('body')}</p>
       {error.digest && (
         <p className="text-[var(--ink-3)] text-xs font-mono mb-6">{tRoot('reference', { digest: error.digest })}</p>
       )}
