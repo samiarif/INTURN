@@ -31,7 +31,8 @@ export type LimitName =
   | 'ai-task-clarity'
   | 'ai-intern-unblocker'
   | 'ai-checkin-draft'
-  | 'ai-cv-parse';
+  | 'ai-cv-parse'
+  | 'team-invite';
 
 const LIMITS: Record<LimitName, { max: number; windowMs: number }> = {
   upload: { max: 20, windowMs: 60_000 },
@@ -41,6 +42,8 @@ const LIMITS: Record<LimitName, { max: number; windowMs: number }> = {
   'ai-checkin-draft': { max: 5, windowMs: 3_600_000 },
   // CV parsing is expensive (Claude vision) — tight cap.
   'ai-cv-parse': { max: 5, windowMs: 60_000 },
+  // Inviting team members — tight cap to block enumeration/spam.
+  'team-invite': { max: 10, windowMs: 60_000 },
 };
 
 export function ratelimit(name: LimitName) {
