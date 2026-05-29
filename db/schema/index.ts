@@ -45,3 +45,10 @@ export {
   type WorkspaceNote,
   type NewWorkspaceNote,
 } from './workspace-notes';
+export {
+  organizationMembers,
+  type OrganizationMember,
+  type NewOrganizationMember,
+  type MemberRole,
+  type MemberStatus,
+} from './organization-members';
