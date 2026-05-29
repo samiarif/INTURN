@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, X } from 'lucide-react';
+import { Check, X, ChevronRight } from 'lucide-react';
 
 export type MatchExplainerStrings = {
   /** Trigger label, e.g. "Why these". An arrow is appended by the component. */
@@ -66,9 +66,13 @@ export function MatchExplainer({
           padding: 0,
           cursor: 'pointer',
           font: 'inherit',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '3px',
         }}
       >
-        {strings.trigger} →
+        {strings.trigger}
+        <ChevronRight size={12} strokeWidth={2.5} aria-hidden />
       </button>
       {open && (
         <>

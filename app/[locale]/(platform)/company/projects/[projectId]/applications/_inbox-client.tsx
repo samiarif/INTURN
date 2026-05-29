@@ -4,6 +4,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import type { Application, Internship, User, Profile } from '@/db/schema';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table';
 
 const STATUS_OPTIONS: Array<{ value: 'all' | Application['status']; label: string }> = [
   { value: 'all', label: 'All' },
@@ -80,21 +88,24 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
         </div>
       ) : (
         <div className="border border-[var(--border-color)] rounded-md overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-[var(--surface-muted)] text-left">
-              <tr>
-                <th className="px-4 py-2 w-8"></th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-eyebrow uppercase">Applicant</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-eyebrow uppercase">Internship</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-eyebrow uppercase">Applied</th>
-                <th className="px-4 py-2 font-medium text-[var(--ink-3)] text-eyebrow uppercase">Status</th>
-                <th className="px-4 py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-8" />
+                <TableHead>Applicant</TableHead>
+                <TableHead>Internship</TableHead>
+                <TableHead>Applied</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {filtered.map((r) => (
-                <tr key={r.application.id} className="border-t border-[var(--border-color)]">
-                  <td className="px-4 py-3">
+                <TableRow
+                  key={r.application.id}
+                  data-state={selected.has(r.application.id) ? 'selected' : undefined}
+                >
+                  <TableCell>
                     <input
                       type="checkbox"
                       checked={selected.has(r.application.id)}
@@ -102,35 +113,37 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
                       onChange={() => toggleSelect(r.application.id)}
                       aria-label={`Select ${r.applicant.firstName} ${r.applicant.lastName}`}
                     />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium">{r.applicant.firstName} {r.applicant.lastName}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-medium text-[var(--ink)]">
+                      {r.applicant.firstName} {r.applicant.lastName}
+                    </div>
                     <div className="text-caption text-[var(--ink-3)]">
                       {r.profile?.university ?? ''} · {r.profile?.yearOfStudy ?? ''}
                     </div>
-                  </td>
-                  <td className="px-4 py-3">{r.internship.title}</td>
-                  <td className="px-4 py-3 font-mono text-caption text-[var(--ink-3)]">
+                  </TableCell>
+                  <TableCell>{r.internship.title}</TableCell>
+                  <TableCell className="font-mono text-caption text-[var(--ink-3)] whitespace-nowrap">
                     {new Date(r.application.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3">
+                  </TableCell>
+                  <TableCell>
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[r.application.status ?? 'new']}`}>
                       {r.application.status}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
+                  </TableCell>
+                  <TableCell className="text-right">
                     <Link
                       href={`/company/projects/${projectId}/applications/${r.application.id}`}
-                      className="inline-flex items-center gap-1 text-[var(--brand-600)] hover:text-[var(--brand-700)] text-sm"
+                      className="inline-flex items-center gap-1 text-[var(--brand-600)] hover:text-[var(--brand-700)]"
                     >
                       Open
                       <ArrowRight size={14} strokeWidth={2.25} aria-hidden />
                     </Link>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

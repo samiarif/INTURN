@@ -1,5 +1,5 @@
 import { getLocale, getTranslations } from 'next-intl/server';
-import { Activity } from 'lucide-react';
+import { Activity, ArrowRight } from 'lucide-react';
 import type { Event } from '@/db/schema';
 
 export type ActorLookup = Map<string, { firstName: string | null; lastName: string | null }>;
@@ -131,7 +131,7 @@ export async function ActivityFeed({
       <div className="ws-card-head">
         <Activity size={16} strokeWidth={2.25} className="ws-hico" />
         <h3>Recent activity</h3>
-        <a className="ws-link">Full timeline →</a>
+        <a className="ws-link">Full timeline <ArrowRight size={13} strokeWidth={2.25} aria-hidden /></a>
       </div>
       <div className="ws-activity">
         {events.length === 0 ? (

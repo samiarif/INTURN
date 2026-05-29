@@ -43,7 +43,7 @@ export async function WorkspaceTopBar({
       </div>
       <div className="ws-tb-actions">
         <div className="ws-tb-search">
-          <Search size={14} className="ws-tb-search-ico" />
+          <Search size={14} />
           <span>{t('search')}</span>
           <span className="kbd">{t('keyboardShortcut')}</span>
         </div>
