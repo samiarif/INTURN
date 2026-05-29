@@ -70,6 +70,7 @@ export function PlatformSidebar({
         { href: '/company/dashboard',  label: tNav('dashboard'),  icon: LayoutDashboard },
         { href: '/company/projects',   label: tNav('projects'),   icon: FolderKanban },
         { href: '/company/workspaces', label: tNav('workspaces'), icon: Briefcase },
+        { href: '/company/team',       label: tNav('team'),       icon: Users },
         { href: '/marketplace',        label: tNav('browse'),     icon: Compass },
         accountItem,
       ]
