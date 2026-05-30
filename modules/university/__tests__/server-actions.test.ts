@@ -15,6 +15,9 @@ vi.mock('@/modules/team/authz', () => ({
 const createInvite = vi.fn();
 vi.mock('@/modules/team/service', () => ({ createInvite: (...a: unknown[]) => createInvite(...a) }));
 
+const assignStudentCoordinator = vi.fn();
+vi.mock('../service', () => ({ assignStudentCoordinator: (...a: unknown[]) => assignStudentCoordinator(...a) }));
+
 const sendEmail = vi.fn();
 vi.mock('@/lib/email', () => ({ sendEmail: (...a: unknown[]) => sendEmail(...a) }));
 vi.mock('@/lib/email/templates/university-invite', () => ({
@@ -25,7 +28,7 @@ vi.mock('@/lib/ratelimit', () => ({
   ratelimit: vi.fn(() => ({ limit: vi.fn(() => ({ success: true })) })),
 }));
 
-import { inviteStudentAction } from '../server-actions';
+import { inviteStudentAction, assignStudentCoordinatorAction } from '../server-actions';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -69,5 +72,22 @@ describe('inviteStudentAction', () => {
     requireUniversityRole.mockRejectedValue(new Error('Forbidden'));
     const res = await inviteStudentAction({ email: 'x@y.com' });
     expect(res).toEqual({ ok: false, error: 'Forbidden' });
+  });
+});
+
+describe('assignStudentCoordinatorAction', () => {
+  it('requires the head (owner) of the university org', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', kind: 'university' }, role: 'admin' });
+    requireOrgRole.mockRejectedValue(new Error('Forbidden'));
+    const res = await assignStudentCoordinatorAction({ studentMemberId: 'm1', coordinatorUserId: 'c1' });
+    expect(res).toEqual({ ok: false, error: 'Forbidden' });
+    expect(requireOrgRole).toHaveBeenCalledWith('coord-1', 'uni-1', ['owner']);
+  });
+  it('assigns when the caller is the head', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', kind: 'university' }, role: 'owner' });
+    requireOrgRole.mockResolvedValue({});
+    assignStudentCoordinator.mockResolvedValue(undefined);
+    const res = await assignStudentCoordinatorAction({ studentMemberId: 'm1', coordinatorUserId: 'c1' });
+    expect(res).toEqual({ ok: true });
   });
 });

@@ -1,7 +1,8 @@
 import { db } from '@/db';
-import { organizations } from '@/db/schema';
+import { organizations, organizationMembers } from '@/db/schema';
 import { recordEvent } from '@/modules/events/service';
 import type { Organization } from '@/db/schema';
+import { and, eq } from 'drizzle-orm';
 
 function slugify(name: string): string {
   return name
@@ -49,4 +50,41 @@ export async function createUniversity(input: {
   });
 
   return created;
+}
+
+export async function assignStudentCoordinator(input: {
+  orgId: string;
+  studentMemberId: string;
+  coordinatorUserId: string | null;
+}): Promise<void> {
+  const [student] = await db
+    .select()
+    .from(organizationMembers)
+    .where(eq(organizationMembers.id, input.studentMemberId))
+    .limit(1);
+  if (!student || student.organizationId !== input.orgId || student.role !== 'student') {
+    throw new Error('member_not_found');
+  }
+
+  if (input.coordinatorUserId) {
+    const [coord] = await db
+      .select()
+      .from(organizationMembers)
+      .where(
+        and(
+          eq(organizationMembers.organizationId, input.orgId),
+          eq(organizationMembers.userId, input.coordinatorUserId),
+          eq(organizationMembers.status, 'active'),
+        ),
+      )
+      .limit(1);
+    if (!coord || (coord.role !== 'owner' && coord.role !== 'admin')) {
+      throw new Error('coordinator_not_found');
+    }
+  }
+
+  await db
+    .update(organizationMembers)
+    .set({ assignedCoordinatorId: input.coordinatorUserId, updatedAt: new Date() })
+    .where(eq(organizationMembers.id, input.studentMemberId));
 }
