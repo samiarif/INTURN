@@ -8,9 +8,9 @@ export const users = pgTable('users', {
   lastName: text('last_name'),
   imageUrl: text('image_url'),
   // TS-only enum — the DB column is a bare text with no CHECK constraint.
-  // 'university' added in Task 6 (coordinator/owner of a university org).
-  // 'admin' + 'intern' + 'company' selectable via the admin UI; 'university'
-  // is provisioning-only (set on invite-accept, never via RoleSelect).
+  // 'intern' | 'company' | 'admin' are selectable via the admin UI; 'university'
+  // is provisioning-only (the coordinator of a university org, set on
+  // invite-accept, never via RoleSelect).
   role: text('role', { enum: ['intern', 'company', 'admin', 'university'] }),
   /** Non-null = the user is suspended by an admin. Login still works
    * (so we can tell them why) but every write server-side checks this

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
-import { getCurrentOrg } from '@/modules/team/authz';
+import { getCurrentOrg, requireOrgRole } from '@/modules/team/authz';
 import { getOrgMembers } from '@/modules/team/queries';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusPill } from '@/components/status-pill';
@@ -33,6 +33,12 @@ export default async function Page() {
       </div>
     );
   }
+
+  // Defense-in-depth: the layout gates the global role; this also confirms the
+  // viewer is an owner/admin of THIS university org before reading its roster —
+  // parity with the mutating coordinator actions. Cannot fail for a real
+  // coordinator; throws Forbidden otherwise.
+  await requireOrgRole(session.user.id, current.org.id, ['owner', 'admin']);
 
   const [students, members] = await Promise.all([
     getManagedStudents(current.org.id),
