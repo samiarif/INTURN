@@ -233,6 +233,24 @@ describe('createInvite', () => {
     expect(token).toMatch(/^[A-Za-z0-9_-]+$/);
     expect(token.length).toBe(32);
   });
+
+  it('createInvite persists assignedCoordinatorId when provided', async () => {
+    mocks.selectQueue.push([]); // no existing user
+    mocks.insertReturning.mockResolvedValueOnce([makeMember({ status: 'invited' })] as unknown as never);
+
+    await createInvite({
+      orgId: 'o1',
+      email: 'S@X.com',
+      role: 'student',
+      invitedByUserId: 'u1',
+      assignedCoordinatorId: 'coord-1',
+    });
+
+    const insertValues = mocks.db.insert.mock.results[0]?.value.values;
+    expect(insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({ assignedCoordinatorId: 'coord-1' }),
+    );
+  });
 });
 
 // ---------------------------------------------------------------------------

@@ -35,8 +35,9 @@ export async function createInvite(input: {
   role: 'owner' | 'admin' | 'supervisor' | 'student';
   projectIds?: string[];
   invitedByUserId: string;
+  assignedCoordinatorId?: string | null;
 }): Promise<{ member: OrganizationMember; token: string }> {
-  const { orgId, email, role, projectIds, invitedByUserId } = input;
+  const { orgId, email, role, projectIds, invitedByUserId, assignedCoordinatorId } = input;
 
   // Look up an existing user by lower-cased email to pre-link userId
   const [existingUser] = await db
@@ -59,6 +60,7 @@ export async function createInvite(input: {
       inviteToken: token,
       inviteExpiresAt: inviteExpiry(),
       invitedByUserId,
+      assignedCoordinatorId: assignedCoordinatorId ?? null,
     })
     .returning();
 
