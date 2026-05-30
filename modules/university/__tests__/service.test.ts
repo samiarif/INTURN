@@ -21,15 +21,18 @@ const mocks = vi.hoisted(() => {
   const mockUpdateSet = vi.fn(() => ({ where: mockUpdateWhere }));
   const mockUpdate = vi.fn(() => ({ set: mockUpdateSet }));
 
-  return { mockReturning, mockValues, mockInsert, mockRecordEvent, selectQueue, mockSelect, mockUpdate };
+  const createInvite = vi.fn();
+
+  return { mockReturning, mockValues, mockInsert, mockRecordEvent, selectQueue, mockSelect, mockUpdate, createInvite };
 });
 
 vi.mock('@/db', () => ({ db: { insert: mocks.mockInsert, select: mocks.mockSelect, update: mocks.mockUpdate } }));
 vi.mock('@/db/schema', () => ({ organizations: { _: 'organizations' }, organizationMembers: {} }));
 vi.mock('@/modules/events/service', () => ({ recordEvent: mocks.mockRecordEvent }));
-vi.mock('drizzle-orm', () => ({ eq: vi.fn(() => 'eq'), and: vi.fn(() => 'and') }));
+vi.mock('@/modules/team/service', () => ({ createInvite: (...a: unknown[]) => mocks.createInvite(...a) }));
+vi.mock('drizzle-orm', () => ({ eq: vi.fn(() => 'eq'), and: vi.fn(() => 'and'), inArray: vi.fn(() => 'inArray') }));
 
-import { createUniversity, assignStudentCoordinator } from '../service';
+import { createUniversity, assignStudentCoordinator, bulkInviteStudents } from '../service';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -99,5 +102,53 @@ describe('assignStudentCoordinator', () => {
     mocks.selectQueue.push([{ id: 'm1', organizationId: 'uni-1', role: 'student' }]);
     await expect(assignStudentCoordinator({ orgId: 'uni-1', studentMemberId: 'm1', coordinatorUserId: null }))
       .resolves.toBeUndefined();
+  });
+});
+
+describe('bulkInviteStudents', () => {
+  beforeEach(() => {
+    mocks.createInvite.mockReset();
+    mocks.createInvite.mockImplementation(async ({ email }: { email: string }) => ({
+      member: { email },
+      token: `tok-${email}`,
+    }));
+  });
+
+  it('rejects when the target coordinator is not an active owner/admin', async () => {
+    mocks.selectQueue.push([]); // coordinator validation: none found
+    await expect(
+      bulkInviteStudents({
+        orgId: 'uni-1',
+        rows: [{ email: 'a@x.com', name: null }],
+        assignedCoordinatorId: 'cX',
+        invitedByUserId: 'u1',
+      }),
+    ).rejects.toThrow('coordinator_not_found');
+  });
+
+  it('invites new rows and skips duplicates (existing + intra-batch)', async () => {
+    mocks.selectQueue.push([{ role: 'owner' }]); // coordinator validation OK
+    mocks.selectQueue.push([{ email: 'dup@x.com' }]); // existing org members
+    const res = await bulkInviteStudents({
+      orgId: 'uni-1',
+      rows: [
+        { email: 'new@x.com', name: 'New' },
+        { email: 'DUP@x.com', name: null }, // already a member (case-insensitive)
+      ],
+      assignedCoordinatorId: 'coord-1',
+      invitedByUserId: 'coord-1',
+    });
+    expect(res.invited).toEqual([{ email: 'new@x.com', token: 'tok-new@x.com' }]);
+    expect(res.skippedDuplicate).toEqual(['DUP@x.com']);
+    expect(mocks.createInvite).toHaveBeenCalledTimes(1);
+    expect(mocks.createInvite).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orgId: 'uni-1',
+        email: 'new@x.com',
+        role: 'student',
+        assignedCoordinatorId: 'coord-1',
+        invitedByUserId: 'coord-1',
+      }),
+    );
   });
 });
