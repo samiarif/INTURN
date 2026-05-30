@@ -1538,7 +1538,65 @@
       "colPhase": "Phase",
       "notPlaced": "Pas encore en stage",
       "phaseOf": "Phase {current} sur {total}",
-      "pendingTitle": "Invitations en attente"
+      "pendingTitle": "Invitations en attente",
+      "awaitingReviewCount": "{count} à relire",
+      "colReport": "Rapport",
+      "reportStatus": {
+        "none": "—",
+        "draft": "Brouillon",
+        "submitted": "En relecture",
+        "approved": "Approuvé",
+        "revisionRequested": "Révision demandée"
+      }
+    },
+    "review": {
+      "snapshotTitle": "Stage",
+      "phaseOf": "Phase {current} sur {total}",
+      "weekOf": "Semaine {current} sur {total}",
+      "notPlaced": "Pas encore en stage.",
+      "noReport": "Cet étudiant n'a pas encore soumis de rapport."
+    }
+  },
+  "academicReport": {
+    "home": {
+      "title": "Mon suivi académique",
+      "subtitle": "Votre université, votre encadrant et votre rapport de stage.",
+      "notSupervised": "Aucune université ne vous encadre pour le moment. Lorsqu'un encadrant vous invite et que vous acceptez, votre rapport apparaît ici.",
+      "supervisedBy": "Encadré par",
+      "noReport": "Vous n'avez pas encore commencé votre rapport.",
+      "startReport": "Démarrer mon rapport",
+      "versionsTitle": "Versions du rapport",
+      "commentsTitle": "Échanges",
+      "noFile": "Aucun fichier",
+      "open": "Ouvrir"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "submitted": "En relecture",
+      "approved": "Approuvé",
+      "revisionRequested": "Révision demandée"
+    },
+    "upload": {
+      "title": "Soumettre une nouvelle version",
+      "helper": "PDF uniquement · max 8 Mo",
+      "notePlaceholder": "Note facultative pour votre encadrant…",
+      "cancel": "Annuler",
+      "send": "Soumettre",
+      "sending": "Envoi…"
+    },
+    "comments": {
+      "placeholder": "Écrire un message…",
+      "empty": "Aucun message pour le moment.",
+      "post": "Envoyer",
+      "sending": "Envoi…"
+    },
+    "review": {
+      "submittedBy": "Soumis par {name}",
+      "requestChanges": "Demander des modifications",
+      "approve": "Approuver",
+      "cancel": "Annuler",
+      "feedbackPlaceholder": "Qu'est-ce qui doit changer ?",
+      "sending": "Envoi…"
     }
   }
 }

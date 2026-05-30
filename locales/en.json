@@ -1538,7 +1538,65 @@
       "colPhase": "Phase",
       "notPlaced": "Not yet placed",
       "phaseOf": "Phase {current} of {total}",
-      "pendingTitle": "Pending invitations"
+      "pendingTitle": "Pending invitations",
+      "awaitingReviewCount": "{count} awaiting review",
+      "colReport": "Report",
+      "reportStatus": {
+        "none": "—",
+        "draft": "Draft",
+        "submitted": "In review",
+        "approved": "Approved",
+        "revisionRequested": "Changes requested"
+      }
+    },
+    "review": {
+      "snapshotTitle": "Internship",
+      "phaseOf": "Phase {current} of {total}",
+      "weekOf": "Week {current} of {total}",
+      "notPlaced": "Not yet placed.",
+      "noReport": "This student hasn't submitted a report yet."
+    }
+  },
+  "academicReport": {
+    "home": {
+      "title": "My academic supervision",
+      "subtitle": "Your university, your coordinator, and your internship report.",
+      "notSupervised": "No university supervises you yet. When a coordinator invites you and you accept, your report will appear here.",
+      "supervisedBy": "Supervised by",
+      "noReport": "You haven't started your report yet.",
+      "startReport": "Start my report",
+      "versionsTitle": "Report versions",
+      "commentsTitle": "Discussion",
+      "noFile": "No file yet",
+      "open": "Open"
+    },
+    "status": {
+      "draft": "Draft",
+      "submitted": "In review",
+      "approved": "Approved",
+      "revisionRequested": "Changes requested"
+    },
+    "upload": {
+      "title": "Submit a new version",
+      "helper": "PDF only · max 8 MB",
+      "notePlaceholder": "Optional note for your coordinator…",
+      "cancel": "Cancel",
+      "send": "Submit",
+      "sending": "Submitting…"
+    },
+    "comments": {
+      "placeholder": "Write a message…",
+      "empty": "No messages yet.",
+      "post": "Send",
+      "sending": "Sending…"
+    },
+    "review": {
+      "submittedBy": "Submitted by {name}",
+      "requestChanges": "Request changes",
+      "approve": "Approve",
+      "cancel": "Cancel",
+      "feedbackPlaceholder": "What needs to change?",
+      "sending": "Sending…"
     }
   }
 }
