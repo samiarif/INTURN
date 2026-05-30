@@ -5,6 +5,7 @@
 // the only design-polished hub view.
 import Link from 'next/link';
 import { Milestone, Users, Plus } from 'lucide-react';
+import { BackLink } from '@/components/ui/back-link';
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { inArray, eq, desc } from 'drizzle-orm';
@@ -343,6 +344,9 @@ export default async function Page({
         )}
         {/* =============== Title bar =============== */}
         <header className="mb-4">
+          <BackLink href="/company/projects" className="mb-3">
+            {t('backToProjects')}
+          </BackLink>
           <div className="flex items-center gap-3 flex-wrap mb-3">
             <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)]">
               {project.name}

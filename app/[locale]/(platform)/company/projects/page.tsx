@@ -5,16 +5,24 @@
 // Design ref: design 05 §02 (mocks at docs/design-bundle/project/mocks/
 // projects-index.{jsx,css}; PDF page-05.jpg). All `.pi-*` styles live at
 // the bottom of app/globals.css with token names rebound to our globals.
-// Server component, no client state.
+// Server component, no client state — grid/list view is driven by `?view=`.
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import {
+  FolderKanban,
+  Activity,
+  Inbox,
+  LayoutGrid,
+  List as ListIcon,
+  ChevronRight,
+} from 'lucide-react';
 import { getSession } from '@/modules/auth/session';
-import { getCurrentOrg } from '@/modules/team/authz';
 import {
   getProjectsByOrganization,
   listCompanyProjectsWithStats,
 } from '@/modules/projects/queries';
+import { getCurrentOrg } from '@/modules/team/authz';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -26,12 +34,13 @@ function projectCode(name: string): string {
   return ((a + b) || name.slice(0, 2)).toUpperCase();
 }
 
-/** Deterministic brand-ish tint for a project mark — same palette as dashboard. */
-const PROJECT_TINTS = ['#8F1FFE', '#2563EB', '#06B6D4', '#E467FE', '#EA580C', '#16A34A'] as const;
-function tintFor(seed: string): string {
-  let h = 5381;
-  for (let i = 0; i < seed.length; i++) h = (h * 33) ^ seed.charCodeAt(i);
-  return PROJECT_TINTS[(h >>> 0) % PROJECT_TINTS.length];
+/** Hub URL preserving the active status filter and selected view. */
+function hubHref(view: 'grid' | 'list', status: string): string {
+  const sp = new URLSearchParams();
+  if (status && status !== 'all') sp.set('status', status);
+  if (view === 'list') sp.set('view', 'list');
+  const qs = sp.toString();
+  return `/company/projects${qs ? `?${qs}` : ''}`;
 }
 
 export default async function Page({
@@ -49,6 +58,7 @@ export default async function Page({
   const statusFilter: 'all' | 'active' | 'draft' | 'archived' =
     (params.status as 'all' | 'active' | 'draft' | 'archived' | undefined) ??
     (showArchived ? 'archived' : 'all');
+  const view: 'grid' | 'list' = params.view === 'list' ? 'list' : 'grid';
 
   const current = await getCurrentOrg(session.user.id);
   if (!current) redirect('/onboarding/company');
@@ -124,8 +134,43 @@ export default async function Page({
   const activeProjectCount = allProjects.filter((p) => p.status === 'active').length;
   const newAppsCount = appsThisWeek.length;
 
-  // ------ Date helper. ------
-  const dateNow = now;
+  // ------ Per-project view model (shared by grid + list renderers). ------
+  const projects = visibleProjects.map((p) => {
+    const isDraft = p.status === 'draft';
+    const code = projectCode(p.name);
+
+    const startDate = p.startDate ? new Date(p.startDate) : null;
+    const endDate = p.endDate ? new Date(p.endDate) : null;
+    const totalWeeks =
+      startDate && endDate
+        ? Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / MS_PER_DAY / 7))
+        : null;
+    const currentWeek =
+      startDate && totalWeeks
+        ? Math.min(
+            totalWeeks,
+            Math.max(1, Math.floor((now.getTime() - startDate.getTime()) / MS_PER_DAY / 7) + 1),
+          )
+        : null;
+
+    const rollup = tasksByProject.get(p.id) ?? { done: 0, total: 0 };
+    const taskProgress = rollup.total > 0 ? Math.round((rollup.done / rollup.total) * 100) : 0;
+    // Fall back to week-of-week progress when there are no tasks yet — matches
+    // the dashboard tile's behaviour so the bar isn't always 0.
+    const fallbackProgress =
+      currentWeek && totalWeeks ? Math.round((currentWeek / totalWeeks) * 100) : 0;
+    const progress = isDraft ? 0 : rollup.total > 0 ? taskProgress : fallbackProgress;
+
+    const internshipCount = internshipCountByProject.get(p.id) ?? 0;
+    const meta = isDraft
+      ? t('cardMetaNotStarted', { n: internshipCount })
+      : currentWeek && totalWeeks
+        ? t('cardMetaWeekOf', { current: currentWeek, total: totalWeeks, n: internshipCount })
+        : t('cardMetaNoClock', { n: internshipCount });
+
+    const activeCount = activeWsByProject.get(p.id) ?? 0;
+    return { project: p, isDraft, code, progress, meta, rollup, activeCount };
+  });
 
   return (
     <div className="pi-shell">
@@ -156,7 +201,9 @@ export default async function Page({
       {/* =============== Top stat tiles =============== */}
       <div className="pi-stats">
         <div className="pi-stat projects">
-          <span className="ico" aria-hidden />
+          <span className="ico" aria-hidden>
+            <FolderKanban size={19} strokeWidth={2} />
+          </span>
           <div>
             <div className="label">{t('statProjects')}</div>
             <div className="value">
@@ -165,7 +212,9 @@ export default async function Page({
           </div>
         </div>
         <div className="pi-stat active">
-          <span className="ico" aria-hidden />
+          <span className="ico" aria-hidden>
+            <Activity size={19} strokeWidth={2} />
+          </span>
           <div>
             <div className="label">{t('statActive')}</div>
             <div className="value">
@@ -174,7 +223,9 @@ export default async function Page({
           </div>
         </div>
         <div className="pi-stat apps">
-          <span className="ico" aria-hidden />
+          <span className="ico" aria-hidden>
+            <Inbox size={19} strokeWidth={2} />
+          </span>
           <div>
             <div className="label">{t('statApps')}</div>
             <div className="value">
@@ -187,26 +238,32 @@ export default async function Page({
       {/* =============== Toolbar =============== */}
       <div className="pi-toolbar">
         <div className="pi-view" role="tablist" aria-label={t('viewToggle')}>
-          <span className="pi-view-btn active" role="tab" aria-selected="true">
-            <span className="ic grid" aria-hidden>
-              <span /><span /><span /><span />
-            </span>
+          <Link
+            href={hubHref('grid', statusFilter)}
+            className={`pi-view-btn${view === 'grid' ? ' active' : ''}`}
+            role="tab"
+            aria-selected={view === 'grid'}
+          >
+            <LayoutGrid size={13} strokeWidth={2} aria-hidden />
             {t('viewGrid')}
-          </span>
-          {/* List view will land in a follow-up — keep the toggle present so
-              the toolbar reads complete vs the design. */}
-          <span className="pi-view-btn" role="tab" aria-selected="false" aria-disabled="true">
-            <span className="ic list" aria-hidden>
-              <span /><span /><span />
-            </span>
+          </Link>
+          <Link
+            href={hubHref('list', statusFilter)}
+            className={`pi-view-btn${view === 'list' ? ' active' : ''}`}
+            role="tab"
+            aria-selected={view === 'list'}
+          >
+            <ListIcon size={13} strokeWidth={2} aria-hidden />
             {t('viewList')}
-          </span>
+          </Link>
         </div>
 
         <div className="pi-spacer" />
 
-        {/* Status filter — server-side via query param. */}
+        {/* Status filter — server-side via query param. Preserve the active
+            view so switching status doesn't bounce back to grid. */}
         <form action="/company/projects" method="get" className="pi-filter">
+          {view === 'list' && <input type="hidden" name="view" value="list" />}
           <select name="status" defaultValue={statusFilter} className="pi-filter-select">
             <option value="all">{t('filterStatusAll')}</option>
             <option value="active">{t('filterStatusActive')}</option>
@@ -223,61 +280,13 @@ export default async function Page({
         </Link>
       </div>
 
-      {/* =============== Grid of cards =============== */}
-      <div className="pi-grid">
-        {visibleProjects.map((p) => {
-          const isDraft = p.status === 'draft';
-          const code = projectCode(p.name);
-          const color = tintFor(p.id);
-
-          const startDate = p.startDate ? new Date(p.startDate) : null;
-          const endDate = p.endDate ? new Date(p.endDate) : null;
-          const totalWeeks =
-            startDate && endDate
-              ? Math.max(
-                  1,
-                  Math.round((endDate.getTime() - startDate.getTime()) / MS_PER_DAY / 7),
-                )
-              : null;
-          const currentWeek =
-            startDate && totalWeeks
-              ? Math.min(
-                  totalWeeks,
-                  Math.max(
-                    1,
-                    Math.floor((dateNow.getTime() - startDate.getTime()) / MS_PER_DAY / 7) + 1,
-                  ),
-                )
-              : null;
-
-          const rollup = tasksByProject.get(p.id) ?? { done: 0, total: 0 };
-          const taskProgress =
-            rollup.total > 0 ? Math.round((rollup.done / rollup.total) * 100) : 0;
-          // Fall back to week-of-week progress when there are no tasks yet —
-          // matches the dashboard tile's behaviour so the bar isn't always 0.
-          const fallbackProgress =
-            currentWeek && totalWeeks ? Math.round((currentWeek / totalWeeks) * 100) : 0;
-          const progress = isDraft
-            ? 0
-            : rollup.total > 0
-              ? taskProgress
-              : fallbackProgress;
-
-          const internshipCount = internshipCountByProject.get(p.id) ?? 0;
-          const meta = isDraft
-            ? t('cardMetaNotStarted', { n: internshipCount })
-            : currentWeek && totalWeeks
-              ? t('cardMetaWeekOf', {
-                  current: currentWeek,
-                  total: totalWeeks,
-                  n: internshipCount,
-                })
-              : t('cardMetaNoClock', { n: internshipCount });
-
-          return (
+      {/* =============== Grid view =============== */}
+      {view === 'grid' && (
+        <div className="pi-grid">
+          {projects.map(({ project: p, isDraft, code, progress, meta, rollup, activeCount }) => (
             <Link key={p.id} href={`/company/projects/${p.id}`} className={`pi-card${isDraft ? ' draft' : ''}`}>
               <div className="pi-card-top">
-                <span className="pi-card-mark" style={{ background: color }} aria-hidden>
+                <span className="pi-card-mark" aria-hidden>
                   {code}
                 </span>
                 <span className="pi-card-title">{p.name}</span>
@@ -311,10 +320,8 @@ export default async function Page({
                     {t('cardTasks')}
                   </span>
                 </span>
-                {(activeWsByProject.get(p.id) ?? 0) > 0 && (
-                  <span className="pi-card-pill">
-                    {t('cardActive', { n: activeWsByProject.get(p.id) ?? 0 })}
-                  </span>
+                {activeCount > 0 && (
+                  <span className="pi-card-pill">{t('cardActive', { n: activeCount })}</span>
                 )}
               </div>
 
@@ -322,15 +329,68 @@ export default async function Page({
                 {isDraft ? t('ctaContinueSetup') : t('ctaViewDetails')}
               </span>
             </Link>
-          );
-        })}
+          ))}
 
-        {/* "+ New project" dashed CTA card — always last in the grid. */}
-        <Link href="/company/projects/new" className="pi-card add" aria-label={t('newProject')}>
-          <span className="plus-big" aria-hidden>+</span>
-          <span>{t('newProject')}</span>
-        </Link>
-      </div>
+          {/* "+ New project" dashed CTA card — always last in the grid. */}
+          <Link href="/company/projects/new" className="pi-card add" aria-label={t('newProject')}>
+            <span className="plus-big" aria-hidden>+</span>
+            <span>{t('newProject')}</span>
+          </Link>
+        </div>
+      )}
+
+      {/* =============== List view =============== */}
+      {view === 'list' && (
+        <div className="pi-list">
+          {projects.map(({ project: p, isDraft, code, progress, meta, rollup, activeCount }) => (
+            <Link
+              key={p.id}
+              href={`/company/projects/${p.id}`}
+              className={`pi-list-row${isDraft ? ' draft' : ''}`}
+            >
+              <span className="pi-card-mark" aria-hidden>
+                {code}
+              </span>
+              <div className="pi-list-main">
+                <span className="pi-list-name">{p.name}</span>
+                <span className="pi-list-meta">{meta}</span>
+              </div>
+              <div className="pi-list-progress">
+                <div className="row">
+                  <span>{t('cardProgress')}</span>
+                  <b>{progress}%</b>
+                </div>
+                <div className="bar">
+                  <div
+                    className={`fill${progress >= 50 ? ' cyan' : ''}`}
+                    style={{ width: `${Math.min(100, progress)}%` }}
+                  />
+                </div>
+              </div>
+              <span className="pi-list-tasks">
+                <b>
+                  {rollup.done}/{rollup.total}
+                </b>{' '}
+                {t('cardTasks')}
+              </span>
+              <span className="pi-list-tail">
+                {activeCount > 0 ? (
+                  <span className="pi-card-pill">{t('cardActive', { n: activeCount })}</span>
+                ) : isDraft ? (
+                  <span className="pi-list-draft">{t('filterStatusDraft')}</span>
+                ) : null}
+                <ChevronRight size={16} strokeWidth={2} className="pi-list-chev" aria-hidden />
+              </span>
+            </Link>
+          ))}
+
+          {/* "+ New project" dashed row — parity with the grid's add-card. */}
+          <Link href="/company/projects/new" className="pi-list-row add" aria-label={t('newProject')}>
+            <span className="pi-list-plus" aria-hidden>+</span>
+            <span className="pi-list-name">{t('newProject')}</span>
+          </Link>
+        </div>
+      )}
 
       {visibleProjects.length === 0 && (
         <div className="pi-empty">
@@ -343,7 +403,6 @@ export default async function Page({
           </p>
         </div>
       )}
-
     </div>
   );
 }

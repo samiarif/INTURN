@@ -753,6 +753,7 @@
     }
   },
   "projectHub": {
+    "backToProjects": "Retour aux projets",
     "addInternship": "+ Ajouter un stage",
     "editProject": "Modifier le projet",
     "editInternship": "Modifier",
@@ -944,7 +945,9 @@
       "reviewSubheading": "Vos modifications sont appliquées dès l'enregistrement.",
       "saveCta": "Enregistrer les modifications",
       "saveHint": "Vous ramène au hub du projet.",
-      "reorderPhase": "Glisser pour réordonner la phase"
+      "reorderPhase": "Glisser pour réordonner la phase",
+      "backToProject": "Retour au projet",
+      "backToProjects": "Retour aux projets"
     }
   },
   "internships": {

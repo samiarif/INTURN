@@ -2,25 +2,41 @@ import { cn } from '@/lib/utils';
 
 type Size = 'sm' | 'md' | 'lg';
 
-const sizeClasses: Record<Size, string> = {
-  sm: 'w-4 h-4 rounded-sm',
-  md: 'w-[22px] h-[22px] rounded-[5px]',
-  lg: 'w-8 h-8 rounded-md',
+const sizePx: Record<Size, number> = {
+  sm: 16,
+  md: 22,
+  lg: 32,
 };
 
+/**
+ * Inturn brand mark — the official app-icon badge (violet→magenta gradient
+ * carrying the white Inturn glyph + sparkle), shipped as a raster asset at
+ * `/brand/inturn-mark.png`. The badge is self-contained (its own gradient
+ * background) so it reads identically in light and dark themes.
+ *
+ * Rendered as a plain <img>: a tiny, static, eager brand asset where
+ * next/image's optimizer + lazy-loading machinery would be pure overhead.
+ *
+ * The `GradientStar` name is kept for API stability across its ~15 call
+ * sites (sidebar, mobile strip, footer, auth/onboarding, public shares).
+ */
 export function GradientStar({ size = 'md', className }: { size?: Size; className?: string }) {
+  const px = sizePx[size];
   return (
-    <span
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/brand/inturn-mark.png"
+      alt=""
       aria-hidden
+      width={px}
+      height={px}
+      decoding="async"
       className={cn(
-        sizeClasses[size],
-        'inline-block shadow-[0_2px_8px_-2px_rgba(143,31,254,0.55)]',
+        'inline-block shrink-0 select-none',
+        'drop-shadow-[0_2px_6px_rgba(143,31,254,0.40)]',
         className,
       )}
-      style={{
-        background:
-          'linear-gradient(135deg, #2BD9C8 0%, #8F70FE 30%, #8F1FFE 60%, #E467FE 100%)',
-      }}
+      style={{ width: px, height: px }}
     />
   );
 }

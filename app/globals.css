@@ -2024,42 +2024,16 @@ a.db-stat:hover {
 .pi-stat .ico {
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-}
-.pi-stat .ico::before {
-  content: '';
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-.pi-stat.projects .ico { background: #ccfbf1; }
-.pi-stat.projects .ico::before {
-  border: 1.6px solid #0f766e;
-  border-radius: 3px;
-  background: linear-gradient(135deg, transparent 0 49%, #0f766e 50% 100%);
-}
-.pi-stat.active .ico { background: var(--brand-50); }
-.pi-stat.active .ico::before {
-  border: 1.6px solid var(--brand-600);
-  border-radius: 999px;
+  flex-shrink: 0;
+  /* Crisp + brand accent: one restrained violet chip across all three tiles.
+     The real lucide glyph carries the meaning — no candy backgrounds. */
   background: var(--brand-50);
-}
-.pi-stat.active .ico::after {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: var(--brand-500);
-  border-radius: 999px;
-}
-.pi-stat.apps .ico { background: #fce7f3; }
-.pi-stat.apps .ico::before {
-  border: 1.6px solid #be185d;
-  border-radius: 2px;
+  color: var(--brand-600);
+  border: 1px solid color-mix(in srgb, var(--brand-500) 16%, transparent);
 }
 .pi-stat .label {
   font-size: 11.5px;
@@ -2083,11 +2057,12 @@ a.db-stat:hover {
   letter-spacing: 0;
 }
 
-/* Dark-mode tile icons — bump tints to legible chips. */
-.dark .pi-stat.projects .ico { background: color-mix(in oklch, #0f766e 25%, var(--surface)); }
-.dark .pi-stat.projects .ico::before { border-color: #5eead4; background: linear-gradient(135deg, transparent 0 49%, #5eead4 50% 100%); }
-.dark .pi-stat.apps .ico { background: color-mix(in oklch, #be185d 25%, var(--surface)); }
-.dark .pi-stat.apps .ico::before { border-color: #f9a8d4; }
+/* Dark-mode tile icons — legible violet chip. */
+.dark .pi-stat .ico {
+  background: color-mix(in oklch, var(--brand-500) 22%, var(--surface));
+  color: var(--brand-100);
+  border-color: color-mix(in oklch, var(--brand-300) 35%, transparent);
+}
 
 /* Toolbar */
 .pi-toolbar {
@@ -2249,8 +2224,17 @@ a.db-stat:hover {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: #fff;
+  /* Crisp + brand accent: subtle violet tile with an ink monogram instead of
+     a flat hashed candy fill. Shared by the grid card + list row. */
+  background: var(--brand-50);
+  color: var(--brand-700);
+  border: 1px solid color-mix(in srgb, var(--brand-500) 18%, transparent);
   flex-shrink: 0;
+}
+.dark .pi-card-mark {
+  background: color-mix(in oklch, var(--brand-500) 20%, var(--surface));
+  color: var(--brand-100);
+  border-color: color-mix(in oklch, var(--brand-300) 32%, transparent);
 }
 .pi-card-title {
   font-size: 15px;
@@ -2423,6 +2407,137 @@ a.db-stat:hover {
   color: var(--brand-600);
 }
 
+/* ============ List view ============
+   Crisp single-column rows sharing the card's data + brand mark. Driven by
+   `?view=list` on the server — no client state. */
+.pi-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+.pi-list-row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 168px 96px auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-color);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 120ms ease;
+}
+.pi-list-row:last-child { border-bottom: 0; }
+.pi-list-row:hover { background: var(--surface-muted); }
+.pi-list-row.draft {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--warning) 7%, var(--surface)), var(--surface) 38%);
+}
+.pi-list-row.draft:hover { background: color-mix(in srgb, var(--warning) 10%, var(--surface)); }
+
+.pi-list-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pi-list-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pi-list-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.pi-list-progress { display: flex; flex-direction: column; gap: 5px; }
+.pi-list-progress .row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.pi-list-progress .row b {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.pi-list-progress .bar {
+  height: 4px;
+  background: var(--surface-muted);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pi-list-progress .bar .fill {
+  height: 100%;
+  background: var(--brand-500);
+  border-radius: 999px;
+}
+.pi-list-progress .bar .fill.cyan {
+  background: linear-gradient(90deg, var(--brand-500), var(--accent-500));
+}
+
+.pi-list-tasks {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.pi-list-tasks b { color: var(--ink); font-weight: 500; }
+
+.pi-list-tail {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.pi-list-draft {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.pi-list-chev { color: var(--ink-4); flex-shrink: 0; }
+.pi-list-row:hover .pi-list-chev { color: var(--brand-500); }
+
+/* Add-row — parity with the grid's dashed add-card. */
+.pi-list-row.add {
+  grid-template-columns: 32px 1fr;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+.pi-list-row.add:hover { color: var(--brand-600); background: var(--surface); }
+.pi-list-plus {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px dashed var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ink-3);
+}
+.pi-list-row.add:hover .pi-list-plus {
+  border-color: var(--brand-500);
+  color: var(--brand-600);
+  background: var(--brand-50);
+}
+
 .pi-empty {
   padding: 48px 16px;
   text-align: center;
@@ -2437,6 +2552,10 @@ a.db-stat:hover {
   .pi-stats { grid-template-columns: 1fr; }
   .pi-toolbar { flex-wrap: wrap; }
   .pi-spacer { display: none; }
+  /* Collapse list rows to mark + name + tail; drop the dense columns. */
+  .pi-list-row { grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; }
+  .pi-list-progress,
+  .pi-list-tasks { display: none; }
 }
 
 /* ================================================
@@ -2773,3 +2892,127 @@ a.db-stat:hover {
   color: var(--danger);
   margin: 0;
 }
+
+/* ============================================================
+   Smart manual creation — inline AI assist primitives (.sc-*).
+   Ported from the design prototype (mocks/smart-create.css),
+   tokenized to the app's brand vars. ADDITIVE — assist-only
+   classes; the forms keep their own field scaffolding. Every
+   assist is draft -> accept/edit -> never auto-commit.
+   ============================================================ */
+
+/* --- label row (hosts an existing <Label> + the assist button) --- */
+.sc-label-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.sc-spacer { flex: 1; }
+.sc-used { font-size: 12px; color: var(--ink-4); font-weight: 400; }
+
+/* --- assist button (the ✦ Spark pill) --- */
+.sc-assist {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.02em;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--brand-50); color: var(--brand-600);
+  border: 1px solid var(--brand-100); cursor: pointer;
+  transition: background .12s, transform .08s, box-shadow .12s; white-space: nowrap;
+}
+.sc-assist:hover { background: var(--brand-100); box-shadow: 0 2px 10px -4px rgba(124, 58, 237, 0.4); }
+.sc-assist:active { transform: translateY(1px); }
+.sc-assist[disabled] { opacity: .5; cursor: default; box-shadow: none; }
+.sc-spark {
+  width: 11px; height: 11px; border-radius: 3px; flex: 0 0 11px;
+  background: var(--brand-gradient);
+  display: inline-block;
+}
+
+/* --- assisted tag (shown after accepting a draft) --- */
+.sc-assisted {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 99px;
+  background: #ecfdf5; color: #166534;
+}
+.sc-assisted::before { content: "✓"; font-size: 10px; }
+
+/* --- thinking shimmer --- */
+.sc-thinking {
+  display: flex; align-items: center; gap: 9px;
+  color: var(--ink-3); font-size: 12.5px; padding: 12px 14px;
+  border: 1px dashed var(--brand-100); border-radius: 10px; margin-top: 10px;
+  background: var(--brand-50);
+}
+.sc-thinking .sc-spark { animation: sc-pulse 1s ease-in-out infinite; }
+.sc-dots { display: inline-flex; gap: 3px; }
+.sc-dots i { width: 5px; height: 5px; border-radius: 99px; background: var(--brand-500); opacity: .35; animation: sc-bounce 1.1s infinite; }
+.sc-dots i:nth-child(2) { animation-delay: .15s; }
+.sc-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes sc-bounce { 0%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+@keyframes sc-pulse { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
+
+/* --- suggestion (draft) panel --- */
+.sc-suggest {
+  margin-top: 10px;
+  border: 1px solid var(--brand-100);
+  background: linear-gradient(180deg, var(--brand-50) 0%, var(--surface) 70%);
+  border-radius: 11px; padding: 14px 16px;
+  animation: sc-in .22s ease;
+}
+@keyframes sc-in { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+.sc-suggest-head {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 11px;
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--brand-600);
+}
+.sc-dismiss { margin-left: auto; color: var(--ink-3); font-size: 11px; cursor: pointer; text-transform: none; letter-spacing: 0; background: none; border: 0; font-family: inherit; padding: 0; }
+.sc-dismiss:hover { color: var(--ink); }
+
+.sc-draft {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 11px; border-radius: 8px;
+  background: var(--surface); border: 1px dashed var(--brand-100);
+  margin-bottom: 7px;
+}
+.sc-draft .body { flex: 1; min-width: 0; }
+.sc-draft .t { font-size: 13.5px; color: var(--ink); line-height: 1.45; font-weight: 500; }
+.sc-draft .d { font-size: 12px; color: var(--ink-3); margin-top: 2px; line-height: 1.4; }
+.sc-draft .meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-4); letter-spacing: 0.04em; margin-top: 3px; }
+.sc-draft .add {
+  flex: 0 0 auto; align-self: center;
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 5px 10px; border-radius: 7px;
+  background: var(--brand-500); color: #fff; border: 0; cursor: pointer;
+}
+.sc-draft .add:hover { background: var(--brand-600); }
+.sc-draft.used { opacity: .45; }
+.sc-draft.used .add { background: var(--success); pointer-events: none; }
+.sc-suggest-actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+
+/* --- reformulate panel --- */
+.sc-reform { margin-top: 10px; border: 1px solid var(--brand-100); border-radius: 11px; overflow: hidden; animation: sc-in .22s ease; }
+.sc-reform-head {
+  display: flex; align-items: center; gap: 8px; padding: 9px 14px;
+  background: var(--brand-50); border-bottom: 1px solid var(--brand-100);
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-600);
+}
+.sc-reform-body { padding: 14px 16px; background: var(--surface); }
+.sc-reform-new { font-size: 14.5px; line-height: 1.55; color: var(--ink); white-space: pre-wrap; }
+.sc-variants { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.sc-variant {
+  font-size: 12px; padding: 5px 11px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--ink-2); cursor: pointer;
+  font-family: inherit;
+}
+.sc-variant.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.sc-reform-actions { display: flex; gap: 8px; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); }
+
+/* --- dark-mode pairs (brand-50/100 do not shift in .dark, so soften the
+   brand-tinted surfaces; flip the high-contrast bits that invert badly) --- */
+.dark .sc-assist { background: rgba(124, 58, 237, 0.16); color: #c4b5fd; border-color: rgba(124, 58, 237, 0.4); }
+.dark .sc-assist:hover { background: rgba(124, 58, 237, 0.28); }
+.dark .sc-thinking { background: rgba(124, 58, 237, 0.1); border-color: rgba(124, 58, 237, 0.35); }
+.dark .sc-suggest { background: linear-gradient(180deg, rgba(124, 58, 237, 0.12) 0%, var(--surface) 70%); border-color: rgba(124, 58, 237, 0.35); }
+.dark .sc-suggest-head, .dark .sc-reform-head { color: #c4b5fd; }
+.dark .sc-reform { border-color: rgba(124, 58, 237, 0.35); }
+.dark .sc-reform-head { background: rgba(124, 58, 237, 0.12); border-bottom-color: rgba(124, 58, 237, 0.35); }
+.dark .sc-draft { border-color: rgba(124, 58, 237, 0.3); }
+.dark .sc-assisted { background: rgba(34, 197, 94, 0.16); color: #4ade80; }
+.dark .sc-variant.on { color: var(--surface); }

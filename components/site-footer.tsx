@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { GradientStar } from '@/components/brand/gradient-star';
 
 /**
  * Site-wide footer with legal links. Rendered on marketing pages
@@ -18,7 +19,10 @@ export async function SiteFooter() {
     <footer className="mt-16 border-t border-[var(--border-color)] bg-[var(--surface)]">
       <div className="max-w-6xl mx-auto px-6 py-10 grid gap-8 md:grid-cols-3">
         <div>
-          <p className="font-semibold text-[15px] mb-2">Inturn</p>
+          <div className="flex items-center gap-2 mb-2">
+            <GradientStar size="sm" />
+            <p className="font-bold text-[15px] tracking-tight font-[family-name:var(--font-display)]">Inturn</p>
+          </div>
           <p className="text-[13px] text-[var(--ink-3)] leading-relaxed">{t('tagline')}</p>
         </div>
         <div>

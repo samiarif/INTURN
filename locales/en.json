@@ -753,6 +753,7 @@
     }
   },
   "projectHub": {
+    "backToProjects": "Back to projects",
     "addInternship": "+ Add internship",
     "editProject": "Edit project",
     "editInternship": "Edit",
@@ -944,7 +945,9 @@
       "reviewSubheading": "Your changes go live as soon as you save.",
       "saveCta": "Save changes",
       "saveHint": "Returns you to the project hub.",
-      "reorderPhase": "Drag to reorder phase"
+      "reorderPhase": "Drag to reorder phase",
+      "backToProject": "Back to project",
+      "backToProjects": "Back to projects"
     }
   },
   "internships": {
