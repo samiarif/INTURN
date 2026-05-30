@@ -434,6 +434,7 @@ describe('removeMember', () => {
     mocks.selectQueue.push([
       makeMember({ status: 'active', userId: 'user-1', organizationId: 'org-1' }),
     ]);
+    mocks.selectQueue.push([{ kind: 'company', ownerId: 'owner-x' }]); // org lookup (not university → no reassign)
     // select org projects with supervisorIds
     mocks.selectQueue.push([]); // no projects to patch
 
@@ -449,6 +450,7 @@ describe('removeMember', () => {
     mocks.selectQueue.push([
       makeMember({ status: 'active', userId: 'user-1', organizationId: 'org-1' }),
     ]);
+    mocks.selectQueue.push([{ kind: 'company', ownerId: 'owner-x' }]); // org lookup (not university)
     // Org projects with supervisorIds containing user-1
     mocks.selectQueue.push([
       { id: 'proj-1', supervisorIds: ['user-1', 'user-2'] },
@@ -459,6 +461,21 @@ describe('removeMember', () => {
 
     // 1 member update + 2 project updates
     expect(mocks.db.update).toHaveBeenCalledTimes(3);
+  });
+
+  it('reassigns a removed university coordinator\'s students to the head (owner)', async () => {
+    mocks.selectQueue.push([
+      makeMember({ status: 'active', role: 'admin', userId: 'enc-1', organizationId: 'org-1' }),
+    ]);
+    mocks.selectQueue.push([{ kind: 'university', ownerId: 'head-1' }]); // org lookup
+    mocks.selectQueue.push([]); // no projects
+    await removeMember({ orgId: 'org-1', memberId: 'member-1' });
+    // soft-delete (#0) + reassignment (#1), no project updates
+    expect(mocks.db.update).toHaveBeenCalledTimes(2);
+    const reassignSet = mocks.db.update.mock.results[1]?.value.set;
+    expect(reassignSet).toHaveBeenCalledWith(
+      expect.objectContaining({ assignedCoordinatorId: 'head-1' }),
+    );
   });
 
   it('skips project updates if member has no userId', async () => {

@@ -8,7 +8,7 @@
  */
 
 import { randomBytes } from 'crypto';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { organizationMembers, organizations, projects, users } from '@/db/schema';
 import type { MemberRole, Organization, OrganizationMember } from '@/db/schema';
@@ -226,9 +226,29 @@ export async function removeMember(input: { orgId: string; memberId: string }): 
     .set({ status: 'removed', removedAt: now, updatedAt: now })
     .where(eq(organizationMembers.id, input.memberId));
 
-  // Write 2: strip userId from every org project's supervisorIds
   if (!m.userId) return;
 
+  // Write 2: (university only) reassign this coordinator's supervised students
+  // to the head (org owner) so none are orphaned. No-op for company orgs — they
+  // have no assigned_coordinator_id rows.
+  const [org] = await db
+    .select({ kind: organizations.kind, ownerId: organizations.ownerId })
+    .from(organizations)
+    .where(eq(organizations.id, m.organizationId))
+    .limit(1);
+  if (org?.kind === 'university' && org.ownerId && org.ownerId !== m.userId) {
+    await db
+      .update(organizationMembers)
+      .set({ assignedCoordinatorId: org.ownerId, updatedAt: now })
+      .where(
+        and(
+          eq(organizationMembers.organizationId, m.organizationId),
+          eq(organizationMembers.assignedCoordinatorId, m.userId),
+        ),
+      );
+  }
+
+  // Write 3: strip userId from every org project's supervisorIds
   const orgProjects = await db
     .select()
     .from(projects)
