@@ -11,7 +11,7 @@ import { randomBytes } from 'crypto';
 import { eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { organizationMembers, organizations, projects, users } from '@/db/schema';
-import type { MemberRole, OrganizationMember } from '@/db/schema';
+import type { MemberRole, Organization, OrganizationMember } from '@/db/schema';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -74,7 +74,7 @@ export async function acceptInvite(input: {
   userId: string;
   userEmail: string;
 }): Promise<
-  | { ok: true; orgId: string; role: MemberRole; orgKind: string }
+  | { ok: true; orgId: string; role: MemberRole; orgKind: Organization['kind'] }
   | { ok: false; reason: 'not_found' | 'expired' | 'email_mismatch' | 'already_member' }
 > {
   const { token, userId, userEmail } = input;
@@ -143,11 +143,13 @@ export async function acceptInvite(input: {
     .where(eq(organizations.id, member.organizationId))
     .limit(1);
 
+  if (!org) throw new Error('org_not_found');
+
   return {
     ok: true,
     orgId: member.organizationId,
     role: member.role as MemberRole,
-    orgKind: (org?.kind as string) ?? 'company',
+    orgKind: org.kind,
   };
 }
 

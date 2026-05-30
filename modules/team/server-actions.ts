@@ -24,6 +24,7 @@ import { ratelimit } from '@/lib/ratelimit';
 // inviteMemberAction
 // ---------------------------------------------------------------------------
 
+// Company-team invites only (admin/supervisor). University coordinator + student invites go through the university actions (Tasks 7-8).
 export async function inviteMemberAction(input: {
   orgId: string;
   email: string;
