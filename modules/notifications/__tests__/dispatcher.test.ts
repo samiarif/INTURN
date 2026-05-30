@@ -62,6 +62,7 @@ vi.mock('@/db/schema', () => ({
   profiles: { __name: 'profiles', userId: {}, preferredLanguage: {} },
   workspaces: { __name: 'workspaces' },
   organizationMembers: { __name: 'organizationMembers' },
+  organizations: { __name: 'organizations' },
   academicReports: { __name: 'academicReports' },
 }));
 vi.mock('drizzle-orm', () => ({
@@ -486,15 +487,17 @@ const reportRow = {
   title: 'Rapport de stage',
 };
 
-// onAcademicReportSubmitted selects:
+// onAcademicReportSubmitted selects (gated routing — the assigned encadrant only):
 //   1. academicReports join users (report + student row)
-//   2. organizationMembers (coordinator member IDs)
-//   3. users (full coordinator rows via inArray)
-//   then (per coordinator, if email): profiles for locale
+//   2. organizationMembers (the student's assigned_coordinator_id)
+//   3. organizationMembers (the encadrant is still an active owner/admin)
+//   4. users (the single recipient row)
+//   then (if email): profiles for locale
 function queueReportSubmitted(coordOverrides: Partial<typeof coordinator> = {}) {
   mocks.selectQueue.push([{ report: reportRow, student }]);
-  mocks.selectQueue.push([{ userId: 'coord1' }]); // organizationMembers
-  mocks.selectQueue.push([{ ...coordinator, ...coordOverrides }]); // coordinator users
+  mocks.selectQueue.push([{ assigned: 'coord1' }]); // student member → assigned encadrant
+  mocks.selectQueue.push([{ userId: 'coord1' }]); // encadrant still active
+  mocks.selectQueue.push([{ ...coordinator, ...coordOverrides }]); // recipient user row
   mocks.selectQueue.push([{ pref: 'en' }]); // localeFor
 }
 
@@ -559,9 +562,10 @@ describe('dispatchNotificationsFor — academicReport.submitted', () => {
     expect(sendEmail).toHaveBeenCalledTimes(1);
   });
 
-  it('does nothing when the university org has no owner/admin coordinators', async () => {
+  it('does nothing when the student is unassigned and the org has no owner', async () => {
     mocks.selectQueue.push([{ report: reportRow, student }]);
-    mocks.selectQueue.push([]); // no coordinator members
+    mocks.selectQueue.push([{ assigned: null }]); // unassigned student member
+    mocks.selectQueue.push([{ ownerId: null }]); // org owner: none → no recipient
 
     await dispatchNotificationsFor({
       type: 'academicReport.submitted',
@@ -573,6 +577,48 @@ describe('dispatchNotificationsFor — academicReport.submitted', () => {
 
     expect(notifInserts()).toHaveLength(0);
     expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the head (owner) when the student is unassigned', async () => {
+    mocks.selectQueue.push([{ report: reportRow, student }]);
+    mocks.selectQueue.push([{ assigned: null }]); // unassigned
+    mocks.selectQueue.push([{ ownerId: 'coord1' }]); // org owner = head
+    mocks.selectQueue.push([coordinator]); // recipient (head) user row
+    mocks.selectQueue.push([{ pref: 'en' }]); // localeFor
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.submitted',
+      actorId: 'stu1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: { version: 2 },
+    });
+
+    const notifs = notifInserts();
+    expect(notifs).toHaveLength(1);
+    expect(notifs[0].values).toMatchObject({ recipientId: 'coord1', type: 'academicReport.submitted' });
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back to the head when the assigned encadrant is no longer active', async () => {
+    mocks.selectQueue.push([{ report: reportRow, student }]);
+    mocks.selectQueue.push([{ assigned: 'gone-enc' }]); // assigned to a removed encadrant
+    mocks.selectQueue.push([]); // active-check: not found → fall back
+    mocks.selectQueue.push([{ ownerId: 'coord1' }]); // org owner
+    mocks.selectQueue.push([coordinator]); // recipient (head)
+    mocks.selectQueue.push([{ pref: 'en' }]);
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.submitted',
+      actorId: 'stu1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: { version: 2 },
+    });
+
+    const notifs = notifInserts();
+    expect(notifs).toHaveLength(1);
+    expect(notifs[0].values).toMatchObject({ recipientId: 'coord1' });
   });
 
   it('does nothing when the report row is not found', async () => {

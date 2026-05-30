@@ -8,6 +8,7 @@ import {
   profiles,
   workspaces,
   organizationMembers,
+  organizations,
   academicReports,
 } from '@/db/schema';
 import { eq, inArray, and } from 'drizzle-orm';
@@ -295,24 +296,52 @@ async function onAcademicReportSubmitted(event: DispatchInput): Promise<void> {
   const studentName =
     `${row.student.firstName ?? ''} ${row.student.lastName ?? ''}`.trim() || 'A student';
 
-  // Recipients = active owner/admin coordinators of the university org.
+  // Recipient = the student's assigned encadrant; fall back to the head (org
+  // owner) when unassigned or the encadrant is no longer an active coordinator.
+  // NEVER broadcast to all coordinators — gated visibility (spec §3.3c).
   // University↔student only — no canViewWorkspace, no workspace tables.
-  const coordinatorMembers = await db
-    .select({ userId: organizationMembers.userId })
+  const [studentMember] = await db
+    .select({ assigned: organizationMembers.assignedCoordinatorId })
     .from(organizationMembers)
     .where(
       and(
         eq(organizationMembers.organizationId, row.report.universityOrgId),
-        eq(organizationMembers.status, 'active'),
-        inArray(organizationMembers.role, ['owner', 'admin']),
+        eq(organizationMembers.userId, row.report.studentUserId),
+        eq(organizationMembers.role, 'student'),
       ),
-    );
-  const coordinatorIds = coordinatorMembers
-    .map((m) => m.userId)
-    .filter((id): id is string => Boolean(id));
-  if (coordinatorIds.length === 0) return;
+    )
+    .limit(1);
 
-  const coordinators = await db.select().from(users).where(inArray(users.id, coordinatorIds));
+  let recipientId: string | null = studentMember?.assigned ?? null;
+
+  // Guard: only notify an assigned encadrant who is still an active coordinator.
+  if (recipientId) {
+    const [stillActive] = await db
+      .select({ userId: organizationMembers.userId })
+      .from(organizationMembers)
+      .where(
+        and(
+          eq(organizationMembers.organizationId, row.report.universityOrgId),
+          eq(organizationMembers.userId, recipientId),
+          eq(organizationMembers.status, 'active'),
+          inArray(organizationMembers.role, ['owner', 'admin']),
+        ),
+      )
+      .limit(1);
+    if (!stillActive) recipientId = null;
+  }
+
+  if (!recipientId) {
+    const [org] = await db
+      .select({ ownerId: organizations.ownerId })
+      .from(organizations)
+      .where(eq(organizations.id, row.report.universityOrgId))
+      .limit(1);
+    recipientId = org?.ownerId ?? null;
+  }
+  if (!recipientId) return;
+
+  const coordinators = await db.select().from(users).where(eq(users.id, recipientId));
 
   for (const coord of coordinators) {
     const prefs = prefsFor(coord);
