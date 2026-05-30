@@ -6,19 +6,13 @@ import { db } from '@/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { PageHeader } from '@/components/ui/page-header';
-import { StatusPill, type StatusTone } from '@/components/status-pill';
+import { StatusPill } from '@/components/status-pill';
 import { getStudentInternshipSnapshot } from '@/modules/university/queries';
+import { toneFor } from '@/modules/academic-reports/status-tone';
 import { getReportForStudent, getReportComments } from '@/modules/academic-reports/queries';
 import { ReportVersionStack } from '@/modules/academic-reports/components/report-version-stack';
 import { ReportCommentsThread } from '@/modules/academic-reports/components/report-comments-thread';
 import { ReportReviewBar } from '@/modules/academic-reports/components/report-review-bar';
-
-function toneFor(status: string): StatusTone {
-  if (status === 'submitted') return 'info';
-  if (status === 'approved') return 'success';
-  if (status === 'revision-requested') return 'warn';
-  return 'neutral';
-}
 
 function relativeWhen(d: Date | string | null, locale: string): string {
   if (!d) return '';
@@ -30,8 +24,11 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
   if (!session) redirect('/sign-in');
   const { studentId } = await params;
 
-  const [t, locale] = await Promise.all([getTranslations('academicReport'), getLocale()]);
-  const tUni = await getTranslations('university.review');
+  const [t, locale, tUni] = await Promise.all([
+    getTranslations('academicReport'),
+    getLocale(),
+    getTranslations('university.review'),
+  ]);
 
   // Resolve the coordinator's active university org.
   const current = await getCurrentOrg(session.user.id);
@@ -44,7 +41,7 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
 
   // Student identity (safe fields only).
   const [student] = await db
-    .select({ id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email, imageUrl: users.imageUrl })
+    .select({ id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email })
     .from(users)
     .where(eq(users.id, studentId))
     .limit(1);
