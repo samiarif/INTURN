@@ -1,6 +1,10 @@
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
-/** Active 1-based phase index, or -1 if we're outside the project clock. */
+/**
+ * Active 0-based phase index for the current week. Returns 0 when there is no
+ * start date or no phases, and clamps to the last phase once past the arc
+ * (never returns -1).
+ */
 export function computeCurrentPhase(
   phases: Array<{ fromWeek: number; toWeek: number }>,
   startDate: Date | null,
