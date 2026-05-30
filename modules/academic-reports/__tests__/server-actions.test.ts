@@ -38,6 +38,7 @@ vi.mock('@/lib/ratelimit', () => ({
 }));
 
 import {
+  createReportDraftAction,
   submitReportAction,
   approveReportAction,
   requestReportRevisionAction,
@@ -47,6 +48,35 @@ import {
 beforeEach(() => {
   vi.clearAllMocks();
   reportRowQueue.length = 0;
+});
+
+describe('createReportDraftAction — student-membership gate', () => {
+  it('rejects a non-student member (role owner) with Forbidden and does NOT call createReportDraft', async () => {
+    requireActiveSession.mockResolvedValue({ user: { id: 'coord1' }, role: 'university' });
+    getActiveMembership.mockResolvedValue({ role: 'owner' });
+    const res = await createReportDraftAction({ universityOrgId: 'uni1' });
+    expect(res).toEqual({ ok: false, error: 'Forbidden' });
+    expect(svc.createReportDraft).not.toHaveBeenCalled();
+  });
+
+  it('rejects when there is no membership (null) with Forbidden and does NOT call createReportDraft', async () => {
+    requireActiveSession.mockResolvedValue({ user: { id: 'rando' }, role: 'intern' });
+    getActiveMembership.mockResolvedValue(null);
+    const res = await createReportDraftAction({ universityOrgId: 'uni1' });
+    expect(res).toEqual({ ok: false, error: 'Forbidden' });
+    expect(svc.createReportDraft).not.toHaveBeenCalled();
+  });
+
+  it('succeeds when the caller holds an active student membership', async () => {
+    requireActiveSession.mockResolvedValue({ user: { id: 'stu1' }, role: 'intern' });
+    getActiveMembership.mockResolvedValue({ role: 'student' });
+    svc.createReportDraft.mockResolvedValue({});
+    const res = await createReportDraftAction({ universityOrgId: 'uni1', title: 'My Report' });
+    expect(svc.createReportDraft).toHaveBeenCalledWith(
+      expect.objectContaining({ studentUserId: 'stu1', universityOrgId: 'uni1', title: 'My Report' }),
+    );
+    expect(res).toEqual({ ok: true });
+  });
 });
 
 describe('submitReportAction — student owns the report', () => {
@@ -103,6 +133,15 @@ describe('approveReportAction — coordinator membership-gated (IDOR-safe)', () 
 });
 
 describe('requestReportRevisionAction', () => {
+  it('rejects a foreign-university coordinator (requireOrgRole throws)', async () => {
+    requireActiveSession.mockResolvedValue({ user: { id: 'coord2' }, role: 'university' });
+    reportRowQueue.push([{ id: 'r1', studentUserId: 'stu1', universityOrgId: 'uni1', status: 'submitted' }]);
+    requireOrgRole.mockRejectedValue(new Error('Forbidden'));
+    const res = await requestReportRevisionAction({ reportId: 'r1', feedback: 'please fix' });
+    expect(res).toEqual({ ok: false, error: 'Forbidden' });
+    expect(svc.requestReportRevision).not.toHaveBeenCalled();
+  });
+
   it('requires non-empty feedback', async () => {
     requireActiveSession.mockResolvedValue({ user: { id: 'coord1' }, role: 'university' });
     reportRowQueue.push([{ id: 'r1', universityOrgId: 'uni1', status: 'submitted' }]);
