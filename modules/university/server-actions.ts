@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { requireUniversityRole } from '@/modules/auth/session';
 import { getCurrentOrg, requireOrgRole } from '@/modules/team/authz';
 import { createInvite } from '@/modules/team/service';
-import { assignStudentCoordinator } from './service';
+import { assignStudentCoordinator, bulkInviteStudents } from './service';
+import { parseStudentCsv } from './csv';
 import { universityInviteTemplate } from '@/lib/email/templates/university-invite';
 import { sendEmail } from '@/lib/email';
 import { ratelimit } from '@/lib/ratelimit';
@@ -91,6 +92,64 @@ export async function inviteCoordinatorAction(input: {
 
     revalidatePath('/university/dashboard');
     return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'unknown_error' };
+  }
+}
+
+export async function bulkInviteStudentsAction(input: {
+  csv: string;
+  encadrantUserId?: string | null;
+}): Promise<
+  | { ok: true; invited: number; skippedDuplicate: string[]; invalid: string[] }
+  | { ok: false; error: string }
+> {
+  try {
+    const { user } = await requireUniversityRole();
+    const current = await getCurrentOrg(user.id);
+    if (!current || current.org.kind !== 'university') return { ok: false, error: 'no_university' };
+    await requireOrgRole(user.id, current.org.id, ['owner', 'admin']);
+
+    const rl = ratelimit('university-bulk-invite').limit(user.id);
+    if (!rl.success) return { ok: false, error: 'rate_limited' };
+
+    const { rows, invalid } = parseStudentCsv(input.csv);
+    if (rows.length + invalid.length > 100) return { ok: false, error: 'too_many_rows' };
+    if (rows.length === 0) return { ok: true, invited: 0, skippedDuplicate: [], invalid };
+
+    // The head may direct a batch to a chosen encadrant; an encadrant always
+    // takes their own batch. bulkInviteStudents re-validates the coordinator.
+    const assignedCoordinatorId =
+      current.role === 'owner' && input.encadrantUserId ? input.encadrantUserId : user.id;
+
+    const { invited, skippedDuplicate } = await bulkInviteStudents({
+      orgId: current.org.id,
+      rows,
+      assignedCoordinatorId,
+      invitedByUserId: user.id,
+    });
+
+    const locale = (user.localePref ?? 'fr') as 'fr' | 'en';
+    const inviterName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+    for (const inv of invited) {
+      const { subject, text, html } = universityInviteTemplate({
+        universityName: current.org.name,
+        inviterName,
+        token: inv.token,
+        variant: 'student',
+        locale,
+      });
+      await sendEmail({
+        to: inv.email,
+        subject,
+        text,
+        html,
+        tags: [{ name: 'type', value: 'university.invite' }],
+      });
+    }
+
+    revalidatePath('/university/dashboard');
+    return { ok: true, invited: invited.length, skippedDuplicate, invalid };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'unknown_error' };
   }

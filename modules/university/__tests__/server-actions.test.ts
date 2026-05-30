@@ -16,7 +16,14 @@ const createInvite = vi.fn();
 vi.mock('@/modules/team/service', () => ({ createInvite: (...a: unknown[]) => createInvite(...a) }));
 
 const assignStudentCoordinator = vi.fn();
-vi.mock('../service', () => ({ assignStudentCoordinator: (...a: unknown[]) => assignStudentCoordinator(...a) }));
+const bulkInviteStudents = vi.fn();
+vi.mock('../service', () => ({
+  assignStudentCoordinator: (...a: unknown[]) => assignStudentCoordinator(...a),
+  bulkInviteStudents: (...a: unknown[]) => bulkInviteStudents(...a),
+}));
+
+const parseStudentCsv = vi.fn();
+vi.mock('../csv', () => ({ parseStudentCsv: (...a: unknown[]) => parseStudentCsv(...a) }));
 
 const sendEmail = vi.fn();
 vi.mock('@/lib/email', () => ({ sendEmail: (...a: unknown[]) => sendEmail(...a) }));
@@ -28,7 +35,12 @@ vi.mock('@/lib/ratelimit', () => ({
   ratelimit: vi.fn(() => ({ limit: vi.fn(() => ({ success: true })) })),
 }));
 
-import { inviteStudentAction, assignStudentCoordinatorAction, inviteCoordinatorAction } from '../server-actions';
+import {
+  inviteStudentAction,
+  assignStudentCoordinatorAction,
+  inviteCoordinatorAction,
+  bulkInviteStudentsAction,
+} from '../server-actions';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -109,5 +121,38 @@ describe('assignStudentCoordinatorAction', () => {
     assignStudentCoordinator.mockResolvedValue(undefined);
     const res = await assignStudentCoordinatorAction({ studentMemberId: 'm1', coordinatorUserId: 'c1' });
     expect(res).toEqual({ ok: true });
+  });
+});
+
+describe('bulkInviteStudentsAction', () => {
+  it('parses, invites, emails each invited, and returns a summary', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', name: 'ENIT', kind: 'university' }, role: 'owner' });
+    requireOrgRole.mockResolvedValue({});
+    parseStudentCsv.mockReturnValue({ rows: [{ email: 'a@x.com', name: 'A' }], invalid: ['bad'] });
+    bulkInviteStudents.mockResolvedValue({ invited: [{ email: 'a@x.com', token: 't' }], skippedDuplicate: [] });
+    const res = await bulkInviteStudentsAction({ csv: 'a@x.com,A\nbad' });
+    expect(bulkInviteStudents).toHaveBeenCalledWith(
+      expect.objectContaining({ orgId: 'uni-1', assignedCoordinatorId: 'coord-1', invitedByUserId: 'coord-1' }),
+    );
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    expect(res).toEqual({ ok: true, invited: 1, skippedDuplicate: [], invalid: ['bad'] });
+  });
+
+  it('rejects more than 100 rows', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', name: 'ENIT', kind: 'university' }, role: 'owner' });
+    requireOrgRole.mockResolvedValue({});
+    parseStudentCsv.mockReturnValue({ rows: new Array(101).fill({ email: 'a@x.com', name: null }), invalid: [] });
+    const res = await bulkInviteStudentsAction({ csv: 'x' });
+    expect(res).toEqual({ ok: false, error: 'too_many_rows' });
+    expect(bulkInviteStudents).not.toHaveBeenCalled();
+  });
+
+  it('an encadrant import assigns to themselves (ignores encadrantUserId)', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', name: 'ENIT', kind: 'university' }, role: 'admin' });
+    requireOrgRole.mockResolvedValue({});
+    parseStudentCsv.mockReturnValue({ rows: [{ email: 'a@x.com', name: null }], invalid: [] });
+    bulkInviteStudents.mockResolvedValue({ invited: [], skippedDuplicate: ['a@x.com'] });
+    await bulkInviteStudentsAction({ csv: 'a@x.com', encadrantUserId: 'someone-else' });
+    expect(bulkInviteStudents).toHaveBeenCalledWith(expect.objectContaining({ assignedCoordinatorId: 'coord-1' }));
   });
 });
