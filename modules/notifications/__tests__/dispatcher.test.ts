@@ -61,10 +61,13 @@ vi.mock('@/db/schema', () => ({
   projects: { __name: 'projects' },
   profiles: { __name: 'profiles', userId: {}, preferredLanguage: {} },
   workspaces: { __name: 'workspaces' },
+  organizationMembers: { __name: 'organizationMembers' },
+  academicReports: { __name: 'academicReports' },
 }));
 vi.mock('drizzle-orm', () => ({
   eq: vi.fn(() => 'eq'),
   inArray: vi.fn(() => 'inArray'),
+  and: vi.fn(() => 'and'),
 }));
 
 const sendEmail = vi.fn().mockResolvedValue(undefined);
@@ -77,6 +80,20 @@ vi.mock('@/lib/email/templates/application-status', () => ({
 }));
 vi.mock('@/lib/email/templates/check-in-reminder', () => ({
   checkInReminderTemplate: vi.fn(() => ({ subject: 's', text: 't', html: '<p>h</p>' })),
+}));
+vi.mock('@/lib/email/templates/academic-report-submitted', () => ({
+  academicReportSubmittedTemplate: vi.fn(({ studentName, version }: { studentName: string; version: number }) => ({
+    subject: `${studentName} submitted their report (v${version})`,
+    text: 't',
+    html: '<p>h</p>',
+  })),
+}));
+vi.mock('@/lib/email/templates/academic-report-reviewed', () => ({
+  academicReportReviewedTemplate: vi.fn(({ outcome }: { outcome: string }) => ({
+    subject: outcome === 'approved' ? 'Your report was approved' : 'Your report needs a revision',
+    text: 't',
+    html: '<p>h</p>',
+  })),
 }));
 
 import { dispatchNotificationsFor } from '../dispatcher';
@@ -436,5 +453,218 @@ describe('unhandled + malformed events', () => {
 
     expect(notifInserts()).toHaveLength(0);
     expect(sendEmail).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// academicReport.* dispatcher cases (Plan 2)
+// ---------------------------------------------------------------------------
+
+const coordinator = {
+  id: 'coord1',
+  email: 'coord@uni.tn',
+  firstName: 'Prof',
+  lastName: 'Saidi',
+  notifyInApp: true,
+  notifyEmail: true,
+};
+
+const student = {
+  id: 'stu1',
+  email: 'lina@example.com',
+  firstName: 'Lina',
+  lastName: 'Ben',
+  notifyInApp: true,
+  notifyEmail: true,
+};
+
+const reportRow = {
+  id: 'rep1',
+  studentUserId: 'stu1',
+  universityOrgId: 'uni1',
+  version: 2,
+  title: 'Rapport de stage',
+};
+
+// onAcademicReportSubmitted selects:
+//   1. academicReports join users (report + student row)
+//   2. organizationMembers (coordinator member IDs)
+//   3. users (full coordinator rows via inArray)
+//   then (per coordinator, if email): profiles for locale
+function queueReportSubmitted(coordOverrides: Partial<typeof coordinator> = {}) {
+  mocks.selectQueue.push([{ report: reportRow, student }]);
+  mocks.selectQueue.push([{ userId: 'coord1' }]); // organizationMembers
+  mocks.selectQueue.push([{ ...coordinator, ...coordOverrides }]); // coordinator users
+  mocks.selectQueue.push([{ pref: 'en' }]); // localeFor
+}
+
+// onAcademicReportReviewed selects:
+//   1. academicReports join users (report + student row)
+//   then (if email): profiles for locale
+function queueReportReviewed(studentOverrides: Partial<typeof student> = {}) {
+  mocks.selectQueue.push([{ report: reportRow, student: { ...student, ...studentOverrides } }]);
+  mocks.selectQueue.push([{ pref: 'fr' }]); // localeFor
+}
+
+describe('dispatchNotificationsFor — academicReport.submitted', () => {
+  it('notifies each coordinator with in-app + email (both prefs on)', async () => {
+    queueReportSubmitted();
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.submitted',
+      actorId: 'stu1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: { version: 2 },
+    });
+
+    const notifs = notifInserts();
+    expect(notifs).toHaveLength(1);
+    expect(notifs[0].values).toMatchObject({
+      recipientId: 'coord1',
+      type: 'academicReport.submitted',
+      href: '/university/students/stu1',
+    });
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    expect(sendEmail.mock.calls[0][0]).toMatchObject({ to: 'coord@uni.tn' });
+  });
+
+  it('notifyEmail=false skips the email but still writes the in-app notification', async () => {
+    queueReportSubmitted({ notifyEmail: false });
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.submitted',
+      actorId: 'stu1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: { version: 2 },
+    });
+
+    expect(notifInserts()).toHaveLength(1);
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('notifyInApp=false skips the in-app notification but still sends the email', async () => {
+    queueReportSubmitted({ notifyInApp: false });
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.submitted',
+      actorId: 'stu1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: { version: 2 },
+    });
+
+    expect(notifInserts()).toHaveLength(0);
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it('does nothing when the university org has no owner/admin coordinators', async () => {
+    mocks.selectQueue.push([{ report: reportRow, student }]);
+    mocks.selectQueue.push([]); // no coordinator members
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.submitted',
+      actorId: 'stu1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: { version: 2 },
+    });
+
+    expect(notifInserts()).toHaveLength(0);
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('does nothing when the report row is not found', async () => {
+    mocks.selectQueue.push([]); // no report row
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.submitted',
+      actorId: 'stu1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: null,
+    });
+
+    expect(notifInserts()).toHaveLength(0);
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+});
+
+describe('dispatchNotificationsFor — academicReport.approved', () => {
+  it('notifies the student with in-app + email', async () => {
+    queueReportReviewed();
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.approved',
+      actorId: 'coord1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: null,
+    });
+
+    const notifs = notifInserts();
+    expect(notifs).toHaveLength(1);
+    expect(notifs[0].values).toMatchObject({
+      recipientId: 'stu1',
+      type: 'academicReport.approved',
+      href: '/intern/university',
+    });
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    expect(sendEmail.mock.calls[0][0]).toMatchObject({ to: 'lina@example.com' });
+  });
+
+  it('notifyEmail=false suppresses only the email', async () => {
+    queueReportReviewed({ notifyEmail: false });
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.approved',
+      actorId: 'coord1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: null,
+    });
+
+    expect(notifInserts()).toHaveLength(1);
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+});
+
+describe('dispatchNotificationsFor — academicReport.revision.requested', () => {
+  it('notifies the student with revision type + feedback in metadata', async () => {
+    queueReportReviewed();
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.revision.requested',
+      actorId: 'coord1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: { note: 'Add the methodology section' },
+    });
+
+    const notifs = notifInserts();
+    expect(notifs).toHaveLength(1);
+    expect(notifs[0].values).toMatchObject({
+      recipientId: 'stu1',
+      type: 'academicReport.revision.requested',
+    });
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    // The email subject should reflect revision, not approval
+    expect(sendEmail.mock.calls[0][0].subject).toContain('revision');
+  });
+
+  it('notifyInApp=false suppresses only the in-app row', async () => {
+    queueReportReviewed({ notifyInApp: false });
+
+    await dispatchNotificationsFor({
+      type: 'academicReport.revision.requested',
+      actorId: 'coord1',
+      targetType: 'academicReport',
+      targetId: 'rep1',
+      metadata: { note: 'Needs sources' },
+    });
+
+    expect(notifInserts()).toHaveLength(0);
+    expect(sendEmail).toHaveBeenCalledTimes(1);
   });
 });

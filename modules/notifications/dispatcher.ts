@@ -7,8 +7,10 @@ import {
   projects,
   profiles,
   workspaces,
+  organizationMembers,
+  academicReports,
 } from '@/db/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, inArray, and } from 'drizzle-orm';
 import { sendEmail } from '@/lib/email';
 import { applicationReceivedTemplate } from '@/lib/email/templates/application-received';
 import {
@@ -16,6 +18,8 @@ import {
   type ApplicationStatusForEmail,
 } from '@/lib/email/templates/application-status';
 import { checkInReminderTemplate } from '@/lib/email/templates/check-in-reminder';
+import { academicReportSubmittedTemplate } from '@/lib/email/templates/academic-report-submitted';
+import { academicReportReviewedTemplate } from '@/lib/email/templates/academic-report-reviewed';
 
 type DispatchInput = {
   type: string;
@@ -45,6 +49,15 @@ export async function dispatchNotificationsFor(event: DispatchInput): Promise<vo
         break;
       case 'checkin.due':
         await onCheckinDue(event);
+        break;
+      case 'academicReport.submitted':
+        await onAcademicReportSubmitted(event);
+        break;
+      case 'academicReport.approved':
+        await onAcademicReportReviewed(event, 'approved');
+        break;
+      case 'academicReport.revision.requested':
+        await onAcademicReportReviewed(event, 'revision');
         break;
       // additional event types extend here
     }
@@ -263,6 +276,117 @@ async function onCheckinDue(event: DispatchInput): Promise<void> {
       text: tpl.text,
       html: tpl.html,
       tags: [{ name: 'type', value: 'checkin.due' }],
+    });
+  }
+}
+
+async function onAcademicReportSubmitted(event: DispatchInput): Promise<void> {
+  if (!event.targetId) return;
+
+  const [row] = await db
+    .select({ report: academicReports, student: users })
+    .from(academicReports)
+    .innerJoin(users, eq(users.id, academicReports.studentUserId))
+    .where(eq(academicReports.id, event.targetId))
+    .limit(1);
+  if (!row) return;
+
+  const version = (event.metadata?.version as number | undefined) ?? row.report.version;
+  const studentName =
+    `${row.student.firstName ?? ''} ${row.student.lastName ?? ''}`.trim() || 'A student';
+
+  // Recipients = active owner/admin coordinators of the university org.
+  // University↔student only — no canViewWorkspace, no workspace tables.
+  const coordinatorMembers = await db
+    .select({ userId: organizationMembers.userId })
+    .from(organizationMembers)
+    .where(
+      and(
+        eq(organizationMembers.organizationId, row.report.universityOrgId),
+        eq(organizationMembers.status, 'active'),
+        inArray(organizationMembers.role, ['owner', 'admin']),
+      ),
+    );
+  const coordinatorIds = coordinatorMembers
+    .map((m) => m.userId)
+    .filter((id): id is string => Boolean(id));
+  if (coordinatorIds.length === 0) return;
+
+  const coordinators = await db.select().from(users).where(inArray(users.id, coordinatorIds));
+
+  for (const coord of coordinators) {
+    const prefs = prefsFor(coord);
+
+    if (prefs.notifyInApp) {
+      await db.insert(notifications).values({
+        recipientId: coord.id,
+        type: 'academicReport.submitted',
+        body: `${studentName} submitted their report (v${version})`,
+        href: `/university/students/${row.report.studentUserId}`,
+        metadata: { reportId: row.report.id, studentUserId: row.report.studentUserId, version },
+      });
+    }
+
+    if (prefs.notifyEmail) {
+      const locale = await localeFor(coord.id);
+      const tpl = academicReportSubmittedTemplate({
+        coordinatorName: coord.firstName ?? 'Coordinator',
+        studentName,
+        version,
+        studentUserId: row.report.studentUserId,
+        locale,
+      });
+      await sendEmail({
+        to: coord.email,
+        subject: tpl.subject,
+        text: tpl.text,
+        html: tpl.html,
+        tags: [{ name: 'type', value: 'academicReport.submitted' }],
+      });
+    }
+  }
+}
+
+async function onAcademicReportReviewed(
+  event: DispatchInput,
+  outcome: 'approved' | 'revision',
+): Promise<void> {
+  if (!event.targetId) return;
+
+  const [row] = await db
+    .select({ report: academicReports, student: users })
+    .from(academicReports)
+    .innerJoin(users, eq(users.id, academicReports.studentUserId))
+    .where(eq(academicReports.id, event.targetId))
+    .limit(1);
+  if (!row) return;
+
+  const studentName = row.student.firstName ?? 'there';
+  const feedback = (event.metadata?.note as string | undefined) ?? undefined;
+  const prefs = prefsFor(row.student);
+
+  if (prefs.notifyInApp) {
+    await db.insert(notifications).values({
+      recipientId: row.student.id,
+      type: outcome === 'approved' ? 'academicReport.approved' : 'academicReport.revision.requested',
+      body:
+        outcome === 'approved'
+          ? 'Your report was approved'
+          : 'Your report needs a revision',
+      href: `/intern/university`,
+      metadata: { reportId: row.report.id, outcome },
+    });
+  }
+
+  if (prefs.notifyEmail) {
+    const locale = await localeFor(row.student.id);
+    const tpl = academicReportReviewedTemplate({ studentName, outcome, feedback, locale });
+    await sendEmail({
+      to: row.student.email,
+      subject: tpl.subject,
+      text: tpl.text,
+      html: tpl.html,
+      tags: [{ name: 'type', value: `academicReport.${outcome}` }],
     });
   }
 }
