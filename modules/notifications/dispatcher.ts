@@ -386,7 +386,7 @@ async function onAcademicReportReviewed(
       subject: tpl.subject,
       text: tpl.text,
       html: tpl.html,
-      tags: [{ name: 'type', value: `academicReport.${outcome}` }],
+      tags: [{ name: 'type', value: event.type }],
     });
   }
 }

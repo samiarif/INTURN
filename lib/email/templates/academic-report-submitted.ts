@@ -15,14 +15,16 @@ export function academicReportSubmittedTemplate({
   locale: 'fr' | 'en';
 }): { subject: string; text: string; html: string } {
   const fr = locale === 'fr';
-  const student = escapeHtml(studentName);
+  const studentHtml = escapeHtml(studentName);
   const coord = escapeHtml(coordinatorName);
+  // Subject is the plain-text SMTP header; emailLayout escapes it for the HTML <title>.
+  // Escape only for the body to avoid double-escaping / entities in the subject header.
   const subject = fr
-    ? `${student} a soumis son rapport (v${version})`
-    : `${student} submitted their report (v${version})`;
+    ? `${studentName} a soumis son rapport (v${version})`
+    : `${studentName} submitted their report (v${version})`;
   const bodyHtml = fr
-    ? `<p>Bonjour ${coord},</p><p><strong>${student}</strong> a soumis la version <strong>v${version}</strong> de son rapport académique pour relecture.</p>`
-    : `<p>Hi ${coord},</p><p><strong>${student}</strong> submitted <strong>v${version}</strong> of their academic report for review.</p>`;
+    ? `<p>Bonjour ${coord},</p><p><strong>${studentHtml}</strong> a soumis la version <strong>v${version}</strong> de son rapport académique pour relecture.</p>`
+    : `<p>Hi ${coord},</p><p><strong>${studentHtml}</strong> submitted <strong>v${version}</strong> of their academic report for review.</p>`;
   return {
     ...emailLayout({
       title: subject,
