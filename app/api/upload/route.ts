@@ -15,6 +15,7 @@ const ALLOWED_ROLES_BY_KIND: Record<Kind, ReadonlyArray<Role>> = {
   logo: ['company', 'admin'],
   registry: ['company', 'admin'],
   deliverable: ['intern', 'company', 'admin'],
+  report: ['intern', 'admin'],
 };
 
 export async function POST(req: Request) {

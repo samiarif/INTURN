@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export type UploadKind = 'cv' | 'logo' | 'deliverable' | 'registry';
+export type UploadKind = 'cv' | 'logo' | 'deliverable' | 'registry' | 'report';
 
 export type UploadResult = {
   url: string;

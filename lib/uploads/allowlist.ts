@@ -1,12 +1,12 @@
 /**
- * Upload allowlist. Each `kind` (cv/logo/registry/deliverable) has:
+ * Upload allowlist. Each `kind` (cv/logo/registry/deliverable/report) has:
  *  - a list of acceptable MIME types
  *  - matching magic-byte signatures (so a renamed/mistyped file is rejected
  *    even if the declared MIME is on the list)
  *  - a per-kind max size (CV/registry larger than logos)
  */
 
-export const ALLOWED_KINDS = ['cv', 'logo', 'registry', 'deliverable'] as const;
+export const ALLOWED_KINDS = ['cv', 'logo', 'registry', 'deliverable', 'report'] as const;
 export type Kind = (typeof ALLOWED_KINDS)[number];
 
 export const MAX_BYTES_BY_KIND: Record<Kind, number> = {
@@ -14,6 +14,7 @@ export const MAX_BYTES_BY_KIND: Record<Kind, number> = {
   logo: 2 * 1024 * 1024,
   registry: 8 * 1024 * 1024,
   deliverable: 25 * 1024 * 1024,
+  report: 8 * 1024 * 1024, // rapport académique PDF — sized like a CV
 };
 
 type Signature = { mime: string; head: number[] };
@@ -42,6 +43,7 @@ const SIGNATURES_BY_KIND: Record<Kind, Signature[]> = {
   logo: [PNG, JPEG],
   registry: [PDF],
   deliverable: [PDF, PNG, JPEG, DOCX, XLSX, PPTX],
+  report: [PDF],
 };
 
 export type ValidationResult =

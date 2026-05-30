@@ -69,4 +69,43 @@ describe('validateUpload', () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.code).toBe('invalid_kind');
   });
+
+  // ── report kind (rapport académique PDF — PDF-only, 8 MB cap) ─────────────
+
+  it('accepts a real PDF for report kind', async () => {
+    const file = fileFromBytes('rapport.pdf', 'application/pdf', pdfMagic);
+    const result = await validateUpload('report', file);
+    expect(result.ok).toBe(true);
+  });
+
+  it('rejects a non-PDF (PNG) for report kind (MIME not allowed)', async () => {
+    const file = fileFromBytes('rapport.png', 'image/png', pngMagic);
+    const result = await validateUpload('report', file);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.code).toBe('mime_not_allowed');
+  });
+
+  it('rejects a PDF with wrong magic bytes for report kind (content_mismatch)', async () => {
+    const file = fileFromBytes('rapport.pdf', 'application/pdf', exeMagic);
+    const result = await validateUpload('report', file);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.code).toBe('content_mismatch');
+  });
+
+  it('rejects an oversize report (over MAX_BYTES_BY_KIND.report)', async () => {
+    const big = new Uint8Array(MAX_BYTES_BY_KIND.report + 1);
+    big.set(pdfMagic, 0);
+    const file = new File([big], 'rapport.pdf', { type: 'application/pdf' });
+    const result = await validateUpload('report', file);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.code).toBe('too_large');
+  });
+
+  it('accepts a report at exactly MAX_BYTES_BY_KIND.report (inclusive boundary)', async () => {
+    const exact = new Uint8Array(MAX_BYTES_BY_KIND.report);
+    exact.set(pdfMagic, 0);
+    const file = new File([exact], 'rapport.pdf', { type: 'application/pdf' });
+    const result = await validateUpload('report', file);
+    expect(result.ok).toBe(true);
+  });
 });
