@@ -1,6 +1,18 @@
-# inturn — Session Handoff (updated 2026-05-30 — Team mgmt · design system · smart-create · close-the-loop)
+# inturn — Session Handoff (updated 2026-05-30 — University product (Plan 1 + Plan 2) · Team mgmt · design system · smart-create · close-the-loop)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
+
+## TL;DR — Where we are (2026-05-30, LATEST — University product)
+
+- **University product shipped** — two milestones, both FF-merged to `main` (subagent-driven, each task spec-reviewed + code-quality-reviewed):
+  - **Plan 1 — foundation & provisioning:** a university is an `organizations` row with a new `kind='university'`; the coordinator gets the new global `university` role + `requireUniversityRole`; admin provisions a university + invites the coordinator; the coordinator invites `student`-role `organization_members`; the firewalled `getStudentInternshipSnapshot` lets a coordinator see a student's internship *phase* but NEVER the company workspace; `/admin/universities` + `/university/dashboard` roster. **Migration `0017`.**
+  - **Plan 2 — academic-supervision rapport-review loop:** student submits a versioned *rapport* (`academic_reports`) → coordinator approves / requests-revision / comments; the review state-machine is extracted to shared `modules/review/`; report comments live in a dedicated `academic_report_comments` table (**migration `0018`**, no `workspaceId` — isolated); student `/intern/university` + coordinator `/university/students/[studentId]` surfaces; demo seed adds a coordinator persona `prof.saidi@enit.utm.tn` on `/dev/login` + placed student Yasmine + a submitted rapport. Spec + plans: `docs/superpowers/{specs,plans}/2026-05-30-university-*`.
+- **State:** `main` is **~39 commits ahead of `origin/main` and UNPUSHED** (Plan 1 + Plan 2). **438 tests pass** / 2 skipped; typecheck + lint + production build clean. Push + `vercel --prod` (the prebuild migrate applies `0017`+`0018` to prod) when ready.
+- **Firewall (the core design):** the coordinator reaches a student's internship phase ONLY via `getStudentInternshipSnapshot` (company name + internship title + time-derived "Phase n of m") — never `canViewWorkspace`, never workspace tables. Report comments carry no `workspaceId`.
+- **Deferred follow-ups:** duplicate-draft hardening on `createReportDraftAction` (a partial unique index or a re-check); a file URL on the seeded demo rapport; the pre-existing `deliverable.*` dispatcher notification gap (deliverable reviews fire no notification — `academicReport.*` is wired correctly).
+- **Local-dev gotcha (cost a crash to find):** `prebuild` / `db:migrate` is `tsx scripts/migrate.ts` with NO `--env-file=.env.local`, so a local `pnpm build` skips migrations (no `DATABASE_URL`) and the dev DB lags behind committed migrations. Apply locally with `pnpm tsx --env-file=.env.local scripts/migrate.ts` (or `pnpm db:push`). On Vercel the env has `DATABASE_URL`, so the prebuild migrate runs normally on deploy.
+
+> The TL;DR below is the PRIOR 2026-05-30 snapshot (team mgmt · design system · smart-create · close-the-loop), preceding the university work. Note its "all work pushed / deployed 205ca4e" line predates the unpushed university commits above.
 
 ## TL;DR — Where we are (2026-05-30)
 
