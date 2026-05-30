@@ -1548,6 +1548,13 @@
       "studentCount": "{count, plural, =0 {no students} one {# student} other {# students}}",
       "inviteCoordinator": "Invite supervisor",
       "coordinatorEmail": "supervisor@email.com",
+      "bulkImport": "Import CSV",
+      "bulkPlaceholder": "email@example.com, First Last (one per line)",
+      "bulkAssignSelf": "Assign these students to me",
+      "bulkSubmit": "Import",
+      "bulkSummary": "{invited} invited, {skipped} skipped, {invalid} invalid",
+      "resend": "Resend",
+      "revoke": "Revoke",
       "reportStatus": {
         "none": "—",
         "draft": "Draft",

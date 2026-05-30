@@ -1548,6 +1548,13 @@
       "studentCount": "{count, plural, =0 {aucun étudiant} one {# étudiant} other {# étudiants}}",
       "inviteCoordinator": "Inviter un encadrant",
       "coordinatorEmail": "encadrant@email.com",
+      "bulkImport": "Importer un CSV",
+      "bulkPlaceholder": "email@exemple.com, Prénom Nom (un par ligne)",
+      "bulkAssignSelf": "M'assigner ces étudiants",
+      "bulkSubmit": "Importer",
+      "bulkSummary": "{invited} invité(s), {skipped} ignoré(s), {invalid} invalide(s)",
+      "resend": "Renvoyer",
+      "revoke": "Révoquer",
       "reportStatus": {
         "none": "—",
         "draft": "Brouillon",
