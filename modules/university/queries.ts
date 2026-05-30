@@ -152,7 +152,6 @@ export async function getManagedStudents(universityOrgId: string): Promise<Manag
 export type UniversityRow = {
   id: string;
   name: string;
-  slug: string;
   city: string | null;
   country: string | null;
   createdAt: Date;
@@ -164,7 +163,6 @@ export async function listUniversities(): Promise<UniversityRow[]> {
     .select({
       id: organizations.id,
       name: organizations.name,
-      slug: organizations.slug,
       city: organizations.city,
       country: organizations.country,
       createdAt: organizations.createdAt,
