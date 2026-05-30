@@ -60,28 +60,24 @@ export function PlatformSidebar({
 
   const accountItem = { href: '/account', label: tNav('account'), icon: Settings };
 
-  const baseInternItems: { href: string; label: string; icon: LucideIcon }[] = [
+  // Explicit construction so reordering base items can't silently misplace the
+  // University link (no splice magic-index). University sits between Community
+  // and Browse — conditionally included when the intern holds a student membership.
+  const internItems: { href: string; label: string; icon: LucideIcon }[] = [
     { href: '/intern/dashboard',     label: tNav('dashboard'),    icon: LayoutDashboard },
     { href: '/intern/applications',  label: tNav('applications'), icon: Send },
     { href: '/intern/saved',         label: tNav('saved'),        icon: Bookmark },
     { href: '/intern/records',       label: tNav('records'),      icon: Award },
     { href: '/intern/community',     label: tNav('community'),    icon: MessagesSquare },
+    ...(hasStudentMembership
+      ? [{ href: '/intern/university', label: tNav('university'), icon: GraduationCap }]
+      : []),
     { href: '/marketplace',          label: tNav('browse'),       icon: Compass },
   ];
-  // Intern who is also a managed student gets a University link to their
-  // academic-supervision home (the page itself lands in Plan 2; the link is
-  // additive and harmless until then — it routes to /intern/university).
-  if (hasStudentMembership) {
-    baseInternItems.splice(5, 0, {
-      href: '/intern/university',
-      label: tNav('university'),
-      icon: GraduationCap,
-    });
-  }
 
   const navItems: { href: string; label: string; icon: LucideIcon }[] =
     role === 'intern'
-      ? [...baseInternItems, accountItem]
+      ? [...internItems, accountItem]
       : role === 'company'
         ? [
             { href: '/company/dashboard',  label: tNav('dashboard'),  icon: LayoutDashboard },

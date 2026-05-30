@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
@@ -15,13 +16,15 @@ export const ACTIVE_ORG_COOKIE = 'inturn-active-org';
 
 export type ViewerMembership = OrganizationMember & { org: Organization };
 
-export async function getViewerMemberships(userId: string): Promise<ViewerMembership[]> {
+// Wrapped in React.cache so same-render callers (platform layout + intern/university
+// page + getCurrentOrg) share one DB hit per request instead of N parallel reads.
+export const getViewerMemberships = cache(async (userId: string): Promise<ViewerMembership[]> => {
   const rows = await db.select().from(organizationMembers)
     .innerJoin(organizations, eq(organizationMembers.organizationId, organizations.id))
     .where(and(eq(organizationMembers.userId, userId), eq(organizationMembers.status, 'active')));
   return (rows as Array<{ organization_members: OrganizationMember; organizations: Organization }>)
     .map((r) => ({ ...r.organization_members, org: r.organizations }));
-}
+});
 
 export async function getActiveMembership(userId: string, orgId: string): Promise<OrganizationMember | null> {
   const [m] = await db.select().from(organizationMembers)

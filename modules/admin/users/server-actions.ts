@@ -87,6 +87,14 @@ export async function setUserRoleAction(input: {
   const [target] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
   if (!target) throw new Error('User not found');
 
+  // A university coordinator's global role is load-bearing (they own a
+  // kind='university' org). Refuse to change it from /admin/users — demoting a
+  // coordinator here would orphan their university. (Setting a role TO
+  // 'university' is already impossible: it is not in this action's Role union.)
+  if (target.role === 'university') {
+    throw new Error('Cannot change a university coordinator role via this UI');
+  }
+
   const before = target.role ?? null;
   if (before === input.role) {
     // No-op — already this role. Don't write an audit entry for nothing.
