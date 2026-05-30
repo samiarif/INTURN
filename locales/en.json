@@ -65,7 +65,9 @@
     "account": "Account",
     "menu": "Main menu",
     "workspaces": "Workspaces",
-    "team": "Team"
+    "team": "Team",
+    "university": "University",
+    "universities": "Universities"
   },
   "notifications": {
     "label": "Notifications",
@@ -1497,6 +1499,46 @@
       "emptyTitle": "No workspaces yet",
       "emptyBody": "Workspaces appear here once you accept an applicant into one of your internships.",
       "emptyCta": "Go to projects"
+    }
+  },
+  "university": {
+    "admin": {
+      "title": "Universities",
+      "subtitle": "Provision universities and invite their coordinators.",
+      "name": "Name",
+      "city": "City",
+      "country": "Country",
+      "createSubmit": "Create university",
+      "creating": "Creating…",
+      "empty": "No universities yet. Create the first one above.",
+      "colName": "University",
+      "colLocation": "Location",
+      "colCreated": "Created",
+      "inviteCoordinator": "Invite coordinator",
+      "coordinatorEmail": "coordinator@university.edu",
+      "send": "Send",
+      "sending": "Sending…",
+      "inviteSent": "Invitation sent"
+    },
+    "dashboard": {
+      "title": "My students",
+      "subtitle": "Students you supervise and their internship progress.",
+      "noOrg": "No university is linked to your account yet.",
+      "inviteStudent": "Invite student",
+      "studentEmail": "student@email.com",
+      "send": "Send",
+      "sending": "Sending…",
+      "inviteSent": "Invitation sent",
+      "managedCount": "{count} managed",
+      "placedCount": "{count} placed",
+      "emptyRoster": "No students yet. Invite your first student above.",
+      "colStudent": "Student",
+      "colField": "Field",
+      "colInternship": "Internship",
+      "colPhase": "Phase",
+      "notPlaced": "Not yet placed",
+      "phaseOf": "Phase {current} of {total}",
+      "pendingTitle": "Pending invitations"
     }
   }
 }

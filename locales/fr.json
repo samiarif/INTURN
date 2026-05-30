@@ -65,7 +65,9 @@
     "account": "Compte",
     "menu": "Menu principal",
     "workspaces": "Espaces de travail",
-    "team": "Équipe"
+    "team": "Équipe",
+    "university": "Université",
+    "universities": "Universités"
   },
   "notifications": {
     "label": "Notifications",
@@ -1497,6 +1499,46 @@
       "emptyTitle": "Aucun espace de travail",
       "emptyBody": "Les espaces de travail apparaissent ici une fois que vous acceptez un candidat dans l'un de vos stages.",
       "emptyCta": "Voir les projets"
+    }
+  },
+  "university": {
+    "admin": {
+      "title": "Universités",
+      "subtitle": "Créez des universités et invitez leurs encadrants.",
+      "name": "Nom",
+      "city": "Ville",
+      "country": "Pays",
+      "createSubmit": "Créer l'université",
+      "creating": "Création…",
+      "empty": "Aucune université pour le moment. Créez la première ci-dessus.",
+      "colName": "Université",
+      "colLocation": "Localisation",
+      "colCreated": "Créée le",
+      "inviteCoordinator": "Inviter un encadrant",
+      "coordinatorEmail": "encadrant@universite.edu",
+      "send": "Envoyer",
+      "sending": "Envoi…",
+      "inviteSent": "Invitation envoyée"
+    },
+    "dashboard": {
+      "title": "Mes étudiants",
+      "subtitle": "Les étudiants que vous encadrez et l'avancement de leurs stages.",
+      "noOrg": "Aucune université n'est encore liée à votre compte.",
+      "inviteStudent": "Inviter un étudiant",
+      "studentEmail": "etudiant@email.com",
+      "send": "Envoyer",
+      "sending": "Envoi…",
+      "inviteSent": "Invitation envoyée",
+      "managedCount": "{count} encadré(s)",
+      "placedCount": "{count} en stage",
+      "emptyRoster": "Aucun étudiant pour le moment. Invitez votre premier étudiant ci-dessus.",
+      "colStudent": "Étudiant",
+      "colField": "Filière",
+      "colInternship": "Stage",
+      "colPhase": "Phase",
+      "notPlaced": "Pas encore en stage",
+      "phaseOf": "Phase {current} sur {total}",
+      "pendingTitle": "Invitations en attente"
     }
   }
 }
