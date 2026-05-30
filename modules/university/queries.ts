@@ -148,3 +148,29 @@ export async function getManagedStudents(universityOrgId: string): Promise<Manag
 
   return rows as ManagedStudent[];
 }
+
+export type UniversityRow = {
+  id: string;
+  name: string;
+  slug: string;
+  city: string | null;
+  country: string | null;
+  createdAt: Date;
+};
+
+/** All university orgs, newest first — backs the admin /admin/universities list. */
+export async function listUniversities(): Promise<UniversityRow[]> {
+  const rows = await db
+    .select({
+      id: organizations.id,
+      name: organizations.name,
+      slug: organizations.slug,
+      city: organizations.city,
+      country: organizations.country,
+      createdAt: organizations.createdAt,
+    })
+    .from(organizations)
+    .where(eq(organizations.kind, 'university'))
+    .orderBy(desc(organizations.createdAt));
+  return rows as UniversityRow[];
+}
