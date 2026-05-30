@@ -34,7 +34,8 @@ export type LimitName =
   | 'ai-checkin-draft'
   | 'ai-cv-parse'
   | 'ai-project-assist'
-  | 'team-invite';
+  | 'team-invite'
+  | 'university-bulk-invite';
 
 const LIMITS: Record<LimitName, { max: number; windowMs: number }> = {
   upload: { max: 20, windowMs: 60_000 },
@@ -48,6 +49,8 @@ const LIMITS: Record<LimitName, { max: number; windowMs: number }> = {
   'ai-project-assist': { max: 20, windowMs: 60_000 },
   // Inviting team members — tight cap to block enumeration/spam.
   'team-invite': { max: 10, windowMs: 60_000 },
+  // Bulk cohort import — a few imports per minute, each up to 100 students.
+  'university-bulk-invite': { max: 5, windowMs: 60_000 },
 };
 
 export function ratelimit(name: LimitName) {
