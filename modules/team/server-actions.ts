@@ -3,8 +3,9 @@
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
+import { clerkClient } from '@clerk/nextjs/server';
 import { db } from '@/db';
-import { organizations, organizationMembers } from '@/db/schema';
+import { organizations, organizationMembers, users } from '@/db/schema';
 import { requireActiveSession } from '@/modules/auth/session';
 import { requireOrgRole, ACTIVE_ORG_COOKIE } from './authz';
 import {
@@ -102,6 +103,39 @@ export async function acceptInviteAction(input: {
     });
 
     if (!result.ok) return result;
+
+    // University touch-points (company accepts are unaffected). On a university
+    // org, an owner/admin runs the supervision side, so promote their GLOBAL role
+    // to 'university' (DB-first + best-effort Clerk sync — pattern copied from
+    // modules/admin/users/server-actions.ts). An owner additionally takes over
+    // org ownership from the provisioning admin.
+    if (result.orgKind === 'university') {
+      if (result.role === 'owner' || result.role === 'admin') {
+        await db
+          .update(users)
+          .set({ role: 'university', updatedAt: new Date() })
+          .where(eq(users.id, user.id));
+
+        // Best-effort Clerk sync. Swallow + log any failure (offline / dev-bypass).
+        try {
+          const clerk = await clerkClient();
+          await clerk.users.updateUser(user.clerkId, {
+            publicMetadata: { role: 'university' },
+          });
+        } catch (err) {
+          console.error(
+            '[team/acceptInvite] clerk role sync failed (DB role is source of truth):',
+            err,
+          );
+        }
+      }
+      if (result.role === 'owner') {
+        await db
+          .update(organizations)
+          .set({ ownerId: user.id, updatedAt: new Date() })
+          .where(eq(organizations.id, result.orgId));
+      }
+    }
 
     // Set the accepted org as the active org cookie
     (await cookies()).set(ACTIVE_ORG_COOKIE, result.orgId, {

@@ -19,14 +19,22 @@ export function RoleSelect({
   isSelf,
 }: {
   userId: string;
-  role: Role | null;
+  // Accept the full users.role union (includes 'university' for coordinators)
+  // but only expose intern|company|admin as selectable options. A 'university'
+  // coordinator's row shows the closest selectable default ('intern') in the
+  // dropdown, but they can't be accidentally demoted — the admin UI disables
+  // self-edits and the server action guards the transition.
+  role: Role | 'university' | null;
   userLabel: string;
   isSelf: boolean;
 }) {
   const t = useTranslations('admin.users');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [value, setValue] = useState<Role>(role ?? 'intern');
+  // Non-selectable roles (university) fall back to 'intern' as the display default.
+  const [value, setValue] = useState<Role>(
+    role === 'intern' || role === 'company' || role === 'admin' ? role : 'intern',
+  );
 
   function onChange(next: Role) {
     if (next === value) return;
