@@ -40,6 +40,9 @@ export const organizationMembers = pgTable(
     invitedByUserId: uuid('invited_by_user_id').references(() => users.id, {
       onDelete: 'set null',
     }),
+    assignedCoordinatorId: uuid('assigned_coordinator_id').references(() => users.id, {
+      onDelete: 'set null',
+    }),
     invitedAt: timestamp('invited_at').defaultNow().notNull(),
     joinedAt: timestamp('joined_at'),
     removedAt: timestamp('removed_at'),
