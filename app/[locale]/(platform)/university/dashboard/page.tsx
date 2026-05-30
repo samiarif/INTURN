@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { getManagedStudents, getStudentInternshipSnapshot } from '@/modules/university/queries';
 import { countReportsAwaitingReview, getReportStatusByStudent } from '@/modules/academic-reports/queries';
+import { toneFor } from '@/modules/academic-reports/status-tone';
 import Link from 'next/link';
 import { InviteStudentButton } from '../_invite-student-button';
 
@@ -130,17 +131,7 @@ export default async function Page() {
                     </TableCell>
                     <TableCell>
                       {rStatus ? (
-                        <StatusPill
-                          tone={
-                            rStatus === 'submitted'
-                              ? 'info'
-                              : rStatus === 'approved'
-                                ? 'success'
-                                : rStatus === 'revision-requested'
-                                  ? 'warn'
-                                  : 'neutral'
-                          }
-                        >
+                        <StatusPill tone={toneFor(rStatus)}>
                           {t(`reportStatus.${rStatus === 'revision-requested' ? 'revisionRequested' : rStatus}`)}
                         </StatusPill>
                       ) : (
