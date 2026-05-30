@@ -10,8 +10,8 @@
 import { randomBytes } from 'crypto';
 import { eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { organizationMembers, projects, users } from '@/db/schema';
-import type { OrganizationMember } from '@/db/schema';
+import { organizationMembers, organizations, projects, users } from '@/db/schema';
+import type { MemberRole, OrganizationMember } from '@/db/schema';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -32,7 +32,7 @@ function inviteExpiry(): Date {
 export async function createInvite(input: {
   orgId: string;
   email: string;
-  role: 'admin' | 'supervisor';
+  role: 'owner' | 'admin' | 'supervisor' | 'student';
   projectIds?: string[];
   invitedByUserId: string;
 }): Promise<{ member: OrganizationMember; token: string }> {
@@ -74,7 +74,7 @@ export async function acceptInvite(input: {
   userId: string;
   userEmail: string;
 }): Promise<
-  | { ok: true; orgId: string }
+  | { ok: true; orgId: string; role: MemberRole; orgKind: string }
   | { ok: false; reason: 'not_found' | 'expired' | 'email_mismatch' | 'already_member' }
 > {
   const { token, userId, userEmail } = input;
@@ -135,7 +135,20 @@ export async function acceptInvite(input: {
       .where(eq(projects.id, projectId));
   }
 
-  return { ok: true, orgId: member.organizationId };
+  // Load the org row to report its kind (company | university) so the action
+  // layer can branch on a university accept (promote + ownership transfer).
+  const [org] = await db
+    .select()
+    .from(organizations)
+    .where(eq(organizations.id, member.organizationId))
+    .limit(1);
+
+  return {
+    ok: true,
+    orgId: member.organizationId,
+    role: member.role as MemberRole,
+    orgKind: (org?.kind as string) ?? 'company',
+  };
 }
 
 // ---------------------------------------------------------------------------

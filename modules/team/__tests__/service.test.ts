@@ -304,14 +304,18 @@ describe('acceptInvite', () => {
     expect(result).toEqual({ ok: false, reason: 'already_member' });
   });
 
-  it('flips to active and returns { ok: true, orgId } on happy path', async () => {
+  it('flips to active and returns { ok, orgId, role, orgKind } on happy path', async () => {
     const member = makeMember({
       status: 'invited',
+      role: 'admin',
       email: 'alice@example.com',
       inviteExpiresAt: new Date(Date.now() + 3600_000),
       pendingProjectIds: [],
     });
     mocks.selectQueue.push([member]);
+    // NEW: acceptInvite now loads the org row (by member.organizationId) to
+    // return its kind. Queue it after the member select.
+    mocks.selectQueue.push([{ id: 'org-1', kind: 'company' }]);
 
     const result = await acceptInvite({
       token: 'tok123',
@@ -319,9 +323,8 @@ describe('acceptInvite', () => {
       userEmail: 'alice@example.com',
     });
 
-    expect(result).toEqual({ ok: true, orgId: 'org-1' });
+    expect(result).toEqual({ ok: true, orgId: 'org-1', role: 'admin', orgKind: 'company' });
     expect(mocks.callOrder).toContain('update');
-    // update set should contain active status
     const updateSet = mocks.db.update.mock.results[0]?.value.set;
     expect(updateSet).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'active', userId: 'new-user-id' }),
@@ -339,6 +342,8 @@ describe('acceptInvite', () => {
     // For each project: select to get current supervisorIds
     mocks.selectQueue.push([{ id: 'proj-1', supervisorIds: ['existing-user'] }]);
     mocks.selectQueue.push([{ id: 'proj-2', supervisorIds: [] }]);
+    // NEW: org-row load (last select before return)
+    mocks.selectQueue.push([{ id: 'org-1', kind: 'company' }]);
 
     const result = await acceptInvite({
       token: 'tok123',
@@ -346,7 +351,7 @@ describe('acceptInvite', () => {
       userEmail: 'alice@example.com',
     });
 
-    expect(result).toMatchObject({ ok: true });
+    expect(result).toMatchObject({ ok: true, orgKind: 'company' });
     // 1 member update + 2 project updates
     expect(mocks.db.update).toHaveBeenCalledTimes(3);
   });
