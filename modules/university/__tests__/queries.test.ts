@@ -23,7 +23,7 @@ vi.mock('drizzle-orm', () => ({
   eq: vi.fn(() => 'eq'), and: vi.fn(() => 'and'), desc: vi.fn(() => 'desc'),
 }));
 
-import { getStudentInternshipSnapshot } from '../queries';
+import { getStudentInternshipSnapshot, getManagedStudents } from '../queries';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -114,5 +114,34 @@ describe('getStudentInternshipSnapshot — firewall', () => {
     expect(snap!.phaseNames).toEqual([]);
     expect(snap!.phaseCount).toBe(0);
     expect(snap!.currentPhaseIndex).toBe(0);
+  });
+});
+
+describe('getManagedStudents', () => {
+  it('returns active student-role members with user + profile fields', async () => {
+    mocks.selectQueue.push([
+      {
+        memberId: 'm1',
+        userId: 'stu-1',
+        firstName: 'Lina',
+        lastName: 'Ben',
+        email: 'lina@uni.edu',
+        imageUrl: null,
+        university: 'ESPRIT',
+        fieldOfStudy: 'Design',
+        invitedAt: new Date('2026-01-01'),
+        joinedAt: new Date('2026-01-02'),
+      },
+    ]);
+
+    const rows = await getManagedStudents('uni-1');
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ userId: 'stu-1', firstName: 'Lina', university: 'ESPRIT' });
+  });
+
+  it('returns [] when the university has no managed students', async () => {
+    mocks.selectQueue.push([]);
+    const rows = await getManagedStudents('uni-1');
+    expect(rows).toEqual([]);
   });
 });

@@ -1,6 +1,14 @@
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { workspaces, internships, organizations, projects } from '@/db/schema';
+import {
+  workspaces,
+  internships,
+  organizations,
+  projects,
+  organizationMembers,
+  users,
+  profiles,
+} from '@/db/schema';
 import { computeCurrentPhase } from '@/modules/workspace/phase';
 import { computeWeekOfTotal } from '@/modules/workspace/queries';
 
@@ -91,4 +99,52 @@ export async function getStudentInternshipSnapshot(
     weekCurrent,
     weekTotal,
   };
+}
+
+export type ManagedStudent = {
+  memberId: string;
+  userId: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+  imageUrl: string | null;
+  university: string | null;
+  fieldOfStudy: string | null;
+  invitedAt: Date;
+  joinedAt: Date | null;
+};
+
+/**
+ * Active student-role members of a university org, joined to the user + their
+ * profile (field/university for the roster card). Staff members (owner/admin)
+ * are excluded — this is the supervised-students list only.
+ */
+export async function getManagedStudents(universityOrgId: string): Promise<ManagedStudent[]> {
+  const rows = await db
+    .select({
+      memberId: organizationMembers.id,
+      userId: organizationMembers.userId,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: organizationMembers.email,
+      imageUrl: users.imageUrl,
+      university: profiles.university,
+      fieldOfStudy: profiles.fieldOfStudy,
+      invitedAt: organizationMembers.invitedAt,
+      joinedAt: organizationMembers.joinedAt,
+    })
+    .from(organizationMembers)
+    .leftJoin(users, eq(users.id, organizationMembers.userId))
+    .leftJoin(profiles, eq(profiles.userId, organizationMembers.userId))
+    .where(
+      and(
+        eq(organizationMembers.organizationId, universityOrgId),
+        eq(organizationMembers.role, 'student'),
+        eq(organizationMembers.status, 'active'),
+      ),
+    )
+    .orderBy(desc(organizationMembers.joinedAt))
+    .limit(500);
+
+  return rows as ManagedStudent[];
 }
