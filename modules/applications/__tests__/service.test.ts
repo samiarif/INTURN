@@ -77,9 +77,22 @@ const mocks = vi.hoisted(() => {
   });
 
   // ---- update chain -------------------------------------------------------
+  // Captures every .set() payload so tests can assert decisionNote is persisted in
+  // the SAME update that flips status. .where() returns a thenable that ALSO exposes
+  // .returning() — transitionApplicationStatus awaits .returning(); acceptApplication
+  // awaits .where() directly. Both resolve to the same updated-row stub.
+  const updateSets: Array<Record<string, unknown>> = [];
+  const updatedRows = [{ id: 'app1', status: 'updated', decisionNote: null }];
+  function makeUpdateWhereResult() {
+    return {
+      then: (f: (v: unknown) => unknown, r?: (e: unknown) => unknown) =>
+        Promise.resolve(updatedRows).then(f, r),
+      returning: vi.fn(() => Promise.resolve(updatedRows)),
+    };
+  }
   const updateWhere = vi.fn(() => {
     callOrder.push('update:applications');
-    return Promise.resolve([]);
+    return makeUpdateWhereResult();
   });
 
   const db = {
@@ -88,12 +101,15 @@ const mocks = vi.hoisted(() => {
       values: vi.fn(() => ({ returning: insertReturning })),
     })),
     update: vi.fn(() => ({
-      set: vi.fn(() => ({ where: updateWhere })),
+      set: vi.fn((payload: Record<string, unknown>) => {
+        updateSets.push(payload);
+        return { where: updateWhere };
+      }),
     })),
     delete: vi.fn(() => ({ where: vi.fn() })),
   };
 
-  return { db, callOrder, selectQueue, insertReturning, updateWhere };
+  return { db, callOrder, selectQueue, insertReturning, updateWhere, updateSets };
 });
 
 vi.mock('@/db', () => ({ db: mocks.db }));
@@ -104,11 +120,17 @@ vi.mock('@/db/schema', () => ({
 }));
 vi.mock('drizzle-orm', () => ({ eq: vi.fn(() => 'eq'), and: vi.fn(() => 'and') }));
 
-// recordEvent is called fire-and-forget after the two critical writes;
-// stub it so it doesn't fail and doesn't pollute callOrder.
-vi.mock('@/modules/events/service', () => ({ recordEvent: vi.fn().mockResolvedValue({}) }));
+// recordEvent is called after the two critical writes; stub it AND log its call
+// order so the "decisionNote UPDATE lands before the event fires" invariant is
+// testable.
+vi.mock('@/modules/events/service', () => ({
+  recordEvent: vi.fn(async () => {
+    mocks.callOrder.push('recordEvent');
+    return {};
+  }),
+}));
 
-import { acceptApplication } from '../service';
+import { acceptApplication, transitionApplicationStatus } from '../service';
 
 const fakeApplication = {
   id: 'app1',
@@ -126,6 +148,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.callOrder.length = 0;
   mocks.selectQueue.length = 0;
+  mocks.updateSets.length = 0;
 });
 
 describe('acceptApplication — write-order invariant', () => {
@@ -176,5 +199,70 @@ describe('acceptApplication — write-order invariant', () => {
 
     expect(mocks.callOrder).not.toContain('insert:workspaces');
     expect(mocks.callOrder).not.toContain('update:applications');
+  });
+});
+
+describe('decisionNote persistence (applicant-facing feedback)', () => {
+  it('transitionApplicationStatus writes decisionNote in the same UPDATE as status, before the event', async () => {
+    mocks.selectQueue.push([{ ...fakeApplication, status: 'shortlisted' }]);
+
+    await transitionApplicationStatus({
+      applicationId: 'app1',
+      to: 'rejected',
+      actorId: 'actor1',
+      decisionNote: 'Strong portfolio — not a fit this round.',
+    });
+
+    expect(mocks.updateSets).toHaveLength(1);
+    expect(mocks.updateSets[0]).toMatchObject({
+      status: 'rejected',
+      decisionNote: 'Strong portfolio — not a fit this round.',
+    });
+    // Ordering invariant: the note-bearing UPDATE lands BEFORE recordEvent fires.
+    expect(mocks.callOrder.indexOf('update:applications')).toBeLessThan(
+      mocks.callOrder.indexOf('recordEvent'),
+    );
+  });
+
+  it('transitionApplicationStatus omits decisionNote from the UPDATE when none is given', async () => {
+    mocks.selectQueue.push([{ ...fakeApplication, status: 'reviewed' }]);
+
+    await transitionApplicationStatus({
+      applicationId: 'app1',
+      to: 'shortlisted',
+      actorId: 'actor1',
+    });
+
+    expect(mocks.updateSets).toHaveLength(1);
+    expect(mocks.updateSets[0]).not.toHaveProperty('decisionNote');
+    expect(mocks.updateSets[0]).toMatchObject({ status: 'shortlisted' });
+  });
+
+  it('acceptApplication persists decisionNote in the status UPDATE', async () => {
+    mocks.selectQueue.push([fakeApplication], [fakeInternship], []);
+
+    await acceptApplication({
+      applicationId: 'app1',
+      actorId: 'actor1',
+      decisionNote: 'Welcome aboard!',
+    });
+
+    const acceptedSet = mocks.updateSets.find((s) => s.status === 'accepted');
+    expect(acceptedSet).toBeDefined();
+    expect(acceptedSet).toMatchObject({ status: 'accepted', decisionNote: 'Welcome aboard!' });
+  });
+
+  it('acceptApplication trims a whitespace-only note to undefined (stored NULL)', async () => {
+    mocks.selectQueue.push([fakeApplication], [fakeInternship], []);
+
+    await acceptApplication({
+      applicationId: 'app1',
+      actorId: 'actor1',
+      decisionNote: '   ',
+    });
+
+    const acceptedSet = mocks.updateSets.find((s) => s.status === 'accepted');
+    expect(acceptedSet).toBeDefined();
+    expect(acceptedSet).not.toHaveProperty('decisionNote');
   });
 });

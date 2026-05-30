@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import {
   acceptApplicationAction,
   transitionApplicationStatusAction,
@@ -18,25 +18,46 @@ const STEPS: Array<{ value: ApplicationStatus; label: string }> = [
   { value: 'accepted', label: 'Accepted' },
 ];
 
+export type StatusPipelineLabels = {
+  reject: string;
+  feedbackHint: string;
+  feedbackPlaceholder: string;
+  confirmReject: string;
+  confirmAccept: string;
+  cancel: string;
+};
+
 export function StatusPipeline({
   applicationId,
   projectId,
   currentStatus,
+  labels,
 }: {
   applicationId: string;
   projectId: string;
   currentStatus: ApplicationStatus;
+  labels: StatusPipelineLabels;
 }) {
   const [pending, startTransition] = useTransition();
+  // Which decision (if any) is awaiting an optional feedback note + confirm.
+  const [feedbackFor, setFeedbackFor] = useState<'rejected' | 'accepted' | null>(null);
+  const [note, setNote] = useState('');
 
-  function transitionTo(to: ApplicationStatus) {
+  function transitionTo(to: ApplicationStatus, decisionNote?: string) {
     startTransition(async () => {
       if (to === 'accepted') {
-        await acceptApplicationAction({ applicationId, projectId });
+        await acceptApplicationAction({ applicationId, projectId, decisionNote });
       } else {
-        await transitionApplicationStatusAction({ applicationId, projectId, to });
+        await transitionApplicationStatusAction({ applicationId, projectId, to, decisionNote });
       }
+      setFeedbackFor(null);
+      setNote('');
     });
+  }
+
+  function openFeedback(target: 'rejected' | 'accepted') {
+    setNote('');
+    setFeedbackFor(target);
   }
 
   return (
@@ -53,7 +74,9 @@ export function StatusPipeline({
               key={step.value}
               type="button"
               disabled={!canTransition || pending}
-              onClick={() => transitionTo(step.value)}
+              onClick={() =>
+                step.value === 'accepted' ? openFeedback('accepted') : transitionTo(step.value)
+              }
               className={
                 isCurrent
                   ? 'px-3 py-1.5 rounded-full text-label bg-[var(--ink)] text-white'
@@ -69,15 +92,57 @@ export function StatusPipeline({
           );
         })}
       </div>
+
       {currentStatus !== 'rejected' && currentStatus !== 'accepted' && (
         <button
           type="button"
           disabled={pending}
-          onClick={() => transitionTo('rejected')}
+          onClick={() => openFeedback('rejected')}
           className="text-label text-[var(--danger)] hover:underline"
         >
-          Reject application
+          {labels.reject}
         </button>
+      )}
+
+      {feedbackFor && (
+        <div className="mt-3 border border-[var(--border-color)] rounded-md p-3 bg-[var(--surface)]">
+          <label htmlFor="decision-note" className="block text-caption text-[var(--ink-3)] mb-1">
+            {labels.feedbackHint}
+          </label>
+          <textarea
+            id="decision-note"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={3}
+            placeholder={labels.feedbackPlaceholder}
+            className="w-full rounded-md border border-[var(--border-color)] bg-[var(--surface)] p-2 text-body text-[var(--ink)] focus:border-[var(--border-strong)] focus:outline-none"
+          />
+          <div className="mt-2 flex items-center gap-2">
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => transitionTo(feedbackFor, note)}
+              className={
+                feedbackFor === 'rejected'
+                  ? 'px-3 py-1.5 rounded-md text-label bg-[var(--danger)] text-white disabled:opacity-50'
+                  : 'px-3 py-1.5 rounded-md text-label bg-[var(--brand-500)] text-white disabled:opacity-50'
+              }
+            >
+              {feedbackFor === 'rejected' ? labels.confirmReject : labels.confirmAccept}
+            </button>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => {
+                setFeedbackFor(null);
+                setNote('');
+              }}
+              className="px-3 py-1.5 rounded-md text-label text-[var(--ink-3)] hover:text-[var(--ink)]"
+            >
+              {labels.cancel}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

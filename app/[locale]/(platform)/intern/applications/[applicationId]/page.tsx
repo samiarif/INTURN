@@ -6,7 +6,8 @@ import { db } from '@/db';
 import { workspaces } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { getUserByClerkId } from '@/modules/profiles/queries';
-import { getApplicationById } from '@/modules/applications/queries';
+import { getApplicationById, getApplicationTimeline } from '@/modules/applications/queries';
+import { daysSince } from '@/lib/format-time';
 import { WithdrawButton } from './withdraw-button';
 
 const TIMELINE_STEPS = ['new', 'reviewed', 'shortlisted', 'interview', 'accepted'] as const;
@@ -33,6 +34,18 @@ export default async function Page({
   ]);
 
   const { application, internship } = data;
+
+  const timeline = await getApplicationTimeline(applicationId);
+  // step key → date reached. The 'applied' entry maps onto the first ('new') pill.
+  const reachedAt = new Map<string, Date>();
+  for (const e of timeline) {
+    reachedAt.set(e.status === 'applied' ? 'new' : e.status, e.at);
+  }
+  const latest = timeline[timeline.length - 1];
+  const daysSinceLatest = latest ? daysSince(latest.at) : 0;
+  const fmtDate = (dt: Date) =>
+    dt.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short' });
+
   const status = application.status ?? 'new';
   const currentIdx =
     status === 'rejected' ? -1 : TIMELINE_STEPS.indexOf(status as TimelineStep);
@@ -74,7 +87,12 @@ export default async function Page({
         </h2>
         {status === 'rejected' ? (
           <div className="border border-[color-mix(in_srgb,var(--status-danger-ink)_22%,transparent)] bg-[var(--status-danger-bg)] text-[var(--status-danger-ink)] rounded-md p-3 text-label">
-            {t('closedLabel')}
+            <div>{t('closedLabel')}</div>
+            {latest && (
+              <div className="text-caption text-[var(--status-danger-ink)] opacity-80 mt-1">
+                {t('decidedOn', { date: fmtDate(latest.at) })}
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-wrap items-center gap-y-2 gap-x-2">
@@ -83,16 +101,23 @@ export default async function Page({
               const isPast = i < currentIdx;
               return (
                 <div key={step} className="flex items-center gap-2">
-                  <div
-                    className={
-                      isCurrent
-                        ? 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--brand-500)] text-white whitespace-nowrap'
-                        : isPast
-                          ? 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--brand-50)] text-[var(--brand-600)] whitespace-nowrap'
-                          : 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] whitespace-nowrap'
-                    }
-                  >
-                    {tStatus(step)}
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className={
+                        isCurrent
+                          ? 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--brand-500)] text-white whitespace-nowrap'
+                          : isPast
+                            ? 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--brand-50)] text-[var(--brand-600)] whitespace-nowrap'
+                            : 'px-3 py-1.5 rounded-full text-caption font-medium bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] whitespace-nowrap'
+                      }
+                    >
+                      {tStatus(step)}
+                    </div>
+                    {reachedAt.has(step) && (
+                      <span className="text-[10px] font-mono text-[var(--ink-4)] whitespace-nowrap">
+                        {fmtDate(reachedAt.get(step)!)}
+                      </span>
+                    )}
                   </div>
                   {i < TIMELINE_STEPS.length - 1 && (
                     <span className="hidden sm:inline h-px w-3 bg-[var(--border-color)]" />
@@ -101,6 +126,11 @@ export default async function Page({
               );
             })}
           </div>
+        )}
+        {status !== 'accepted' && status !== 'rejected' && latest && (
+          <p className="text-caption text-[var(--ink-3)] mt-3">
+            {t('reviewingSince', { date: fmtDate(latest.at), days: daysSinceLatest })}
+          </p>
         )}
         {status === 'accepted' && workspaceId && (
           <div className="mt-4">
@@ -113,6 +143,17 @@ export default async function Page({
           </div>
         )}
       </section>
+
+      {application.decisionNote && (
+        <section className="mb-8">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
+            {t('feedbackHeading')}
+          </h2>
+          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] text-body text-[var(--ink-2)] whitespace-pre-line">
+            {application.decisionNote}
+          </div>
+        </section>
+      )}
 
       {application.coverNote && (
         <section className="mb-6">

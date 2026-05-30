@@ -18,6 +18,10 @@ export const applications = pgTable(
     coverNote: text('cover_note'),
     customAnswers: jsonb('custom_answers').$type<Array<{ question: string; answer: string }>>(),
     internalNotes: text('internal_notes'),
+    // Optional company→candidate feedback attached to a decision (reject/accept).
+    // DISTINCT from internal_notes (which is company-private). Nullable: a decision
+    // with no note is the default and works unchanged.
+    decisionNote: text('decision_note'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },

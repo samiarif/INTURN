@@ -611,7 +611,10 @@
       "yourCoverNote": "Votre lettre",
       "yourAnswers": "Vos réponses",
       "withdraw": "Retirer la candidature",
-      "withdrawConfirm": "Retirer votre candidature ? Vous pourrez postuler à nouveau plus tard si le stage est encore ouvert."
+      "withdrawConfirm": "Retirer votre candidature ? Vous pourrez postuler à nouveau plus tard si le stage est encore ouvert.",
+      "feedbackHeading": "Retour de l'entreprise",
+      "reviewingSince": "En cours d'examen depuis le {date} · {days, plural, =0 {aujourd'hui} one {# jour} other {# jours}}",
+      "decidedOn": "Décision rendue le {date}"
     },
     "compare": {
       "back": "← Toutes les candidatures",
@@ -641,7 +644,14 @@
       "coverNote": "Lettre de motivation",
       "applicationAnswers": "Réponses à la candidature",
       "internalNotes": "Notes internes",
-      "pipeline": "Pipeline"
+      "pipeline": "Pipeline",
+      "reject": "Refuser la candidature",
+      "feedbackHint": "Retour au candidat (facultatif — il le verra)",
+      "feedbackPlaceholder": "Message facultatif au candidat…",
+      "confirmReject": "Confirmer le refus",
+      "confirmAccept": "Confirmer et accepter",
+      "cancel": "Annuler",
+      "agingLine": "En {status} depuis {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}}"
     }
   },
   "admin": {

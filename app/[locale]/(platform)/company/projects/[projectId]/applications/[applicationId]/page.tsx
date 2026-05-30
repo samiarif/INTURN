@@ -5,7 +5,8 @@ import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { canViewProject } from '@/modules/team/authz';
-import { getApplicationById } from '@/modules/applications/queries';
+import { getApplicationById, getApplicationTimeline } from '@/modules/applications/queries';
+import { daysSince } from '@/lib/format-time';
 import { NotesEditor } from './_notes';
 import { StatusPipeline } from './_status-pipeline';
 import type { ApplicationStatus } from '@/modules/applications/state-machine';
@@ -28,9 +29,16 @@ export default async function Page({
   if (!data) notFound();
   if (data.internship.projectId !== projectId) notFound();
 
-  const t = await getTranslations({ locale, namespace: 'applications.review' });
+  const [t, tStatus] = await Promise.all([
+    getTranslations({ locale, namespace: 'applications.review' }),
+    getTranslations({ locale, namespace: 'applications.status' }),
+  ]);
 
   const { application, internship, applicant, profile } = data;
+
+  const timeline = await getApplicationTimeline(applicationId);
+  const latestEntry = timeline[timeline.length - 1];
+  const daysInStatus = latestEntry ? daysSince(latestEntry.at) : 0;
   const customQuestions = internship.customQuestions ?? [];
   const customAnswers = application.customAnswers ?? [];
 
@@ -47,7 +55,7 @@ export default async function Page({
       <div className="text-eyebrow font-mono text-[var(--ink-3)] uppercase mb-1">
         {internship.title}
       </div>
-      <div className="flex items-center justify-between gap-4 flex-wrap mb-8">
+      <div className="flex items-center justify-between gap-4 flex-wrap mb-2">
         <h1 className="text-display font-[family-name:var(--font-display)]">
           {applicant.firstName} {applicant.lastName}
         </h1>
@@ -59,6 +67,13 @@ export default async function Page({
           })}
         </span>
       </div>
+      {latestEntry && application.status !== 'rejected' && application.status !== 'accepted' ? (
+        <p className="text-caption text-[var(--ink-3)] mb-8">
+          {t('agingLine', { status: tStatus(application.status ?? 'new'), days: daysInStatus })}
+        </p>
+      ) : (
+        <div className="mb-6" />
+      )}
 
       <section className="mb-8">
         <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
@@ -185,6 +200,14 @@ export default async function Page({
           applicationId={applicationId}
           projectId={projectId}
           currentStatus={(application.status ?? 'new') as ApplicationStatus}
+          labels={{
+            reject: t('reject'),
+            feedbackHint: t('feedbackHint'),
+            feedbackPlaceholder: t('feedbackPlaceholder'),
+            confirmReject: t('confirmReject'),
+            confirmAccept: t('confirmAccept'),
+            cancel: t('cancel'),
+          }}
         />
       </section>
     </div>

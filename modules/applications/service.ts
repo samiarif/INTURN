@@ -69,6 +69,7 @@ export async function transitionApplicationStatus(input: {
   applicationId: string;
   to: ApplicationStatus;
   actorId: string;
+  decisionNote?: string;
 }) {
   const [current] = await db
     .select()
@@ -81,9 +82,18 @@ export async function transitionApplicationStatus(input: {
     throw new Error(`Invalid transition: ${from} → ${input.to}`);
   }
 
+  // Persist optional applicant-visible feedback in the SAME update that flips
+  // status, BEFORE recordEvent fires — so the dispatcher's re-select reads it off
+  // the freshly-updated row. Empty/whitespace → undefined: leave the column as-is.
+  const decisionNote = input.decisionNote?.trim() || undefined;
+
   const [updated] = await db
     .update(applications)
-    .set({ status: input.to, updatedAt: new Date() })
+    .set({
+      status: input.to,
+      ...(decisionNote !== undefined ? { decisionNote } : {}),
+      updatedAt: new Date(),
+    })
     .where(eq(applications.id, input.applicationId))
     .returning();
 
@@ -117,7 +127,11 @@ export async function updateInternalNotes(input: {
  * The neon-http driver is stateless HTTP and does not support db.transaction(),
  * so we rely on write ordering + an idempotency guard instead.
  */
-export async function acceptApplication(input: { applicationId: string; actorId: string }) {
+export async function acceptApplication(input: {
+  applicationId: string;
+  actorId: string;
+  decisionNote?: string;
+}) {
   const [application] = await db
     .select()
     .from(applications)
@@ -172,10 +186,16 @@ export async function acceptApplication(input: { applicationId: string; actorId:
         .returning()
     )[0];
 
-  // Write 2: only after the workspace exists, mark the application accepted.
+  // Write 2: only after the workspace exists, mark the application accepted. The
+  // optional decision note rides on this same UPDATE, before recordEvent fires.
+  const decisionNote = input.decisionNote?.trim() || undefined;
   await db
     .update(applications)
-    .set({ status: 'accepted', updatedAt: new Date() })
+    .set({
+      status: 'accepted',
+      ...(decisionNote !== undefined ? { decisionNote } : {}),
+      updatedAt: new Date(),
+    })
     .where(eq(applications.id, input.applicationId));
 
   await recordEvent({

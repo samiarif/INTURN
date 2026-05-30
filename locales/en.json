@@ -611,7 +611,10 @@
       "yourCoverNote": "Your cover note",
       "yourAnswers": "Your answers",
       "withdraw": "Withdraw application",
-      "withdrawConfirm": "Withdraw your application? You can apply again later if the internship is still open."
+      "withdrawConfirm": "Withdraw your application? You can apply again later if the internship is still open.",
+      "feedbackHeading": "Feedback from the company",
+      "reviewingSince": "Under review since {date} · {days, plural, =0 {today} one {# day} other {# days}}",
+      "decidedOn": "Decision made {date}"
     },
     "compare": {
       "back": "← All applications",
@@ -641,7 +644,14 @@
       "coverNote": "Cover note",
       "applicationAnswers": "Application answers",
       "internalNotes": "Internal notes",
-      "pipeline": "Pipeline"
+      "pipeline": "Pipeline",
+      "reject": "Reject application",
+      "feedbackHint": "Feedback to the candidate (optional — they'll see this)",
+      "feedbackPlaceholder": "Optional message to the candidate…",
+      "confirmReject": "Confirm rejection",
+      "confirmAccept": "Confirm & accept",
+      "cancel": "Cancel",
+      "agingLine": "In {status} for {days, plural, =0 {less than a day} one {# day} other {# days}}"
     }
   },
   "admin": {

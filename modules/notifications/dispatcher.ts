@@ -37,8 +37,7 @@ export async function dispatchNotificationsFor(event: DispatchInput): Promise<vo
       case 'application.created':
         await onApplicationCreated(event);
         break;
-      case 'application.statusChanged':
-      case 'application.status_changed':
+      case 'application.status.changed':
         await onApplicationStatusChanged(event);
         break;
       case 'application.accepted':
@@ -144,32 +143,37 @@ async function onApplicationCreated(event: DispatchInput): Promise<void> {
   }
 }
 
-async function onApplicationStatusChanged(event: DispatchInput): Promise<void> {
-  if (!event.targetId) return;
-  const newStatus = event.metadata?.to as string | undefined;
-  if (!newStatus) return;
-  const allowed: ApplicationStatusForEmail[] = [
-    'reviewed',
-    'shortlisted',
-    'interview',
-    'accepted',
-    'rejected',
-  ];
-  if (!(allowed as readonly string[]).includes(newStatus)) return;
+// Applicant-facing statuses that notify on a plain status change, EXCLUDING
+// 'accepted'. Accept is owned by onApplicationAccepted (it fires a separate
+// application.accepted event); handling it here too would double-notify.
+const NOTIFIABLE_STATUSES: ApplicationStatusForEmail[] = [
+  'reviewed',
+  'shortlisted',
+  'interview',
+  'rejected',
+];
 
+/**
+ * Shared applicant-notification body. Re-selects the freshly-updated application
+ * row (joined to internship + applicant) and reads applications.decisionNote
+ * straight off the row, so the optional company→candidate feedback rides along
+ * into both the email and (implicitly) whatever the applicant page renders.
+ * Honors the recipient's per-channel prefs.
+ */
+async function notifyApplicant(
+  applicationId: string,
+  status: ApplicationStatusForEmail,
+): Promise<void> {
   const [row] = await db
-    .select({
-      app: applications,
-      internship: internships,
-      applicant: users,
-    })
+    .select({ app: applications, internship: internships, applicant: users })
     .from(applications)
     .innerJoin(internships, eq(internships.id, applications.internshipId))
     .innerJoin(users, eq(users.id, applications.applicantId))
-    .where(eq(applications.id, event.targetId))
+    .where(eq(applications.id, applicationId))
     .limit(1);
   if (!row) return;
 
+  const note = row.app.decisionNote ?? null;
   const applicantName =
     `${row.applicant.firstName ?? ''} ${row.applicant.lastName ?? ''}`.trim() || 'there';
   const prefs = prefsFor(row.applicant);
@@ -178,13 +182,9 @@ async function onApplicationStatusChanged(event: DispatchInput): Promise<void> {
     await db.insert(notifications).values({
       recipientId: row.applicant.id,
       type: 'application.status',
-      body: `Your application to ${row.internship.title} was ${newStatus}`,
+      body: `Your application to ${row.internship.title} was ${status}`,
       href: `/intern/applications/${row.app.id}`,
-      metadata: {
-        applicationId: row.app.id,
-        internshipId: row.internship.id,
-        to: newStatus,
-      },
+      metadata: { applicationId: row.app.id, internshipId: row.internship.id, to: status },
     });
   }
 
@@ -193,9 +193,10 @@ async function onApplicationStatusChanged(event: DispatchInput): Promise<void> {
     const tpl = applicationStatusTemplate({
       applicantName,
       internshipTitle: row.internship.title,
-      status: newStatus as ApplicationStatusForEmail,
+      status,
       applicationId: row.app.id,
       locale,
+      note: note ?? undefined,
     });
     await sendEmail({
       to: row.applicant.email,
@@ -207,14 +208,18 @@ async function onApplicationStatusChanged(event: DispatchInput): Promise<void> {
   }
 }
 
+async function onApplicationStatusChanged(event: DispatchInput): Promise<void> {
+  if (!event.targetId) return;
+  const newStatus = event.metadata?.to as string | undefined;
+  if (!newStatus) return;
+  if (newStatus === 'accepted') return;
+  if (!(NOTIFIABLE_STATUSES as readonly string[]).includes(newStatus)) return;
+  await notifyApplicant(event.targetId, newStatus as ApplicationStatusForEmail);
+}
+
 async function onApplicationAccepted(event: DispatchInput): Promise<void> {
-  // Acceptance also flows through statusChanged via the service layer, so
-  // this is just an extra in-app notification if we want a distinct event.
-  // For v1, treat as a status change with status='accepted'.
-  await onApplicationStatusChanged({
-    ...event,
-    metadata: { ...(event.metadata ?? {}), to: 'accepted' },
-  });
+  if (!event.targetId) return;
+  await notifyApplicant(event.targetId, 'accepted');
 }
 
 async function onCheckinDue(event: DispatchInput): Promise<void> {

@@ -75,3 +75,15 @@ export function hoursSince(date: Date | string): number {
   if (Number.isNaN(d.getTime())) return 0;
   return Math.floor((Date.now() - d.getTime()) / MS_PER_HOUR);
 }
+
+/**
+ * Days-since helper — companion to hoursSince, for aging / "under review
+ * since" indicators that want the raw whole-day count, not a string. Lives
+ * here (module scope) so Date.now() isn't called inside a component render,
+ * which the react-hooks/purity lint rule forbids.
+ */
+export function daysSince(date: Date | string): number {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  if (Number.isNaN(d.getTime())) return 0;
+  return Math.floor((Date.now() - d.getTime()) / MS_PER_DAY);
+}

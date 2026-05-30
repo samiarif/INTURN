@@ -229,32 +229,33 @@ describe('application.created', () => {
   });
 });
 
-describe('application.statusChanged', () => {
-  it.each(['application.statusChanged', 'application.status_changed'])(
-    'in-app + email to the applicant for a notifiable status (%s)',
-    async (type) => {
-      queueStatusChanged();
+describe('application.status.changed (canonical event)', () => {
+  // Regression guard for the silent-notification bug: the service emits the dotted
+  // canonical 'application.status.changed' (modules/events/types.ts). The dispatcher
+  // previously matched only camel/snake forms, so every non-accept transition fired
+  // ZERO notifications. Feed the EXACT string the service emits.
+  it('in-app + email to the applicant for a notifiable status (canonical string)', async () => {
+    queueStatusChanged();
 
-      await dispatchNotificationsFor({
-        type,
-        actorId: 'sup1',
-        targetType: 'application',
-        targetId: 'app1',
-        metadata: { to: 'shortlisted' },
-      });
+    await dispatchNotificationsFor({
+      type: 'application.status.changed',
+      actorId: 'sup1',
+      targetType: 'application',
+      targetId: 'app1',
+      metadata: { from: 'reviewed', to: 'shortlisted' },
+    });
 
-      const notifs = notifInserts();
-      expect(notifs).toHaveLength(1);
-      expect(notifs[0].values).toMatchObject({ recipientId: 'intern1', type: 'application.status' });
-      expect(sendEmail).toHaveBeenCalledTimes(1);
-      expect(sendEmail.mock.calls[0][0]).toMatchObject({ to: 'lina@x.com' });
-    },
-  );
+    const notifs = notifInserts();
+    expect(notifs).toHaveLength(1);
+    expect(notifs[0].values).toMatchObject({ recipientId: 'intern1', type: 'application.status' });
+    expect(sendEmail).toHaveBeenCalledTimes(1);
+    expect(sendEmail.mock.calls[0][0]).toMatchObject({ to: 'lina@x.com' });
+  });
 
   it('ignores a status that is not in the notifiable allow-list (e.g. "new")', async () => {
     // No rows need queueing — it bails before the row fetch.
     await dispatchNotificationsFor({
-      type: 'application.statusChanged',
+      type: 'application.status.changed',
       actorId: 'sup1',
       targetType: 'application',
       targetId: 'app1',
@@ -265,15 +266,30 @@ describe('application.statusChanged', () => {
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
+  it('does NOT notify on to=accepted here (accept is owned by application.accepted)', async () => {
+    // Critical de-dupe half: the accepted status-change must early-return so the
+    // separate application.accepted event is the single source of the notification.
+    await dispatchNotificationsFor({
+      type: 'application.status.changed',
+      actorId: 'sup1',
+      targetType: 'application',
+      targetId: 'app1',
+      metadata: { from: 'shortlisted', to: 'accepted' },
+    });
+
+    expect(notifInserts()).toHaveLength(0);
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
   it('notifyEmail=false suppresses only the email', async () => {
     queueStatusChanged({ notifyEmail: false });
 
     await dispatchNotificationsFor({
-      type: 'application.statusChanged',
+      type: 'application.status.changed',
       actorId: 'sup1',
       targetType: 'application',
       targetId: 'app1',
-      metadata: { to: 'accepted' },
+      metadata: { to: 'shortlisted' },
     });
 
     expect(notifInserts()).toHaveLength(1);
@@ -284,7 +300,7 @@ describe('application.statusChanged', () => {
     queueStatusChanged({ notifyInApp: false });
 
     await dispatchNotificationsFor({
-      type: 'application.statusChanged',
+      type: 'application.status.changed',
       actorId: 'sup1',
       targetType: 'application',
       targetId: 'app1',
@@ -296,8 +312,8 @@ describe('application.statusChanged', () => {
   });
 });
 
-describe('application.accepted', () => {
-  it('routes through the status-change path with to=accepted', async () => {
+describe('application.accepted (owns the accept notification)', () => {
+  it('writes one in-app row with to=accepted', async () => {
     queueStatusChanged();
 
     await dispatchNotificationsFor({
@@ -305,15 +321,41 @@ describe('application.accepted', () => {
       actorId: 'sup1',
       targetType: 'application',
       targetId: 'app1',
-      metadata: {},
+      metadata: { workspaceId: 'ws1' },
     });
 
     const notifs = notifInserts();
     expect(notifs).toHaveLength(1);
     expect(notifs[0].values).toMatchObject({
       recipientId: 'intern1',
+      type: 'application.status',
       metadata: expect.objectContaining({ to: 'accepted' }),
     });
+  });
+
+  it('de-dupes: the TWO events accept emits produce EXACTLY ONE notification', async () => {
+    // acceptApplication records BOTH application.status.changed(to:accepted) AND
+    // application.accepted. The first early-returns (accept owned here); only the
+    // second writes. Net = one notification, one email — not two.
+    queueStatusChanged(); // consumed by the application.accepted path only
+
+    await dispatchNotificationsFor({
+      type: 'application.status.changed',
+      actorId: 'sup1',
+      targetType: 'application',
+      targetId: 'app1',
+      metadata: { from: 'shortlisted', to: 'accepted' },
+    });
+    await dispatchNotificationsFor({
+      type: 'application.accepted',
+      actorId: 'sup1',
+      targetType: 'application',
+      targetId: 'app1',
+      metadata: { workspaceId: 'ws1' },
+    });
+
+    expect(notifInserts()).toHaveLength(1);
+    expect(sendEmail).toHaveBeenCalledTimes(1);
   });
 });
 

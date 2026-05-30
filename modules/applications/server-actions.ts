@@ -83,6 +83,7 @@ export async function transitionApplicationStatusAction(input: {
   applicationId: string;
   projectId: string;
   to: ApplicationStatus;
+  decisionNote?: string;
 }) {
   const user = await requireUser();
   await assertProjectSupervisor(input.projectId, user.id);
@@ -90,6 +91,7 @@ export async function transitionApplicationStatusAction(input: {
     applicationId: input.applicationId,
     to: input.to,
     actorId: user.id,
+    decisionNote: input.decisionNote,
   });
   // Company inbox + applicant intern's dashboard/list all change.
   revalidatePath(`/company/projects/${input.projectId}/applications`);
@@ -116,12 +118,14 @@ export async function updateInternalNotesAction(input: {
 export async function acceptApplicationAction(input: {
   applicationId: string;
   projectId: string;
+  decisionNote?: string;
 }) {
   const user = await requireUser();
   await assertProjectSupervisor(input.projectId, user.id);
   const result = await acceptApplication({
     applicationId: input.applicationId,
     actorId: user.id,
+    decisionNote: input.decisionNote,
   });
   // Workspace was just created; dashboards on both sides need refresh.
   revalidatePath('/intern/dashboard');
