@@ -21,6 +21,11 @@ export {
   type AcademicReportRevision,
 } from './academic-reports';
 export {
+  academicReportComments,
+  type AcademicReportComment,
+  type NewAcademicReportComment,
+} from './academic-report-comments';
+export {
   internshipBookmarks,
   type InternshipBookmark,
   type NewInternshipBookmark,
