@@ -1,12 +1,6 @@
 import type { AcademicReport, AcademicReportRevision } from '@/db/schema';
-import { StatusPill, type StatusTone } from '@/components/status-pill';
-
-function toneFor(status: string): StatusTone {
-  if (status === 'submitted') return 'info';
-  if (status === 'approved') return 'success';
-  if (status === 'revision-requested') return 'warn';
-  return 'neutral';
-}
+import { StatusPill } from '@/components/status-pill';
+import { toneFor } from '@/modules/academic-reports/status-tone';
 
 function fmt(d: Date | string | null, locale: string): string {
   if (!d) return '';

@@ -1593,6 +1593,7 @@
     "review": {
       "submittedBy": "Submitted by {name}",
       "requestChanges": "Request changes",
+      "submitChanges": "Send request",
       "approve": "Approve",
       "cancel": "Cancel",
       "feedbackPlaceholder": "What needs to change?",

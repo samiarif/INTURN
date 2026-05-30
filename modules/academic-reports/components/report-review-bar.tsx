@@ -21,6 +21,7 @@ export function ReportReviewBar({
   labels: {
     submittedBy: string;
     requestChanges: string;
+    submitChanges: string;
     approve: string;
     cancel: string;
     feedbackPlaceholder: string;
@@ -80,6 +81,7 @@ export function ReportReviewBar({
             rows={4}
             maxLength={2000}
             placeholder={labels.feedbackPlaceholder}
+            aria-label={labels.feedbackPlaceholder}
             className="w-full resize-y rounded border border-[var(--border-color)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)]"
           />
           <div className="mt-2 flex justify-end">
@@ -89,7 +91,7 @@ export function ReportReviewBar({
               onClick={sendRevision}
               style={{ background: 'var(--warning)', borderColor: 'var(--warning)' }}
             >
-              {pending ? labels.sending : labels.requestChanges}
+              {pending ? labels.sending : labels.submitChanges}
             </Button>
           </div>
         </div>

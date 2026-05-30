@@ -1593,6 +1593,7 @@
     "review": {
       "submittedBy": "Soumis par {name}",
       "requestChanges": "Demander des modifications",
+      "submitChanges": "Envoyer la demande",
       "approve": "Approuver",
       "cancel": "Annuler",
       "feedbackPlaceholder": "Qu'est-ce qui doit changer ?",

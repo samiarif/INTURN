@@ -9,11 +9,9 @@ import { submitReportAction } from '@/modules/academic-reports/server-actions';
 
 export function ReportUploadZone({
   reportId,
-  nextVersion,
   labels,
 }: {
   reportId: string;
-  nextVersion: number;
   labels: {
     title: string;
     helper: string;
@@ -29,9 +27,6 @@ export function ReportUploadZone({
   const [staged, setStaged] = useState<{ url: string; fileName: string; contentType: string } | null>(null);
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  // nextVersion is shown for informational purposes; actual version is computed server-side
-  void nextVersion;
 
   function submit() {
     if (!staged) return;
@@ -83,6 +78,7 @@ export function ReportUploadZone({
         rows={3}
         maxLength={1000}
         placeholder={labels.notePlaceholder}
+        aria-label={labels.notePlaceholder}
         className="mt-2.5 w-full rounded border border-[var(--border-color)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)]"
       />
       {error && <p className="mt-1 text-caption text-[var(--danger)]">{error}</p>}

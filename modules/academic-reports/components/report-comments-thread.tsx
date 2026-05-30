@@ -11,12 +11,13 @@ import type { ReportCommentWithAuthor } from '@/modules/academic-reports/queries
 export function ReportCommentsThread({
   reportId,
   comments,
-  currentUserId,
+  currentUserId: _currentUserId,
   locale,
   labels,
 }: {
   reportId: string;
   comments: ReportCommentWithAuthor[];
+  /** Reserved for Task 8 delete-button; keep in prop type for forward compatibility. */
   currentUserId: string;
   locale: string;
   labels: { placeholder: string; empty: string; post: string; sending: string };
@@ -44,6 +45,7 @@ export function ReportCommentsThread({
           rows={3}
           maxLength={4000}
           placeholder={labels.placeholder}
+          aria-label={labels.placeholder}
           onKeyDown={(e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
               e.preventDefault();
@@ -85,9 +87,6 @@ export function ReportCommentsThread({
                   <span className="font-mono text-caption text-[var(--ink-3)]">
                     {new Date(comment.createdAt).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  {author.id === currentUserId && (
-                    <span className="font-mono text-caption text-[var(--ink-4)]">·</span>
-                  )}
                 </div>
                 <p className="whitespace-pre-line break-words text-sm text-[var(--ink-2)]">{comment.body}</p>
               </div>

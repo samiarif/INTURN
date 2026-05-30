@@ -3,19 +3,13 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
 import { getViewerMemberships } from '@/modules/team/authz';
 import { PageHeader } from '@/components/ui/page-header';
-import { StatusPill, type StatusTone } from '@/components/status-pill';
+import { StatusPill } from '@/components/status-pill';
 import { getReportForStudent, getReportComments } from '@/modules/academic-reports/queries';
 import { createReportDraftAction } from '@/modules/academic-reports/server-actions';
 import { ReportVersionStack } from '@/modules/academic-reports/components/report-version-stack';
 import { ReportUploadZone } from '@/modules/academic-reports/components/report-upload-zone';
 import { ReportCommentsThread } from '@/modules/academic-reports/components/report-comments-thread';
-
-function toneFor(status: string): StatusTone {
-  if (status === 'submitted') return 'info';
-  if (status === 'approved') return 'success';
-  if (status === 'revision-requested') return 'warn';
-  return 'neutral';
-}
+import { toneFor } from '@/modules/academic-reports/status-tone';
 
 export default async function Page() {
   const session = await getSession();
@@ -90,7 +84,6 @@ export default async function Page() {
               <span className="ml-auto">
                 <ReportUploadZone
                   reportId={report.id}
-                  nextVersion={report.status === 'draft' ? report.version : report.version + 1}
                   labels={{
                     title: t('upload.title'),
                     helper: t('upload.helper'),
