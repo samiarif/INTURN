@@ -24,6 +24,7 @@ import { getSession } from '@/modules/auth/session';
 import { getProjectById, getProjectsByOrganization } from '@/modules/projects/queries';
 import { getInternshipsByProject } from '@/modules/internships/queries';
 import { getActiveMembership, canManageOrg } from '@/modules/team/authz';
+import { computeCurrentPhase } from '@/modules/workspace/phase';
 import { getOrgMembers } from '@/modules/team/queries';
 import {
   ProjectSupervisors,
@@ -64,21 +65,6 @@ function formatDateLong(d: Date | string | null | undefined): string {
   if (!d) return '—';
   const date = d instanceof Date ? d : new Date(d);
   return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
-}
-
-/** Active 1-based phase index, or -1 if we're outside the project clock. */
-function computeCurrentPhase(
-  phases: Array<{ fromWeek: number; toWeek: number }>,
-  startDate: Date | null,
-  now = new Date(),
-): number {
-  if (!startDate || phases.length === 0) return 0;
-  const elapsedWeeks = Math.floor((now.getTime() - startDate.getTime()) / MS_PER_DAY / 7) + 1;
-  for (let i = 0; i < phases.length; i++) {
-    if (elapsedWeeks >= phases[i].fromWeek && elapsedWeeks <= phases[i].toWeek) return i;
-  }
-  // Past the last phase → consider the project at handoff.
-  return Math.max(0, phases.length - 1);
 }
 
 // ---------------------------------------------------------------------------
