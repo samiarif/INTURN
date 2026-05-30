@@ -1,20 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import {
-  isValidDeliverableTransition,
-  nextDeliverableState,
-  type DeliverableStatus,
-  type DeliverableAction,
+  isValidReviewTransition,
+  nextReviewState,
+  type ReviewStatus,
+  type ReviewAction,
 } from '../state-machine';
 
 // ---------------------------------------------------------------------------
-// Pure transition matrix (no DB, no mocks). Mirrors the application/project
-// state-machine tests. The deliverable lifecycle is:
+// Pure transition matrix (no DB, no mocks). The review lifecycle (shared by
+// deliverables AND academic reports) is:
 //   draft → submitted → (approved | revision-requested)
 //   revision-requested → submitted  (resubmission, bumps version)
 //   approved is terminal.
 // ---------------------------------------------------------------------------
-describe('isValidDeliverableTransition', () => {
-  const cases: Array<[DeliverableStatus, DeliverableStatus, boolean]> = [
+describe('isValidReviewTransition', () => {
+  const cases: Array<[ReviewStatus, ReviewStatus, boolean]> = [
     // from draft
     ['draft', 'submitted', true],
     ['draft', 'approved', false],
@@ -39,25 +39,25 @@ describe('isValidDeliverableTransition', () => {
 
   for (const [from, to, expected] of cases) {
     it(`${from} → ${to} ${expected ? 'allowed' : 'denied'}`, () => {
-      expect(isValidDeliverableTransition(from, to)).toBe(expected);
+      expect(isValidReviewTransition(from, to)).toBe(expected);
     });
   }
 });
 
 // ---------------------------------------------------------------------------
-// nextDeliverableState — the pure resolver the service layer delegates to.
+// nextReviewState — the pure resolver the service layer delegates to.
 // It owns BOTH the transition guard and the version-increment policy.
 // ---------------------------------------------------------------------------
-describe('nextDeliverableState — valid actions', () => {
+describe('nextReviewState — valid actions', () => {
   it('draft + submit → submitted, version unchanged (first submission)', () => {
-    expect(nextDeliverableState({ status: 'draft', version: 1 }, 'submit')).toEqual({
+    expect(nextReviewState({ status: 'draft', version: 1 }, 'submit')).toEqual({
       status: 'submitted',
       version: 1,
     });
   });
 
   it('submitted + approve → approved, version unchanged', () => {
-    expect(nextDeliverableState({ status: 'submitted', version: 1 }, 'approve')).toEqual({
+    expect(nextReviewState({ status: 'submitted', version: 1 }, 'approve')).toEqual({
       status: 'approved',
       version: 1,
     });
@@ -65,30 +65,30 @@ describe('nextDeliverableState — valid actions', () => {
 
   it('submitted + request-revision → revision-requested, version unchanged', () => {
     expect(
-      nextDeliverableState({ status: 'submitted', version: 1 }, 'request-revision'),
+      nextReviewState({ status: 'submitted', version: 1 }, 'request-revision'),
     ).toEqual({ status: 'revision-requested', version: 1 });
   });
 
   it('revision-requested + submit → submitted, version INCREMENTED (resubmission)', () => {
     expect(
-      nextDeliverableState({ status: 'revision-requested', version: 1 }, 'submit'),
+      nextReviewState({ status: 'revision-requested', version: 1 }, 'submit'),
     ).toEqual({ status: 'submitted', version: 2 });
   });
 
   it('version increment compounds across multiple revision cycles', () => {
     // v1 submitted → changes → resubmit (v2) → changes → resubmit (v3)
-    let state = { status: 'revision-requested' as DeliverableStatus, version: 2 };
-    const after = nextDeliverableState(state, 'submit');
+    let state = { status: 'revision-requested' as ReviewStatus, version: 2 };
+    const after = nextReviewState(state, 'submit');
     expect(after).toEqual({ status: 'submitted', version: 3 });
 
     // approving the resubmitted version keeps that version number
     state = { status: 'submitted', version: after.version };
-    expect(nextDeliverableState(state, 'approve')).toEqual({ status: 'approved', version: 3 });
+    expect(nextReviewState(state, 'approve')).toEqual({ status: 'approved', version: 3 });
   });
 });
 
-describe('nextDeliverableState — invalid actions throw', () => {
-  const invalid: Array<[DeliverableStatus, DeliverableAction]> = [
+describe('nextReviewState — invalid actions throw', () => {
+  const invalid: Array<[ReviewStatus, ReviewAction]> = [
     ['draft', 'approve'],
     ['draft', 'request-revision'],
     ['submitted', 'submit'],
@@ -101,15 +101,15 @@ describe('nextDeliverableState — invalid actions throw', () => {
 
   for (const [status, action] of invalid) {
     it(`${action} from ${status} throws`, () => {
-      expect(() => nextDeliverableState({ status, version: 1 }, action)).toThrow(
+      expect(() => nextReviewState({ status, version: 1 }, action)).toThrow(
         `Cannot ${action} from status ${status}`,
       );
     });
   }
 
   it('does not mutate the input state object', () => {
-    const input = { status: 'revision-requested' as DeliverableStatus, version: 4 };
-    nextDeliverableState(input, 'submit');
+    const input = { status: 'revision-requested' as ReviewStatus, version: 4 };
+    nextReviewState(input, 'submit');
     expect(input).toEqual({ status: 'revision-requested', version: 4 });
   });
 });
