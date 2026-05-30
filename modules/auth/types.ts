@@ -1,4 +1,4 @@
-export const ROLES = ['intern', 'company', 'admin'] as const;
+export const ROLES = ['intern', 'company', 'admin', 'university'] as const;
 export type Role = (typeof ROLES)[number];
 
 export const SELECTABLE_ROLES = ['intern', 'company'] as const;

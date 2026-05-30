@@ -37,7 +37,10 @@ export const getSession = cache(async (): Promise<Session | null> => {
       const [user] = await db.select().from(users).where(eq(users.clerkId, devClerkId)).limit(1);
       if (user) {
         const role: Role =
-          user.role === 'admin' || user.role === 'company' || user.role === 'intern'
+          user.role === 'admin' ||
+          user.role === 'company' ||
+          user.role === 'intern' ||
+          user.role === 'university'
             ? user.role
             : 'intern';
         return { clerkId: devClerkId, user, role };
@@ -75,9 +78,15 @@ export const getSession = cache(async (): Promise<Session | null> => {
   const claimsMeta = sessionClaims?.publicMetadata as { role?: string } | undefined;
   const claimedRole = claimsMeta?.role;
   const role: Role =
-    claimedRole === 'admin' || claimedRole === 'company' || claimedRole === 'intern'
+    claimedRole === 'admin' ||
+    claimedRole === 'company' ||
+    claimedRole === 'intern' ||
+    claimedRole === 'university'
       ? claimedRole
-      : user.role === 'admin' || user.role === 'company' || user.role === 'intern'
+      : user.role === 'admin' ||
+          user.role === 'company' ||
+          user.role === 'intern' ||
+          user.role === 'university'
         ? user.role
         : 'intern';
 
@@ -117,6 +126,20 @@ export async function requireAdmin(): Promise<Session> {
 }
 
 /**
+ * Require global role university (or admin, a superset) or throw. Gates every
+ * /university/* route + coordinator server action. Mirrors requireAdmin: this
+ * is the GLOBAL-role gate; per-org owner/admin scoping is layered on top via
+ * requireOrgRole in the coordinator actions.
+ */
+export async function requireUniversityRole(): Promise<Session> {
+  const session = await requireSession();
+  if (session.role !== 'university' && session.role !== 'admin') {
+    throw new Error('Forbidden');
+  }
+  return session;
+}
+
+/**
  * Organizations the viewer owns. Cached per-request.
  */
 export const getViewerOrganizations = cache(async (userId: string): Promise<Organization[]> => {
@@ -131,6 +154,6 @@ export async function roleFromClerkUser(clerkId: string): Promise<Role | undefin
   const clerk = await clerkClient();
   const user = await clerk.users.getUser(clerkId);
   const raw = user.publicMetadata.role;
-  if (raw === 'admin' || raw === 'company' || raw === 'intern') return raw;
+  if (raw === 'admin' || raw === 'company' || raw === 'intern' || raw === 'university') return raw;
   return undefined;
 }
