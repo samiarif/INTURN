@@ -10,23 +10,18 @@ import { eq } from 'drizzle-orm';
 /**
  * Download the PDF for an internship record.
  *
- * Authorization:
- *   - The intern who earned it
- *   - The supervisor who issued it
- *   - The owner of the host organization
- *   - Any admin
+ * Authorization — allowed if EITHER:
+ *   - the request carries the record's share token (?token=…), i.e. whoever
+ *     holds the public viewer link (/records/[token]); or
+ *   - the session belongs to a stakeholder: the intern who earned it, the
+ *     supervisor who issued it, the host-org owner, or any admin.
  *
- * Revoked records return 410 Gone.
+ * Revoked records return 410 Gone (before any auth check).
  */
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ recordId: string }> },
 ) {
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   const { recordId } = await params;
   const record = await findRecordById(recordId);
   if (!record) {
@@ -36,22 +31,37 @@ export async function GET(
     return NextResponse.json({ error: 'Revoked' }, { status: 410 });
   }
 
-  const isIntern = record.internUserId === session.user.id;
-  const isGenerator = record.generatedBy === session.user.id;
-  const isAdmin = session.role === 'admin';
+  // Public capability: the share token that unlocks the public record page
+  // also authorizes its PDF — same data, same capability. Must match THIS
+  // record's token so one record's link can't unlock another.
+  const token = new URL(req.url).searchParams.get('token');
+  const hasValidToken = token != null && token === record.shareToken;
 
-  let isOrgOwner = false;
-  if (!isIntern && !isGenerator && !isAdmin) {
-    const [org] = await db
-      .select({ ownerId: organizations.ownerId })
-      .from(organizations)
-      .where(eq(organizations.id, record.organizationId))
-      .limit(1);
-    isOrgOwner = org?.ownerId === session.user.id;
+  // Authenticated stakeholder path (unchanged set of roles).
+  const session = await getSession();
+  let isStakeholder = false;
+  if (session) {
+    const isIntern = record.internUserId === session.user.id;
+    const isGenerator = record.generatedBy === session.user.id;
+    const isAdmin = session.role === 'admin';
+
+    let isOrgOwner = false;
+    if (!isIntern && !isGenerator && !isAdmin) {
+      const [org] = await db
+        .select({ ownerId: organizations.ownerId })
+        .from(organizations)
+        .where(eq(organizations.id, record.organizationId))
+        .limit(1);
+      isOrgOwner = org?.ownerId === session.user.id;
+    }
+    isStakeholder = isIntern || isGenerator || isAdmin || isOrgOwner;
   }
 
-  if (!isIntern && !isGenerator && !isAdmin && !isOrgOwner) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!hasValidToken && !isStakeholder) {
+    return NextResponse.json(
+      { error: session ? 'Forbidden' : 'Unauthorized' },
+      { status: session ? 403 : 401 },
+    );
   }
 
   const origin =

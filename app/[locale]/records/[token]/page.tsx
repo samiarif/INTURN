@@ -176,7 +176,7 @@ export default async function PublicRecordPage({
         </section>
 
         <div className="rec-actions">
-          <a className="rec-btn rec-btn-primary" href={`/api/records/${record.id}/pdf`}>
+          <a className="rec-btn rec-btn-primary" href={`/api/records/${record.id}/pdf?token=${encodeURIComponent(token)}`}>
             {t('downloadPdf')}
           </a>
           <CopyLinkButton label={t('shareLink')} copiedLabel={t('linkCopied')} />
