@@ -147,7 +147,7 @@ export async function acceptInviteAction(input: {
     const redirectTo =
       result.orgKind === 'university'
         ? result.role === 'student'
-          ? '/intern/dashboard' // TODO(plan2): /intern/university
+          ? '/intern/university'
           : '/university/dashboard'
         : '/company/dashboard';
     revalidatePath('/company/team');

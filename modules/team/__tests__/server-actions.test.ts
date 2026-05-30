@@ -109,4 +109,15 @@ describe('acceptInviteAction — university touch-points', () => {
     expect(res).toMatchObject({ ok: true, orgId: 'uni-1', redirectTo: '/university/dashboard' });
     expect(mocks.userUpdates.some((u) => u.role === 'university')).toBe(true);
   });
+
+  it('university student: redirects to the intern university surface', async () => {
+    acceptInvite.mockResolvedValue({ ok: true, orgId: 'uni-1', role: 'student', orgKind: 'university' });
+
+    const res = await acceptInviteAction({ token: 't' });
+
+    expect(res).toMatchObject({ ok: true, orgId: 'uni-1', redirectTo: '/intern/university' });
+    // A student gets neither the global 'university' role nor org ownership.
+    expect(mocks.userUpdates).toHaveLength(0);
+    expect(mocks.orgUpdates).toHaveLength(0);
+  });
 });
