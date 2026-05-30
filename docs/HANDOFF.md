@@ -1,8 +1,36 @@
-# inturn — Session Handoff (updated 2026-05-28 — Completeness Sprints S1–S4)
+# inturn — Session Handoff (updated 2026-05-30 — Team mgmt · design system · smart-create · close-the-loop)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
-## TL;DR — Where we are (2026-05-28)
+## TL;DR — Where we are (2026-05-30)
+
+- **Branch/state:** all work is on **`main`**, head at **`4c22c73`** (plus this docs commit). **344 tests pass** / 2 opt-in integration tests skipped; typecheck + lint clean. `main` carried 15 unpushed **Team-management** commits; this session added **four feature commits** (`2d1ac37` build fix → `4c22c73` close-the-loop) + this handoff update, then pushed everything to **`origin/main`** (the Vercel deploy source).
+- Since the 2026-05-28 S1–S4 snapshot (below), **five workstreams** landed — summarized next, newest last.
+- **One new migration:** `0016_applications_decision_note.sql` (idempotent `ADD COLUMN IF NOT EXISTS`). It applies automatically on deploy via the `prebuild` migrate runner (`scripts/migrate.ts`) — same path the Team `organization_members` migration rides.
+- ⚠️ The two never-forgets still hold: **`DEV_AUTH_BYPASS` must NOT be set in Vercel production** (local-dev-only), and the **local IPv6/Cloudflare network quirk** (mitigations in the `dev` script + `db/index.ts`).
+- **Deploy:** push to `main` runs CI (`ci.yml`: typecheck + lint + test + build) and triggers a Vercel production deploy. CI does **not** itself deploy; Vercel's git integration does. New env to confirm present in Vercel prod: `ANTHROPIC_API_KEY` (D12 assists reuse it — they degrade gracefully if absent).
+
+### 1 · Team / user management (15 commits, `c0ff881`…`80c6c93`)
+Multi-seat companies. New `organization_members` table (owner backfilled) + membership-based authz and current-org resolution; org-members + interns roster queries; invite / accept / remove / role-change service; invite email template; team server actions; a **Team page** (staff + interns) with an add-member modal; sidebar **Team** link; per-project **supervisor** management; and a cross-tenant **IDOR fix** (no cross-org member addressing; owner can't be removed). Design + implementation plan in the `docs(team)` commit. (FR/EN i18n included.)
+
+### 2 · Build fix — Turbopack workspace root (`2d1ac37`)
+`next.config.ts` pins `turbopack.root = import.meta.dirname`. Without it the stray parent-folder lockfile made Turbopack infer the wrong workspace root and break the Tailwind v4 PostCSS pipeline in dev. `import.meta.dirname` is the `inturn/` dir both locally and on Vercel.
+
+### 3 · Design-system foundation + Lucide (`4ed4c69`)
+Extended the brand CSS-variable tokens in `app/globals.css` with a deliberate type scale, spacing rhythm, layered shadows and radii. Adopted **Lucide** icons (brand star, site footer, projects index/hub) in place of emoji / CSS-shape icons. Added a reusable `components/ui/back-link.tsx` primitive and brand favicon/app icons (`app/icon.png`, `app/apple-icon.png`, `public/brand/*`). Brand violet + gradient identity preserved.
+
+### 4 · Smart project-creation assists — D12 (`7e6bc3b`)
+The manual create flow stays the single canonical surface and gains inline **✦ Assist** micro-actions (draft → accept/edit, never auto-commit): Reformulate description, Suggest goals (≤3), Draft phases (mapped to the project week-clock), Suggest deliverables (with due-weeks, min 3 / max 10), Suggest application questions (1–3). Backed by `modules/ai/project-assist.ts` + `app/api/ai/project-assist/route.ts`, reusing the existing rate limiter; every assist validates output against the same zod limits the forms enforce and degrades gracefully on error/timeout (soft notice, input untouched, never blocks). UI primitive: `components/ai/assist.tsx`. Unit test with a mocked Anthropic client.
+
+### 5 · Application "close the loop" — CTL (`4c22c73`)
+Fixes the **silent status-change notification bug** — the dispatcher now emits the canonical `application.status.changed` event so applicants are actually notified — and **de-dupes** the accept notification. Adds an optional applicant-facing **decision note** (migration `0016`) shown as feedback on accept/reject. Surfaces an **events-derived status timeline** with per-step dates plus a light **aging** line ("under review since…") on both the intern and company application detail views. New module-scope `daysSince()` in `lib/format-time.ts` (keeps `Date.now()` out of render for the `react-hooks/purity` rule). Spec + plan: `docs/superpowers/{specs,plans}/2026-05-30-application-close-the-loop*`.
+
+### Verify
+`pnpm typecheck && pnpm lint && pnpm test` → **344 pass / 2 skipped**. Then `pnpm dev` and `/dev/login` for the three seeded personas (intern `sami.arif@thog.io`, company `dazzsemi@gmail.com`, admin `hellowemakeitgrow@gmail.com`).
+
+---
+
+## Prior snapshot — Completeness Sprints S1–S4 (2026-05-28)
 
 - **Branch/state:** everything is merged to **`main`** at commit **`9cee725`**. All feature/sprint branches deleted — `main` is the single source of truth. **276 tests pass** (+2 opt-in integration tests skipped by default); typecheck + lint + production build all clean.
 - **Stack**: Next.js 16 (App Router) + TypeScript strict + Drizzle + Neon Postgres (neon-http) + Clerk auth + Tailwind v4 + shadcn/ui + next-intl 4 (FR default / EN `as-needed`) + Vitest 4 + Vercel + @react-pdf/renderer + Resend + Anthropic SDK.
