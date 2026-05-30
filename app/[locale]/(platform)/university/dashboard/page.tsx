@@ -14,6 +14,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getManagedStudents, getStudentInternshipSnapshot } from '@/modules/university/queries';
+import { countReportsAwaitingReview, getReportStatusByStudent } from '@/modules/academic-reports/queries';
+import Link from 'next/link';
 import { InviteStudentButton } from '../_invite-student-button';
 
 export default async function Page() {
@@ -40,9 +42,11 @@ export default async function Page() {
   // coordinator; throws Forbidden otherwise.
   await requireOrgRole(session.user.id, current.org.id, ['owner', 'admin']);
 
-  const [students, members] = await Promise.all([
+  const [students, members, awaitingReview, reportStatus] = await Promise.all([
     getManagedStudents(current.org.id),
     getOrgMembers(current.org.id),
+    countReportsAwaitingReview(current.org.id),
+    getReportStatusByStudent(current.org.id),
   ]);
 
   // Per-student sanitized snapshot (independent → parallel). Students with a
@@ -62,12 +66,16 @@ export default async function Page() {
         className="mb-6"
       />
 
-      {/* Minimal counts only (Plan 2 adds awaiting-review grouping). */}
       <div className="flex gap-6 mb-6 text-sm">
         <span className="text-[var(--ink-3)]">{t('managedCount', { count: students.length })}</span>
         <span className="text-[var(--ink-3)]">
           {t('placedCount', { count: snapshots.filter(Boolean).length })}
         </span>
+        {awaitingReview > 0 && (
+          <span className="font-medium text-[var(--brand-700)]">
+            {t('awaitingReviewCount', { count: awaitingReview })}
+          </span>
+        )}
       </div>
 
       {students.length === 0 ? (
@@ -76,22 +84,35 @@ export default async function Page() {
         </div>
       ) : (
         <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden mb-8">
-          <Table className="min-w-[760px]">
+          <Table className="min-w-[900px]">
             <TableHeader>
               <TableRow>
                 <TableHead>{t('colStudent')}</TableHead>
                 <TableHead>{t('colField')}</TableHead>
                 <TableHead>{t('colInternship')}</TableHead>
                 <TableHead>{t('colPhase')}</TableHead>
+                <TableHead>{t('colReport')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {students.map((s, i) => {
                 const snap = snapshots[i];
                 const name = [s.firstName, s.lastName].filter(Boolean).join(' ') || s.email;
+                const rStatus = s.userId ? reportStatus.get(s.userId) : undefined;
                 return (
                   <TableRow key={s.memberId}>
-                    <TableCell className="font-medium text-[var(--ink)]">{name}</TableCell>
+                    <TableCell className="font-medium text-[var(--ink)]">
+                      {s.userId ? (
+                        <Link
+                          href={`/university/students/${s.userId}`}
+                          className="text-[var(--brand-700)] hover:underline"
+                        >
+                          {name}
+                        </Link>
+                      ) : (
+                        name
+                      )}
+                    </TableCell>
                     <TableCell className="text-caption text-[var(--ink-3)]">
                       {s.fieldOfStudy ?? s.university ?? '—'}
                     </TableCell>
@@ -101,13 +122,29 @@ export default async function Page() {
                     <TableCell>
                       {snap && snap.phaseCount > 0 ? (
                         <StatusPill tone="info">
-                          {t('phaseOf', {
-                            current: snap.currentPhaseIndex + 1,
-                            total: snap.phaseCount,
-                          })}
+                          {t('phaseOf', { current: snap.currentPhaseIndex + 1, total: snap.phaseCount })}
                         </StatusPill>
                       ) : (
                         <span className="text-caption text-[var(--ink-4)]">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {rStatus ? (
+                        <StatusPill
+                          tone={
+                            rStatus === 'submitted'
+                              ? 'info'
+                              : rStatus === 'approved'
+                                ? 'success'
+                                : rStatus === 'revision-requested'
+                                  ? 'warn'
+                                  : 'neutral'
+                          }
+                        >
+                          {t(`reportStatus.${rStatus === 'revision-requested' ? 'revisionRequested' : rStatus}`)}
+                        </StatusPill>
+                      ) : (
+                        <span className="text-caption text-[var(--ink-4)]">{t('reportStatus.none')}</span>
                       )}
                     </TableCell>
                   </TableRow>
