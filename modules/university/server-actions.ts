@@ -31,6 +31,8 @@ export async function inviteStudentAction(input: {
       email: input.email,
       role: 'student',
       invitedByUserId: user.id,
+      // Inviter owns the student until a head reassigns them.
+      assignedCoordinatorId: user.id,
     });
 
     const locale = (user.localePref ?? 'fr') as 'fr' | 'en';

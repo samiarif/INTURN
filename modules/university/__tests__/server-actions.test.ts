@@ -45,7 +45,7 @@ describe('inviteStudentAction', () => {
     expect(requireUniversityRole).toHaveBeenCalled();
     expect(requireOrgRole).toHaveBeenCalledWith('coord-1', 'uni-1', ['owner', 'admin']);
     expect(createInvite).toHaveBeenCalledWith(
-      expect.objectContaining({ orgId: 'uni-1', email: 'stu@uni.edu', role: 'student', invitedByUserId: 'coord-1' }),
+      expect.objectContaining({ orgId: 'uni-1', email: 'stu@uni.edu', role: 'student', invitedByUserId: 'coord-1', assignedCoordinatorId: 'coord-1' }),
     );
     expect(sendEmail).toHaveBeenCalled();
     expect(res).toEqual({ ok: true });
