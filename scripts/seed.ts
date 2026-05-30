@@ -922,7 +922,12 @@ async function seedUniversity(ctx: {
   }
 
   // 3. Coordinator owner membership on the university.
-  const ensureMember = async (userId: string, role: 'owner' | 'student', email: string) => {
+  const ensureMember = async (
+    userId: string,
+    role: 'owner' | 'student',
+    email: string,
+    assignedCoordinatorId?: string | null,
+  ) => {
     const [existing] = await db
       .select()
       .from(organizationMembers)
@@ -937,6 +942,7 @@ async function seedUniversity(ctx: {
         email,
         role,
         status: 'active',
+        assignedCoordinatorId: assignedCoordinatorId ?? null,
         joinedAt: new Date(),
       })
       .returning();
@@ -944,8 +950,9 @@ async function seedUniversity(ctx: {
   };
   await ensureMember(prof.id, 'owner', prof.email);
 
-  // 4. Two managed students. Yasmine (PLACED in Acme) + a second student.
-  await ensureMember(ctx.yasmineId, 'student', 'yasmine@enit.utm.tn');
+  // 4. Two managed students, both assigned to the head (prof) so the demo roster
+  // + gated review surface populate deterministically. Yasmine is PLACED in Acme.
+  await ensureMember(ctx.yasmineId, 'student', 'yasmine@enit.utm.tn', prof.id);
 
   const student2 = await upsertUser({
     clerkId: 'seed_user_student_amine',
@@ -954,7 +961,7 @@ async function seedUniversity(ctx: {
     lastName: 'Gharbi',
     role: 'intern',
   });
-  await ensureMember(student2.id, 'student', student2.email);
+  await ensureMember(student2.id, 'student', student2.email, prof.id);
 
   // 5. One submitted rapport for Yasmine (references her Acme internship).
   const [existingReport] = await db
