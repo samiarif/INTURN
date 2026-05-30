@@ -1541,6 +1541,13 @@
       "pendingTitle": "Invitations en attente",
       "awaitingReviewCount": "{count} à relire",
       "colReport": "Rapport",
+      "colEncadrant": "Encadrant",
+      "unassigned": "Non assigné",
+      "coordinatorsTitle": "Encadrants",
+      "headBadge": "Responsable",
+      "studentCount": "{count, plural, =0 {aucun étudiant} one {# étudiant} other {# étudiants}}",
+      "inviteCoordinator": "Inviter un encadrant",
+      "coordinatorEmail": "encadrant@email.com",
       "reportStatus": {
         "none": "—",
         "draft": "Brouillon",

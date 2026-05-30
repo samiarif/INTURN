@@ -1541,6 +1541,13 @@
       "pendingTitle": "Pending invitations",
       "awaitingReviewCount": "{count} awaiting review",
       "colReport": "Report",
+      "colEncadrant": "Supervisor",
+      "unassigned": "Unassigned",
+      "coordinatorsTitle": "Supervisors",
+      "headBadge": "Head",
+      "studentCount": "{count, plural, =0 {no students} one {# student} other {# students}}",
+      "inviteCoordinator": "Invite supervisor",
+      "coordinatorEmail": "supervisor@email.com",
       "reportStatus": {
         "none": "—",
         "draft": "Draft",
