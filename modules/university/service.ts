@@ -145,3 +145,33 @@ export async function bulkInviteStudents(input: {
   }
   return { invited, skippedDuplicate };
 }
+
+/**
+ * Guard for managing a pending student invite (resend/revoke). The row must be a
+ * pending (`status='invited'`) `student` member of THIS org. An encadrant may
+ * only manage invites assigned to them; the head (owner) may manage any. Throws
+ * the opaque `member_not_found` on any mismatch.
+ */
+export async function assertStudentInviteManageable(input: {
+  orgId: string;
+  memberId: string;
+  viewerRole: 'owner' | 'admin';
+  viewerUserId: string;
+}): Promise<void> {
+  const [m] = await db
+    .select()
+    .from(organizationMembers)
+    .where(eq(organizationMembers.id, input.memberId))
+    .limit(1);
+  if (
+    !m ||
+    m.organizationId !== input.orgId ||
+    m.role !== 'student' ||
+    m.status !== 'invited'
+  ) {
+    throw new Error('member_not_found');
+  }
+  if (input.viewerRole !== 'owner' && m.assignedCoordinatorId !== input.viewerUserId) {
+    throw new Error('member_not_found');
+  }
+}

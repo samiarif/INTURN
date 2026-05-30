@@ -13,13 +13,21 @@ vi.mock('@/modules/team/authz', () => ({
 }));
 
 const createInvite = vi.fn();
-vi.mock('@/modules/team/service', () => ({ createInvite: (...a: unknown[]) => createInvite(...a) }));
+const resendInvite = vi.fn();
+const revokeInvite = vi.fn();
+vi.mock('@/modules/team/service', () => ({
+  createInvite: (...a: unknown[]) => createInvite(...a),
+  resendInvite: (...a: unknown[]) => resendInvite(...a),
+  revokeInvite: (...a: unknown[]) => revokeInvite(...a),
+}));
 
 const assignStudentCoordinator = vi.fn();
 const bulkInviteStudents = vi.fn();
+const assertStudentInviteManageable = vi.fn();
 vi.mock('../service', () => ({
   assignStudentCoordinator: (...a: unknown[]) => assignStudentCoordinator(...a),
   bulkInviteStudents: (...a: unknown[]) => bulkInviteStudents(...a),
+  assertStudentInviteManageable: (...a: unknown[]) => assertStudentInviteManageable(...a),
 }));
 
 const parseStudentCsv = vi.fn();
@@ -40,6 +48,8 @@ import {
   assignStudentCoordinatorAction,
   inviteCoordinatorAction,
   bulkInviteStudentsAction,
+  revokeStudentInviteAction,
+  resendStudentInviteAction,
 } from '../server-actions';
 
 beforeEach(() => {
@@ -154,5 +164,41 @@ describe('bulkInviteStudentsAction', () => {
     bulkInviteStudents.mockResolvedValue({ invited: [], skippedDuplicate: ['a@x.com'] });
     await bulkInviteStudentsAction({ csv: 'a@x.com', encadrantUserId: 'someone-else' });
     expect(bulkInviteStudents).toHaveBeenCalledWith(expect.objectContaining({ assignedCoordinatorId: 'coord-1' }));
+  });
+});
+
+describe('revokeStudentInviteAction', () => {
+  it('guards then revokes', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', kind: 'university' }, role: 'owner' });
+    requireOrgRole.mockResolvedValue({});
+    assertStudentInviteManageable.mockResolvedValue(undefined);
+    revokeInvite.mockResolvedValue(undefined);
+    const res = await revokeStudentInviteAction({ memberId: 'm1' });
+    expect(assertStudentInviteManageable).toHaveBeenCalledWith(
+      expect.objectContaining({ orgId: 'uni-1', memberId: 'm1', viewerRole: 'owner', viewerUserId: 'coord-1' }),
+    );
+    expect(revokeInvite).toHaveBeenCalledWith({ orgId: 'uni-1', memberId: 'm1' });
+    expect(res).toEqual({ ok: true });
+  });
+  it('returns the guard error when the invite is not manageable', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', kind: 'university' }, role: 'admin' });
+    requireOrgRole.mockResolvedValue({});
+    assertStudentInviteManageable.mockRejectedValue(new Error('member_not_found'));
+    const res = await revokeStudentInviteAction({ memberId: 'm1' });
+    expect(res).toEqual({ ok: false, error: 'member_not_found' });
+    expect(revokeInvite).not.toHaveBeenCalled();
+  });
+});
+
+describe('resendStudentInviteAction', () => {
+  it('guards, regenerates the token, and emails the student', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', name: 'ENIT', kind: 'university' }, role: 'admin' });
+    requireOrgRole.mockResolvedValue({});
+    assertStudentInviteManageable.mockResolvedValue(undefined);
+    resendInvite.mockResolvedValue({ token: 'tok2' });
+    const res = await resendStudentInviteAction({ memberId: 'm1', email: 'p@x.com' });
+    expect(resendInvite).toHaveBeenCalledWith({ orgId: 'uni-1', memberId: 'm1' });
+    expect(sendEmail).toHaveBeenCalled();
+    expect(res).toEqual({ ok: true });
   });
 });

@@ -32,7 +32,12 @@ vi.mock('@/modules/events/service', () => ({ recordEvent: mocks.mockRecordEvent 
 vi.mock('@/modules/team/service', () => ({ createInvite: (...a: unknown[]) => mocks.createInvite(...a) }));
 vi.mock('drizzle-orm', () => ({ eq: vi.fn(() => 'eq'), and: vi.fn(() => 'and'), inArray: vi.fn(() => 'inArray') }));
 
-import { createUniversity, assignStudentCoordinator, bulkInviteStudents } from '../service';
+import {
+  createUniversity,
+  assignStudentCoordinator,
+  bulkInviteStudents,
+  assertStudentInviteManageable,
+} from '../service';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -150,5 +155,32 @@ describe('bulkInviteStudents', () => {
         invitedByUserId: 'coord-1',
       }),
     );
+  });
+});
+
+describe('assertStudentInviteManageable', () => {
+  it('throws for a non-student / wrong-org / wrong-status member', async () => {
+    mocks.selectQueue.push([{ organizationId: 'uni-1', role: 'admin', status: 'active', assignedCoordinatorId: null }]);
+    await expect(
+      assertStudentInviteManageable({ orgId: 'uni-1', memberId: 'm1', viewerRole: 'owner', viewerUserId: 'o1' }),
+    ).rejects.toThrow('member_not_found');
+  });
+  it('throws when an encadrant targets an invite not assigned to them', async () => {
+    mocks.selectQueue.push([{ organizationId: 'uni-1', role: 'student', status: 'invited', assignedCoordinatorId: 'other' }]);
+    await expect(
+      assertStudentInviteManageable({ orgId: 'uni-1', memberId: 'm1', viewerRole: 'admin', viewerUserId: 'me' }),
+    ).rejects.toThrow('member_not_found');
+  });
+  it('passes for the head on any pending student invite', async () => {
+    mocks.selectQueue.push([{ organizationId: 'uni-1', role: 'student', status: 'invited', assignedCoordinatorId: 'whoever' }]);
+    await expect(
+      assertStudentInviteManageable({ orgId: 'uni-1', memberId: 'm1', viewerRole: 'owner', viewerUserId: 'o1' }),
+    ).resolves.toBeUndefined();
+  });
+  it('passes for an encadrant on their own assigned invite', async () => {
+    mocks.selectQueue.push([{ organizationId: 'uni-1', role: 'student', status: 'invited', assignedCoordinatorId: 'me' }]);
+    await expect(
+      assertStudentInviteManageable({ orgId: 'uni-1', memberId: 'm1', viewerRole: 'admin', viewerUserId: 'me' }),
+    ).resolves.toBeUndefined();
   });
 });
