@@ -90,7 +90,7 @@ export async function inviteMemberAction(input: {
 export async function acceptInviteAction(input: {
   token: string;
 }): Promise<
-  | { ok: true; orgId: string }
+  | { ok: true; orgId: string; redirectTo: string }
   | { ok: false; reason: 'not_found' | 'expired' | 'email_mismatch' | 'already_member' | 'error' }
 > {
   try {
@@ -144,8 +144,14 @@ export async function acceptInviteAction(input: {
       maxAge: 60 * 60 * 24 * 30,
     });
 
+    const redirectTo =
+      result.orgKind === 'university'
+        ? result.role === 'student'
+          ? '/intern/dashboard' // TODO(plan2): /intern/university
+          : '/university/dashboard'
+        : '/company/dashboard';
     revalidatePath('/company/team');
-    return { ok: true, orgId: result.orgId };
+    return { ok: true, orgId: result.orgId, redirectTo };
   } catch {
     return { ok: false, reason: 'error' };
   }

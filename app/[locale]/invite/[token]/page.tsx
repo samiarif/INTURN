@@ -30,7 +30,7 @@ const STR = {
       inviterName
         ? `${inviterName} vous invite à rejoindre ${orgName} en tant que ${role}.`
         : `Vous avez été invité(e) à rejoindre ${orgName} en tant que ${role}.`,
-    roleLabel: { admin: 'Administrateur', supervisor: 'Superviseur', owner: 'Propriétaire' } as Record<string, string>,
+    roleLabel: { admin: 'Administrateur', supervisor: 'Superviseur', owner: 'Propriétaire', student: 'Étudiant' } as Record<string, string>,
   },
   en: {
     inviteInvalid: 'This invite is no longer valid.',
@@ -55,7 +55,7 @@ const STR = {
       inviterName
         ? `${inviterName} has invited you to join ${orgName} as ${role}.`
         : `You have been invited to join ${orgName} as ${role}.`,
-    roleLabel: { admin: 'Admin', supervisor: 'Supervisor', owner: 'Owner' } as Record<string, string>,
+    roleLabel: { admin: 'Admin', supervisor: 'Supervisor', owner: 'Owner', student: 'Student' } as Record<string, string>,
   },
 } as const;
 

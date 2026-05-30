@@ -54,7 +54,7 @@ export function AcceptButton({ token, locale }: { token: string; locale: string 
     startTransition(async () => {
       const res = await acceptInviteAction({ token });
       if (res.ok) {
-        router.push('/company/dashboard');
+        router.push(res.redirectTo ?? '/company/dashboard');
       } else {
         setError(mapReason(res.reason));
       }

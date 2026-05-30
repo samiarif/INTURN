@@ -68,7 +68,7 @@ describe('acceptInviteAction — university touch-points', () => {
 
     const res = await acceptInviteAction({ token: 't' });
 
-    expect(res).toEqual({ ok: true, orgId: 'uni-1' });
+    expect(res).toMatchObject({ ok: true, orgId: 'uni-1', redirectTo: '/university/dashboard' });
     // Global role promoted to 'university'.
     expect(mocks.userUpdates.some((u) => u.role === 'university')).toBe(true);
     // Ownership transferred to the accepting user.
@@ -94,7 +94,7 @@ describe('acceptInviteAction — university touch-points', () => {
 
     const res = await acceptInviteAction({ token: 't' });
 
-    expect(res).toEqual({ ok: true, orgId: 'co-1' });
+    expect(res).toMatchObject({ ok: true, orgId: 'co-1', redirectTo: '/company/dashboard' });
     expect(mocks.userUpdates).toHaveLength(0);
     expect(mocks.orgUpdates).toHaveLength(0);
     expect(mocks.clerkUpdateUser).not.toHaveBeenCalled();
@@ -106,7 +106,7 @@ describe('acceptInviteAction — university touch-points', () => {
 
     const res = await acceptInviteAction({ token: 't' });
 
-    expect(res).toEqual({ ok: true, orgId: 'uni-1' });
+    expect(res).toMatchObject({ ok: true, orgId: 'uni-1', redirectTo: '/university/dashboard' });
     expect(mocks.userUpdates.some((u) => u.role === 'university')).toBe(true);
   });
 });
