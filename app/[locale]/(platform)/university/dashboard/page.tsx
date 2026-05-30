@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
 import { getCurrentOrg, requireOrgRole } from '@/modules/team/authz';
-import { getOrgMembers } from '@/modules/team/queries';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusPill } from '@/components/status-pill';
 import {
@@ -17,6 +16,7 @@ import {
   getManagedStudents,
   getStudentInternshipSnapshot,
   getUniversityCoordinators,
+  getPendingStudentInvites,
   type UniversityCoordinator,
 } from '@/modules/university/queries';
 import { countReportsAwaitingReview, getReportStatusByStudent } from '@/modules/academic-reports/queries';
@@ -25,6 +25,8 @@ import Link from 'next/link';
 import { InviteStudentButton } from '../_invite-student-button';
 import { InviteCoordinatorButton } from '../_invite-coordinator-button';
 import { AssignCoordinatorSelect } from '../_assign-coordinator-select';
+import { BulkInviteButton } from '../_bulk-invite-button';
+import { PendingInvites } from '../_pending-invites';
 
 export default async function Page() {
   const session = await getSession();
@@ -54,9 +56,8 @@ export default async function Page() {
   // an encadrant (admin) sees only the students assigned to them.
   const isHead = current.role === 'owner';
 
-  const [students, members, awaitingReview, reportStatus] = await Promise.all([
+  const [students, awaitingReview, reportStatus] = await Promise.all([
     getManagedStudents(current.org.id, isHead ? undefined : { forCoordinatorId: session.user.id }),
-    getOrgMembers(current.org.id),
     countReportsAwaitingReview(current.org.id),
     getReportStatusByStudent(current.org.id),
   ]);
@@ -65,13 +66,18 @@ export default async function Page() {
     ? await getUniversityCoordinators(current.org.id)
     : [];
 
+  const pendingInvites = await getPendingStudentInvites(
+    current.org.id,
+    isHead ? undefined : { forCoordinatorId: session.user.id },
+  );
+
   // Per-student sanitized snapshot (independent → parallel). Students with a
   // null userId (invite not yet linked) get no snapshot.
   const snapshots = await Promise.all(
     students.map((s) => (s.userId ? getStudentInternshipSnapshot(s.userId) : Promise.resolve(null))),
   );
 
-  const pendingStudents = members.filter((m) => m.role === 'student' && m.status === 'invited');
+  const coordinatorOptions = coordinators.map((c) => ({ userId: c.userId, name: c.name }));
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8 md:p-8">
@@ -81,6 +87,10 @@ export default async function Page() {
         actions={<InviteStudentButton />}
         className="mb-6"
       />
+
+      <div className="mb-6">
+        <BulkInviteButton coordinators={coordinatorOptions} />
+      </div>
 
       <div className="flex gap-6 mb-6 text-sm">
         <span className="text-[var(--ink-3)]">{t('managedCount', { count: students.length })}</span>
@@ -159,7 +169,7 @@ export default async function Page() {
                         <AssignCoordinatorSelect
                           studentMemberId={s.memberId}
                           current={s.assignedCoordinatorId}
-                          coordinators={coordinators.map((c) => ({ userId: c.userId, name: c.name }))}
+                          coordinators={coordinatorOptions}
                           unassignedLabel={t('unassigned')}
                         />
                       </TableCell>
@@ -197,16 +207,13 @@ export default async function Page() {
         </section>
       )}
 
-      {isHead && pendingStudents.length > 0 && (
-        <section>
-          <h2 className="text-sm font-semibold text-[var(--ink-2)] mb-2">{t('pendingTitle')}</h2>
-          <ul className="text-sm text-[var(--ink-3)] flex flex-col gap-1">
-            {pendingStudents.map((m) => (
-              <li key={m.id}>{m.email}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <PendingInvites
+        invites={pendingInvites.map((p) => ({
+          memberId: p.memberId,
+          email: p.email,
+          encadrantName: p.encadrantName,
+        }))}
+      />
     </div>
   );
 }
