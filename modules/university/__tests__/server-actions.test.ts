@@ -28,7 +28,7 @@ vi.mock('@/lib/ratelimit', () => ({
   ratelimit: vi.fn(() => ({ limit: vi.fn(() => ({ success: true })) })),
 }));
 
-import { inviteStudentAction, assignStudentCoordinatorAction } from '../server-actions';
+import { inviteStudentAction, assignStudentCoordinatorAction, inviteCoordinatorAction } from '../server-actions';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -72,6 +72,26 @@ describe('inviteStudentAction', () => {
     requireUniversityRole.mockRejectedValue(new Error('Forbidden'));
     const res = await inviteStudentAction({ email: 'x@y.com' });
     expect(res).toEqual({ ok: false, error: 'Forbidden' });
+  });
+});
+
+describe('inviteCoordinatorAction (self-service)', () => {
+  it('invites an encadrant (role=admin) and emails them', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', name: 'ENIT', kind: 'university' }, role: 'owner' });
+    requireOrgRole.mockResolvedValue({});
+    createInvite.mockResolvedValue({ member: { email: 'enc@uni' }, token: 'tok' });
+    const res = await inviteCoordinatorAction({ email: 'enc@uni' });
+    expect(requireOrgRole).toHaveBeenCalledWith('coord-1', 'uni-1', ['owner']);
+    expect(createInvite).toHaveBeenCalledWith(expect.objectContaining({ orgId: 'uni-1', email: 'enc@uni', role: 'admin' }));
+    expect(sendEmail).toHaveBeenCalled();
+    expect(res).toEqual({ ok: true });
+  });
+  it('rejects a non-head caller', async () => {
+    getCurrentOrg.mockResolvedValue({ org: { id: 'uni-1', name: 'ENIT', kind: 'university' }, role: 'admin' });
+    requireOrgRole.mockRejectedValue(new Error('Forbidden'));
+    const res = await inviteCoordinatorAction({ email: 'x@y' });
+    expect(res).toEqual({ ok: false, error: 'Forbidden' });
+    expect(createInvite).not.toHaveBeenCalled();
   });
 });
 

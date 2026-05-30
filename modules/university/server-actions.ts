@@ -63,6 +63,39 @@ export async function inviteStudentAction(input: {
   }
 }
 
+export async function inviteCoordinatorAction(input: {
+  email: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const { user } = await requireUniversityRole();
+    const current = await getCurrentOrg(user.id);
+    if (!current || current.org.kind !== 'university') return { ok: false, error: 'no_university' };
+    await requireOrgRole(user.id, current.org.id, ['owner']); // only the head adds coordinators
+
+    const rl = ratelimit('team-invite').limit(user.id);
+    if (!rl.success) return { ok: false, error: 'rate_limited' };
+
+    const { member, token } = await createInvite({
+      orgId: current.org.id,
+      email: input.email,
+      role: 'admin', // encadrant
+      invitedByUserId: user.id,
+    });
+
+    const locale = (user.localePref ?? 'fr') as 'fr' | 'en';
+    const inviterName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+    const { subject, text, html } = universityInviteTemplate({
+      universityName: current.org.name, inviterName, token, variant: 'coordinator', locale,
+    });
+    await sendEmail({ to: member.email, subject, text, html, tags: [{ name: 'type', value: 'university.invite' }] });
+
+    revalidatePath('/university/dashboard');
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'unknown_error' };
+  }
+}
+
 export async function assignStudentCoordinatorAction(input: {
   studentMemberId: string;
   coordinatorUserId: string | null;
