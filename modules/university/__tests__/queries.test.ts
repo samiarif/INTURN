@@ -21,10 +21,11 @@ vi.mock('@/db/schema', () => ({
 }));
 vi.mock('drizzle-orm', () => ({
   eq: vi.fn(() => 'eq'), and: vi.fn(() => 'and'), desc: vi.fn(() => 'desc'),
+  inArray: vi.fn(() => 'inArray'),
 }));
 vi.mock('drizzle-orm/pg-core', () => ({ alias: (t: unknown) => t }));
 
-import { getStudentInternshipSnapshot, getManagedStudents } from '../queries';
+import { getStudentInternshipSnapshot, getManagedStudents, getUniversityCoordinators } from '../queries';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -161,5 +162,17 @@ describe('getManagedStudents', () => {
     mocks.selectQueue.push([]);
     const rows = await getManagedStudents('uni-1', { forCoordinatorId: 'coord-9' });
     expect(rows).toEqual([]);
+  });
+});
+
+describe('getUniversityCoordinators', () => {
+  it('returns active owner/admin members with display names', async () => {
+    mocks.selectQueue.push([
+      { userId: 'o1', firstName: 'Head', lastName: 'Prof', email: 'head@uni', role: 'owner' },
+      { userId: 'a1', firstName: 'Enc', lastName: 'Adrant', email: 'enc@uni', role: 'admin' },
+    ]);
+    const rows = await getUniversityCoordinators('uni-1');
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toMatchObject({ userId: 'o1', name: 'Head Prof', role: 'owner' });
   });
 });

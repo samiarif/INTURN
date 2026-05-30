@@ -1,4 +1,4 @@
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { db } from '@/db';
 import {
@@ -186,6 +186,47 @@ export type UniversityRow = {
   country: string | null;
   createdAt: Date;
 };
+
+export type UniversityCoordinator = {
+  userId: string;
+  name: string;
+  email: string;
+  role: 'owner' | 'admin';
+};
+
+/** Active owner/admin members of a university org — the coordinators (head + encadrants). */
+export async function getUniversityCoordinators(
+  universityOrgId: string,
+): Promise<UniversityCoordinator[]> {
+  const rows = await db
+    .select({
+      userId: organizationMembers.userId,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: organizationMembers.email,
+      role: organizationMembers.role,
+    })
+    .from(organizationMembers)
+    .leftJoin(users, eq(users.id, organizationMembers.userId))
+    .where(
+      and(
+        eq(organizationMembers.organizationId, universityOrgId),
+        eq(organizationMembers.status, 'active'),
+        inArray(organizationMembers.role, ['owner', 'admin']),
+      ),
+    )
+    .orderBy(desc(organizationMembers.role)) // owner before admin
+    .limit(200);
+
+  return rows
+    .filter((r): r is typeof r & { userId: string } => Boolean(r.userId))
+    .map((r) => ({
+      userId: r.userId,
+      name: [r.firstName, r.lastName].filter(Boolean).join(' ') || r.email,
+      email: r.email,
+      role: r.role as 'owner' | 'admin',
+    }));
+}
 
 /** All university orgs, newest first — backs the admin /admin/universities list. */
 export async function listUniversities(): Promise<UniversityRow[]> {
