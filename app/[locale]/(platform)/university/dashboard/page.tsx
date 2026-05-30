@@ -13,11 +13,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getManagedStudents, getStudentInternshipSnapshot } from '@/modules/university/queries';
+import {
+  getManagedStudents,
+  getStudentInternshipSnapshot,
+  getUniversityCoordinators,
+  type UniversityCoordinator,
+} from '@/modules/university/queries';
 import { countReportsAwaitingReview, getReportStatusByStudent } from '@/modules/academic-reports/queries';
 import { toneFor } from '@/modules/academic-reports/status-tone';
 import Link from 'next/link';
 import { InviteStudentButton } from '../_invite-student-button';
+import { InviteCoordinatorButton } from '../_invite-coordinator-button';
+import { AssignCoordinatorSelect } from '../_assign-coordinator-select';
 
 export default async function Page() {
   const session = await getSession();
@@ -43,12 +50,20 @@ export default async function Page() {
   // coordinator; throws Forbidden otherwise.
   await requireOrgRole(session.user.id, current.org.id, ['owner', 'admin']);
 
+  // Gated visibility: the head (owner) sees every student + manages assignments;
+  // an encadrant (admin) sees only the students assigned to them.
+  const isHead = current.role === 'owner';
+
   const [students, members, awaitingReview, reportStatus] = await Promise.all([
-    getManagedStudents(current.org.id),
+    getManagedStudents(current.org.id, isHead ? undefined : { forCoordinatorId: session.user.id }),
     getOrgMembers(current.org.id),
     countReportsAwaitingReview(current.org.id),
     getReportStatusByStudent(current.org.id),
   ]);
+
+  const coordinators: UniversityCoordinator[] = isHead
+    ? await getUniversityCoordinators(current.org.id)
+    : [];
 
   // Per-student sanitized snapshot (independent → parallel). Students with a
   // null userId (invite not yet linked) get no snapshot.
@@ -93,6 +108,7 @@ export default async function Page() {
                 <TableHead>{t('colInternship')}</TableHead>
                 <TableHead>{t('colPhase')}</TableHead>
                 <TableHead>{t('colReport')}</TableHead>
+                {isHead && <TableHead>{t('colEncadrant')}</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -138,6 +154,16 @@ export default async function Page() {
                         <span className="text-caption text-[var(--ink-4)]">{t('reportStatus.none')}</span>
                       )}
                     </TableCell>
+                    {isHead && (
+                      <TableCell>
+                        <AssignCoordinatorSelect
+                          studentMemberId={s.memberId}
+                          current={s.assignedCoordinatorId}
+                          coordinators={coordinators.map((c) => ({ userId: c.userId, name: c.name }))}
+                          unassignedLabel={t('unassigned')}
+                        />
+                      </TableCell>
+                    )}
                   </TableRow>
                 );
               })}
@@ -146,7 +172,32 @@ export default async function Page() {
         </div>
       )}
 
-      {pendingStudents.length > 0 && (
+      {isHead && (
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-semibold text-[var(--ink-2)]">{t('coordinatorsTitle')}</h2>
+            <InviteCoordinatorButton />
+          </div>
+          <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] divide-y divide-[var(--border-color)]">
+            {coordinators.map((c) => {
+              const count = students.filter((s) => s.assignedCoordinatorId === c.userId).length;
+              return (
+                <div key={c.userId} className="flex items-center justify-between px-4 py-2 text-sm">
+                  <span className="text-[var(--ink)]">
+                    {c.name}
+                    {c.role === 'owner' && (
+                      <span className="ml-2 text-caption text-[var(--ink-4)]">{t('headBadge')}</span>
+                    )}
+                  </span>
+                  <span className="text-caption text-[var(--ink-3)]">{t('studentCount', { count })}</span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {isHead && pendingStudents.length > 0 && (
         <section>
           <h2 className="text-sm font-semibold text-[var(--ink-2)] mb-2">{t('pendingTitle')}</h2>
           <ul className="text-sm text-[var(--ink-3)] flex flex-col gap-1">
