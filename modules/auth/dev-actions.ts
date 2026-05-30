@@ -34,7 +34,9 @@ export async function devLoginAction(email: string): Promise<void> {
       ? '/admin/dashboard'
       : user.role === 'company'
         ? '/company/dashboard'
-        : '/intern/dashboard';
+        : user.role === 'university'
+          ? '/university/dashboard'
+          : '/intern/dashboard';
   redirect(dashHref);
 }
 

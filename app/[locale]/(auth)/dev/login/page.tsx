@@ -11,6 +11,8 @@ const SAM_EMAILS = [
   'hellowemakeitgrow@gmail.com',
   'dazzsemi@gmail.com',
   'sami.arif@thog.io',
+  'prof.saidi@enit.utm.tn',
+  'yasmine@enit.utm.tn',
 ];
 
 /**

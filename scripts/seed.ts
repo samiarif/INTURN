@@ -16,6 +16,8 @@ import {
   communityComments,
   internshipRecords,
   reports,
+  academicReports,
+  organizationMembers,
 } from '../db/schema';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 
@@ -24,7 +26,7 @@ async function upsertUser(input: {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'intern' | 'company' | 'admin';
+  role: 'intern' | 'company' | 'admin' | 'university';
 }) {
   const existing = await db.select().from(users).where(eq(users.clerkId, input.clerkId)).limit(1);
   if (existing[0]) return existing[0];
@@ -876,6 +878,113 @@ async function seedSamAccounts(ctx: { candidateApplicants: Array<typeof users.$i
       } internships + applications + ${activeWorkspaceId ? '1 active workspace' : '0 workspaces'}`,
     );
   }
+}
+
+// ============================================================
+// University seed (Plan 2 demo): a coordinator persona + a demo university
+// + 2 managed students (Yasmine is PLACED so the snapshot/phase populate) +
+// one submitted rapport so the coordinator roster + review surface are
+// clickable in localhost. Idempotent (email/slug-keyed, insert-if-absent).
+// ============================================================
+async function seedUniversity(ctx: {
+  yasmineId: string;
+  yasmineInternshipId: string;
+}) {
+  // 1. Coordinator persona (global role 'university').
+  const prof = await upsertUser({
+    clerkId: 'seed_user_prof_saidi',
+    email: 'prof.saidi@enit.utm.tn',
+    firstName: 'Nizar',
+    lastName: 'Saidi',
+    role: 'university',
+  });
+  if (prof.role !== 'university') {
+    await db.update(users).set({ role: 'university', updatedAt: new Date() }).where(eq(users.id, prof.id));
+  }
+
+  // 2. Demo university org (kind='university', verified, owned by the coordinator).
+  const uniSlug = 'enit-demo';
+  let [uni] = await db.select().from(organizations).where(eq(organizations.slug, uniSlug)).limit(1);
+  if (!uni) {
+    [uni] = await db
+      .insert(organizations)
+      .values({
+        ownerId: prof.id,
+        kind: 'university',
+        name: 'ENIT (demo)',
+        slug: uniSlug,
+        city: 'Tunis',
+        country: 'Tunisia',
+        verified: true,
+        verificationStatus: 'verified',
+      })
+      .returning();
+  }
+
+  // 3. Coordinator owner membership on the university.
+  const ensureMember = async (userId: string, role: 'owner' | 'student', email: string) => {
+    const [existing] = await db
+      .select()
+      .from(organizationMembers)
+      .where(and(eq(organizationMembers.organizationId, uni.id), eq(organizationMembers.userId, userId)))
+      .limit(1);
+    if (existing) return existing;
+    const [m] = await db
+      .insert(organizationMembers)
+      .values({
+        organizationId: uni.id,
+        userId,
+        email,
+        role,
+        status: 'active',
+        joinedAt: new Date(),
+      })
+      .returning();
+    return m;
+  };
+  await ensureMember(prof.id, 'owner', prof.email);
+
+  // 4. Two managed students. Yasmine (PLACED in Acme) + a second student.
+  await ensureMember(ctx.yasmineId, 'student', 'yasmine@enit.utm.tn');
+
+  const student2 = await upsertUser({
+    clerkId: 'seed_user_student_amine',
+    email: 'amine@enit.utm.tn',
+    firstName: 'Amine',
+    lastName: 'Gharbi',
+    role: 'intern',
+  });
+  await ensureMember(student2.id, 'student', student2.email);
+
+  // 5. One submitted rapport for Yasmine (references her Acme internship).
+  const [existingReport] = await db
+    .select()
+    .from(academicReports)
+    .where(
+      and(
+        eq(academicReports.studentUserId, ctx.yasmineId),
+        eq(academicReports.universityOrgId, uni.id),
+      ),
+    )
+    .limit(1);
+  if (!existingReport) {
+    await db.insert(academicReports).values({
+      studentUserId: ctx.yasmineId,
+      universityOrgId: uni.id,
+      internshipId: ctx.yasmineInternshipId,
+      title: 'Rapport de stage — Brand audit',
+      description: 'Premier jet du rapport de stage couvrant la phase de découverte.',
+      status: 'submitted',
+      version: 1,
+      submittedAt: new Date(),
+      fileName: 'rapport-stage-v1.pdf',
+      fileType: 'application/pdf',
+    });
+  }
+
+  console.log(
+    `✓ University seed: ENIT (demo) + coordinator prof.saidi@enit.utm.tn (university role) + 2 managed students (Yasmine placed) + 1 submitted rapport`,
+  );
 }
 
 export async function runSeed() {
@@ -2183,6 +2292,8 @@ export async function runSeed() {
       ...extraApplicants, // Imen, Rayen, Syrine, Fares
     ],
   });
+
+  await seedUniversity({ yasmineId: yasmine.id, yasmineInternshipId: internship.id });
 
   return {
     workspaceId: workspace.id,
