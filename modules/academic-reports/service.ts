@@ -70,6 +70,9 @@ export async function submitReport(input: {
       status: 'revision-requested',
     };
     if (current.feedback) {
+      // best-effort: the report row doesn't track WHO requested the revision,
+      // so reviewerId falls back to the resubmitter. Same inherited limitation
+      // as modules/deliverables/service.ts; revisit if a reviewer-id column lands.
       snapshot.review = {
         reviewerId: input.actorId,
         reviewedAt: (current.updatedAt ?? new Date()).toISOString(),
