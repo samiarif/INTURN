@@ -256,3 +256,53 @@ export async function listUniversities(): Promise<UniversityRow[]> {
     .orderBy(desc(organizations.createdAt));
   return rows as UniversityRow[];
 }
+
+export type PendingStudentInvite = {
+  memberId: string;
+  email: string;
+  invitedAt: Date;
+  inviteExpiresAt: Date | null;
+  assignedCoordinatorId: string | null;
+  encadrantName: string | null;
+};
+
+/** Pending (status='invited') student members. Head sees all; encadrant sees only theirs. */
+export async function getPendingStudentInvites(
+  universityOrgId: string,
+  opts?: { forCoordinatorId?: string },
+): Promise<PendingStudentInvite[]> {
+  const encadrant = alias(users, 'pending_encadrant');
+  const where = [
+    eq(organizationMembers.organizationId, universityOrgId),
+    eq(organizationMembers.role, 'student'),
+    eq(organizationMembers.status, 'invited'),
+  ];
+  if (opts?.forCoordinatorId) {
+    where.push(eq(organizationMembers.assignedCoordinatorId, opts.forCoordinatorId));
+  }
+
+  const rows = await db
+    .select({
+      memberId: organizationMembers.id,
+      email: organizationMembers.email,
+      invitedAt: organizationMembers.invitedAt,
+      inviteExpiresAt: organizationMembers.inviteExpiresAt,
+      assignedCoordinatorId: organizationMembers.assignedCoordinatorId,
+      encadrantFirstName: encadrant.firstName,
+      encadrantLastName: encadrant.lastName,
+    })
+    .from(organizationMembers)
+    .leftJoin(encadrant, eq(encadrant.id, organizationMembers.assignedCoordinatorId))
+    .where(and(...where))
+    .orderBy(desc(organizationMembers.invitedAt))
+    .limit(500);
+
+  return rows.map((r) => ({
+    memberId: r.memberId,
+    email: r.email,
+    invitedAt: r.invitedAt,
+    inviteExpiresAt: r.inviteExpiresAt,
+    assignedCoordinatorId: r.assignedCoordinatorId ?? null,
+    encadrantName: [r.encadrantFirstName, r.encadrantLastName].filter(Boolean).join(' ') || null,
+  }));
+}

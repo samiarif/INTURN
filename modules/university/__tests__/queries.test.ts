@@ -30,6 +30,7 @@ import {
   getManagedStudents,
   getUniversityCoordinators,
   canCoordinatorViewStudent,
+  getPendingStudentInvites,
 } from '../queries';
 
 beforeEach(() => {
@@ -191,5 +192,26 @@ describe('canCoordinatorViewStudent', () => {
     expect(canCoordinatorViewStudent('admin', 'a1', { assignedCoordinatorId: 'a1' })).toBe(true);
     expect(canCoordinatorViewStudent('admin', 'a1', { assignedCoordinatorId: 'a2' })).toBe(false);
     expect(canCoordinatorViewStudent('admin', 'a1', { assignedCoordinatorId: null })).toBe(false);
+  });
+});
+
+describe('getPendingStudentInvites', () => {
+  it('maps pending student invites with encadrant name', async () => {
+    mocks.selectQueue.push([{
+      memberId: 'm1', email: 'pending@x.com', invitedAt: new Date('2026-05-01'),
+      inviteExpiresAt: new Date('2026-05-08'), assignedCoordinatorId: 'coord-9',
+      encadrantFirstName: 'Sami', encadrantLastName: 'Saidi',
+    }]);
+    const rows = await getPendingStudentInvites('uni-1');
+    expect(rows[0]).toMatchObject({
+      email: 'pending@x.com',
+      assignedCoordinatorId: 'coord-9',
+      encadrantName: 'Sami Saidi',
+    });
+  });
+
+  it('accepts forCoordinatorId (encadrant view)', async () => {
+    mocks.selectQueue.push([]);
+    expect(await getPendingStudentInvites('uni-1', { forCoordinatorId: 'coord-9' })).toEqual([]);
   });
 });
