@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { organizations } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
 import type { CompanyProfileInput } from './validators';
 
@@ -16,7 +16,7 @@ export async function createOrUpdateCompanyProfile(userId: string, input: Compan
   const existing = await db
     .select()
     .from(organizations)
-    .where(eq(organizations.ownerId, userId))
+    .where(and(eq(organizations.ownerId, userId), eq(organizations.kind, 'company')))
     .limit(1);
 
   if (existing.length === 0) {
@@ -63,7 +63,7 @@ export async function createOrUpdateCompanyProfile(userId: string, input: Compan
       rneUrl: input.rneUrl,
       updatedAt: new Date(),
     })
-    .where(eq(organizations.ownerId, userId))
+    .where(and(eq(organizations.ownerId, userId), eq(organizations.kind, 'company')))
     .returning();
 
   await recordEvent({
