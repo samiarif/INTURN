@@ -11,12 +11,10 @@ import {
 
 export function ReportReviewBar({
   reportId,
-  submitterName,
   whenLabel,
   labels,
 }: {
   reportId: string;
-  submitterName: string;
   whenLabel: string;
   labels: {
     submittedBy: string;
@@ -62,7 +60,7 @@ export function ReportReviewBar({
     <div className="rounded-lg border border-[var(--brand-200)] bg-[var(--brand-50)] p-4">
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm text-[var(--ink-2)]">
-          {labels.submittedBy.replace('{name}', submitterName)} · {whenLabel}
+          {labels.submittedBy} · {whenLabel}
         </span>
         <div className="ml-auto flex gap-2">
           <Button variant="outline" size="sm" disabled={pending} onClick={() => setShowRequest((v) => !v)}>

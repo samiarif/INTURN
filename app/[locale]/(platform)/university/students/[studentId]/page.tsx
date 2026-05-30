@@ -102,10 +102,9 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
           {report.status === 'submitted' && (
             <ReportReviewBar
               reportId={report.id}
-              submitterName={studentName}
               whenLabel={relativeWhen(report.submittedAt, locale)}
               labels={{
-                submittedBy: t('review.submittedBy'),
+                submittedBy: t('review.submittedBy', { name: studentName }),
                 requestChanges: t('review.requestChanges'),
                 submitChanges: t('review.submitChanges'),
                 approve: t('review.approve'),
