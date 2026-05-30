@@ -25,7 +25,12 @@ vi.mock('drizzle-orm', () => ({
 }));
 vi.mock('drizzle-orm/pg-core', () => ({ alias: (t: unknown) => t }));
 
-import { getStudentInternshipSnapshot, getManagedStudents, getUniversityCoordinators } from '../queries';
+import {
+  getStudentInternshipSnapshot,
+  getManagedStudents,
+  getUniversityCoordinators,
+  canCoordinatorViewStudent,
+} from '../queries';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -174,5 +179,17 @@ describe('getUniversityCoordinators', () => {
     const rows = await getUniversityCoordinators('uni-1');
     expect(rows).toHaveLength(2);
     expect(rows[0]).toMatchObject({ userId: 'o1', name: 'Head Prof', role: 'owner' });
+  });
+});
+
+describe('canCoordinatorViewStudent', () => {
+  it('owner (head) sees any student', () => {
+    expect(canCoordinatorViewStudent('owner', 'o1', { assignedCoordinatorId: 'someone-else' })).toBe(true);
+    expect(canCoordinatorViewStudent('owner', 'o1', { assignedCoordinatorId: null })).toBe(true);
+  });
+  it('encadrant (admin) sees only their assigned student', () => {
+    expect(canCoordinatorViewStudent('admin', 'a1', { assignedCoordinatorId: 'a1' })).toBe(true);
+    expect(canCoordinatorViewStudent('admin', 'a1', { assignedCoordinatorId: 'a2' })).toBe(false);
+    expect(canCoordinatorViewStudent('admin', 'a1', { assignedCoordinatorId: null })).toBe(false);
   });
 });

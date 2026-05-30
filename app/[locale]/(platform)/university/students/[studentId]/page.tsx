@@ -7,7 +7,7 @@ import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusPill } from '@/components/status-pill';
-import { getStudentInternshipSnapshot } from '@/modules/university/queries';
+import { getStudentInternshipSnapshot, canCoordinatorViewStudent } from '@/modules/university/queries';
 import { toneFor } from '@/modules/academic-reports/status-tone';
 import { getReportForStudent, getReportComments } from '@/modules/academic-reports/queries';
 import { ReportVersionStack } from '@/modules/academic-reports/components/report-version-stack';
@@ -38,6 +38,12 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
   // university org. A foreign student → not found (same opaque outcome).
   const studentMembership = await getActiveMembership(studentId, current.org.id);
   if (!studentMembership || studentMembership.role !== 'student') notFound();
+
+  // Gated visibility: an encadrant (admin) may only open a student assigned to
+  // them; the head (owner) sees any. Same opaque not-found as a foreign student.
+  if (!canCoordinatorViewStudent(current.role as 'owner' | 'admin', session.user.id, studentMembership)) {
+    notFound();
+  }
 
   // Student identity (safe fields only).
   const [student] = await db

@@ -228,6 +228,19 @@ export async function getUniversityCoordinators(
     }));
 }
 
+/**
+ * Gated visibility: the head (owner) sees any student; an encadrant (admin) sees
+ * only the students assigned to them. Pure — caller supplies the membership row.
+ */
+export function canCoordinatorViewStudent(
+  viewerRole: 'owner' | 'admin',
+  viewerUserId: string,
+  studentMembership: { assignedCoordinatorId: string | null },
+): boolean {
+  if (viewerRole === 'owner') return true;
+  return studentMembership.assignedCoordinatorId === viewerUserId;
+}
+
 /** All university orgs, newest first — backs the admin /admin/universities list. */
 export async function listUniversities(): Promise<UniversityRow[]> {
   const rows = await db
