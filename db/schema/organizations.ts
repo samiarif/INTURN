@@ -16,6 +16,11 @@ export const organizations = pgTable('organizations', {
   country: text('country'),
   city: text('city'),
   logoUrl: text('logo_url'),
+  // 'company' (default, backfilled) | 'university'. A university is an
+  // admin-provisioned org with a coordinator (owner member + global role
+  // 'university') who supervises 'student'-role members. Company-only fields
+  // (industry, size, rneUrl) simply stay null on a university row.
+  kind: text('kind', { enum: ['company', 'university'] }).default('company').notNull(),
   rneUrl: text('rne_url'),
   verified: boolean('verified').default(false).notNull(),
   verificationStatus: text('verification_status', {

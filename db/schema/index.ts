@@ -15,6 +15,12 @@ export {
 } from './deliverables';
 export { comments, type Comment, type NewComment } from './comments';
 export {
+  academicReports,
+  type AcademicReport,
+  type NewAcademicReport,
+  type AcademicReportRevision,
+} from './academic-reports';
+export {
   internshipBookmarks,
   type InternshipBookmark,
   type NewInternshipBookmark,

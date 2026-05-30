@@ -53,6 +53,8 @@ export function ProjectSupervisors({
     owner: t.roleOwner,
     admin: t.roleAdmin,
     supervisor: t.roleSupervisor,
+    // Students are university-org members; they never appear in the supervisor picker.
+    student: '',
   };
 
   function toggle(userId: string, assigned: boolean) {

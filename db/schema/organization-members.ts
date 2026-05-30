@@ -10,10 +10,14 @@ import { users } from './users';
  * - `owner`      — billing + everything; cannot be removed or demoted.
  * - `admin`      — full co-manager (projects/internships/applications/team).
  * - `supervisor` — scoped only to assigned projects (via `projects.supervisorIds`).
+ * - `student`    — a managed academic-supervision relationship on a `kind='university'`
+ *                  org ONLY. Additive + orthogonal to company staff: a student member
+ *                  keeps their GLOBAL role `intern`. Staff-only reads (`canManageOrg`,
+ *                  the workspace-derived `getOrgInterns`) never include `role='student'`.
  *
  * Pending invites live here too: a row with `status='invited'`, an `inviteToken`,
- * and (until accepted) a possibly-null `userId`. Interns are NOT members — they
- * are derived from the `workspaces` table.
+ * and (until accepted) a possibly-null `userId`. Company interns are NOT members —
+ * they are derived from the `workspaces` table.
  */
 export const organizationMembers = pgTable(
   'organization_members',
@@ -24,7 +28,7 @@ export const organizationMembers = pgTable(
       .references(() => organizations.id, { onDelete: 'cascade' }),
     userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
     email: text('email').notNull(),
-    role: text('role', { enum: ['owner', 'admin', 'supervisor'] })
+    role: text('role', { enum: ['owner', 'admin', 'supervisor', 'student'] })
       .notNull()
       .default('supervisor'),
     status: text('status', { enum: ['invited', 'active', 'removed'] })
