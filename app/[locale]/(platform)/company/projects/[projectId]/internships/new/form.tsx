@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Link } from '@/i18n/navigation';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,8 +22,20 @@ import {
   updateInternshipAction,
 } from '@/modules/internships/server-actions';
 import { TemplatePicker } from '@/modules/internships/components/template-picker';
+import {
+  useAssist,
+  AssistButton,
+  AssistThinking,
+  AssistedTag,
+  SuggestDraftPanel,
+  type AssistErrorCode,
+} from '@/components/ai/assist';
 import { useTranslations } from 'next-intl';
 import type { InternshipTemplate } from '@/lib/internship-templates';
+import type {
+  SuggestDeliverablesResult,
+  SuggestQuestionsResult,
+} from '@/modules/ai/project-assist';
 import type { Internship } from '@/db/schema';
 
 const SECTORS = [
@@ -85,6 +98,7 @@ export function PostInternshipForm({
   orgLocation,
   supervisorName,
   initialInternship,
+  unifiedFlow = false,
 }: {
   projectId: string;
   projectName: string;
@@ -93,9 +107,28 @@ export function PostInternshipForm({
   orgLocation: string;
   supervisorName: string;
   initialInternship?: Internship;
+  /**
+   * True only when reached via createProjectAction's redirect (the project was
+   * just drafted). Switches the step bar to the full 5-step span and reveals a
+   * "skip — add an internship later" escape hatch to the hub. Standalone entry
+   * from the hub/dashboard leaves this false → the original 2-step form.
+   */
+  unifiedFlow?: boolean;
 }) {
   const isEdit = Boolean(initialInternship);
+  const showUnified = unifiedFlow && !isEdit;
   const tEdit = useTranslations('internships.edit');
+  const ta = useTranslations('assist');
+  const tw = useTranslations('wizard');
+
+  // Assist failure copy, localized. Errors never block — on any failure the
+  // user's input is kept untouched.
+  const assistError = (code: AssistErrorCode): string =>
+    code === 'rate_limited'
+      ? ta('errorRateLimited')
+      : code === 'network'
+        ? ta('errorNetwork')
+        : ta('errorGeneric');
   const seededComp = splitCompensation(initialInternship?.compensation);
 
   const [title, setTitle] = useState(initialInternship?.title ?? '');
@@ -196,6 +229,95 @@ export function PostInternshipForm({
     setQuestions([...questions, { question: '', required: false }]);
   }
 
+  // ---- Inline AI assists (draft -> you accept/edit; never auto-commit) ----
+  const deliverablesAssist = useAssist<SuggestDeliverablesResult>('deliverables');
+  const questionsAssist = useAssist<SuggestQuestionsResult>('questions');
+  const [deliverablesAssisted, setDeliverablesAssisted] = useState(false);
+  const [questionsAssisted, setQuestionsAssisted] = useState(false);
+
+  // `const` data captures keep TS narrowing inside callbacks below.
+  const deliverablesData =
+    deliverablesAssist.state.status === 'ready' ? deliverablesAssist.state.data : null;
+  const questionsData =
+    questionsAssist.state.status === 'ready' ? questionsAssist.state.data : null;
+  const deliverablesError =
+    deliverablesAssist.state.status === 'error' ? deliverablesAssist.state.code : null;
+  const questionsError =
+    questionsAssist.state.status === 'error' ? questionsAssist.state.code : null;
+
+  // Both lists fill empty slots first, then append (respecting the form caps).
+  const hasDeliverableRoom =
+    deliverables.length < 10 || deliverables.some((d) => d.name.trim().length === 0);
+  const hasQuestionRoom =
+    questions.length < 3 || questions.some((q) => q.question.trim().length === 0);
+
+  function addDeliverableDraft(d: SuggestDeliverablesResult['deliverables'][number]) {
+    const item: Deliverable = {
+      name: d.name,
+      description: d.description ?? '',
+      dueWeek: Math.max(1, Math.min(duration, d.dueWeek)),
+    };
+    const slot = deliverables.findIndex((x) => x.name.trim().length === 0);
+    if (slot !== -1) {
+      setDeliverables(deliverables.map((x, j) => (j === slot ? item : x)));
+    } else if (deliverables.length < 10) {
+      setDeliverables([...deliverables, item]);
+    } else {
+      return;
+    }
+    setDeliverablesAssisted(true);
+  }
+  function addAllDeliverables(drafts: SuggestDeliverablesResult['deliverables']) {
+    let next = [...deliverables];
+    for (const d of drafts) {
+      if (next.some((x) => x.name.trim().length > 0 && x.name.trim() === d.name.trim())) continue;
+      const item: Deliverable = {
+        name: d.name,
+        description: d.description ?? '',
+        dueWeek: Math.max(1, Math.min(duration, d.dueWeek)),
+      };
+      const slot = next.findIndex((x) => x.name.trim().length === 0);
+      if (slot !== -1) {
+        next = next.map((x, j) => (j === slot ? item : x));
+      } else if (next.length < 10) {
+        next = [...next, item];
+      } else {
+        break;
+      }
+    }
+    setDeliverables(next);
+    setDeliverablesAssisted(true);
+  }
+
+  function addQuestionDraft(text: string) {
+    const slot = questions.findIndex((q) => q.question.trim().length === 0);
+    if (slot !== -1) {
+      setQuestions(questions.map((q, j) => (j === slot ? { ...q, question: text } : q)));
+    } else if (questions.length < 3) {
+      setQuestions([...questions, { question: text, required: false }]);
+    } else {
+      return;
+    }
+    setQuestionsAssisted(true);
+  }
+  function addAllQuestions(drafts: string[]) {
+    let next = [...questions];
+    for (const text of drafts) {
+      if (next.some((q) => q.question.trim().length > 0 && q.question.trim() === text.trim()))
+        continue;
+      const slot = next.findIndex((q) => q.question.trim().length === 0);
+      if (slot !== -1) {
+        next = next.map((q, j) => (j === slot ? { ...q, question: text } : q));
+      } else if (next.length < 3) {
+        next = [...next, { question: text, required: false }];
+      } else {
+        break;
+      }
+    }
+    setQuestions(next);
+    setQuestionsAssisted(true);
+  }
+
   const boundAction = isEdit
     ? updateInternshipAction.bind(null, initialInternship!.id)
     : createInternshipAction.bind(null, projectId);
@@ -231,13 +353,34 @@ export function PostInternshipForm({
           shown in edit mode (would clobber the loaded internship). */}
       {!isEdit && title.trim().length === 0 && <TemplatePicker onPick={applyTemplate} />}
 
-      <WizardStepsInline
-        steps={[
-          { id: 'role', label: 'Role & skills' },
-          { id: 'deliverables', label: 'Deliverables & publish' },
-        ]}
-        active="role"
-      />
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+        <WizardStepsInline
+          steps={
+            showUnified
+              ? [
+                  { id: 'basics', label: tw('basics'), done: true },
+                  { id: 'goals', label: tw('goalsPhases'), done: true },
+                  { id: 'review', label: tw('review'), done: true },
+                  { id: 'role', label: tw('roleSkills') },
+                  { id: 'deliverables', label: tw('deliverablesPublish') },
+                ]
+              : [
+                  { id: 'role', label: tw('roleSkills') },
+                  { id: 'deliverables', label: tw('deliverablesPublish') },
+                ]
+          }
+          active="role"
+        />
+        {showUnified && (
+          <Link
+            href={`/company/projects/${projectId}`}
+            className="inline-flex shrink-0 items-center gap-1 text-caption text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors whitespace-nowrap"
+          >
+            {ta('skipAddLater')}
+            <ArrowRight size={13} strokeWidth={2} aria-hidden />
+          </Link>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
         {/* ============================================================
@@ -548,12 +691,25 @@ export function PostInternshipForm({
             </header>
 
             <div>
-              <Label>
-                Required deliverables{' '}
-                <span className="text-[var(--ink-3)] font-normal">
-                  · {filledDeliverables} of 10 used
-                </span>
-              </Label>
+              <div className="sc-label-row">
+                <Label>
+                  Required deliverables{' '}
+                  <span className="text-[var(--ink-3)] font-normal">
+                    · {filledDeliverables} of 10 used
+                  </span>
+                </Label>
+                <span className="sc-spacer" />
+                {deliverablesAssisted && <AssistedTag />}
+                <AssistButton
+                  label={ta('suggestDeliverables')}
+                  onClick={() =>
+                    deliverablesAssist.run({ title, description, skills, duration })
+                  }
+                  loading={deliverablesAssist.state.status === 'loading'}
+                  disabled={title.trim().length === 0 || description.trim().length < 20}
+                  title={ta('suggestDeliverablesHint')}
+                />
+              </div>
               <div className="space-y-1.5 mt-1.5">
                 {deliverables.map((d, i) => (
                   <div
@@ -632,12 +788,48 @@ export function PostInternshipForm({
                 </button>
                 <span className="text-caption text-[var(--ink-3)]">Min 3 · max 10</span>
               </div>
+              {deliverablesAssist.state.status === 'loading' && <AssistThinking />}
+              {deliverablesData && (
+                <SuggestDraftPanel
+                  title={ta('suggestedDeliverables')}
+                  drafts={deliverablesData.deliverables.map((d) => ({
+                    t: d.name,
+                    d: d.description,
+                    meta: ta('deliverableDueWeek', { week: d.dueWeek }),
+                  }))}
+                  used={deliverablesData.deliverables.map((d) =>
+                    deliverables.some(
+                      (x) => x.name.trim().length > 0 && x.name.trim() === d.name.trim(),
+                    ),
+                  )}
+                  canAddMore={hasDeliverableRoom}
+                  onAdd={(i) => addDeliverableDraft(deliverablesData.deliverables[i])}
+                  onAddAll={() => addAllDeliverables(deliverablesData.deliverables)}
+                  onDismiss={deliverablesAssist.reset}
+                />
+              )}
+              {deliverablesError && (
+                <p className="text-caption text-[var(--danger)] mt-1.5">
+                  {assistError(deliverablesError)}
+                </p>
+              )}
             </div>
 
             <SectionDivider label="application questions" />
 
             <div>
-              <Label>Ask applicants 1–3 short questions</Label>
+              <div className="sc-label-row">
+                <Label>Ask applicants 1–3 short questions</Label>
+                <span className="sc-spacer" />
+                {questionsAssisted && <AssistedTag />}
+                <AssistButton
+                  label={ta('suggestQuestions')}
+                  onClick={() => questionsAssist.run({ title, description, skills })}
+                  loading={questionsAssist.state.status === 'loading'}
+                  disabled={title.trim().length === 0}
+                  title={ta('suggestQuestionsHint')}
+                />
+              </div>
               <div className="space-y-1.5 mt-1.5">
                 {questions.map((q, i) => (
                   <div
@@ -699,6 +891,27 @@ export function PostInternshipForm({
               >
                 + Add question {questions.length >= 3 ? '(max 3)' : `(${3 - questions.length} left)`}
               </button>
+              {questionsAssist.state.status === 'loading' && <AssistThinking />}
+              {questionsData && (
+                <SuggestDraftPanel
+                  title={ta('suggestedQuestions')}
+                  drafts={questionsData.questions.map((q) => ({ t: q }))}
+                  used={questionsData.questions.map((q) =>
+                    questions.some(
+                      (x) => x.question.trim().length > 0 && x.question.trim() === q.trim(),
+                    ),
+                  )}
+                  canAddMore={hasQuestionRoom}
+                  onAdd={(i) => addQuestionDraft(questionsData.questions[i])}
+                  onAddAll={() => addAllQuestions(questionsData.questions)}
+                  onDismiss={questionsAssist.reset}
+                />
+              )}
+              {questionsError && (
+                <p className="text-caption text-[var(--danger)] mt-1.5">
+                  {assistError(questionsError)}
+                </p>
+              )}
             </div>
 
             <SectionDivider label="visibility" />

@@ -9,14 +9,20 @@ import { PostInternshipForm } from './form';
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ projectId: string }>;
+  searchParams: Promise<{ flow?: string }>;
 }) {
   const session = await getSession();
   if (!session) redirect('/sign-in');
   const { user, role } = session;
 
   const { projectId } = await params;
+  // `?flow=create` is only ever appended by createProjectAction's redirect, so
+  // arriving with it means we're mid-unified-create (project just drafted).
+  // Standalone entry from the hub/dashboard omits it → plain 2-step form.
+  const { flow } = await searchParams;
   const project = await getProjectById(projectId);
   if (!project) notFound();
   if (!(await canViewProject(user.id, role, project))) notFound();
@@ -41,6 +47,7 @@ export default async function Page({
         orgName={org?.name ?? 'Your company'}
         orgLocation={org?.city ?? org?.location ?? ''}
         supervisorName={supervisorName}
+        unifiedFlow={flow === 'create'}
       />
     </div>
   );

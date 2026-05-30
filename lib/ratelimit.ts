@@ -10,6 +10,7 @@
  *   - ai-task-clarity:      10 / 1m  per session.user.id
  *   - ai-intern-unblocker:  10 / 1m  per session.user.id
  *   - ai-checkin-draft:      5 / 1h  per session.user.id
+ *   - ai-project-assist:    20 / 1m  per session.user.id
  *
  * Tuned for dev + light production; raise once we have real load data.
  */
@@ -32,6 +33,7 @@ export type LimitName =
   | 'ai-intern-unblocker'
   | 'ai-checkin-draft'
   | 'ai-cv-parse'
+  | 'ai-project-assist'
   | 'team-invite';
 
 const LIMITS: Record<LimitName, { max: number; windowMs: number }> = {
@@ -42,6 +44,8 @@ const LIMITS: Record<LimitName, { max: number; windowMs: number }> = {
   'ai-checkin-draft': { max: 5, windowMs: 3_600_000 },
   // CV parsing is expensive (Claude vision) — tight cap.
   'ai-cv-parse': { max: 5, windowMs: 60_000 },
+  // Inline creation assists — several per field is normal while drafting.
+  'ai-project-assist': { max: 20, windowMs: 60_000 },
   // Inviting team members — tight cap to block enumeration/spam.
   'team-invite': { max: 10, windowMs: 60_000 },
 };

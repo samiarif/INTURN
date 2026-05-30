@@ -9,10 +9,25 @@ import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { WizardStepsInline } from '@/components/ui/wizard-steps-inline';
 import { DraftBanner } from '@/components/ui/draft-banner';
+import { BackLink } from '@/components/ui/back-link';
 import {
   createProjectAction,
   updateProjectAction,
 } from '@/modules/projects/server-actions';
+import {
+  useAssist,
+  AssistButton,
+  AssistThinking,
+  AssistedTag,
+  SuggestDraftPanel,
+  ReformulatePanel,
+  type AssistErrorCode,
+} from '@/components/ai/assist';
+import type {
+  ReformulateResult,
+  SuggestGoalsResult,
+  DraftPhasesResult,
+} from '@/modules/ai/project-assist';
 import type { Project } from '@/db/schema';
 import {
   DndContext,
@@ -75,7 +90,23 @@ function weeksBetween(start?: string | null, end?: string | null): number | null
 
 export function ProjectCreateForm({ initialProject }: { initialProject?: Project }) {
   const t = useTranslations('projects.edit');
+  const ta = useTranslations('assist');
+  const tw = useTranslations('wizard');
   const isEdit = Boolean(initialProject);
+
+  // Reformulate variant chips + assist failure copy, localized. Errors never
+  // block — on any failure the user's text is kept untouched.
+  const reformLabels: Record<'balanced' | 'shorter' | 'warmer', string> = {
+    balanced: ta('variantBalanced'),
+    shorter: ta('variantShorter'),
+    warmer: ta('variantWarmer'),
+  };
+  const assistError = (code: AssistErrorCode): string =>
+    code === 'rate_limited'
+      ? ta('errorRateLimited')
+      : code === 'network'
+        ? ta('errorNetwork')
+        : ta('errorGeneric');
 
   // Goals/phases persist on the project row; mode/location/onSiteDays/duration
   // are create-form-only fields that aren't stored, so in edit mode we seed
@@ -89,6 +120,8 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
   const [name, setName] = useState(initialProject?.name ?? '');
   const [slug, setSlug] = useState(initialProject?.slug ?? '');
   const [slugTouched, setSlugTouched] = useState(Boolean(initialProject));
+  // Controlled so Reformulate can write back — also seeds the field in edit mode.
+  const [brief, setBrief] = useState(initialProject?.brief ?? '');
   const [mode, setMode] = useState<Mode>('hybrid');
   const [location, setLocation] = useState('');
   const [onSiteDays, setOnSiteDays] = useState<string[]>(['Mon', 'Tue', 'Wed']);
@@ -115,6 +148,83 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
     d.setDate(d.getDate() + duration * 7);
     return d.toISOString().slice(0, 10);
   })();
+
+  // ---- Inline AI assists (draft -> you accept/edit; never auto-commit) ----
+  const descAssist = useAssist<ReformulateResult>('reformulate');
+  const goalsAssist = useAssist<SuggestGoalsResult>('goals');
+  const phasesAssist = useAssist<DraftPhasesResult>('phases');
+  const [descAssisted, setDescAssisted] = useState(false);
+  const [goalsAssisted, setGoalsAssisted] = useState(false);
+  const [phasesAssisted, setPhasesAssisted] = useState(false);
+  const [reformSel, setReformSel] = useState<'balanced' | 'shorter' | 'warmer'>('balanced');
+
+  // `const` data captures keep TS narrowing inside callbacks below.
+  const descData = descAssist.state.status === 'ready' ? descAssist.state.data : null;
+  const goalsData = goalsAssist.state.status === 'ready' ? goalsAssist.state.data : null;
+  const phasesData = phasesAssist.state.status === 'ready' ? phasesAssist.state.data : null;
+  const descError = descAssist.state.status === 'error' ? descAssist.state.code : null;
+  const goalsError = goalsAssist.state.status === 'error' ? goalsAssist.state.code : null;
+  const phasesError = phasesAssist.state.status === 'error' ? phasesAssist.state.code : null;
+
+  const hasGoalRoom = goals.some((g) => g.trim().length === 0);
+  const canAddPhase = phases.length < 12;
+
+  async function triggerReformulate() {
+    const data = await descAssist.run({ text: brief });
+    if (data?.variants[0]) setReformSel(data.variants[0].key);
+  }
+  function applyReformulation(text: string) {
+    setBrief(text);
+    setDescAssisted(true);
+    descAssist.reset();
+  }
+
+  function addGoalDraft(text: string) {
+    const slot = goals.findIndex((g) => g.trim().length === 0);
+    if (slot === -1) return;
+    setGoals(goals.map((g, j) => (j === slot ? text : g)));
+    setGoalsAssisted(true);
+  }
+  function addAllGoals(drafts: string[]) {
+    let next = [...goals];
+    for (const text of drafts) {
+      if (next.some((g) => g.trim() === text.trim())) continue;
+      const slot = next.findIndex((g) => g.trim().length === 0);
+      if (slot === -1) break;
+      next = next.map((g, j) => (j === slot ? text : g));
+    }
+    setGoals(next);
+    setGoalsAssisted(true);
+  }
+
+  function addPhaseDraft(p: DraftPhasesResult['phases'][number]) {
+    if (phases.length >= 12) return;
+    setPhases([
+      ...phases,
+      { id: newPhaseId(), name: p.name, description: p.description ?? '', fromWeek: p.fromWeek, toWeek: p.toWeek },
+    ]);
+    setPhasesAssisted(true);
+  }
+  function addAllPhases(drafts: DraftPhasesResult['phases']) {
+    const room = 12 - phases.length;
+    const toAdd = drafts
+      .filter(
+        (d) => !phases.some((p) => p.name === d.name && p.fromWeek === d.fromWeek && p.toWeek === d.toWeek),
+      )
+      .slice(0, room);
+    if (toAdd.length === 0) return;
+    setPhases([
+      ...phases,
+      ...toAdd.map((d) => ({
+        id: newPhaseId(),
+        name: d.name,
+        description: d.description ?? '',
+        fromWeek: d.fromWeek,
+        toWeek: d.toWeek,
+      })),
+    ]);
+    setPhasesAssisted(true);
+  }
 
   function toggleDay(day: string) {
     setOnSiteDays((cur) =>
@@ -178,6 +288,12 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
 
   return (
     <form action={formAction} className="space-y-8">
+      <BackLink
+        href={isEdit ? `/company/projects/${initialProject!.id}` : '/company/projects'}
+      >
+        {isEdit ? t('backToProject') : t('backToProjects')}
+      </BackLink>
+
       {!isEdit && (
         <DraftBanner
           title="Draft mode"
@@ -186,11 +302,23 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
       )}
 
       <WizardStepsInline
-        steps={[
-          { id: 'basics', label: 'Basics' },
-          { id: 'goals', label: 'Goals & phases' },
-          { id: 'review', label: 'Review' },
-        ]}
+        steps={
+          isEdit
+            ? [
+                { id: 'basics', label: tw('basics') },
+                { id: 'goals', label: tw('goalsPhases') },
+                { id: 'review', label: tw('review') },
+              ]
+            : [
+                // Create flows straight into posting the first internship, so
+                // the bar spans all five steps — Review hands off to step 4.
+                { id: 'basics', label: tw('basics') },
+                { id: 'goals', label: tw('goalsPhases') },
+                { id: 'review', label: tw('review') },
+                { id: 'role', label: tw('roleSkills') },
+                { id: 'deliverables', label: tw('deliverablesPublish') },
+              ]
+        }
         active="basics"
       />
 
@@ -260,17 +388,49 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         </div>
 
         <div>
-          <Label htmlFor="brief">
-            Short description <span className="text-[var(--danger)]">*</span>
-          </Label>
+          <div className="sc-label-row">
+            <Label htmlFor="brief">
+              Short description <span className="text-[var(--danger)]">*</span>
+            </Label>
+            <span className="sc-spacer" />
+            {descAssisted && <AssistedTag />}
+            <AssistButton
+              label={ta('reformulate')}
+              onClick={triggerReformulate}
+              loading={descAssist.state.status === 'loading'}
+              disabled={brief.trim().length < 10}
+              title={ta('reformulateHint')}
+            />
+          </div>
           <Textarea
             id="brief"
             name="brief"
             rows={4}
             maxLength={2000}
+            value={brief}
+            onChange={(e) => setBrief(e.target.value)}
             placeholder="A full-funnel audit of Acme's brand and a refreshed system delivered as Figma library + guidelines. Designed for two parallel interns over 12 weeks."
             required
           />
+          {descAssist.state.status === 'loading' && <AssistThinking />}
+          {descData && (
+            <ReformulatePanel
+              variants={descData.variants.map((v) => ({
+                key: v.key,
+                label: reformLabels[v.key],
+                text: v.text,
+              }))}
+              selected={reformSel}
+              onSelect={(k) => setReformSel(k as 'balanced' | 'shorter' | 'warmer')}
+              onUse={applyReformulation}
+              onDismiss={descAssist.reset}
+            />
+          )}
+          {descError && (
+            <p className="text-caption text-[var(--danger)] mt-1.5">
+              {assistError(descError)}
+            </p>
+          )}
           <p className="text-caption text-[var(--ink-3)] mt-1">
             2–3 sentences. This becomes the brief at the top of every workspace under this
             project.
@@ -398,12 +558,23 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         </header>
 
         <div>
-          <Label>
-            Project goals{' '}
-            <span className="text-[var(--ink-3)] font-normal">
-              · {goalsFilled} of 3 used
-            </span>
-          </Label>
+          <div className="sc-label-row">
+            <Label>
+              Project goals{' '}
+              <span className="text-[var(--ink-3)] font-normal">
+                · {goalsFilled} of 3 used
+              </span>
+            </Label>
+            <span className="sc-spacer" />
+            {goalsAssisted && <AssistedTag />}
+            <AssistButton
+              label={ta('suggestGoals')}
+              onClick={() => goalsAssist.run({ name, brief, duration })}
+              loading={goalsAssist.state.status === 'loading'}
+              disabled={name.trim().length === 0}
+              title={ta('suggestGoalsHint')}
+            />
+          </div>
           <div className="flex flex-col gap-2 mt-1.5">
             {goals.map((g, i) => (
               <Input
@@ -425,6 +596,23 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
           <p className="text-caption text-[var(--ink-3)] mt-1.5">
             Limit is 3. If you can&apos;t say it in 3, you don&apos;t know it yet.
           </p>
+          {goalsAssist.state.status === 'loading' && <AssistThinking />}
+          {goalsData && (
+            <SuggestDraftPanel
+              title={ta('suggestedGoals')}
+              drafts={goalsData.goals.map((g) => ({ t: g }))}
+              used={goalsData.goals.map((g) => goals.some((x) => x.trim() === g.trim()))}
+              canAddMore={hasGoalRoom}
+              onAdd={(i) => addGoalDraft(goalsData.goals[i])}
+              onAddAll={() => addAllGoals(goalsData.goals)}
+              onDismiss={goalsAssist.reset}
+            />
+          )}
+          {goalsError && (
+            <p className="text-caption text-[var(--danger)] mt-1.5">
+              {assistError(goalsError)}
+            </p>
+          )}
         </div>
 
         <div className="relative">
@@ -439,9 +627,18 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         </div>
 
         <div>
-          <h3 className="text-heading text-[var(--ink)]">
-            Project phases
-          </h3>
+          <div className="sc-label-row">
+            <h3 className="text-heading text-[var(--ink)]">Project phases</h3>
+            <span className="sc-spacer" />
+            {phasesAssisted && <AssistedTag />}
+            <AssistButton
+              label={ta('draftPhases')}
+              onClick={() => phasesAssist.run({ name, brief, duration })}
+              loading={phasesAssist.state.status === 'loading'}
+              disabled={name.trim().length === 0}
+              title={ta('draftPhasesHint')}
+            />
+          </div>
           <p className="text-caption text-[var(--ink-3)] mt-1 mb-3">
             Sketch the project arc. You can edit or skip — the Hub&apos;s phase strip uses
             these to show progress.
@@ -483,6 +680,32 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             </button>
             <span className="text-caption text-[var(--ink-3)]">· Skip this section</span>
           </div>
+
+          {phasesAssist.state.status === 'loading' && <AssistThinking />}
+          {phasesData && (
+            <SuggestDraftPanel
+              title={ta('draftedPhases')}
+              drafts={phasesData.phases.map((p) => ({
+                t: p.name,
+                d: p.description,
+                meta: ta('phaseWeekRange', { from: p.fromWeek, to: p.toWeek }),
+              }))}
+              used={phasesData.phases.map((p) =>
+                phases.some(
+                  (x) => x.name === p.name && x.fromWeek === p.fromWeek && x.toWeek === p.toWeek,
+                ),
+              )}
+              canAddMore={canAddPhase}
+              onAdd={(i) => addPhaseDraft(phasesData.phases[i])}
+              onAddAll={() => addAllPhases(phasesData.phases)}
+              onDismiss={phasesAssist.reset}
+            />
+          )}
+          {phasesError && (
+            <p className="text-caption text-[var(--danger)] mt-1.5">
+              {assistError(phasesError)}
+            </p>
+          )}
         </div>
       </section>
 
@@ -539,7 +762,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
                 <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
               </Button>
               <span className="text-caption text-[var(--status-warn-ink)]">
-                Saves a draft and takes you to step 5.
+                Saves a draft and takes you to step 4.
               </span>
             </div>
           </div>

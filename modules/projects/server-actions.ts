@@ -63,7 +63,12 @@ export async function createProjectAction(formData: FormData) {
     phases: parsed.phases,
   });
 
-  redirect(`/company/projects/${project.id}`);
+  // Unified create flow: a freshly drafted project flows straight into posting
+  // its first internship — the CTA already reads "Save & post first internship."
+  // `?flow=create` tells that screen to render the 5-step span and a "skip —
+  // add an internship later" escape hatch back to the hub. Editing a project
+  // (updateProjectAction, below) still returns to the hub.
+  redirect(`/company/projects/${project.id}/internships/new?flow=create`);
 }
 
 export async function updateProjectAction(projectId: string, formData: FormData) {
