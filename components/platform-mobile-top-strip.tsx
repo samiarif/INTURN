@@ -15,6 +15,7 @@ type Props = {
   notifications: Notification[];
   unreadCount: number;
   devBypassed?: boolean;
+  hasStudentMembership?: boolean;
 };
 
 export function PlatformMobileTopStrip(props: Props) {

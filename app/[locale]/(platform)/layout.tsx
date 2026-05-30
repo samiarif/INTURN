@@ -7,6 +7,7 @@ import {
   getUnreadCount,
   listRecentNotifications,
 } from '@/modules/notifications/queries';
+import { getViewerMemberships } from '@/modules/team/authz';
 import { SuspendedBanner } from '@/components/suspended-banner';
 import { isDevAuthBypassed } from '@/lib/dev-auth';
 
@@ -21,6 +22,14 @@ export default async function PlatformLayout({ children }: { children: React.Rea
     listRecentNotifications(session.user.id, 12),
   ]);
 
+  // An intern who is also a managed university student gets a conditional nav
+  // link. Only query for interns (others never show the link).
+  let hasStudentMembership = false;
+  if (session.role === 'intern') {
+    const memberships = await getViewerMemberships(session.user.id);
+    hasStudentMembership = memberships.some((m) => m.role === 'student');
+  }
+
   const userProps = {
     role: session.role,
     user: {
@@ -33,6 +42,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
     notifications,
     unreadCount,
     devBypassed: isDevAuthBypassed(),
+    hasStudentMembership,
   };
 
   return (

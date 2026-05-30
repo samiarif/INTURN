@@ -17,6 +17,7 @@ import {
   Flag,
   Users,
   ScrollText,
+  GraduationCap,
   type LucideIcon,
 } from 'lucide-react';
 import { GradientStar } from '@/components/brand/gradient-star';
@@ -35,6 +36,8 @@ type Props = {
   devBypassed?: boolean;
   /** When true, render even below md (used by the mobile drawer). */
   forceVisible?: boolean;
+  /** Intern viewer holds an active university 'student' membership → show the link. */
+  hasStudentMembership?: boolean;
 };
 
 export function PlatformSidebar({
@@ -44,6 +47,7 @@ export function PlatformSidebar({
   unreadCount,
   devBypassed = false,
   forceVisible = false,
+  hasStudentMembership = false,
 }: Props) {
   const tNav = useTranslations('platformNav');
   const tNotif = useTranslations('notifications');
@@ -55,36 +59,56 @@ export function PlatformSidebar({
   // (topbar + tab-bar) sits inside the main content area.
 
   const accountItem = { href: '/account', label: tNav('account'), icon: Settings };
-  const navItems: { href: string; label: string; icon: LucideIcon }[] = role === 'intern'
-    ? [
-        { href: '/intern/dashboard',     label: tNav('dashboard'),    icon: LayoutDashboard },
-        { href: '/intern/applications',  label: tNav('applications'), icon: Send },
-        { href: '/intern/saved',         label: tNav('saved'),        icon: Bookmark },
-        { href: '/intern/records',       label: tNav('records'),      icon: Award },
-        { href: '/intern/community',     label: tNav('community'),    icon: MessagesSquare },
-        { href: '/marketplace',          label: tNav('browse'),       icon: Compass },
-        accountItem,
-      ]
-    : role === 'company'
-    ? [
-        { href: '/company/dashboard',  label: tNav('dashboard'),  icon: LayoutDashboard },
-        { href: '/company/projects',   label: tNav('projects'),   icon: FolderKanban },
-        { href: '/company/workspaces', label: tNav('workspaces'), icon: Briefcase },
-        { href: '/company/team',       label: tNav('team'),       icon: Users },
-        { href: '/marketplace',        label: tNav('browse'),     icon: Compass },
-        accountItem,
-      ]
-    : role === 'admin'
-    ? [
-        { href: '/admin/dashboard',     label: tNav('dashboard'),     icon: LayoutDashboard },
-        { href: '/admin/verifications', label: tNav('verifications'), icon: ShieldCheck },
-        { href: '/admin/reports',       label: tNav('reports'),       icon: Flag },
-        { href: '/admin/users',         label: tNav('users'),         icon: Users },
-        { href: '/admin/audit',         label: tNav('audit'),         icon: ScrollText },
-        { href: '/marketplace',         label: tNav('browse'),        icon: Compass },
-        accountItem,
-      ]
-    : [];
+
+  const baseInternItems: { href: string; label: string; icon: LucideIcon }[] = [
+    { href: '/intern/dashboard',     label: tNav('dashboard'),    icon: LayoutDashboard },
+    { href: '/intern/applications',  label: tNav('applications'), icon: Send },
+    { href: '/intern/saved',         label: tNav('saved'),        icon: Bookmark },
+    { href: '/intern/records',       label: tNav('records'),      icon: Award },
+    { href: '/intern/community',     label: tNav('community'),    icon: MessagesSquare },
+    { href: '/marketplace',          label: tNav('browse'),       icon: Compass },
+  ];
+  // Intern who is also a managed student gets a University link to their
+  // academic-supervision home (the page itself lands in Plan 2; the link is
+  // additive and harmless until then — it routes to /intern/university).
+  if (hasStudentMembership) {
+    baseInternItems.splice(5, 0, {
+      href: '/intern/university',
+      label: tNav('university'),
+      icon: GraduationCap,
+    });
+  }
+
+  const navItems: { href: string; label: string; icon: LucideIcon }[] =
+    role === 'intern'
+      ? [...baseInternItems, accountItem]
+      : role === 'company'
+        ? [
+            { href: '/company/dashboard',  label: tNav('dashboard'),  icon: LayoutDashboard },
+            { href: '/company/projects',   label: tNav('projects'),   icon: FolderKanban },
+            { href: '/company/workspaces', label: tNav('workspaces'), icon: Briefcase },
+            { href: '/company/team',       label: tNav('team'),       icon: Users },
+            { href: '/marketplace',        label: tNav('browse'),     icon: Compass },
+            accountItem,
+          ]
+        : role === 'university'
+          ? [
+              { href: '/university/dashboard', label: tNav('dashboard'), icon: LayoutDashboard },
+              { href: '/marketplace',          label: tNav('browse'),    icon: Compass },
+              accountItem,
+            ]
+          : role === 'admin'
+            ? [
+                { href: '/admin/dashboard',     label: tNav('dashboard'),     icon: LayoutDashboard },
+                { href: '/admin/verifications', label: tNav('verifications'), icon: ShieldCheck },
+                { href: '/admin/universities',  label: tNav('universities'),  icon: GraduationCap },
+                { href: '/admin/reports',       label: tNav('reports'),       icon: Flag },
+                { href: '/admin/users',         label: tNav('users'),         icon: Users },
+                { href: '/admin/audit',         label: tNav('audit'),         icon: ScrollText },
+                { href: '/marketplace',         label: tNav('browse'),        icon: Compass },
+                accountItem,
+              ]
+            : [];
 
   function isActive(href: string): boolean {
     return href === pathname || (href !== '/marketplace' && pathname.startsWith(href));
