@@ -41,6 +41,7 @@ export const academicReports = pgTable(
     internshipId: uuid('internship_id').references(() => internships.id, {
       onDelete: 'set null',
     }),
+    // Nullable: a report may start as a bare draft before the student fills metadata.
     title: text('title'),
     description: text('description'),
     fileUrl: text('file_url'),
