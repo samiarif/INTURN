@@ -1613,5 +1613,18 @@
       "feedbackPlaceholder": "Qu'est-ce qui doit changer ?",
       "sending": "Envoi…"
     }
+  },
+  "pulse": {
+    "title": "Pulse · vos stagiaires cette semaine",
+    "refresh": "Actualiser",
+    "refreshing": "Analyse…",
+    "basedOn": "D'après",
+    "empty": "Aucun stagiaire actif pour le moment.",
+    "status": {
+      "on-track": "Sur les rails",
+      "attention": "À surveiller",
+      "at-risk": "En risque",
+      "too-early": "Trop tôt"
+    }
   }
 }

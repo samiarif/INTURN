@@ -28,6 +28,8 @@ import { getInternshipsByProjectIds } from '@/modules/internships/queries';
 import { Clock } from 'lucide-react';
 import { CalendarWidget } from '@/components/dashboard/calendar-widget';
 import { FteChecklist } from '@/components/fte-checklist';
+import { getPulse } from '@/modules/pulse/engine';
+import { PulseDigest, type PulseDigestItem } from '@/modules/pulse/components/pulse-digest';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MS_PER_HOUR = 1000 * 60 * 60;
@@ -403,6 +405,26 @@ export default async function Page() {
     }
   }
 
+  // ------ Pulse digest: AI co-supervisor read across the active workspaces
+  // this supervisor owns. Reuses orgWorkspaces (already org-scoped) + the
+  // intern names we just resolved; getPulse is React-cached per workspace. ------
+  const pulseLocale: 'fr' | 'en' = locale === 'en' ? 'en' : 'fr';
+  const activeWorkspaces = orgWorkspaces.filter((w) => w.status === 'active');
+  const pulseDigestItems: PulseDigestItem[] = (
+    await Promise.all(
+      activeWorkspaces.map(async (w) => {
+        const pulse = await getPulse(w.id, pulseLocale);
+        if (!pulse) return null;
+        const intern = internsByWorkspace.get(w.id);
+        const internName =
+          [intern?.firstName, intern?.lastName].filter(Boolean).join(' ').trim() ||
+          intern?.email ||
+          '—';
+        return { workspaceId: w.id, internName, pulse };
+      }),
+    )
+  ).filter((x): x is PulseDigestItem => x !== null);
+
   // ------ Workspace → project name for sync sub-meta. ------
   const projectByWorkspace = new Map<string, { id: string; name: string }>();
   for (const link of wsLinks) {
@@ -499,6 +521,9 @@ export default async function Page() {
             </div>
           )}
         </div>
+
+        {/* ---------- Pulse digest (AI co-supervisor rollup) ---------- */}
+        <PulseDigest items={pulseDigestItems} locale={locale} />
 
         {/* ---------- 4-tile KPI stats ---------- */}
         <div className="db-stats">

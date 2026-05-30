@@ -1613,5 +1613,18 @@
       "feedbackPlaceholder": "What needs to change?",
       "sending": "Sending…"
     }
+  },
+  "pulse": {
+    "title": "Pulse · your interns this week",
+    "refresh": "Refresh",
+    "refreshing": "Analyzing…",
+    "basedOn": "Based on",
+    "empty": "No active interns yet.",
+    "status": {
+      "on-track": "On track",
+      "attention": "Needs attention",
+      "at-risk": "At risk",
+      "too-early": "Too early"
+    }
   }
 }
