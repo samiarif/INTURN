@@ -1,4 +1,5 @@
 import { and, desc, eq } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 import { db } from '@/db';
 import {
   workspaces,
@@ -112,14 +113,32 @@ export type ManagedStudent = {
   fieldOfStudy: string | null;
   invitedAt: Date;
   joinedAt: Date | null;
+  assignedCoordinatorId: string | null;
+  encadrantName: string | null;
 };
 
 /**
  * Active student-role members of a university org, joined to the user + their
  * profile (field/university for the roster card). Staff members (owner/admin)
  * are excluded — this is the supervised-students list only.
+ *
+ * Pass `forCoordinatorId` to restrict results to students assigned to that
+ * coordinator (encadrant view). Omit for the head's full roster.
  */
-export async function getManagedStudents(universityOrgId: string): Promise<ManagedStudent[]> {
+export async function getManagedStudents(
+  universityOrgId: string,
+  opts?: { forCoordinatorId?: string },
+): Promise<ManagedStudent[]> {
+  const encadrant = alias(users, 'encadrant');
+  const where = [
+    eq(organizationMembers.organizationId, universityOrgId),
+    eq(organizationMembers.role, 'student'),
+    eq(organizationMembers.status, 'active'),
+  ];
+  if (opts?.forCoordinatorId) {
+    where.push(eq(organizationMembers.assignedCoordinatorId, opts.forCoordinatorId));
+  }
+
   const rows = await db
     .select({
       memberId: organizationMembers.id,
@@ -132,21 +151,32 @@ export async function getManagedStudents(universityOrgId: string): Promise<Manag
       fieldOfStudy: profiles.fieldOfStudy,
       invitedAt: organizationMembers.invitedAt,
       joinedAt: organizationMembers.joinedAt,
+      assignedCoordinatorId: organizationMembers.assignedCoordinatorId,
+      encadrantFirstName: encadrant.firstName,
+      encadrantLastName: encadrant.lastName,
     })
     .from(organizationMembers)
     .leftJoin(users, eq(users.id, organizationMembers.userId))
     .leftJoin(profiles, eq(profiles.userId, organizationMembers.userId))
-    .where(
-      and(
-        eq(organizationMembers.organizationId, universityOrgId),
-        eq(organizationMembers.role, 'student'),
-        eq(organizationMembers.status, 'active'),
-      ),
-    )
+    .leftJoin(encadrant, eq(encadrant.id, organizationMembers.assignedCoordinatorId))
+    .where(and(...where))
     .orderBy(desc(organizationMembers.joinedAt))
     .limit(500);
 
-  return rows as ManagedStudent[];
+  return rows.map((r) => ({
+    memberId: r.memberId,
+    userId: r.userId,
+    firstName: r.firstName,
+    lastName: r.lastName,
+    email: r.email,
+    imageUrl: r.imageUrl,
+    university: r.university,
+    fieldOfStudy: r.fieldOfStudy,
+    invitedAt: r.invitedAt,
+    joinedAt: r.joinedAt,
+    assignedCoordinatorId: r.assignedCoordinatorId ?? null,
+    encadrantName: [r.encadrantFirstName, r.encadrantLastName].filter(Boolean).join(' ') || null,
+  }));
 }
 
 export type UniversityRow = {

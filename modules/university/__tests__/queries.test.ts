@@ -22,6 +22,7 @@ vi.mock('@/db/schema', () => ({
 vi.mock('drizzle-orm', () => ({
   eq: vi.fn(() => 'eq'), and: vi.fn(() => 'and'), desc: vi.fn(() => 'desc'),
 }));
+vi.mock('drizzle-orm/pg-core', () => ({ alias: (t: unknown) => t }));
 
 import { getStudentInternshipSnapshot, getManagedStudents } from '../queries';
 
@@ -142,6 +143,23 @@ describe('getManagedStudents', () => {
   it('returns [] when the university has no managed students', async () => {
     mocks.selectQueue.push([]);
     const rows = await getManagedStudents('uni-1');
+    expect(rows).toEqual([]);
+  });
+
+  it('maps assignedCoordinatorId + encadrant name onto each row', async () => {
+    mocks.selectQueue.push([{
+      memberId: 'm1', userId: 'stu-1', firstName: 'Lina', lastName: 'Ben',
+      email: 'lina@uni.edu', imageUrl: null, university: 'ENIT', fieldOfStudy: 'GL',
+      invitedAt: new Date(), joinedAt: new Date(),
+      assignedCoordinatorId: 'coord-9', encadrantFirstName: 'Sami', encadrantLastName: 'Saidi',
+    }]);
+    const rows = await getManagedStudents('uni-1');
+    expect(rows[0]).toMatchObject({ assignedCoordinatorId: 'coord-9', encadrantName: 'Sami Saidi' });
+  });
+
+  it('accepts a forCoordinatorId option (encadrant view)', async () => {
+    mocks.selectQueue.push([]);
+    const rows = await getManagedStudents('uni-1', { forCoordinatorId: 'coord-9' });
     expect(rows).toEqual([]);
   });
 });
