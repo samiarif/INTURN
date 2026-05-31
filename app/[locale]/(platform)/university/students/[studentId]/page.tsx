@@ -9,7 +9,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusPill } from '@/components/status-pill';
 import { getStudentInternshipSnapshot, canCoordinatorViewStudent } from '@/modules/university/queries';
 import { toneFor } from '@/modules/academic-reports/status-tone';
-import { getReportForStudent, getReportComments } from '@/modules/academic-reports/queries';
+import { getReportsForStudent, getReportComments } from '@/modules/academic-reports/queries';
 import { ReportVersionStack } from '@/modules/academic-reports/components/report-version-stack';
 import { ReportCommentsThread } from '@/modules/academic-reports/components/report-comments-thread';
 import { ReportReviewBar } from '@/modules/academic-reports/components/report-review-bar';
@@ -53,12 +53,12 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
     .limit(1);
   if (!student) notFound();
 
-  // Firewalled snapshot + the rapport. NEVER canViewWorkspace.
-  const [snapshot, report] = await Promise.all([
+  // Firewalled snapshot + all deliverables. NEVER canViewWorkspace.
+  const [snapshot, reports] = await Promise.all([
     getStudentInternshipSnapshot(studentId),
-    getReportForStudent(studentId, current.org.id),
+    getReportsForStudent(studentId, current.org.id),
   ]);
-  const comments = report ? await getReportComments(report.id) : [];
+  const commentsByReport = await Promise.all(reports.map((r) => getReportComments(r.id)));
   const studentName = [student.firstName, student.lastName].filter(Boolean).join(' ') || student.email;
 
   const statusLabels: Record<string, string> = {
@@ -92,63 +92,80 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
         )}
       </section>
 
-      {/* The rapport. */}
-      {!report ? (
+      {/* Deliverables list — one card per livrable. */}
+      {reports.length === 0 ? (
         <div className="rounded-md border border-dashed border-[var(--border-color)] p-8 text-center text-sm text-[var(--ink-3)]">
           {tUni('noReport')}
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          <div className="flex items-center gap-3">
-            <StatusPill tone={toneFor(report.status)}>{statusLabels[report.status]}</StatusPill>
-            <span className="font-mono text-caption text-[var(--ink-3)]">{`v${report.version}`}</span>
-          </div>
+          {reports.map((report, i) => (
+            <div
+              key={report.id}
+              className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4"
+            >
+              {/* Deliverable heading */}
+              <div className="mb-4">
+                <h2 className="text-sm font-semibold text-[var(--ink)]">
+                  {report.title || t(`kind.${report.kind}`)}
+                </h2>
+                <span className="text-caption text-[var(--ink-4)]">{t(`kind.${report.kind}`)}</span>
+              </div>
 
-          {/* Role-gated review bar — only when awaiting review. */}
-          {report.status === 'submitted' && (
-            <ReportReviewBar
-              reportId={report.id}
-              whenLabel={relativeWhen(report.submittedAt, locale)}
-              labels={{
-                submittedBy: t('review.submittedBy', { name: studentName }),
-                requestChanges: t('review.requestChanges'),
-                submitChanges: t('review.submitChanges'),
-                approve: t('review.approve'),
-                cancel: t('review.cancel'),
-                feedbackPlaceholder: t('review.feedbackPlaceholder'),
-                sending: t('review.sending'),
-                errorGeneric: t('review.errorGeneric'),
-              }}
-            />
-          )}
+              <div className="flex flex-col gap-6">
+                <div className="flex items-center gap-3">
+                  <StatusPill tone={toneFor(report.status)}>{statusLabels[report.status]}</StatusPill>
+                  <span className="font-mono text-caption text-[var(--ink-3)]">v{report.version}</span>
+                </div>
 
-          <section>
-            <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{t('home.versionsTitle')}</h2>
-            <ReportVersionStack
-              report={report}
-              authorName={studentName}
-              statusLabels={statusLabels}
-              locale={locale}
-              noFileLabel={t('home.noFile')}
-              openLabel={t('home.open')}
-            />
-          </section>
+                {/* Role-gated review bar — only when awaiting review. */}
+                {report.status === 'submitted' && (
+                  <ReportReviewBar
+                    reportId={report.id}
+                    whenLabel={relativeWhen(report.submittedAt, locale)}
+                    labels={{
+                      submittedBy: t('review.submittedBy', { name: studentName }),
+                      requestChanges: t('review.requestChanges'),
+                      submitChanges: t('review.submitChanges'),
+                      approve: t('review.approve'),
+                      cancel: t('review.cancel'),
+                      feedbackPlaceholder: t('review.feedbackPlaceholder'),
+                      sending: t('review.sending'),
+                      errorGeneric: t('review.errorGeneric'),
+                    }}
+                  />
+                )}
 
-          <section>
-            <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{t('home.commentsTitle')}</h2>
-            <ReportCommentsThread
-              reportId={report.id}
-              comments={comments}
-              currentUserId={session.user.id}
-              locale={locale}
-              labels={{
-                placeholder: t('comments.placeholder'),
-                empty: t('comments.empty'),
-                post: t('comments.post'),
-                sending: t('comments.sending'),
-              }}
-            />
-          </section>
+                <section>
+                  <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{t('home.versionsTitle')}</h2>
+                  <ReportVersionStack
+                    report={report}
+                    authorName={studentName}
+                    statusLabels={statusLabels}
+                    locale={locale}
+                    noFileLabel={t('home.noFile')}
+                    openLabel={t('home.open')}
+                  />
+                </section>
+
+                <section>
+                  <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{t('home.commentsTitle')}</h2>
+                  <ReportCommentsThread
+                    reportId={report.id}
+                    comments={commentsByReport[i]}
+                    currentUserId={session.user.id}
+                    locale={locale}
+                    labels={{
+                      placeholder: t('comments.placeholder'),
+                      empty: t('comments.empty'),
+                      post: t('comments.post'),
+                      sending: t('comments.sending'),
+                    }}
+                  />
+                </section>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
