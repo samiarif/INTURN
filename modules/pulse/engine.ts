@@ -47,15 +47,20 @@ async function aiPulse(signals: PulseSignals): Promise<Pulse> {
   return { ...verdict, source: 'ai', generatedAt: new Date().toISOString() };
 }
 
-export const getPulse = cache(
-  async (workspaceId: string, locale: 'fr' | 'en'): Promise<Pulse | null> => {
-    const signals = await gatherPulseSignals(workspaceId, locale);
-    if (!signals) return null;
-    if (!pulseAiEnabled()) return heuristicPulse(signals);
-    try {
-      return await aiPulse(signals);
-    } catch {
-      return heuristicPulse(signals); // never let a model hiccup break the page
-    }
-  },
-);
+/** Uncached core. Used by the cron sweep (which runs outside a React render). */
+export async function computePulse(
+  workspaceId: string,
+  locale: 'fr' | 'en',
+): Promise<Pulse | null> {
+  const signals = await gatherPulseSignals(workspaceId, locale);
+  if (!signals) return null;
+  if (!pulseAiEnabled()) return heuristicPulse(signals);
+  try {
+    return await aiPulse(signals);
+  } catch {
+    return heuristicPulse(signals); // never let a model hiccup break the page
+  }
+}
+
+/** React-cached wrapper for renders — one render = one synthesis per workspace. */
+export const getPulse = cache(computePulse);
