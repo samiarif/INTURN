@@ -38,6 +38,47 @@ export function formatTimeAgo(date: Date | string, locale: FormatLocale = 'fr'):
 }
 
 /**
+ * Day-granularity relative time for activity rails: "today" / "yesterday" /
+ * "3d ago", falling back to a short date past a week. Companion to
+ * `formatTimeAgo` (minute/hour granularity) — use this where day buckets read
+ * better than "47h ago". Pass the caller's `now` so Date.now() isn't read
+ * inside a component render.
+ */
+export function formatDayRelative(
+  date: Date | string,
+  now: Date,
+  locale: FormatLocale = 'fr',
+): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  if (Number.isNaN(d.getTime())) return '—';
+  const days = Math.floor((now.getTime() - d.getTime()) / MS_PER_DAY);
+  if (days <= 0) return locale === 'fr' ? "aujourd'hui" : 'today';
+  if (days === 1) return locale === 'fr' ? 'hier' : 'yesterday';
+  if (days < 7) return locale === 'fr' ? `il y a ${days} j` : `${days}d ago`;
+  return formatDateShort(d, locale);
+}
+
+/**
+ * Ultra-compact age stamp without the "ago" suffix: "5m" / "2h" / "3d" (en)
+ * · "5 min" / "2 h" / "3 j" (fr). For dense KPI tiles where even "5m ago" is
+ * too long. Pass the caller's `now` so Date.now() isn't read in a render.
+ */
+export function formatShortAge(from: Date, now: Date, locale: FormatLocale = 'fr'): string {
+  const ms = now.getTime() - from.getTime();
+  if (ms < MS_PER_MIN) return locale === 'fr' ? '<1 min' : '<1m';
+  if (ms < MS_PER_HOUR) {
+    const m = Math.floor(ms / MS_PER_MIN);
+    return locale === 'fr' ? `${m} min` : `${m}m`;
+  }
+  if (ms < MS_PER_DAY) {
+    const h = Math.floor(ms / MS_PER_HOUR);
+    return locale === 'fr' ? `${h} h` : `${h}h`;
+  }
+  const d = Math.floor(ms / MS_PER_DAY);
+  return locale === 'fr' ? `${d} j` : `${d}d`;
+}
+
+/**
  * "12 Jan" / "12 janv." — short date, no year. Use in dense lists and
  * activity feeds.
  */

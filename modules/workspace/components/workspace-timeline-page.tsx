@@ -1,11 +1,29 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { WorkspaceMHead } from './m-head';
 import { getWorkspaceTimeline, type TimelineRow } from '../queries';
 import type { WorkspaceOverviewData } from '../queries';
 import type { WorkspaceView } from '../types';
 
-function fmtDay(d: Date): string {
-  return d.toLocaleDateString(undefined, {
+// Persisted event types (stable keys — never translate) → camelCase label keys
+// under `workspace.timeline.eventType`. Unmapped types fall back to the raw type.
+const EVENT_TYPE_KEY: Record<string, string> = {
+  'workspace.created': 'workspaceCreated',
+  'task.created': 'taskCreated',
+  'task.moved': 'taskMoved',
+  'comment.added': 'commentAdded',
+  'deliverable.submitted': 'deliverableSubmitted',
+  'deliverable.approved': 'deliverableApproved',
+  'deliverable.revision.requested': 'deliverableRevisionRequested',
+  'system.checkin.scheduled': 'checkinScheduled',
+  'checkin.submitted': 'checkinSubmitted',
+  'stuck.signaled': 'stuckSignaled',
+  'academicReport.submitted': 'reportSubmitted',
+  'academicReport.approved': 'reportApproved',
+  'academicReport.revision.requested': 'reportRevisionRequested',
+};
+
+function fmtDay(d: Date, locale: string): string {
+  return d.toLocaleDateString(locale, {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -36,7 +54,10 @@ export async function WorkspaceTimelinePage({
   // workspace consolidated to a single route with ?tab= switching.
   basePath?: string;
 }) {
-  const t = await getTranslations('workspace.timeline');
+  const [t, locale] = await Promise.all([
+    getTranslations('workspace.timeline'),
+    getLocale(),
+  ]);
   const rows = await getWorkspaceTimeline(data.workspace.id);
   const grouped = groupByDay(rows);
 
@@ -67,7 +88,7 @@ export async function WorkspaceTimelinePage({
             {grouped.map(({ day, rows }) => (
               <section key={day}>
                 <h3 className="text-eyebrow uppercase text-[var(--ink-3)] mb-3">
-                  {fmtDay(new Date(day))}
+                  {fmtDay(new Date(day), locale)}
                 </h3>
                 <ul className="space-y-3 border-l border-[var(--border-color)] pl-5">
                   {rows.map((r) => (
@@ -81,11 +102,15 @@ export async function WorkspaceTimelinePage({
                         }`}
                       />
                       {r.kind === 'milestone' ? (
-                        <span className="font-medium text-[var(--ink)]">{r.label}</span>
+                        <span className="font-medium text-[var(--ink)]">{t(r.labelKey)}</span>
                       ) : (
                         <span>
-                          <span className="font-medium text-[var(--ink)]">{r.type}</span>
-                          <span className="text-[var(--ink-3)]"> · {r.at.toLocaleTimeString()}</span>
+                          <span className="font-medium text-[var(--ink)]">
+                            {EVENT_TYPE_KEY[r.type] ? t(`eventType.${EVENT_TYPE_KEY[r.type]}`) : r.type}
+                          </span>
+                          <span className="text-[var(--ink-3)]">
+                            {t('eventTime', { time: r.at.toLocaleTimeString(locale) })}
+                          </span>
                         </span>
                       )}
                     </li>

@@ -126,7 +126,7 @@ export default async function Page() {
           {eyebrow}
         </div>
         <h1 className="text-display font-[family-name:var(--font-display)] text-[var(--ink)] mb-1">
-          {greeting},{' '}
+          {greeting}{', '}
           <span
             className="bg-clip-text text-transparent"
             style={{

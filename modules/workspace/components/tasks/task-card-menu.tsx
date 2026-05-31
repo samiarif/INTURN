@@ -74,7 +74,7 @@ export function TaskCardMenu({ task, view }: Props) {
         onPointerDown={(e) => e.stopPropagation()}
         onClick={() => setPanel(panel ? null : 'main')}
       >
-        ⋯
+        {t('triggerGlyph')}
       </button>
       {panel && (
         <div

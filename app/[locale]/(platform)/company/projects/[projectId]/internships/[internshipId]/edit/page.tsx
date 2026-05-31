@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { db } from '@/db';
 import { organizations } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -32,8 +33,11 @@ export default async function Page({
     .where(eq(organizations.id, project.organizationId))
     .limit(1);
 
+  const tf = await getTranslations('internships.form');
   const supervisorName =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email || 'You';
+    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+    user.email ||
+    tf('previewDefaultSupervisor');
 
   return (
     <div className="max-w-[1200px] mx-auto p-6 sm:p-8">
@@ -41,7 +45,7 @@ export default async function Page({
         projectId={projectId}
         projectName={project.name}
         projectStartDate={project.startDate ?? null}
-        orgName={org?.name ?? 'Your company'}
+        orgName={org?.name ?? tf('previewDefaultOrg')}
         orgLocation={org?.city ?? org?.location ?? ''}
         supervisorName={supervisorName}
         initialInternship={internship}

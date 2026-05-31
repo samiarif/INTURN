@@ -24,7 +24,9 @@ export function CreateUniversityForm() {
         setName(''); setCity(''); setCountry('');
         router.refresh();
       } else {
-        setError(res.error);
+        // createUniversityAction only surfaces thrown/shouldn't-happen codes
+        // (authz, unexpected), so every failure funnels to generic copy.
+        setError(t('errorGeneric'));
       }
     });
   }

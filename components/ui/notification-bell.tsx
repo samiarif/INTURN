@@ -2,22 +2,11 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { Bell } from 'lucide-react';
 import type { Notification } from '@/db/schema';
+import { formatTimeAgo, type FormatLocale } from '@/lib/format-time';
 import { markAsReadAction, markAllAsReadAction } from '@/modules/notifications/actions';
-
-function timeAgo(d: Date | string): string {
-  const t = typeof d === 'string' ? new Date(d) : d;
-  const diff = Date.now() - t.getTime();
-  const min = Math.floor(diff / 60_000);
-  if (min < 1) return 'just now';
-  if (min < 60) return `${min}m ago`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h ago`;
-  const day = Math.floor(hr / 24);
-  if (day < 7) return `${day}d ago`;
-  return t.toLocaleDateString();
-}
 
 export function NotificationBell({
   initialUnread,
@@ -28,6 +17,8 @@ export function NotificationBell({
   initialItems: Notification[];
   label: string;
 }) {
+  const t = useTranslations('notifications');
+  const locale = useLocale() as FormatLocale;
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState(initialItems);
   const [unread, setUnread] = useState(initialUnread);
@@ -51,12 +42,61 @@ export function NotificationBell({
     setUnread(0);
   }
 
+  // Render the notification line from its structured `type` + `metadata`, so a
+  // FR reader sees French (the stored `body` is written English-only at
+  // dispatch time). Mirrors the activity-feed humanizer. Falls back to the
+  // stored `body` for legacy rows whose metadata predates the display fields,
+  // or any future type not handled here.
+  function describe(n: Notification): string {
+    const meta = (n.metadata ?? {}) as Record<string, unknown>;
+    switch (n.type) {
+      case 'application.received':
+        // `applicantName` may be empty (invited-but-not-onboarded applicants
+        // have no name yet) — fall back to a localized "Someone" at render time,
+        // since the stored metadata is locale-agnostic.
+        if (meta.internshipTitle)
+          return t('item.applicationReceived', {
+            name: meta.applicantName ? String(meta.applicantName) : t('item.unknownPerson'),
+            title: String(meta.internshipTitle),
+          });
+        break;
+      case 'application.status':
+        if (meta.internshipTitle && meta.to)
+          return t('item.applicationStatus', {
+            title: String(meta.internshipTitle),
+            status: t(`status.${String(meta.to)}` as 'status.reviewed'),
+          });
+        break;
+      case 'checkin.due':
+        if (meta.internshipTitle)
+          return t('item.checkinDue', { title: String(meta.internshipTitle) });
+        break;
+      case 'nudge':
+        return meta.message
+          ? t('item.nudge', { message: String(meta.message) })
+          : t('item.nudgeNoMessage');
+      case 'academicReport.submitted':
+        // `studentName` may be empty — localize the fallback at render time.
+        if (meta.version != null)
+          return t('item.academicReportSubmitted', {
+            name: meta.studentName ? String(meta.studentName) : t('item.unknownStudent'),
+            version: Number(meta.version),
+          });
+        break;
+      case 'academicReport.approved':
+        return t('item.academicReportApproved');
+      case 'academicReport.revision.requested':
+        return t('item.academicReportRevision');
+    }
+    return n.body;
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label={unread > 0 ? `${label} (${unread} unread)` : label}
+        aria-label={unread > 0 ? t('unreadAria', { label, count: unread }) : label}
         className="h-9 w-9 inline-flex items-center justify-center rounded-md border border-[var(--border-color)] bg-[var(--surface)] hover:border-[var(--border-strong)] relative"
       >
         <Bell size={17} strokeWidth={2} className="text-[var(--ink-2)]" aria-hidden />
@@ -100,6 +140,7 @@ export function NotificationBell({
               right: 0,
               top: '110%',
               width: 340,
+              maxWidth: 'calc(100vw - 24px)',
               maxHeight: 480,
               overflowY: 'auto',
               background: 'var(--surface)',
@@ -131,7 +172,7 @@ export function NotificationBell({
                     cursor: 'pointer',
                   }}
                 >
-                  Mark all read
+                  {t('markAllRead')}
                 </button>
               )}
             </div>
@@ -144,7 +185,7 @@ export function NotificationBell({
                   fontSize: 13,
                 }}
               >
-                No notifications yet.
+                {t('empty')}
               </div>
             ) : (
               <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
@@ -167,7 +208,7 @@ export function NotificationBell({
                         color: 'var(--ink)',
                       }}
                     >
-                      {n.body}
+                      {describe(n)}
                       <div
                         style={{
                           fontSize: 11,
@@ -176,7 +217,7 @@ export function NotificationBell({
                           fontFamily: 'var(--font-mono)',
                         }}
                       >
-                        {timeAgo(n.createdAt)}
+                        {formatTimeAgo(new Date(n.createdAt), locale)}
                       </div>
                     </button>
                   </li>

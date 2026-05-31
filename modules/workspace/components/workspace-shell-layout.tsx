@@ -4,6 +4,7 @@ import { WorkspaceTopBar, type Crumb } from './topbar';
 import { StuckPill } from './stuck-pill';
 import { computeWeekOfTotal, getProjectSiblingWorkspaces } from '../queries';
 import type { WorkspaceShell } from '../page-data';
+import { locationLabelKey } from './location-label';
 
 // `localePrefix: 'as-needed'` — French (default) has no prefix, English is /en
 // (see i18n/routing.ts). Mirrors CommandCenterFilter's hrefFor.
@@ -60,11 +61,6 @@ async function buildShellCrumbs(
   return [orgCrumb, projectCrumb, internCrumb];
 }
 
-function buildShellModeChip(shell: WorkspaceShell['shell']): { label: string } {
-  const { current, total } = computeWeekOfTotal(shell.startDate, shell.durationWeeks);
-  return { label: `${shell.locationType} · WEEK ${current} / ${total}` };
-}
-
 export async function WorkspaceShellLayout({
   shell,
   children,
@@ -73,11 +69,20 @@ export async function WorkspaceShellLayout({
   children: ReactNode;
 }) {
   const s = shell.shell;
-  const [tCrumbs, locale] = await Promise.all([
+  const [tCrumbs, tMode, tTopbar, locale] = await Promise.all([
     getTranslations('workspace.crumbs'),
+    getTranslations('workspace.brief.mode'),
+    getTranslations('workspace.topbar'),
     getLocale(),
   ]);
   const crumbs = await buildShellCrumbs(s, shell.view, tCrumbs('myWorkspaces'), locale);
+  // The mode chip pairs a localized location label with the week-of-total
+  // counter. locationType is stored verbatim (on-site/virtual/hybrid); map it
+  // to the shared brief.mode key set rather than rendering the raw enum.
+  const { current, total } = computeWeekOfTotal(s.startDate, s.durationWeeks);
+  const modeChip = {
+    label: `${tMode(locationLabelKey(s.locationType))} · ${tTopbar('weekChip', { current, total })}`,
+  };
   return (
     <div
       className="ws-shell ws"
@@ -87,7 +92,7 @@ export async function WorkspaceShellLayout({
         view={shell.view}
         viewerInitials={shell.viewer.initials}
         crumbs={crumbs}
-        modeChip={buildShellModeChip(s)}
+        modeChip={modeChip}
       />
       <div className="ws-body">
         <main id="main-content" className="ws-main">{children}</main>

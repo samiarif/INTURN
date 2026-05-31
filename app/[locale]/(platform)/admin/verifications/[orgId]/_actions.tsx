@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
 import { setVerificationStatusAction } from '@/modules/admin/server-actions';
 import {
@@ -16,6 +17,7 @@ export function VerificationActions({
   orgId: string;
   currentStatus: VerificationStatus;
 }) {
+  const t = useTranslations('admin.verifyActions');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -36,7 +38,7 @@ export function VerificationActions({
           className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[#15803D] text-white hover:bg-[#166534] disabled:opacity-50"
         >
           <Check size={15} strokeWidth={2.5} aria-hidden />
-          Mark verified
+          {t('markVerified')}
         </button>
       )}
       {isValidVerificationTransition(currentStatus, 'pending') && (
@@ -46,7 +48,7 @@ export function VerificationActions({
           onClick={() => setTo('pending')}
           className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A] hover:bg-[#FEF3C7] disabled:opacity-50"
         >
-          Request changes
+          {t('requestChanges')}
         </button>
       )}
       {isValidVerificationTransition(currentStatus, 'suspended') && (
@@ -54,13 +56,13 @@ export function VerificationActions({
           type="button"
           disabled={pending}
           onClick={() => {
-            if (confirm('Suspend this organization? Their internships will be hidden from the marketplace.')) {
+            if (confirm(t('suspendConfirm'))) {
               setTo('suspended');
             }
           }}
           className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] hover:bg-[#FEE2E2] disabled:opacity-50"
         >
-          Suspend
+          {t('suspend')}
         </button>
       )}
     </div>

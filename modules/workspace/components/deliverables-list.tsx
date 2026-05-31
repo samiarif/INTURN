@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import type { Deliverable } from '@/db/schema';
 import type { DeliverableLinks } from '@/modules/deliverables/dependencies';
+import { formatTimeAgo, type FormatLocale } from '@/lib/format-time';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { FileDrop } from '@/components/file-drop';
@@ -78,9 +79,9 @@ function DeliverableLinkChipsInline({ links }: { links: DeliverableLinks }) {
           <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
             {links.dependsOn.map((d) => (
               <span key={d.id} style={chipStyle}>
-                <span aria-hidden style={{ lineHeight: 1 }}>🔗</span>
+                <span aria-hidden style={{ lineHeight: 1 }}>{'🔗'}</span>
                 <span style={{ color: 'var(--ink)' }}>{d.title}</span>
-                <span style={{ color: 'var(--ink-4)' }}>·</span>
+                <span style={{ color: 'var(--ink-4)' }}>{'·'}</span>
                 <span>{d.internName}</span>
                 <span
                   aria-hidden
@@ -104,9 +105,9 @@ function DeliverableLinkChipsInline({ links }: { links: DeliverableLinks }) {
           <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
             {links.feedsInto.map((d) => (
               <span key={d.id} style={chipStyle}>
-                <span aria-hidden style={{ lineHeight: 1 }}>🔗</span>
+                <span aria-hidden style={{ lineHeight: 1 }}>{'🔗'}</span>
                 <span style={{ color: 'var(--ink)' }}>{d.title}</span>
-                <span style={{ color: 'var(--ink-4)' }}>·</span>
+                <span style={{ color: 'var(--ink-4)' }}>{'·'}</span>
                 <span>{d.internName}</span>
               </span>
             ))}
@@ -121,17 +122,6 @@ function fmtDate(d: Date | string | null, locale: string): string {
   if (!d) return '';
   const date = new Date(d);
   return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
-}
-
-function relativeDate(d: Date | string | null): string {
-  if (!d) return '';
-  const ms = Date.now() - new Date(d).getTime();
-  const minutes = Math.floor(ms / 60_000);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
 }
 
 function DeliverableRow({
@@ -206,7 +196,7 @@ function DeliverableRow({
             </span>
             <span
               className="ws-deliv-ver"
-              title={`Version ${deliverable.version}`}
+              title={t('versionBadge', { n: deliverable.version })}
             >
               {t('version', { n: deliverable.version })}
             </span>
@@ -221,14 +211,14 @@ function DeliverableRow({
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'var(--ink-3)', marginBottom: deliverable.fileUrl || deliverable.feedback ? 12 : 0 }}>
             {deliverable.dueDate && (
               <>
-                <span>Due {fmtDate(deliverable.dueDate, locale)}</span>
-                <span>·</span>
+                <span>{t('rowDue', { date: fmtDate(deliverable.dueDate, locale) })}</span>
+                <span>{t('rowSep')}</span>
               </>
             )}
             {deliverable.submittedAt && (
               <>
-                <span>Submitted {relativeDate(deliverable.submittedAt)}</span>
-                <span>·</span>
+                <span>{t('rowSubmitted', { when: formatTimeAgo(deliverable.submittedAt, locale as FormatLocale) })}</span>
+                <span>{t('rowSep')}</span>
               </>
             )}
             <span style={{ fontFamily: 'var(--font-mono)' }}>{deliverable.id.slice(0, 8)}</span>
@@ -252,7 +242,7 @@ function DeliverableRow({
                   background: 'var(--surface-muted)',
                 }}
               >
-                📎 {deliverable.fileName ?? 'Open file'}
+                {t('fileChip', { name: deliverable.fileName ?? t('fileChipFallback') })}
               </a>
             </div>
           )}
@@ -269,7 +259,7 @@ function DeliverableRow({
                 borderRadius: 8,
               }}
             >
-              <b>{tStatus('changesRequested')}:</b> {deliverable.feedback}
+              <b>{t('feedbackLabel', { label: tStatus('changesRequested') })}</b> {deliverable.feedback}
             </div>
           )}
 
@@ -297,10 +287,10 @@ function DeliverableRow({
             className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
           >
             {showSubmit
-              ? 'Cancel'
+              ? t('cancel')
               : status === 'revision-requested'
-                ? 'Submit revision'
-                : 'Submit'}
+                ? t('submitRevision')
+                : t('submit')}
           </Button>
         )}
         {view === 'supervisor' && status === 'submitted' && (
@@ -311,7 +301,7 @@ function DeliverableRow({
               onClick={approve}
               className="bg-[#15803D] hover:bg-[#166534] text-white"
             >
-              ✓ {t('approve')}
+              {t('checkLabel', { label: t('approve') })}
             </Button>
             <Button
               type="button"
@@ -319,13 +309,13 @@ function DeliverableRow({
               disabled={pending}
               onClick={() => setShowRequest((v) => !v)}
             >
-              {showRequest ? 'Cancel' : t('requestChanges')}
+              {showRequest ? t('cancel') : t('requestChanges')}
             </Button>
           </>
         )}
         {status === 'approved' && (
           <span style={{ color: 'var(--success)', fontSize: 13, fontWeight: 500 }}>
-            ✓ {tStatus('approved')}
+            {t('checkLabel', { label: tStatus('approved') })}
           </span>
         )}
       </div>
@@ -336,7 +326,7 @@ function DeliverableRow({
             kind="deliverable"
             accept=".pdf,image/*,.zip,.fig"
             onUploaded={(r) => setStagedFile({ url: r.url, fileName: r.fileName, contentType: r.contentType })}
-            helper="PDF, image, zip or .fig · max 5 MB"
+            helper={t('fileDropHelper')}
           />
           {stagedFile && (
             <div
@@ -351,7 +341,7 @@ function DeliverableRow({
                 gap: 12,
               }}
             >
-              <span>✓ {stagedFile.fileName}</span>
+              <span>{t('checkLabel', { label: stagedFile.fileName })}</span>
               <Button
                 type="button"
                 size="sm"
@@ -359,7 +349,7 @@ function DeliverableRow({
                 onClick={submit}
                 className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] ml-auto"
               >
-                {pending ? 'Sending…' : 'Send to supervisor →'}
+                {pending ? t('sending') : t('sendToSupervisor')}
               </Button>
             </div>
           )}
@@ -386,7 +376,7 @@ function DeliverableRow({
               onClick={sendRevision}
               className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
             >
-              {pending ? 'Sending…' : t('submitChanges')}
+              {pending ? t('sending') : t('submitChanges')}
             </Button>
           </div>
         </div>
@@ -409,16 +399,15 @@ export function DeliverablesList({
    */
   linksByDeliverable?: Record<string, DeliverableLinks>;
 }) {
-  // Empty-state copy ("No deliverables yet.", subline) is not in the plan
-  // namespace and remains English until the namespace expands.
+  const tm = useTranslations('workspace.deliverables.master');
   if (deliverables.length === 0) {
     return (
       <div className="ws-card" style={{ textAlign: 'center', padding: 48 }}>
         <p style={{ color: 'var(--ink-2)', fontWeight: 500, marginBottom: 4 }}>
-          No deliverables yet.
+          {tm('noDeliverables')}
         </p>
         <p style={{ color: 'var(--ink-3)', fontSize: 13 }}>
-          Deliverables get created from the supervisor side as part of the project plan.
+          {tm('noDeliverablesSub')}
         </p>
       </div>
     );

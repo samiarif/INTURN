@@ -72,7 +72,27 @@
   "notifications": {
     "label": "Notifications",
     "empty": "No notifications yet.",
-    "markAllRead": "Mark all read"
+    "markAllRead": "Mark all read",
+    "unreadAria": "{label} ({count} unread)",
+    "item": {
+      "applicationReceived": "{name} applied to {title}",
+      "applicationStatus": "Your application to {title} was {status}",
+      "checkinDue": "Weekly check-in due for {title}",
+      "nudge": "Your supervisor sent a nudge: \"{message}\"",
+      "nudgeNoMessage": "Your supervisor sent a nudge.",
+      "academicReportSubmitted": "{name} submitted their report (v{version})",
+      "academicReportApproved": "Your report was approved",
+      "academicReportRevision": "Your report needs a revision",
+      "unknownPerson": "Someone",
+      "unknownStudent": "A student"
+    },
+    "status": {
+      "reviewed": "reviewed",
+      "shortlisted": "shortlisted",
+      "interview": "invited to interview",
+      "accepted": "accepted",
+      "rejected": "declined"
+    }
   },
   "common": {
     "loading": "Loading...",
@@ -81,7 +101,13 @@
     "cancel": "Cancel",
     "back": "Back",
     "next": "Next",
-    "submit": "Submit"
+    "submit": "Submit",
+    "requiredMark": "*",
+    "selectPlaceholder": "Select…",
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    }
   },
   "auth": {
     "signIn": "Sign in",
@@ -95,7 +121,11 @@
       "company": "I'm a company",
       "companyDescription": "I want to post internships and recruit talent",
       "continue": "Continue"
-    }
+    },
+    "signInTitle": "Welcome back",
+    "signInSubtitle": "Sign in to your workspace.",
+    "signUpTitle": "Create your Inturn account",
+    "signUpSubtitle": "One profile. Apply once. Work in dedicated workspaces."
   },
   "onboarding": {
     "intern": {
@@ -115,7 +145,10 @@
         "continue": "Continue →",
         "back": "← Back",
         "step": "Basics",
-        "save": "Save changes"
+        "save": "Save changes",
+        "universityPlaceholder": "Select university…",
+        "universitySearchPlaceholder": "Search universities…",
+        "universityNoMatches": "No universities match."
       },
       "skills": {
         "title": "Your skills",
@@ -131,7 +164,8 @@
         "addLink": "+ Add another link",
         "back": "← Back",
         "finish": "Finish profile →",
-        "step": "Skills + CV"
+        "step": "Skills + CV",
+        "cvUploadedLine": "CV uploaded · <a>view</a>"
       },
       "done": {
         "title": "Profile complete",
@@ -150,6 +184,7 @@
       "industry": "Industry",
       "size": "Company size",
       "country": "Country",
+      "countryDefault": "Tunisia",
       "city": "City",
       "description": "Short description",
       "descriptionHelper": "Shows on every public listing.",
@@ -160,7 +195,22 @@
       "rneHelper": "PDF or image · Reviewed by our team in <24h",
       "saveDraft": "Save as draft",
       "continue": "Continue → Post first internship",
-      "step": "Setup"
+      "step": "Setup",
+      "sizeOption": "{size} employees",
+      "websitePlaceholder": "https://…",
+      "descriptionMeta": "{count} / 280 · {helper}",
+      "rneUploaded": "RNE uploaded",
+      "industries": {
+        "designCreative": "Design & creative",
+        "softwareTech": "Software & tech",
+        "marketingComms": "Marketing & comms",
+        "finance": "Finance",
+        "education": "Education",
+        "healthcare": "Healthcare",
+        "manufacturing": "Manufacturing",
+        "retail": "Retail",
+        "other": "Other"
+      }
     }
   },
   "dashboard": {
@@ -185,7 +235,9 @@
       "forCompanies": "For companies",
       "howItWorks": "How it works",
       "logIn": "Log in",
-      "signUp": "Sign up"
+      "signUp": "Sign up",
+      "dashboard": "Dashboard",
+      "devLogin": "Dev login"
     },
     "interns": {
       "title": "For students",
@@ -246,7 +298,16 @@
       "help": "Help",
       "profile": "Profile",
       "keyboardShortcut": "⌘K",
-      "openSidebar": "Open sidebar"
+      "openSidebar": "Open sidebar",
+      "crumbSep": "/",
+      "addGlyph": "+",
+      "addNote": "Add note",
+      "assignTask": "Assign task",
+      "weeklyCheckIn": "Weekly check-in →",
+      "welcomeBack": "Welcome back, {name}",
+      "headTitleSupervisor": "{name} · {project}",
+      "activeBadge": "ACTIVE",
+      "weekChip": "WEEK {current} / {total}"
     },
     "tabs": {
       "overview": "Overview",
@@ -255,7 +316,8 @@
       "timeline": "Timeline",
       "activity": "Activity",
       "comments": "Comments",
-      "checkIn": "Check-in"
+      "checkIn": "Check-in",
+      "activityCount": "{count, plural, one {# new} other {# new}}"
     },
     "crumbs": {
       "myWorkspaces": "My workspaces"
@@ -268,7 +330,13 @@
       "title": "Tell us what's blocking you",
       "placeholder": "Describe what you tried and what's not working",
       "send": "Send",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "rateLimited": "Too many requests. Wait a moment.",
+      "aiFailed": "AI failed",
+      "networkError": "Network error",
+      "drafting": "Drafting…",
+      "aiDraft": "✦ AI draft",
+      "draftBadgeGlyph": "✦ {label}"
     },
     "tasksBoard": {
       "columns": {
@@ -282,6 +350,9 @@
       "overdue": "Overdue by {days} days",
       "noPhase": "No phase",
       "dueOn": "Due {date}",
+      "doneOn": "Done · {day}",
+      "doneWeeksAgo": "{weeks, plural, =1 {Done · 1wk ago} other {Done · #wk ago}}",
+      "overdueShort": "Overdue",
       "closed": "Closed",
       "awaitingReview": "Awaiting review",
       "noTasks": "No tasks yet.",
@@ -301,6 +372,17 @@
       "reviewBannerHeadline": "{count, plural, =1 {1 task is waiting on you.} other {# tasks are waiting on you.}}",
       "reviewBannerBodyPrefix": "{name} submitted",
       "reviewBannerJump": "JUMP TO CARD →",
+      "addGlyph": "+",
+      "columnCount": "{count} tasks",
+      "thisWeekSupervisor": "Tasks · this week",
+      "seeAll": "See all {count}",
+      "card": {
+        "roleDescription": "Draggable task",
+        "tagLabel": {
+          "design": "Design",
+          "research": "Research"
+        }
+      },
       "cardMenu": {
         "triggerLabel": "Task actions",
         "edit": "Edit…",
@@ -319,7 +401,8 @@
           "in-progress": "In progress",
           "review": "In review",
           "done": "Done"
-        }
+        },
+        "triggerGlyph": "⋯"
       },
       "columnMenu": {
         "triggerLabel": "{status} column actions",
@@ -331,20 +414,23 @@
           "priority": "By priority",
           "title": "By title",
           "created": "By created"
-        }
+        },
+        "triggerGlyph": "⋯"
       },
       "calendar": {
         "prevMonth": "Previous month",
         "nextMonth": "Next month",
         "today": "Today",
         "more": "more",
-        "undatedBanner": "{n} task(s) without a due date"
+        "undatedBanner": "{n} task(s) without a due date",
+        "moreCount": "+{count} more"
       },
       "list": {
         "caption": "Tasks list, sortable",
         "empty": "No tasks.",
         "relativeToday": "today",
         "relativeDays": "{n}d ago",
+        "actionsAria": "Actions",
         "header": {
           "title": "Title",
           "status": "Status",
@@ -370,7 +456,9 @@
         "sortCreated": "Created",
         "group": "Group",
         "groupStatus": "Status",
-        "groupPhase": "Phase"
+        "groupPhase": "Phase",
+        "selectLabel": "{label}:",
+        "selectedSuffix": ": {list}"
       }
     },
     "addTask": {
@@ -401,7 +489,8 @@
       "aiApply": "Apply to form",
       "aiFailed": "AI request failed. Try again.",
       "networkError": "Network error.",
-      "rateLimited": "Too many requests. Wait a moment."
+      "rateLimited": "Too many requests. Wait a moment.",
+      "aiPanelHead": "✦ {label}"
     },
     "notes": {
       "title": "Notes",
@@ -422,7 +511,9 @@
       "cancel": "Cancel",
       "sent": "Nudge sent",
       "rateLimited": "You already nudged today.",
-      "errorGeneric": "Could not send nudge. Please try again."
+      "errorGeneric": "Could not send nudge. Please try again.",
+      "charCount": "{count}/{max}",
+      "sending": "…"
     },
     "deliverables": {
       "uploadNew": "Upload new",
@@ -431,6 +522,7 @@
       "changesPlaceholder": "What needs to change?",
       "submitChanges": "Submit feedback",
       "version": "v{n}",
+      "versionBadge": "Version {n}",
       "status": {
         "draft": "Draft",
         "submitted": "Submitted",
@@ -488,13 +580,68 @@
         "changesPill": "CHANGES",
         "approvedPill": "APPROVED",
         "uploadCount": "{count} / {total}",
-        "submittedRelative": "submitted {when}"
+        "submittedRelative": "submitted {when}",
+        "submittedByWhen": "Submitted by {name} · {when}",
+        "submittedByName": "Submitted by <b>{name}</b>",
+        "versionNote": "<b>{name}’s note:</b> “{note}”",
+        "quotedNote": "“{note}”",
+        "reviewerWhen": "{name} · {when}",
+        "reviewerQuoted": "{name}: “{text}”",
+        "activityHead": "<b>v{n}</b> · {status}",
+        "fileUntitled": "Untitled",
+        "emptyDash": "—",
+        "detailSep": "·",
+        "detailEyebrowSingular": "Deliverable",
+        "submittedOnTimeSuffix": " · submitted on time",
+        "ownerLine": "Owner: <b>{name}</b>",
+        "reviewerLine": "Reviewer: <b>{name}</b>",
+        "progressPct": "{pct}%",
+        "version": "v{n}",
+        "fileUpdated": "updated {date}",
+        "nameFallbackIntern": "Intern",
+        "nameFallbackReviewer": "Reviewer",
+        "nameFallbackMember": "Member",
+        "unassignedReviewer": "Unassigned"
       },
       "share": {
         "button": "Share link",
         "generating": "Generating…",
         "copied": "Copied ✓",
         "error": "Copy failed"
+      },
+      "rowDue": "Due {date}",
+      "rowSubmitted": "Submitted {when}",
+      "rowSep": "·",
+      "fileChip": "📎 {name}",
+      "fileChipFallback": "Open file",
+      "feedbackLabel": "{label}:",
+      "checkLabel": "✓ {label}",
+      "cancel": "Cancel",
+      "submit": "Submit",
+      "submitRevision": "Submit revision",
+      "sendToSupervisor": "Send to supervisor →",
+      "sending": "Sending…",
+      "fileDropHelper": "PDF, image, zip or .fig · max 5 MB",
+      "mini": {
+        "heading": "Deliverables",
+        "allVersions": "All versions",
+        "notSubmitted": "—",
+        "statusLabel": {
+          "draft": "Upcoming",
+          "submitted": "In review",
+          "approved": "Approved",
+          "changesRequested": "Revise"
+        },
+        "meta": {
+          "dueWeekday": "Due {day} {md}",
+          "dueDate": "Due {md}",
+          "submittedWaitingDated": "Submitted {date} · waiting on reviewer",
+          "submittedWaiting": "Submitted · waiting on reviewer",
+          "approved": "Approved",
+          "changesRequestedFeedback": "Changes requested · {feedback}",
+          "changesRequested": "Changes requested",
+          "upcoming": "Upcoming"
+        }
       }
     },
     "checkIn": {
@@ -507,7 +654,37 @@
       "nextPlaceholder": "What will you tackle this coming week?",
       "submit": "Submit check-in",
       "draftedByAi": "Drafted by AI — edit before submitting",
-      "regenerate": "Regenerate draft"
+      "regenerate": "Regenerate draft",
+      "pageTitle": "Week {week} check-in",
+      "pageIntro": "Quick summary for {name}. Generate a draft from this week's activity or write it yourself.",
+      "supervisorFallback": "your supervisor"
+    },
+    "checkInForm": {
+      "sentTitle": "Check-in sent",
+      "sentBody": "Your supervisor will see this in the timeline and dashboard.",
+      "drafting": "Drafting…",
+      "generateDraft": "Generate draft",
+      "templateNote": "Template draft (no AI key configured). Edit anything before sending.",
+      "sending": "Sending…",
+      "errorGenerateFailed": "Couldn't generate a draft just now. Try again.",
+      "errorSendFailed": "Couldn't send your check-in. Try again."
+    },
+    "supervisorRail": {
+      "thisWeekLabel": "This week · {date}",
+      "performanceSignal": "Performance signal",
+      "dataLive": "DATA · LIVE",
+      "onTimeDelivery": "on-time delivery",
+      "bench": "{submitted} of {total} sent · {events} events logged across the internship.",
+      "needSyncTitle": "Need a sync?",
+      "needSyncBody": "Schedule a check-in. Inturn generates the link and adds it to the timeline.",
+      "wrapUpTitle": "Wrap-up",
+      "wrapUpBody": "Issue the end-of-internship record. Snapshots deliverables, your review, and a rating. Generates a shareable PDF for the intern.",
+      "nothingWaiting": "Nothing waiting on you",
+      "review": "Review {title}",
+      "annotate": "Annotate {title}",
+      "quietFlag": "Quiet flag · informational",
+      "noActivity": "No activity from {name} {ago}.",
+      "percent": "%"
     },
     "schedule": {
       "title": "Schedule a check-in",
@@ -515,7 +692,17 @@
       "submit": "Schedule",
       "cancel": "Cancel",
       "successHeading": "Scheduled",
-      "linkLabel": "Jitsi link"
+      "linkLabel": "Jitsi link",
+      "whenLabel": "When",
+      "durationLabel": "Duration",
+      "duration15": "15 min",
+      "duration30": "30 min",
+      "duration45": "45 min",
+      "duration60": "60 min",
+      "agendaLabel": "Agenda (optional)",
+      "agendaPlaceholder": "e.g. Review v2, plan next sprint",
+      "scheduling": "Scheduling…",
+      "errorGeneric": "Failed to schedule"
     },
     "comments": {
       "placeholder": "Write a comment…",
@@ -523,19 +710,111 @@
       "empty": "No comments yet. Be the first.",
       "edit": "Edit",
       "delete": "Delete",
-      "deletedNotice": "[deleted]"
+      "deletedNotice": "[deleted]",
+      "sending": "Sending…",
+      "charCount": "⌘/Ctrl + Enter · {count} / 4000",
+      "deleteConfirm": "Delete this comment?"
     },
     "activity": {
       "empty": "No activity yet.",
       "minutesAgo": "{n}m ago",
       "hoursAgo": "{n}h ago",
-      "daysAgo": "{n}d ago"
+      "daysAgo": "{n}d ago",
+      "recentTitle": "Recent activity",
+      "fullTimeline": "Full timeline",
+      "someone": "Someone",
+      "aDeliverable": "a deliverable",
+      "scope": {
+        "task": "a task",
+        "deliverable": "a deliverable",
+        "workspace": "the workspace"
+      },
+      "event": {
+        "submitted": "<b>{who}</b> submitted <b>{name}</b>{version}",
+        "approved": "<b>{who}</b> approved <b>{name}</b>",
+        "revisionRequested": "<b>{who}</b> requested changes on <b>{name}</b>",
+        "commented": "<b>{who}</b> commented on <b>{scope}</b>",
+        "taskMoved": "<b>{who}</b> moved <tag>{tagText}</tag> to <b>{to}</b>",
+        "checkinScheduled": "<b>{who}</b> scheduled a check-in",
+        "checkinSubmitted": "<b>{who}</b> sent the weekly check-in",
+        "checkinFor": " for {when}",
+        "note": " — \"{text}\""
+      }
     },
     "timeline": {
       "empty": "Nothing on the timeline yet.",
       "emptySub": "Tasks, deliverables, and check-ins will appear here as they happen.",
       "workspaceStarted": "Workspace started",
-      "deadline": "Deadline"
+      "deadline": "Deadline",
+      "eventTime": " · {time}",
+      "eventType": {
+        "workspaceCreated": "Workspace created",
+        "taskCreated": "Task created",
+        "taskMoved": "Task moved",
+        "commentAdded": "Comment added",
+        "deliverableSubmitted": "Deliverable submitted",
+        "deliverableApproved": "Deliverable approved",
+        "deliverableRevisionRequested": "Revision requested",
+        "checkinScheduled": "Check-in scheduled",
+        "checkinSubmitted": "Check-in submitted",
+        "stuckSignaled": "Flagged as stuck",
+        "reportSubmitted": "Report submitted",
+        "reportApproved": "Report approved",
+        "reportRevisionRequested": "Report revision requested"
+      }
+    },
+    "rail": {
+      "checkInTitle": "Weekly check-in",
+      "checkInBody": "Inturn drafts it from your activity — you edit and send.",
+      "draftCheckIn": "Draft check-in →",
+      "thisWeekLabel": "This week · {date}",
+      "nothingUrgent": "Nothing urgent this week",
+      "taskWithDay": "{title} ({day})",
+      "shipDeliverable": "Ship {title}",
+      "recordTitle": "Your record · so far",
+      "deliverablesSubmitted": "{submitted} of {total} deliverables submitted",
+      "eventsLogged": "{count} events logged this internship",
+      "endOfInternshipRecord": "End-of-internship record · {date}",
+      "emptyDash": "—"
+    },
+    "statTiles": {
+      "tasksLabel": "Tasks",
+      "ofOpen": "of {total} open",
+      "tasksFoot": "{done} done · {review} in review",
+      "deliverablesLabel": "Deliverables",
+      "ofSubmitted": "of {total} submitted",
+      "daysRemainingLabel": "Days remaining",
+      "daysUnit": "days",
+      "endsOn": "Ends {date}",
+      "emptyDash": "—",
+      "eventsThisWeekLabel": "Events this week",
+      "activityScoreLabel": "Activity score",
+      "eventsUnit": "logged",
+      "scoreUnit": "/ 100",
+      "eventsTotal": "{count} total this internship",
+      "aboveFloor": "Above the floor of 70",
+      "belowFloor": "Below floor — flag for nudge",
+      "delivSent": "✓ {title} · v{version} sent",
+      "delivPendingReview": "{count} pending review",
+      "delivReviewed": "✓ {title} reviewed",
+      "delivNothingSubmitted": "Nothing submitted yet",
+      "delivNothingPending": "Nothing pending"
+    },
+    "brief": {
+      "eyebrow": "Internship · {weeks} weeks · {mode}",
+      "mode": {
+        "onSite": "On-site",
+        "remote": "Remote",
+        "hybrid": "Hybrid"
+      },
+      "workspaceFallback": "Workspace",
+      "hintHybrid": "3d/wk on-site",
+      "hintOnSite": "on-site full week",
+      "hintRemote": "remote",
+      "locationMeta": "<b>{location}</b> · {hint}",
+      "paidMeta": "Paid · <b>{amount}</b>",
+      "roleSupervisor": "Supervisor",
+      "roleIntern": "Intern"
     }
   },
   "marketplace": {
@@ -607,6 +886,17 @@
       "accepted": "Accepted",
       "rejected": "Rejected"
     },
+    "inbox": {
+      "filterAll": "All",
+      "compare": "Compare {count}",
+      "empty": "No applications match.",
+      "colApplicant": "Applicant",
+      "colInternship": "Internship",
+      "colApplied": "Applied",
+      "colStatus": "Status",
+      "open": "Open",
+      "selectLabel": "Select {name}"
+    },
     "detail": {
       "back": "← All applications",
       "appliedOn": "Applied {date}",
@@ -628,7 +918,8 @@
       "skills": "Skills",
       "roles": "Role chips",
       "coverNote": "Cover note",
-      "openFull": "Open full →"
+      "openFull": "Open full →",
+      "meta": "{university} · {year} · {field}"
     },
     "apply": {
       "eyebrow": "Applying to · {org}",
@@ -657,7 +948,17 @@
       "confirmAccept": "Confirm & accept",
       "cancel": "Cancel",
       "agingLine": "In {status} for {days, plural, =0 {less than a day} one {# day} other {# days}}"
-    }
+    },
+    "notes": {
+      "placeholder": "Internal notes (never shown to the applicant)…",
+      "saving": "Saving…",
+      "saved": "Saved · {time}",
+      "autoSaves": "Auto-saves as you type"
+    },
+    "inboxHeading": "Applications",
+    "inboxCount": "{count, plural, one {# application} other {# applications}} across this project's internships.",
+    "inboxMeta": "{university} · {year}",
+    "metaSep": "·"
   },
   "admin": {
     "dashboard": {
@@ -694,6 +995,7 @@
       "status": "Status",
       "created": "Created",
       "review": "Review →",
+      "rneProvidedAria": "RNE provided",
       "detail": {
         "back": "← All verifications",
         "organization": "Organization",
@@ -722,7 +1024,8 @@
       "reportedBy": "Reported by {email}",
       "deletedUser": "deleted user",
       "suspendUser": "Suspend user",
-      "reactivateUser": "Reactivate user"
+      "reactivateUser": "Reactivate user",
+      "metaSep": "·"
     },
     "audit": {
       "title": "Audit log",
@@ -735,7 +1038,12 @@
       "previous": "← Previous",
       "next": "Next →",
       "page": "Page {n}",
-      "exportCsv": "Export CSV"
+      "exportCsv": "Export CSV",
+      "filterAll": "All",
+      "filterOrg": "Organizations",
+      "filterReport": "Reports",
+      "filterInternship": "Internships",
+      "filterUser": "Users"
     },
     "users": {
       "title": "Users",
@@ -777,6 +1085,11 @@
       "detailNoOrg": "No organization owned.",
       "detailNoApplications": "No applications yet.",
       "detailNoWorkspaces": "No workspaces yet.",
+      "workspaceStatus": {
+        "active": "Active",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
       "detailUniversity": "University",
       "detailField": "Field of study",
       "detailCity": "City",
@@ -788,7 +1101,8 @@
       "detailJoined": "Joined",
       "detailColInternship": "Internship",
       "detailColStatus": "Status",
-      "detailColDate": "Date"
+      "detailColDate": "Date",
+      "errorGeneric": "Something went wrong. Please try again."
     },
     "status": {
       "draft": "Draft",
@@ -799,6 +1113,11 @@
       "reviewed": "Reviewed",
       "resolved": "Resolved"
     },
+    "subjectType": {
+      "internship": "Internship",
+      "organization": "Organization",
+      "user": "User"
+    },
     "reasons": {
       "scam": "Scam",
       "misleading": "Misleading",
@@ -806,6 +1125,57 @@
       "spam": "Spam",
       "unsafe": "Unsafe",
       "other": "Other"
+    },
+    "reportDetail": {
+      "back": "Back to reports",
+      "heading": "Report {id}",
+      "subject": "Subject",
+      "openSubject": "Open subject",
+      "subjectGone": "Subject no longer exists in the database.",
+      "deleted": {
+        "internship": "Deleted internship",
+        "organization": "Deleted organization",
+        "user": "Deleted user"
+      },
+      "detailStatus": "status",
+      "detailRole": "role",
+      "role": {
+        "intern": "Intern",
+        "company": "Company",
+        "admin": "Admin",
+        "university": "University"
+      },
+      "reportBody": "Report body",
+      "reportedBy": "Reported by {email}",
+      "deletedUser": "deleted user",
+      "resolution": "Resolution",
+      "metaSep": "·",
+      "triage": "Triage",
+      "reopen": "Re-open",
+      "reopenHint": "This report is {status}. Re-open to make changes.",
+      "placeholder": "What did you do about it? (e.g. unpublished internship, contacted org, no action)",
+      "unpublishInternship": "Unpublish internship",
+      "markReviewed": "Mark reviewed",
+      "resolve": "Resolve",
+      "saving": "Saving…",
+      "validationMin": "Add a short resolution note (min 5 chars).",
+      "confirmUnpublish": "Unpublish this internship from the marketplace?",
+      "genericError": "Something went wrong. Please try again.",
+      "errorNotFound": "This report no longer exists.",
+      "reasons": {
+        "scam": "Scam",
+        "misleading": "Misleading",
+        "inappropriate": "Inappropriate",
+        "spam": "Spam",
+        "unsafe": "Unsafe",
+        "other": "Other"
+      }
+    },
+    "verifyActions": {
+      "markVerified": "Mark verified",
+      "requestChanges": "Request changes",
+      "suspend": "Suspend",
+      "suspendConfirm": "Suspend this organization? Their internships will be hidden from the marketplace."
     }
   },
   "projectHub": {
@@ -832,7 +1202,11 @@
       "removePhase": "Remove phase",
       "cancel": "Cancel",
       "save": "Save",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "errorTooManyGoals": "You can set at most 3 goals.",
+      "errorTooManyPhases": "You can set at most 6 phases.",
+      "errorSuspended": "Your account is suspended.",
+      "errorGeneric": "Something went wrong. Please try again."
     },
     "noPhases": "No phases defined for this project yet.",
     "noGoals": "No goals defined yet.",
@@ -885,9 +1259,100 @@
         "forbidden": "You don't have permission to manage dependencies.",
         "generic": "Something went wrong. Please try again."
       }
+    },
+    "publishedBanner": "Internship published to the marketplace.",
+    "blockedBanner": "Saved as draft. Your organization must be verified before you can publish.",
+    "projectStatus": {
+      "draft": "draft",
+      "active": "active",
+      "archived": "archived"
+    },
+    "internshipStatusLabel": {
+      "draft": "draft",
+      "published": "published",
+      "closed": "closed",
+      "archived": "archived"
+    },
+    "scheduleRange": "{start} — {end}",
+    "scheduleWeeks": " · {n} WK",
+    "eyebrowProject": "Project",
+    "eyebrowSep": "·",
+    "eyebrowDuration": "{n} weeks",
+    "eyebrowOpenEnded": "Open-ended",
+    "eyebrowInternships": "{n} internships",
+    "createdOn": "Created <b>{date}</b>",
+    "createdBy": "by <b>{name}</b>",
+    "projectTeam": "Project team",
+    "supervisorRole": "Supervisor",
+    "avatarPlaceholder": "?",
+    "internsPlaced": "{n} interns placed",
+    "openSlots": "{n} open slots",
+    "phaseOf": "PHASE {current} OF {total}",
+    "onTrack": "On track",
+    "phaseNum": "PHASE {n}",
+    "phaseNumNow": " · NOW",
+    "phaseWeeks": "Wk {from} → {to}",
+    "statActive": "active",
+    "statBothFilled": "Both filled · no draft",
+    "statSomeFilled": "{filled} filled · {draft} draft",
+    "statNoInterns": "No interns placed yet",
+    "statTasksOpen": "of {total} open",
+    "statTasksFooter": "{done} done · {review} in review",
+    "statDelivsOf": "of {total}",
+    "statDelivsFooter": "{pending} needs review · {approved} approved",
+    "statDelivsApproved": "{approved} approved",
+    "statDaysSub": "days",
+    "statEnds": "Ends {date}",
+    "statNoEndDate": "No end date set",
+    "rosterMeta": "INT-{id} · {n, plural, one {# slot} other {# slots}} · {fill}",
+    "rosterFilled": "filled",
+    "rosterOpen": "open",
+    "rosterApplicants": "{n, plural, one {# applicant} other {# applicants}}",
+    "rosterAwaiting": "Awaiting candidate",
+    "rosterTasks": "Tasks",
+    "rosterDelivs": "Deliv.",
+    "rosterStatus": "Status",
+    "rosterInReview": "{n} in review",
+    "rosterOnTrack": "On track",
+    "rosterCount": "{done} / {total}",
+    "addAnotherInternship": "Add another internship under this project",
+    "signalDataLive": "DATA · LIVE",
+    "signalPercent": "%",
+    "signalOnPace": "on-pace, both roles",
+    "signalBenchPhase": "Phase {current} runs through <b>Wk {week}</b>. No interventions needed across either workspace.",
+    "signalBenchNoPhase": "No interventions needed across either workspace.",
+    "signalSparkAria": "Project pace sparkline",
+    "leadBadge": "LEAD",
+    "internRole": "Intern · {title}",
+    "thisWeekDate": "{week} · {date}",
+    "eventLine": "{event} · {time}",
+    "noActivity": "No activity in this project yet.",
+    "phaseEndsWeek": "Phase {n} ends Wk {week}",
+    "eventVerb": {
+      "signup": "Signup",
+      "login": "Login",
+      "created": "Created",
+      "updated": "Updated",
+      "deleted": "Deleted",
+      "saved": "Saved",
+      "selected": "Selected",
+      "changed": "Changed",
+      "moved": "Moved",
+      "added": "Added",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "requested": "Requested",
+      "scheduled": "Scheduled",
+      "signaled": "Signaled",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "closed": "Closed",
+      "accepted": "Accepted"
     }
   },
   "internshipDetail": {
+    "metaNotFound": "Not found",
+    "metaFallbackDescription": "Internship at {org}",
     "weeks": "{n, plural, one {# week} other {# weeks}}",
     "paid": "Paid",
     "paidWith": "Paid · {amount}",
@@ -897,7 +1362,19 @@
     "back": "← All internships",
     "applySignUp": "Sign up to apply",
     "applyNow": "Apply now →",
-    "applyCompleteProfile": "Complete profile to apply"
+    "applyCompleteProfile": "Complete profile to apply",
+    "orgLocation": "{name} · {place}",
+    "metaSep": "·",
+    "locationType": {
+      "on-site": "On-site",
+      "virtual": "Remote",
+      "hybrid": "Hybrid"
+    }
+  },
+  "internshipApply": {
+    "coverNoteLabel": "Cover note (optional, 1500 chars max)",
+    "coverNotePlaceholder": "Why this internship?",
+    "submit": "Submit application"
   },
   "card": {
     "durationWeeks": "{n, plural, one {# week} other {# weeks}}",
@@ -991,7 +1468,15 @@
       "syncsEmpty": "No upcoming syncs.",
       "syncsScheduleLink": "Schedule one →",
       "syncsToday": "Today",
-      "syncsDurationMin": "{n} min"
+      "syncsDurationMin": "{n} min",
+      "greetingLine": "{greeting}, <hl>{name}</hl>",
+      "greetingFallbackName": "there",
+      "verifyLine": "{heading} · {sla}",
+      "cardPercent": "{progress}%",
+      "syncCheckin": "Weekly check-in",
+      "syncCheckinProject": "Weekly check-in · {project}",
+      "syncJitsi": " · Jitsi",
+      "syncIntern": " · {name}"
     }
   },
   "projects": {
@@ -1026,7 +1511,10 @@
       "ctaContinueSetup": "Continue setup →",
       "emptyAll": "No projects yet — create your first one to get started.",
       "emptyDrafts": "No drafts. Start a new project to draft one.",
-      "emptyArchived": "Nothing archived yet."
+      "emptyArchived": "Nothing archived yet.",
+      "addIcon": "+",
+      "cardPercent": "{progress}%",
+      "cardCount": "{done}/{total}"
     },
     "edit": {
       "heading": "Edit project",
@@ -1038,6 +1526,86 @@
       "reorderPhase": "Drag to reorder phase",
       "backToProject": "Back to project",
       "backToProjects": "Back to projects"
+    },
+    "new": {
+      "draftBannerTitle": "Draft mode",
+      "draftBannerMessage": "this project stays private until you publish your first internship.",
+      "heading": "Create a new project",
+      "subheading": "Projects group your internships. One project = one piece of work; one or more interns work on it together in their own workspaces.",
+      "reviewSubheading": "The project goes live the moment you post your first internship — until then, nobody outside your org sees it.",
+      "ctaNextTitle": "Next: post your first internship",
+      "ctaNextBody": "The project becomes <b>active</b> the moment your first internship is published. A draft with no internships <b>auto-archives after 30 days</b>.",
+      "ctaSave": "Save & post first internship",
+      "ctaSaveHint": "Saves a draft and takes you to step 4.",
+      "awaitingVerificationTitle": "Your organization is awaiting verification",
+      "awaitingVerificationBody": "You can draft a project, but you won't be able to publish internships from it until an admin marks your organization as verified."
+    },
+    "form": {
+      "req": "*",
+      "nameLabel": "Project name",
+      "namePlaceholder": "Brand audit & system refresh",
+      "nameHint": "Visible internally and to applicants once internships go live.",
+      "slugLabel": "URL slug",
+      "slugHint": "Used in URLs. Lowercase letters, digits, hyphens only.",
+      "briefLabel": "Short description",
+      "briefPlaceholder": "A full-funnel audit of Acme's brand and a refreshed system delivered as Figma library + guidelines. Designed for two parallel interns over 12 weeks.",
+      "briefHint": "2–3 sentences. This becomes the brief at the top of every workspace under this project.",
+      "modeLabel": "Mode",
+      "mode": {
+        "hybrid": { "label": "Hybrid", "sub": "On-site + remote" },
+        "virtual": { "label": "Remote", "sub": "Fully distributed" },
+        "on-site": { "label": "On-site", "sub": "Office every day" }
+      },
+      "locationLabel": "Location",
+      "locationPlaceholder": "Tunis · Lac 2",
+      "locationHint": "Hybrid & on-site projects only.",
+      "onSiteDaysLabel": "On-site days",
+      "day": {
+        "Mon": "Mon",
+        "Tue": "Tue",
+        "Wed": "Wed",
+        "Thu": "Thu",
+        "Fri": "Fri"
+      },
+      "startDateLabel": "Start date",
+      "durationLabel": "Duration (weeks)",
+      "durationHint": "Internships can run shorter, never longer. Ends {endDate}.",
+      "goalsHeading": "What does success look like?",
+      "goalsIntro": "3 short statements. These appear in every workspace under this project — interns read them on day 1, supervisors revisit them at every check-in.",
+      "goalsLabel": "Project goals",
+      "goalsUsed": "· {filled} of 3 used",
+      "goalPlaceholder1": "Clarity of position — a stakeholder-validated story in one paragraph.",
+      "goalPlaceholder2": "System, not assets — refresh ships as a token-backed Figma library.",
+      "goalPlaceholder3": "Handoff that lasts — guidelines a junior can apply day one without us.",
+      "goalAria": "Goal {n}",
+      "goalsHint": "Limit is 3. If you can't say it in 3, you don't know it yet.",
+      "thenOptional": "then · optional",
+      "phasesHeading": "Project phases",
+      "phasesIntro": "Sketch the project arc. You can edit or skip — the Hub's phase strip uses these to show progress.",
+      "addPhase": "+ Add phase",
+      "skipSection": "· Skip this section",
+      "phaseNamePlaceholder0": "Discovery & audit",
+      "phaseNamePlaceholder1": "Explore & moodboard",
+      "phaseNamePlaceholder2": "System build",
+      "phaseNamePlaceholder3": "Handoff",
+      "phaseNameAria": "Phase name",
+      "phaseDescPlaceholder": "Short note (optional)",
+      "phaseDescAria": "Phase description",
+      "fromWeekAria": "From week",
+      "toWeekAria": "To week",
+      "removePhase": "Remove phase",
+      "summaryName": "Name",
+      "summaryMode": "Mode",
+      "summarySchedule": "Schedule",
+      "summaryGoals": "Goals",
+      "summaryPhases": "Phases",
+      "summaryNotSet": "(not set)",
+      "summaryNoneYet": "(none yet)",
+      "summarySkipped": "(skipped)",
+      "scheduleRange": "{start} → {end}",
+      "summaryDuration": "· {n} weeks",
+      "summaryGoalItem": "· {goal}",
+      "summaryPhasePill": "{name} · WK {from}-{to}"
     }
   },
   "internships": {
@@ -1047,6 +1615,135 @@
       "deliverablesHeading": "What will they deliver?",
       "saveCta": "Save changes",
       "back": "← Back"
+    },
+    "publishConfirm": "Publish this internship to the marketplace? It will become visible to all candidates.",
+    "new": {
+      "draftBannerTitle": "Draft mode",
+      "draftBannerMessage": "saving here won't publish — {projectName} stays private until you hit Publish.",
+      "heading": "Add an internship to <brand>{projectName}</brand>",
+      "subheading": "One role, one set of deliverables. You can add more roles to this project anytime — research, copywriting, dev support, etc.",
+      "back": "Back",
+      "saveDraft": "Save as draft",
+      "publishCta": "Publish to marketplace",
+      "activateTitle": "Publishing activates the project.",
+      "activateBody": "{projectName} goes from Draft → Active the moment this listing is live.",
+      "nextTitle": "What interns see next",
+      "nextScope": "· Public landing page with full scope & deliverables",
+      "nextApply": "· 1-click apply (profile auto-attaches)",
+      "nextQuestions": "· Your {count} {count, plural, =1 {question} other {questions}} on the apply form",
+      "nextResponse": "· “Expected response by” date on their tracker"
+    },
+    "form": {
+      "req": "*",
+      "titleLabel": "Role title",
+      "titlePlaceholder": "Visual designer",
+      "titleHint": "This is what interns search for — be specific.",
+      "disciplineLabel": "Discipline",
+      "sector": {
+        "design": "Design",
+        "softwareTech": "Software & tech",
+        "marketingComms": "Marketing & comms",
+        "product": "Product",
+        "data": "Data",
+        "operations": "Operations",
+        "finance": "Finance",
+        "content": "Content",
+        "other": "Other"
+      },
+      "scopeLabel": "Scope",
+      "scopePlaceholder": "What this intern owns — concrete, specific. Different from the project description.",
+      "scopeHint": "What this intern owns. Different from the project description — be concrete about scope.",
+      "slotsLabel": "Slots",
+      "slotsThreePlus": "3+",
+      "slotsHint": "How many interns work this role in parallel.",
+      "supervisorLabel": "Supervisor",
+      "supervisorYou": "{name} (you)",
+      "durationLabel": "Duration (weeks)",
+      "durationHint": "Can't exceed project length.",
+      "modeLabel": "Mode",
+      "mode": {
+        "hybrid": { "label": "Hybrid", "sub": "On-site + remote" },
+        "virtual": { "label": "Remote", "sub": "Fully distributed" },
+        "on-site": { "label": "On-site", "sub": "Office every day" }
+      },
+      "locationLabel": "Location",
+      "locationPlaceholder": "Tunis",
+      "listingLanguageLabel": "Listing language",
+      "language": {
+        "fr": "Français",
+        "en": "English",
+        "ar": "العربية"
+      },
+      "dividerSkills": "required skills",
+      "skillsLabel": "Skills the intern should have",
+      "skillsPlaceholder": "Add a skill",
+      "skillsHint": "Used to surface this listing in marketplace search. Don't gate — preferred > required.",
+      "compensationLabel": "Compensation",
+      "paid": "Paid",
+      "unpaid": "Unpaid",
+      "compensationAmountAria": "Compensation amount",
+      "unit": {
+        "tndMonth": "TND / month",
+        "tndWeek": "TND / week",
+        "eurMonth": "EUR / month"
+      },
+      "unitShort": {
+        "month": "mo",
+        "week": "wk"
+      },
+      "compensationHint": "Inturn shows this on the listing. Hiding pay is not allowed for paid roles.",
+      "deadlineLabel": "Application deadline",
+      "deliverablesHeading": "What will they deliver?",
+      "deliverablesIntro": "Be specific. Deliverables anchor the workspace — vague briefs lead to drift. Required at post-time, not after.",
+      "deliverablesLabel": "Required deliverables",
+      "deliverablesUsed": "· {filled} of 10 used",
+      "deliverableBadge": "D{n}",
+      "deliverableNamePlaceholder0": "Brand audit · stakeholder findings",
+      "deliverableNamePlaceholder1": "Visual exploration · moodboards",
+      "deliverableNamePlaceholder2": "System library handoff",
+      "deliverableNamePlaceholder": "Deliverable name",
+      "deliverableNameAria": "Deliverable {n} name",
+      "deliverableDescPlaceholder": "Short note (optional)",
+      "deliverableDescAria": "Deliverable {n} description",
+      "weekAbbr": "Wk",
+      "deliverableDueWeekAria": "Deliverable {n} due week",
+      "removeDeliverable": "Remove deliverable {n}",
+      "addDeliverable": "+ Add deliverable",
+      "deliverablesRange": "Min 3 · max 10",
+      "dividerQuestions": "application questions",
+      "questionsLabel": "Ask applicants 1–3 short questions",
+      "questionBadge": "Q{n}",
+      "questionPlaceholder0": "Share a brand system you've worked on (link or attachment).",
+      "questionPlaceholder1": "What's a brand you think gets identity right? In one sentence, why?",
+      "questionPlaceholder": "Question text",
+      "questionAria": "Question {n}",
+      "questionRequired": "Required",
+      "removeQuestion": "Remove question",
+      "addQuestion": "+ Add question {remaining, plural, =0 {(max 3)} one {(# left)} other {(# left)}}",
+      "dividerVisibility": "visibility",
+      "visibilityLabel": "Where this listing appears",
+      "visibilityPublicTitle": "Public marketplace",
+      "visibilityPublicSub": "Anyone can apply. Inturn handles the inbox.",
+      "visibilityPrivateTitle": "Private link only",
+      "visibilityPrivateSub": "Share with named candidates. No marketplace presence.",
+      "previewEyebrow": "Live preview · marketplace card",
+      "previewTitle": "{title} · {projectName}",
+      "previewOrg": "{orgName} · {location}",
+      "previewDefaultCity": "Tunis",
+      "previewDefaultOrg": "Your company",
+      "previewDefaultSupervisor": "You",
+      "previewPaid": "· paid",
+      "previewUnpaid": "· unpaid",
+      "previewDurationMode": "{weeks} weeks · {mode}",
+      "previewLocationSuffix": " · {location}",
+      "previewSlots": "{count} {count, plural, =1 {slot} other {slots}}",
+      "previewSlotsThreePlus": "3+ slots",
+      "previewStarts": " · starts {date}",
+      "previewSupervisor": "Supervisor: <b>{name}</b>",
+      "previewSkillsMore": "+{count}",
+      "previewAddSkills": "Add skills →",
+      "previewApply": "Apply",
+      "tbd": "TBD"
     }
   },
   "errors": {
@@ -1116,6 +1813,7 @@
     },
     "suspended": {
       "label": "Account restricted",
+      "metaSep": "·",
       "body": "Your account is currently suspended. You can still browse but cannot apply, post, or comment.",
       "contactSupport": "Contact support →"
     },
@@ -1135,7 +1833,9 @@
       "theme": "Theme",
       "light": "Light",
       "dark": "Dark",
-      "language": "Language"
+      "language": "Language",
+      "langFr": "FR",
+      "langEn": "EN"
     }
   },
   "community": {
@@ -1164,6 +1864,8 @@
       "titlePlaceholder": "What's on your mind?",
       "bodyLabel": "Body",
       "bodyPlaceholder": "Add detail, context, or examples.",
+      "titleMin": "{count}/6 min",
+      "bodyMin": "{count}/20 min",
       "submit": "Post",
       "saving": "Posting…",
       "errorTitleMin": "Title must be at least 6 characters.",
@@ -1220,11 +1922,38 @@
       }
     }
   },
+  "fileDrop": {
+    "uploading": "Uploading…",
+    "prompt": "Drop your file or click to browse",
+    "error": "Upload failed. Please try again."
+  },
+  "chipInput": {
+    "counter": "{count} / {max} added · min {min}",
+    "addSkill": "Add a skill",
+    "capReached": "Cap reached",
+    "remove": "Remove {item}"
+  },
+  "linkRepeater": {
+    "addAnother": "Add another link",
+    "removeLink": "Remove link"
+  },
   "internshipTemplates": {
     "pickerTitle": "Start from a template",
     "pickerSubtitle": "Pre-filled scaffolds for common Tunisian internship archetypes. Tweak after applying.",
+    "cardMeta": "{sector} · {duration}wk · {locationType}",
     "applyTemplate": "Use this template",
     "blank": "Start blank",
+    "sector": {
+      "Design": "Design",
+      "Engineering": "Engineering",
+      "Marketing": "Marketing",
+      "Content": "Content"
+    },
+    "locationType": {
+      "on-site": "On-site",
+      "virtual": "Remote",
+      "hybrid": "Hybrid"
+    },
     "visualDesigner": {
       "title": "Visual designer — Brand work",
       "description": "Lead visual exploration for a brand or product. You'll own moodboards, type pairings, logo iterations, and final guidelines. Weekly crit with the design lead; deliverables shipped in Figma + exported PDFs."
@@ -1275,6 +2004,9 @@
       "portfolio": "Add a portfolio link"
     }
   },
+  "meta": {
+    "ogTagline": "The internship platform for Tunisia"
+  },
   "footer": {
     "tagline": "The internship platform for Tunisian universities and the companies hiring their students.",
     "product": "Product",
@@ -1286,6 +2018,7 @@
     "privacy": "Privacy",
     "cookies": "Cookies",
     "madeIn": "Made in Tunis",
+    "metaSep": "·",
     "contact": "hello@inturn.tn"
   },
   "cookieBanner": {
@@ -1434,16 +2167,19 @@
     "successBody": "An admin will triage this. Thanks for keeping the platform safe.",
     "close": "Close",
     "errorMin": "Please describe the problem (min 20 characters).",
-    "errorGeneric": "Could not submit. Please try again."
+    "errorGeneric": "Could not submit. Please try again.",
+    "charCount": "{count}/20 min"
   },
   "deliverables": {
     "public": {
       "badge": "Shared deliverable",
       "eyebrow": "Deliverable",
+      "metaDescription": "Shared deliverable on Inturn",
       "about": "About",
       "versions": "Version history",
       "version": "Version {n}",
       "submitted": "Submitted",
+      "submittedValue": "Submitted: {date}",
       "openFile": "Open file",
       "noFile": "No file",
       "copyLink": "Copy link",
@@ -1460,6 +2196,11 @@
   "records": {
     "verified": "Verified record",
     "eyebrow": "Internship record",
+    "listIntro": "Your end-of-internship records. Share the link with future employers.",
+    "listEmptyTitle": "No records yet",
+    "listEmptyBody": "You will receive your first record when a supervisor signs off on your internship.",
+    "listBrowseCta": "Browse internships",
+    "metaIssuedBy": "Internship record issued by {org}",
     "title": "End-of-Internship Record",
     "subtitle": "Official document issued by the host organisation",
     "intern": "Intern",
@@ -1488,6 +2229,7 @@
     "shareLink": "Copy share link",
     "linkCopied": "Link copied",
     "issuedBy": "Issued by",
+    "metaSep": "·",
     "verifyBlurb": "This record was issued through Inturn. The supervisor signed off on the work shown above; the URL above is the only canonical source.",
     "status": {
       "draft": "Draft",
@@ -1508,7 +2250,10 @@
       "successTitle": "Record issued",
       "successCta": "View record",
       "alreadyExistsHint": "An active record exists. Issuing a new one revokes the previous one.",
-      "minReviewError": "Review must be at least 40 characters."
+      "minReviewError": "Review must be at least 40 characters.",
+      "charCount": "{count}/40 min",
+      "errorForbidden": "You don't have permission to issue this record.",
+      "errorGeneric": "Something went wrong. Please try again."
     }
   },
   "company": {
@@ -1519,7 +2264,10 @@
       "close": "Close",
       "closing": "Closing…",
       "closeConfirm": "Close this internship? It will stop accepting applicants and be removed from the marketplace. This cannot be undone.",
-      "closedLabel": "Closed"
+      "closedLabel": "Closed",
+      "publish": "Publish",
+      "publishing": "Publishing…",
+      "errorGeneric": "Something went wrong. Please try again."
     },
     "workspaces": {
       "title": "Workspaces",
@@ -1535,7 +2283,8 @@
       "open": "Open workspace",
       "emptyTitle": "No workspaces yet",
       "emptyBody": "Workspaces appear here once you accept an applicant into one of your internships.",
-      "emptyCta": "Go to projects"
+      "emptyCta": "Go to projects",
+      "sep": "·"
     }
   },
   "university": {
@@ -1555,7 +2304,8 @@
       "coordinatorEmail": "coordinator@university.edu",
       "send": "Send",
       "sending": "Sending…",
-      "inviteSent": "Invitation sent"
+      "inviteSent": "Invitation sent",
+      "errorGeneric": "Something went wrong. Please try again."
     },
     "dashboard": {
       "title": "My students",
@@ -1592,6 +2342,9 @@
       "bulkSummary": "{invited} invited, {skipped} skipped, {invalid} invalid",
       "resend": "Resend",
       "revoke": "Revoke",
+      "errorRateLimited": "Too many requests. Wait a moment, then try again.",
+      "errorTooManyRows": "Too many rows — 100 students max per import.",
+      "errorGeneric": "Couldn't send that invitation. Please try again.",
       "reportStatus": {
         "none": "—",
         "draft": "Draft",
@@ -1633,7 +2386,9 @@
       "notePlaceholder": "Optional note for your coordinator…",
       "cancel": "Cancel",
       "send": "Submit",
-      "sending": "Submitting…"
+      "sending": "Submitting…",
+      "errorRateLimited": "Too many requests. Wait a moment, then try again.",
+      "errorGeneric": "Couldn't submit that version. Please try again."
     },
     "comments": {
       "placeholder": "Write a message…",
@@ -1648,7 +2403,8 @@
       "approve": "Approve",
       "cancel": "Cancel",
       "feedbackPlaceholder": "What needs to change?",
-      "sending": "Sending…"
+      "sending": "Sending…",
+      "errorGeneric": "Couldn't complete that action. Please try again."
     }
   },
   "pulse": {

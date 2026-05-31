@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -29,6 +30,7 @@ export function LinkRepeater({
   value: PortfolioLink[];
   onChange: (next: PortfolioLink[]) => void;
 }) {
+  const t = useTranslations('linkRepeater');
   function add() {
     onChange([...value, { platform: 'GitHub', url: '' }]);
   }
@@ -66,7 +68,7 @@ export function LinkRepeater({
             type="button"
             onClick={() => remove(i)}
             className="flex items-center justify-center border border-[var(--border-color)] rounded-md text-[var(--ink-3)] hover:text-[var(--ink)]"
-            aria-label="Remove link"
+            aria-label={t('removeLink')}
           >
             <X className="h-4 w-4" />
           </button>
@@ -77,7 +79,7 @@ export function LinkRepeater({
         onClick={add}
         className="text-[13px] text-[var(--brand-600)] font-medium self-start mt-1 hover:text-[var(--brand-700)]"
       >
-        + Add another link
+        {'+'} {t('addAnother')}
       </button>
     </div>
   );

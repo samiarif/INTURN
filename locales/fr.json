@@ -72,7 +72,27 @@
   "notifications": {
     "label": "Notifications",
     "empty": "Pas encore de notification.",
-    "markAllRead": "Tout marquer comme lu"
+    "markAllRead": "Tout marquer comme lu",
+    "unreadAria": "{label} ({count} non lues)",
+    "item": {
+      "applicationReceived": "{name} a postulé à {title}",
+      "applicationStatus": "Votre candidature à {title} : {status}",
+      "checkinDue": "Point hebdomadaire attendu pour {title}",
+      "nudge": "Votre superviseur vous a envoyé un rappel : « {message} »",
+      "nudgeNoMessage": "Votre superviseur vous a envoyé un rappel.",
+      "academicReportSubmitted": "{name} a soumis son rapport (v{version})",
+      "academicReportApproved": "Votre rapport a été approuvé",
+      "academicReportRevision": "Votre rapport nécessite une révision",
+      "unknownPerson": "Quelqu'un",
+      "unknownStudent": "Un·e étudiant·e"
+    },
+    "status": {
+      "reviewed": "examinée",
+      "shortlisted": "présélectionnée",
+      "interview": "invitée à un entretien",
+      "accepted": "acceptée",
+      "rejected": "non retenue"
+    }
   },
   "common": {
     "loading": "Chargement...",
@@ -81,7 +101,13 @@
     "cancel": "Annuler",
     "back": "Retour",
     "next": "Suivant",
-    "submit": "Soumettre"
+    "submit": "Soumettre",
+    "requiredMark": "*",
+    "selectPlaceholder": "Sélectionner…",
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    }
   },
   "auth": {
     "signIn": "Se connecter",
@@ -95,7 +121,11 @@
       "company": "Je suis une entreprise",
       "companyDescription": "Je veux publier des stages et recruter des talents",
       "continue": "Continuer"
-    }
+    },
+    "signInTitle": "Bon retour",
+    "signInSubtitle": "Connectez-vous à votre espace de travail.",
+    "signUpTitle": "Créez votre compte Inturn",
+    "signUpSubtitle": "Un seul profil. Postulez une fois. Travaillez dans des espaces dédiés."
   },
   "onboarding": {
     "intern": {
@@ -115,7 +145,10 @@
         "continue": "Continuer →",
         "back": "← Retour",
         "step": "Profil",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "universityPlaceholder": "Sélectionner une université…",
+        "universitySearchPlaceholder": "Rechercher une université…",
+        "universityNoMatches": "Aucune université correspondante."
       },
       "skills": {
         "title": "Vos compétences",
@@ -131,7 +164,8 @@
         "addLink": "+ Ajouter un lien",
         "back": "← Retour",
         "finish": "Terminer le profil →",
-        "step": "Compétences + CV"
+        "step": "Compétences + CV",
+        "cvUploadedLine": "CV importé · <a>voir</a>"
       },
       "done": {
         "title": "Profil complété",
@@ -150,6 +184,7 @@
       "industry": "Secteur",
       "size": "Taille de l'entreprise",
       "country": "Pays",
+      "countryDefault": "Tunisie",
       "city": "Ville",
       "description": "Description courte",
       "descriptionHelper": "Affichée sur chaque annonce publique.",
@@ -160,7 +195,22 @@
       "rneHelper": "PDF ou image · Vérifié par notre équipe en <24h",
       "saveDraft": "Enregistrer comme brouillon",
       "continue": "Continuer → Publier la première annonce",
-      "step": "Configuration"
+      "step": "Configuration",
+      "sizeOption": "{size} employés",
+      "websitePlaceholder": "https://…",
+      "descriptionMeta": "{count} / 280 · {helper}",
+      "rneUploaded": "RNE importé",
+      "industries": {
+        "designCreative": "Design & création",
+        "softwareTech": "Logiciel & tech",
+        "marketingComms": "Marketing & comm",
+        "finance": "Finance",
+        "education": "Éducation",
+        "healthcare": "Santé",
+        "manufacturing": "Industrie",
+        "retail": "Commerce de détail",
+        "other": "Autre"
+      }
     }
   },
   "dashboard": {
@@ -185,7 +235,9 @@
       "forCompanies": "Pour les entreprises",
       "howItWorks": "Comment ça marche",
       "logIn": "Connexion",
-      "signUp": "S'inscrire"
+      "signUp": "S'inscrire",
+      "dashboard": "Tableau de bord",
+      "devLogin": "Connexion dev"
     },
     "interns": {
       "title": "Pour les étudiants",
@@ -246,7 +298,16 @@
       "help": "Aide",
       "profile": "Profil",
       "keyboardShortcut": "⌘K",
-      "openSidebar": "Ouvrir la barre latérale"
+      "openSidebar": "Ouvrir la barre latérale",
+      "crumbSep": "/",
+      "addGlyph": "+",
+      "addNote": "Ajouter une note",
+      "assignTask": "Assigner une tâche",
+      "weeklyCheckIn": "Point hebdomadaire →",
+      "welcomeBack": "Bon retour, {name}",
+      "headTitleSupervisor": "{name} · {project}",
+      "activeBadge": "ACTIF",
+      "weekChip": "SEMAINE {current} / {total}"
     },
     "tabs": {
       "overview": "Vue d'ensemble",
@@ -255,7 +316,8 @@
       "timeline": "Chronologie",
       "activity": "Activité",
       "comments": "Commentaires",
-      "checkIn": "Point hebdo"
+      "checkIn": "Point hebdo",
+      "activityCount": "{count, plural, one {# nouveau} other {# nouveaux}}"
     },
     "crumbs": {
       "myWorkspaces": "Mes workspaces"
@@ -268,7 +330,13 @@
       "title": "Dites-nous ce qui vous bloque",
       "placeholder": "Décrivez ce que vous avez essayé et ce qui ne fonctionne pas",
       "send": "Envoyer",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "rateLimited": "Trop de requêtes. Attendez un moment.",
+      "aiFailed": "Échec de l'IA",
+      "networkError": "Erreur réseau",
+      "drafting": "Rédaction…",
+      "aiDraft": "✦ Brouillon IA",
+      "draftBadgeGlyph": "✦ {label}"
     },
     "tasksBoard": {
       "columns": {
@@ -282,6 +350,9 @@
       "overdue": "En retard de {days} jours",
       "noPhase": "Sans phase",
       "dueOn": "Échéance {date}",
+      "doneOn": "Terminé · {day}",
+      "doneWeeksAgo": "{weeks, plural, =1 {Terminé · il y a 1 sem.} other {Terminé · il y a # sem.}}",
+      "overdueShort": "En retard",
       "closed": "Fermé",
       "awaitingReview": "En attente de revue",
       "noTasks": "Aucune tâche pour le moment.",
@@ -301,6 +372,17 @@
       "reviewBannerHeadline": "{count, plural, =1 {1 tâche attend votre revue.} other {# tâches attendent votre revue.}}",
       "reviewBannerBodyPrefix": "{name} a soumis",
       "reviewBannerJump": "VOIR LA CARTE →",
+      "addGlyph": "+",
+      "columnCount": "{count} tâches",
+      "thisWeekSupervisor": "Tâches · cette semaine",
+      "seeAll": "Voir les {count}",
+      "card": {
+        "roleDescription": "Tâche déplaçable",
+        "tagLabel": {
+          "design": "Design",
+          "research": "Recherche"
+        }
+      },
       "cardMenu": {
         "triggerLabel": "Actions de la tâche",
         "edit": "Modifier…",
@@ -319,7 +401,8 @@
           "in-progress": "En cours",
           "review": "En revue",
           "done": "Terminé"
-        }
+        },
+        "triggerGlyph": "⋯"
       },
       "columnMenu": {
         "triggerLabel": "Actions de la colonne {status}",
@@ -331,20 +414,23 @@
           "priority": "Par priorité",
           "title": "Par titre",
           "created": "Par création"
-        }
+        },
+        "triggerGlyph": "⋯"
       },
       "calendar": {
         "prevMonth": "Mois précédent",
         "nextMonth": "Mois suivant",
         "today": "Aujourd'hui",
         "more": "de plus",
-        "undatedBanner": "{n} tâche(s) sans échéance"
+        "undatedBanner": "{n} tâche(s) sans échéance",
+        "moreCount": "+{count} de plus"
       },
       "list": {
         "caption": "Liste des tâches, triable",
         "empty": "Aucune tâche.",
         "relativeToday": "aujourd'hui",
         "relativeDays": "il y a {n}j",
+        "actionsAria": "Actions",
         "header": {
           "title": "Titre",
           "status": "Statut",
@@ -370,7 +456,9 @@
         "sortCreated": "Création",
         "group": "Groupe",
         "groupStatus": "Statut",
-        "groupPhase": "Phase"
+        "groupPhase": "Phase",
+        "selectLabel": "{label} :",
+        "selectedSuffix": " : {list}"
       }
     },
     "addTask": {
@@ -401,7 +489,8 @@
       "aiApply": "Appliquer au formulaire",
       "aiFailed": "Échec de la requête IA. Réessayez.",
       "networkError": "Erreur réseau.",
-      "rateLimited": "Trop de requêtes. Attendez un moment."
+      "rateLimited": "Trop de requêtes. Attendez un moment.",
+      "aiPanelHead": "✦ {label}"
     },
     "notes": {
       "title": "Notes",
@@ -422,7 +511,9 @@
       "cancel": "Annuler",
       "sent": "Rappel envoyé",
       "rateLimited": "Vous avez déjà envoyé un rappel aujourd'hui.",
-      "errorGeneric": "Impossible d'envoyer le rappel. Réessayez."
+      "errorGeneric": "Impossible d'envoyer le rappel. Réessayez.",
+      "charCount": "{count}/{max}",
+      "sending": "…"
     },
     "deliverables": {
       "uploadNew": "Téléverser",
@@ -431,6 +522,7 @@
       "changesPlaceholder": "Qu'est-ce qui doit changer ?",
       "submitChanges": "Envoyer le retour",
       "version": "v{n}",
+      "versionBadge": "Version {n}",
       "status": {
         "draft": "Brouillon",
         "submitted": "Soumis",
@@ -453,7 +545,7 @@
         "commentsEmpty": "Aucun commentaire sur ce livrable pour le moment.",
         "activityEmpty": "Aucune activité pour le moment.",
         "submittedBy": "Soumis par {name}",
-        "supervisorWaitingForReview": "En attente du superviseur · réponse sous un jour en général",
+        "supervisorWaitingForReview": "En attente de l'encadrant · réponse sous un jour en général",
         "submitVersion": "Soumettre v{n}",
         "submitFirstVersion": "Soumettre v1",
         "dropFilesTitle": "Soumettre v{n}",
@@ -470,31 +562,86 @@
         "dueShort": "ÉCH. {date}",
         "submittedOnTime": "remis dans les temps",
         "owner": "Auteur·rice",
-        "reviewer": "Superviseur·e",
+        "reviewer": "Encadrant·e",
         "linkedTasks": "Tâches liées",
         "versionsCount": "{n} versions",
         "versionsCountOne": "{n} version",
         "noteLabel": "Note de {name}",
         "openFile": "Ouvrir",
-        "send": "Envoyer au superviseur",
+        "send": "Envoyer à l'encadrant",
         "sending": "Envoi…",
         "cancel": "Annuler",
         "noDeliverables": "Aucun livrable pour le moment.",
-        "noDeliverablesSub": "Les livrables sont créés côté superviseur dans le cadre du plan de projet.",
+        "noDeliverablesSub": "Les livrables sont créés côté encadrant dans le cadre du plan de projet.",
         "selectPrompt": "Choisissez un livrable à gauche pour voir les versions et les retours.",
-        "feedbackOptional": "Note optionnelle pour le superviseur",
+        "feedbackOptional": "Note optionnelle pour l'encadrant",
         "feedbackChangesRequired": "Indiquez ce qui doit être ajusté",
         "approvedFinal": "Approuvé",
         "changesPill": "MODIF.",
         "approvedPill": "OK",
         "uploadCount": "{count} / {total}",
-        "submittedRelative": "soumis {when}"
+        "submittedRelative": "soumis {when}",
+        "submittedByWhen": "Soumis par {name} · {when}",
+        "submittedByName": "Soumis par <b>{name}</b>",
+        "versionNote": "<b>Note de {name} :</b> « {note} »",
+        "quotedNote": "« {note} »",
+        "reviewerWhen": "{name} · {when}",
+        "reviewerQuoted": "{name} : « {text} »",
+        "activityHead": "<b>v{n}</b> · {status}",
+        "fileUntitled": "Sans titre",
+        "emptyDash": "—",
+        "detailSep": "·",
+        "detailEyebrowSingular": "Livrable",
+        "submittedOnTimeSuffix": " · remis dans les temps",
+        "ownerLine": "Auteur·rice : <b>{name}</b>",
+        "reviewerLine": "Encadrant·e : <b>{name}</b>",
+        "progressPct": "{pct}%",
+        "version": "v{n}",
+        "fileUpdated": "mis à jour le {date}",
+        "nameFallbackIntern": "Stagiaire",
+        "nameFallbackReviewer": "Encadrant·e",
+        "nameFallbackMember": "Membre",
+        "unassignedReviewer": "Non attribué·e"
       },
       "share": {
         "button": "Lien de partage",
         "generating": "Génération…",
         "copied": "Copié ✓",
         "error": "Échec de la copie"
+      },
+      "rowDue": "Échéance {date}",
+      "rowSubmitted": "Soumis {when}",
+      "rowSep": "·",
+      "fileChip": "📎 {name}",
+      "fileChipFallback": "Ouvrir le fichier",
+      "feedbackLabel": "{label} :",
+      "checkLabel": "✓ {label}",
+      "cancel": "Annuler",
+      "submit": "Soumettre",
+      "submitRevision": "Soumettre la reprise",
+      "sendToSupervisor": "Envoyer à l'encadrant →",
+      "sending": "Envoi…",
+      "fileDropHelper": "PDF, image, zip ou .fig · max 5 Mo",
+      "mini": {
+        "heading": "Livrables",
+        "allVersions": "Toutes les versions",
+        "notSubmitted": "—",
+        "statusLabel": {
+          "draft": "À venir",
+          "submitted": "En revue",
+          "approved": "Validé",
+          "changesRequested": "Reprise"
+        },
+        "meta": {
+          "dueWeekday": "À rendre {day} {md}",
+          "dueDate": "À rendre le {md}",
+          "submittedWaitingDated": "Envoyé le {date} · en attente de relecture",
+          "submittedWaiting": "Envoyé · en attente de relecture",
+          "approved": "Validé",
+          "changesRequestedFeedback": "Modifications demandées · {feedback}",
+          "changesRequested": "Modifications demandées",
+          "upcoming": "À venir"
+        }
       }
     },
     "checkIn": {
@@ -507,7 +654,37 @@
       "nextPlaceholder": "Sur quoi allez-vous travailler la semaine prochaine ?",
       "submit": "Envoyer le point",
       "draftedByAi": "Brouillon généré par l'IA — relisez avant d'envoyer",
-      "regenerate": "Régénérer le brouillon"
+      "regenerate": "Régénérer le brouillon",
+      "pageTitle": "Point de la semaine {week}",
+      "pageIntro": "Résumé rapide pour {name}. Générez un brouillon à partir de l'activité de la semaine ou rédigez-le vous-même.",
+      "supervisorFallback": "votre encadrant"
+    },
+    "checkInForm": {
+      "sentTitle": "Point envoyé",
+      "sentBody": "Votre encadrant le verra dans la timeline et le tableau de bord.",
+      "drafting": "Rédaction…",
+      "generateDraft": "Générer un brouillon",
+      "templateNote": "Brouillon modèle (aucune clé IA configurée). Modifiez ce que vous voulez avant d'envoyer.",
+      "sending": "Envoi…",
+      "errorGenerateFailed": "Impossible de générer un brouillon pour le moment. Veuillez réessayer.",
+      "errorSendFailed": "Impossible d'envoyer votre point hebdo. Veuillez réessayer."
+    },
+    "supervisorRail": {
+      "thisWeekLabel": "Cette semaine · {date}",
+      "performanceSignal": "Signal de performance",
+      "dataLive": "DONNÉES · EN DIRECT",
+      "onTimeDelivery": "livraison dans les temps",
+      "bench": "{submitted} sur {total} envoyés · {events} événements enregistrés sur le stage.",
+      "needSyncTitle": "Besoin d'un point ?",
+      "needSyncBody": "Planifiez un point. Inturn génère le lien et l'ajoute à la timeline.",
+      "wrapUpTitle": "Clôture",
+      "wrapUpBody": "Délivrez l'attestation de fin de stage. Capture les livrables, votre évaluation et une note. Génère un PDF partageable pour le stagiaire.",
+      "nothingWaiting": "Rien en attente de votre part",
+      "review": "Réviser {title}",
+      "annotate": "Annoter {title}",
+      "quietFlag": "Signal de calme · informatif",
+      "noActivity": "Aucune activité de {name} {ago}.",
+      "percent": "%"
     },
     "schedule": {
       "title": "Planifier un point",
@@ -515,7 +692,17 @@
       "submit": "Planifier",
       "cancel": "Annuler",
       "successHeading": "Planifié",
-      "linkLabel": "Lien Jitsi"
+      "linkLabel": "Lien Jitsi",
+      "whenLabel": "Quand",
+      "durationLabel": "Durée",
+      "duration15": "15 min",
+      "duration30": "30 min",
+      "duration45": "45 min",
+      "duration60": "60 min",
+      "agendaLabel": "Ordre du jour (optionnel)",
+      "agendaPlaceholder": "p. ex. revoir la v2, planifier le prochain sprint",
+      "scheduling": "Planification…",
+      "errorGeneric": "Échec de la planification"
     },
     "comments": {
       "placeholder": "Écrire un commentaire…",
@@ -523,19 +710,111 @@
       "empty": "Pas encore de commentaire. Soyez le premier.",
       "edit": "Modifier",
       "delete": "Supprimer",
-      "deletedNotice": "[supprimé]"
+      "deletedNotice": "[supprimé]",
+      "sending": "Envoi…",
+      "charCount": "⌘/Ctrl + Entrée · {count} / 4000",
+      "deleteConfirm": "Supprimer ce commentaire ?"
     },
     "activity": {
       "empty": "Aucune activité.",
       "minutesAgo": "il y a {n} min",
       "hoursAgo": "il y a {n} h",
-      "daysAgo": "il y a {n} j"
+      "daysAgo": "il y a {n} j",
+      "recentTitle": "Activité récente",
+      "fullTimeline": "Chronologie complète",
+      "someone": "Quelqu'un",
+      "aDeliverable": "un livrable",
+      "scope": {
+        "task": "une tâche",
+        "deliverable": "un livrable",
+        "workspace": "l'espace de travail"
+      },
+      "event": {
+        "submitted": "<b>{who}</b> a soumis <b>{name}</b>{version}",
+        "approved": "<b>{who}</b> a approuvé <b>{name}</b>",
+        "revisionRequested": "<b>{who}</b> a demandé des modifications sur <b>{name}</b>",
+        "commented": "<b>{who}</b> a commenté <b>{scope}</b>",
+        "taskMoved": "<b>{who}</b> a déplacé <tag>{tagText}</tag> vers <b>{to}</b>",
+        "checkinScheduled": "<b>{who}</b> a programmé un point hebdomadaire",
+        "checkinSubmitted": "<b>{who}</b> a envoyé le point hebdomadaire",
+        "checkinFor": " pour le {when}",
+        "note": " — « {text} »"
+      }
     },
     "timeline": {
       "empty": "Rien sur la timeline pour le moment.",
       "emptySub": "Les tâches, livrables et points hebdo apparaîtront ici.",
       "workspaceStarted": "Workspace démarré",
-      "deadline": "Échéance"
+      "deadline": "Échéance",
+      "eventTime": " · {time}",
+      "eventType": {
+        "workspaceCreated": "Workspace créé",
+        "taskCreated": "Tâche créée",
+        "taskMoved": "Tâche déplacée",
+        "commentAdded": "Commentaire ajouté",
+        "deliverableSubmitted": "Livrable soumis",
+        "deliverableApproved": "Livrable approuvé",
+        "deliverableRevisionRequested": "Révision demandée",
+        "checkinScheduled": "Point hebdo planifié",
+        "checkinSubmitted": "Point hebdo envoyé",
+        "stuckSignaled": "Signalé comme bloqué",
+        "reportSubmitted": "Rapport soumis",
+        "reportApproved": "Rapport approuvé",
+        "reportRevisionRequested": "Révision du rapport demandée"
+      }
+    },
+    "rail": {
+      "checkInTitle": "Point hebdomadaire",
+      "checkInBody": "Inturn le rédige à partir de votre activité — vous modifiez et envoyez.",
+      "draftCheckIn": "Rédiger le point →",
+      "thisWeekLabel": "Cette semaine · {date}",
+      "nothingUrgent": "Rien d'urgent cette semaine",
+      "taskWithDay": "{title} ({day})",
+      "shipDeliverable": "Livrer {title}",
+      "recordTitle": "Votre suivi · à ce jour",
+      "deliverablesSubmitted": "{submitted} livrables sur {total} soumis",
+      "eventsLogged": "{count} événements enregistrés sur ce stage",
+      "endOfInternshipRecord": "Attestation de fin de stage · {date}",
+      "emptyDash": "—"
+    },
+    "statTiles": {
+      "tasksLabel": "Tâches",
+      "ofOpen": "sur {total} ouvertes",
+      "tasksFoot": "{done} terminées · {review} en revue",
+      "deliverablesLabel": "Livrables",
+      "ofSubmitted": "sur {total} soumis",
+      "daysRemainingLabel": "Jours restants",
+      "daysUnit": "jours",
+      "endsOn": "Se termine {date}",
+      "emptyDash": "—",
+      "eventsThisWeekLabel": "Événements cette semaine",
+      "activityScoreLabel": "Score d'activité",
+      "eventsUnit": "enregistrés",
+      "scoreUnit": "/ 100",
+      "eventsTotal": "{count} au total sur ce stage",
+      "aboveFloor": "Au-dessus du seuil de 70",
+      "belowFloor": "Sous le seuil — à relancer",
+      "delivSent": "✓ {title} · v{version} envoyé",
+      "delivPendingReview": "{count} en attente de revue",
+      "delivReviewed": "✓ {title} relu",
+      "delivNothingSubmitted": "Rien de soumis pour l'instant",
+      "delivNothingPending": "Rien en attente"
+    },
+    "brief": {
+      "eyebrow": "Stage · {weeks} semaines · {mode}",
+      "mode": {
+        "onSite": "Sur site",
+        "remote": "À distance",
+        "hybrid": "Hybride"
+      },
+      "workspaceFallback": "Espace de travail",
+      "hintHybrid": "3 j/sem sur site",
+      "hintOnSite": "sur site toute la semaine",
+      "hintRemote": "à distance",
+      "locationMeta": "<b>{location}</b> · {hint}",
+      "paidMeta": "Rémunéré · <b>{amount}</b>",
+      "roleSupervisor": "Encadrant",
+      "roleIntern": "Stagiaire"
     }
   },
   "marketplace": {
@@ -607,6 +886,17 @@
       "accepted": "Accepté",
       "rejected": "Refusé"
     },
+    "inbox": {
+      "filterAll": "Tous",
+      "compare": "Comparer {count}",
+      "empty": "Aucune candidature ne correspond.",
+      "colApplicant": "Candidat",
+      "colInternship": "Stage",
+      "colApplied": "Reçue",
+      "colStatus": "Statut",
+      "open": "Ouvrir",
+      "selectLabel": "Sélectionner {name}"
+    },
     "detail": {
       "back": "← Toutes les candidatures",
       "appliedOn": "Postulé le {date}",
@@ -628,7 +918,8 @@
       "skills": "Compétences",
       "roles": "Rôles",
       "coverNote": "Lettre",
-      "openFull": "Ouvrir la fiche →"
+      "openFull": "Ouvrir la fiche →",
+      "meta": "{university} · {year} · {field}"
     },
     "apply": {
       "eyebrow": "Candidature · {org}",
@@ -657,7 +948,17 @@
       "confirmAccept": "Confirmer et accepter",
       "cancel": "Annuler",
       "agingLine": "En {status} depuis {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}}"
-    }
+    },
+    "notes": {
+      "placeholder": "Notes internes (jamais montrées au candidat)…",
+      "saving": "Enregistrement…",
+      "saved": "Enregistré · {time}",
+      "autoSaves": "Enregistrement automatique à la saisie"
+    },
+    "inboxHeading": "Candidatures",
+    "inboxCount": "{count, plural, one {# candidature} other {# candidatures}} pour les stages de ce projet.",
+    "inboxMeta": "{university} · {year}",
+    "metaSep": "·"
   },
   "admin": {
     "dashboard": {
@@ -694,6 +995,7 @@
       "status": "Statut",
       "created": "Créée",
       "review": "Examiner →",
+      "rneProvidedAria": "RNE fourni",
       "detail": {
         "back": "← Toutes les vérifications",
         "organization": "Entreprise",
@@ -722,7 +1024,8 @@
       "reportedBy": "Signalé par {email}",
       "deletedUser": "utilisateur supprimé",
       "suspendUser": "Suspendre l'utilisateur",
-      "reactivateUser": "Réactiver l'utilisateur"
+      "reactivateUser": "Réactiver l'utilisateur",
+      "metaSep": "·"
     },
     "audit": {
       "title": "Journal d'audit",
@@ -735,7 +1038,12 @@
       "previous": "← Précédent",
       "next": "Suivant →",
       "page": "Page {n}",
-      "exportCsv": "Exporter CSV"
+      "exportCsv": "Exporter CSV",
+      "filterAll": "Toutes",
+      "filterOrg": "Organisations",
+      "filterReport": "Signalements",
+      "filterInternship": "Stages",
+      "filterUser": "Utilisateurs"
     },
     "users": {
       "title": "Utilisateurs",
@@ -777,6 +1085,11 @@
       "detailNoOrg": "Aucune entreprise détenue.",
       "detailNoApplications": "Aucune candidature.",
       "detailNoWorkspaces": "Aucun espace de travail.",
+      "workspaceStatus": {
+        "active": "Actif",
+        "completed": "Terminé",
+        "cancelled": "Annulé"
+      },
       "detailUniversity": "Établissement",
       "detailField": "Domaine d'études",
       "detailCity": "Ville",
@@ -788,7 +1101,8 @@
       "detailJoined": "Inscription",
       "detailColInternship": "Stage",
       "detailColStatus": "Statut",
-      "detailColDate": "Date"
+      "detailColDate": "Date",
+      "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
     },
     "status": {
       "draft": "Brouillon",
@@ -799,6 +1113,11 @@
       "reviewed": "Examiné",
       "resolved": "Résolu"
     },
+    "subjectType": {
+      "internship": "Stage",
+      "organization": "Organisation",
+      "user": "Utilisateur"
+    },
     "reasons": {
       "scam": "Arnaque",
       "misleading": "Trompeur",
@@ -806,6 +1125,57 @@
       "spam": "Spam",
       "unsafe": "Dangereux",
       "other": "Autre"
+    },
+    "reportDetail": {
+      "back": "Retour aux signalements",
+      "heading": "Signalement {id}",
+      "subject": "Objet",
+      "openSubject": "Ouvrir l'objet",
+      "subjectGone": "L'objet n'existe plus dans la base de données.",
+      "deleted": {
+        "internship": "Stage supprimé",
+        "organization": "Organisation supprimée",
+        "user": "Utilisateur supprimé"
+      },
+      "detailStatus": "statut",
+      "detailRole": "rôle",
+      "role": {
+        "intern": "Stagiaire",
+        "company": "Entreprise",
+        "admin": "Admin",
+        "university": "Université"
+      },
+      "reportBody": "Contenu du signalement",
+      "reportedBy": "Signalé par {email}",
+      "deletedUser": "utilisateur supprimé",
+      "resolution": "Résolution",
+      "metaSep": "·",
+      "triage": "Triage",
+      "reopen": "Rouvrir",
+      "reopenHint": "Ce signalement est {status}. Rouvrez-le pour le modifier.",
+      "placeholder": "Qu'avez-vous fait ? (ex. stage dépublié, organisation contactée, aucune action)",
+      "unpublishInternship": "Dépublier le stage",
+      "markReviewed": "Marquer comme examiné",
+      "resolve": "Résoudre",
+      "saving": "Enregistrement…",
+      "validationMin": "Ajoutez une courte note de résolution (5 caractères min).",
+      "confirmUnpublish": "Dépublier ce stage du marketplace ?",
+      "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+      "errorNotFound": "Ce signalement n'existe plus.",
+      "reasons": {
+        "scam": "Arnaque",
+        "misleading": "Trompeur",
+        "inappropriate": "Inapproprié",
+        "spam": "Spam",
+        "unsafe": "Dangereux",
+        "other": "Autre"
+      }
+    },
+    "verifyActions": {
+      "markVerified": "Marquer comme vérifié",
+      "requestChanges": "Demander des modifications",
+      "suspend": "Suspendre",
+      "suspendConfirm": "Suspendre cette organisation ? Ses stages seront masqués du marketplace."
     }
   },
   "projectHub": {
@@ -832,7 +1202,11 @@
       "removePhase": "Supprimer la phase",
       "cancel": "Annuler",
       "save": "Enregistrer",
-      "saving": "Enregistrement…"
+      "saving": "Enregistrement…",
+      "errorTooManyGoals": "Vous pouvez définir au maximum 3 objectifs.",
+      "errorTooManyPhases": "Vous pouvez définir au maximum 6 phases.",
+      "errorSuspended": "Votre compte est suspendu.",
+      "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
     },
     "noPhases": "Aucune phase définie pour ce projet.",
     "noGoals": "Aucun objectif défini pour l'instant.",
@@ -846,9 +1220,9 @@
     "projectSignal": "Signal projet",
     "projectSync": "Sync projet",
     "projectSyncBody": "Chaque espace a son propre calendrier de check-in. Ouvrez un espace ci-dessous pour planifier — le lien Jitsi sera publié dans le fil d'activité.",
-    "supervisors": "Superviseurs & équipe",
-    "leadSupervisor": "Superviseur principal",
-    "coSupervisor": "Co-superviseur",
+    "supervisors": "Encadrants & équipe",
+    "leadSupervisor": "Encadrant principal",
+    "coSupervisor": "Co-encadrant",
     "thisWeek": "Cette semaine",
     "openWorkspace": "Ouvrir l'espace →",
     "applicationsLink": "Candidatures →",
@@ -885,9 +1259,100 @@
         "forbidden": "Vous n'avez pas l'autorisation de gérer les dépendances.",
         "generic": "Une erreur s'est produite. Réessayez."
       }
+    },
+    "publishedBanner": "Stage publié sur le marketplace.",
+    "blockedBanner": "Enregistré en brouillon. Votre organisation doit être vérifiée avant de pouvoir publier.",
+    "projectStatus": {
+      "draft": "brouillon",
+      "active": "actif",
+      "archived": "archivé"
+    },
+    "internshipStatusLabel": {
+      "draft": "brouillon",
+      "published": "publié",
+      "closed": "clôturé",
+      "archived": "archivé"
+    },
+    "scheduleRange": "{start} — {end}",
+    "scheduleWeeks": " · {n} SEM",
+    "eyebrowProject": "Projet",
+    "eyebrowSep": "·",
+    "eyebrowDuration": "{n} semaines",
+    "eyebrowOpenEnded": "Sans échéance",
+    "eyebrowInternships": "{n} stages",
+    "createdOn": "Créé le <b>{date}</b>",
+    "createdBy": "par <b>{name}</b>",
+    "projectTeam": "Équipe du projet",
+    "supervisorRole": "Encadrant",
+    "avatarPlaceholder": "?",
+    "internsPlaced": "{n} stagiaires placés",
+    "openSlots": "{n} places ouvertes",
+    "phaseOf": "PHASE {current} SUR {total}",
+    "onTrack": "Dans les temps",
+    "phaseNum": "PHASE {n}",
+    "phaseNumNow": " · MAINTENANT",
+    "phaseWeeks": "Sem {from} → {to}",
+    "statActive": "actifs",
+    "statBothFilled": "Tous pourvus · aucun brouillon",
+    "statSomeFilled": "{filled} pourvus · {draft} brouillon",
+    "statNoInterns": "Aucun stagiaire placé pour l'instant",
+    "statTasksOpen": "sur {total} ouvertes",
+    "statTasksFooter": "{done} faites · {review} en revue",
+    "statDelivsOf": "sur {total}",
+    "statDelivsFooter": "{pending} à examiner · {approved} approuvés",
+    "statDelivsApproved": "{approved} approuvés",
+    "statDaysSub": "jours",
+    "statEnds": "Fin le {date}",
+    "statNoEndDate": "Aucune date de fin définie",
+    "rosterMeta": "INT-{id} · {n, plural, one {# place} other {# places}} · {fill}",
+    "rosterFilled": "pourvu",
+    "rosterOpen": "ouvert",
+    "rosterApplicants": "{n, plural, one {# candidat} other {# candidats}}",
+    "rosterAwaiting": "En attente de candidat",
+    "rosterTasks": "Tâches",
+    "rosterDelivs": "Livr.",
+    "rosterStatus": "Statut",
+    "rosterInReview": "{n} en revue",
+    "rosterOnTrack": "Dans les temps",
+    "rosterCount": "{done} / {total}",
+    "addAnotherInternship": "Ajouter un autre stage à ce projet",
+    "signalDataLive": "DONNÉES · LIVE",
+    "signalPercent": "%",
+    "signalOnPace": "dans les temps, les deux postes",
+    "signalBenchPhase": "La phase {current} se poursuit jusqu'à la <b>Sem {week}</b>. Aucune intervention nécessaire dans l'un ou l'autre espace.",
+    "signalBenchNoPhase": "Aucune intervention nécessaire dans l'un ou l'autre espace.",
+    "signalSparkAria": "Courbe de rythme du projet",
+    "leadBadge": "PRINCIPAL",
+    "internRole": "Stagiaire · {title}",
+    "thisWeekDate": "{week} · {date}",
+    "eventLine": "{event} · {time}",
+    "noActivity": "Aucune activité dans ce projet pour l'instant.",
+    "phaseEndsWeek": "La phase {n} se termine Sem {week}",
+    "eventVerb": {
+      "signup": "Inscription",
+      "login": "Connexion",
+      "created": "Créé",
+      "updated": "Mis à jour",
+      "deleted": "Supprimé",
+      "saved": "Enregistré",
+      "selected": "Sélectionné",
+      "changed": "Modifié",
+      "moved": "Déplacé",
+      "added": "Ajouté",
+      "submitted": "Soumis",
+      "approved": "Approuvé",
+      "requested": "Demandé",
+      "scheduled": "Programmé",
+      "signaled": "Signalé",
+      "published": "Publié",
+      "unpublished": "Dépublié",
+      "closed": "Fermé",
+      "accepted": "Accepté"
     }
   },
   "internshipDetail": {
+    "metaNotFound": "Introuvable",
+    "metaFallbackDescription": "Stage chez {org}",
     "weeks": "{n, plural, one {# semaine} other {# semaines}}",
     "paid": "Rémunéré",
     "paidWith": "Rémunéré · {amount}",
@@ -897,7 +1362,19 @@
     "back": "← Tous les stages",
     "applySignUp": "S'inscrire pour postuler",
     "applyNow": "Postuler →",
-    "applyCompleteProfile": "Compléter le profil pour postuler"
+    "applyCompleteProfile": "Compléter le profil pour postuler",
+    "orgLocation": "{name} · {place}",
+    "metaSep": "·",
+    "locationType": {
+      "on-site": "Sur site",
+      "virtual": "À distance",
+      "hybrid": "Hybride"
+    }
+  },
+  "internshipApply": {
+    "coverNoteLabel": "Lettre de motivation (optionnel, 1500 caractères max)",
+    "coverNotePlaceholder": "Pourquoi ce stage ?",
+    "submit": "Envoyer la candidature"
   },
   "card": {
     "durationWeeks": "{n, plural, one {# semaine} other {# semaines}}",
@@ -991,7 +1468,15 @@
       "syncsEmpty": "Aucune réunion à venir.",
       "syncsScheduleLink": "En planifier une →",
       "syncsToday": "Aujourd'hui",
-      "syncsDurationMin": "{n} min"
+      "syncsDurationMin": "{n} min",
+      "greetingLine": "{greeting}, <hl>{name}</hl>",
+      "greetingFallbackName": "vous",
+      "verifyLine": "{heading} · {sla}",
+      "cardPercent": "{progress}%",
+      "syncCheckin": "Point hebdomadaire",
+      "syncCheckinProject": "Point hebdomadaire · {project}",
+      "syncJitsi": " · Jitsi",
+      "syncIntern": " · {name}"
     }
   },
   "projects": {
@@ -1026,7 +1511,10 @@
       "ctaContinueSetup": "Continuer la config →",
       "emptyAll": "Aucun projet — créez votre premier pour démarrer.",
       "emptyDrafts": "Aucun brouillon. Démarrez un nouveau projet.",
-      "emptyArchived": "Rien d'archivé pour l'instant."
+      "emptyArchived": "Rien d'archivé pour l'instant.",
+      "addIcon": "+",
+      "cardPercent": "{progress}%",
+      "cardCount": "{done}/{total}"
     },
     "edit": {
       "heading": "Modifier le projet",
@@ -1038,6 +1526,86 @@
       "reorderPhase": "Glisser pour réordonner la phase",
       "backToProject": "Retour au projet",
       "backToProjects": "Retour aux projets"
+    },
+    "new": {
+      "draftBannerTitle": "Mode brouillon",
+      "draftBannerMessage": "ce projet reste privé jusqu'à la publication de votre premier stage.",
+      "heading": "Créer un nouveau projet",
+      "subheading": "Les projets regroupent vos stages. Un projet = un travail ; un ou plusieurs stagiaires y collaborent depuis leurs propres espaces de travail.",
+      "reviewSubheading": "Le projet est mis en ligne dès que vous publiez votre premier stage — d'ici là, personne en dehors de votre organisation ne le voit.",
+      "ctaNextTitle": "Étape suivante : publiez votre premier stage",
+      "ctaNextBody": "Le projet devient <b>actif</b> dès la publication de votre premier stage. Un brouillon sans aucun stage <b>est archivé automatiquement après 30 jours</b>.",
+      "ctaSave": "Enregistrer & publier le premier stage",
+      "ctaSaveHint": "Enregistre un brouillon et vous amène à l'étape 4.",
+      "awaitingVerificationTitle": "Votre organisation est en attente de vérification",
+      "awaitingVerificationBody": "Vous pouvez rédiger un brouillon de projet, mais vous ne pourrez pas en publier de stages tant qu'un administrateur n'a pas marqué votre organisation comme vérifiée."
+    },
+    "form": {
+      "req": "*",
+      "nameLabel": "Nom du projet",
+      "namePlaceholder": "Audit de marque & refonte du système",
+      "nameHint": "Visible en interne et par les candidats une fois les stages publiés.",
+      "slugLabel": "Slug d'URL",
+      "slugHint": "Utilisé dans les URL. Minuscules, chiffres et tirets uniquement.",
+      "briefLabel": "Description courte",
+      "briefPlaceholder": "Un audit complet de la marque d'Acme et un système repensé, livrés sous forme de bibliothèque Figma + charte. Conçu pour deux stagiaires en parallèle sur 12 semaines.",
+      "briefHint": "2 à 3 phrases. Ce texte devient le brief affiché en tête de chaque espace de travail de ce projet.",
+      "modeLabel": "Mode",
+      "mode": {
+        "hybrid": { "label": "Hybride", "sub": "Présentiel + distanciel" },
+        "virtual": { "label": "Distanciel", "sub": "Entièrement à distance" },
+        "on-site": { "label": "Présentiel", "sub": "Au bureau tous les jours" }
+      },
+      "locationLabel": "Lieu",
+      "locationPlaceholder": "Tunis · Lac 2",
+      "locationHint": "Projets hybrides et présentiels uniquement.",
+      "onSiteDaysLabel": "Jours sur site",
+      "day": {
+        "Mon": "Lun",
+        "Tue": "Mar",
+        "Wed": "Mer",
+        "Thu": "Jeu",
+        "Fri": "Ven"
+      },
+      "startDateLabel": "Date de début",
+      "durationLabel": "Durée (semaines)",
+      "durationHint": "Les stages peuvent être plus courts, jamais plus longs. Fin le {endDate}.",
+      "goalsHeading": "À quoi ressemble la réussite ?",
+      "goalsIntro": "3 énoncés courts. Ils apparaissent dans chaque espace de travail de ce projet — les stagiaires les lisent dès le premier jour, les encadrants y reviennent à chaque point d'étape.",
+      "goalsLabel": "Objectifs du projet",
+      "goalsUsed": "· {filled} sur 3 utilisés",
+      "goalPlaceholder1": "Clarté du positionnement — une histoire validée par les parties prenantes, en un paragraphe.",
+      "goalPlaceholder2": "Un système, pas des assets — la refonte est livrée comme une bibliothèque Figma adossée à des tokens.",
+      "goalPlaceholder3": "Une passation qui dure — une charte qu'un junior peut appliquer dès le premier jour, sans nous.",
+      "goalAria": "Objectif {n}",
+      "goalsHint": "La limite est de 3. Si vous ne pouvez pas le dire en 3, c'est que ce n'est pas encore clair.",
+      "thenOptional": "ensuite · optionnel",
+      "phasesHeading": "Phases du projet",
+      "phasesIntro": "Esquissez le déroulé du projet. Vous pouvez modifier ou ignorer — le bandeau de phases du Hub s'en sert pour afficher la progression.",
+      "addPhase": "+ Ajouter une phase",
+      "skipSection": "· Ignorer cette section",
+      "phaseNamePlaceholder0": "Découverte & audit",
+      "phaseNamePlaceholder1": "Exploration & moodboard",
+      "phaseNamePlaceholder2": "Construction du système",
+      "phaseNamePlaceholder3": "Passation",
+      "phaseNameAria": "Nom de la phase",
+      "phaseDescPlaceholder": "Note courte (optionnel)",
+      "phaseDescAria": "Description de la phase",
+      "fromWeekAria": "Semaine de début",
+      "toWeekAria": "Semaine de fin",
+      "removePhase": "Supprimer la phase",
+      "summaryName": "Nom",
+      "summaryMode": "Mode",
+      "summarySchedule": "Calendrier",
+      "summaryGoals": "Objectifs",
+      "summaryPhases": "Phases",
+      "summaryNotSet": "(non défini)",
+      "summaryNoneYet": "(aucun pour l'instant)",
+      "summarySkipped": "(ignoré)",
+      "scheduleRange": "{start} → {end}",
+      "summaryDuration": "· {n} semaines",
+      "summaryGoalItem": "· {goal}",
+      "summaryPhasePill": "{name} · SEM {from}-{to}"
     }
   },
   "internships": {
@@ -1047,6 +1615,135 @@
       "deliverablesHeading": "Que vont-ils livrer ?",
       "saveCta": "Enregistrer les modifications",
       "back": "← Retour"
+    },
+    "publishConfirm": "Publier ce stage sur le marketplace ? Il deviendra visible par tous les candidats.",
+    "new": {
+      "draftBannerTitle": "Mode brouillon",
+      "draftBannerMessage": "enregistrer ici ne publie rien — {projectName} reste privé jusqu'à ce que vous cliquiez sur Publier.",
+      "heading": "Ajouter un stage à <brand>{projectName}</brand>",
+      "subheading": "Un poste, un ensemble de livrables. Vous pouvez ajouter d'autres postes à ce projet à tout moment — recherche, rédaction, support technique, etc.",
+      "back": "Retour",
+      "saveDraft": "Enregistrer le brouillon",
+      "publishCta": "Publier sur le marketplace",
+      "activateTitle": "La publication active le projet.",
+      "activateBody": "{projectName} passe de Brouillon à Actif dès que cette annonce est en ligne.",
+      "nextTitle": "Ce que les stagiaires voient ensuite",
+      "nextScope": "· Page publique avec le périmètre complet et les livrables",
+      "nextApply": "· Candidature en un clic (le profil est joint automatiquement)",
+      "nextQuestions": "· Vos {count} {count, plural, =1 {question} other {questions}} sur le formulaire de candidature",
+      "nextResponse": "· Date de « réponse attendue avant le » sur leur suivi"
+    },
+    "form": {
+      "req": "*",
+      "titleLabel": "Intitulé du poste",
+      "titlePlaceholder": "Designer visuel",
+      "titleHint": "C'est ce que les stagiaires recherchent — soyez précis.",
+      "disciplineLabel": "Discipline",
+      "sector": {
+        "design": "Design",
+        "softwareTech": "Logiciel & tech",
+        "marketingComms": "Marketing & communication",
+        "product": "Produit",
+        "data": "Données",
+        "operations": "Opérations",
+        "finance": "Finance",
+        "content": "Contenu",
+        "other": "Autre"
+      },
+      "scopeLabel": "Périmètre",
+      "scopePlaceholder": "Ce que ce stagiaire prend en charge — concret et précis. Différent de la description du projet.",
+      "scopeHint": "Ce que ce stagiaire prend en charge. Différent de la description du projet — soyez concret sur le périmètre.",
+      "slotsLabel": "Places",
+      "slotsThreePlus": "3+",
+      "slotsHint": "Combien de stagiaires occupent ce poste en parallèle.",
+      "supervisorLabel": "Encadrant",
+      "supervisorYou": "{name} (vous)",
+      "durationLabel": "Durée (semaines)",
+      "durationHint": "Ne peut pas dépasser la durée du projet.",
+      "modeLabel": "Mode",
+      "mode": {
+        "hybrid": { "label": "Hybride", "sub": "Présentiel + à distance" },
+        "virtual": { "label": "À distance", "sub": "Entièrement distribué" },
+        "on-site": { "label": "Présentiel", "sub": "Au bureau tous les jours" }
+      },
+      "locationLabel": "Lieu",
+      "locationPlaceholder": "Tunis",
+      "listingLanguageLabel": "Langue de l'annonce",
+      "language": {
+        "fr": "Français",
+        "en": "English",
+        "ar": "العربية"
+      },
+      "dividerSkills": "compétences requises",
+      "skillsLabel": "Compétences attendues du stagiaire",
+      "skillsPlaceholder": "Ajouter une compétence",
+      "skillsHint": "Sert à faire remonter cette annonce dans la recherche du marketplace. Ne filtrez pas trop — souhaité plutôt qu'exigé.",
+      "compensationLabel": "Rémunération",
+      "paid": "Rémunéré",
+      "unpaid": "Non rémunéré",
+      "compensationAmountAria": "Montant de la rémunération",
+      "unit": {
+        "tndMonth": "TND / mois",
+        "tndWeek": "TND / semaine",
+        "eurMonth": "EUR / mois"
+      },
+      "unitShort": {
+        "month": "mois",
+        "week": "sem."
+      },
+      "compensationHint": "Inturn affiche cette information sur l'annonce. Masquer la rémunération est interdit pour les postes rémunérés.",
+      "deadlineLabel": "Date limite de candidature",
+      "deliverablesHeading": "Que vont-ils livrer ?",
+      "deliverablesIntro": "Soyez précis. Les livrables structurent l'espace de travail — des briefs flous mènent à la dérive. Exigés dès la publication, pas après.",
+      "deliverablesLabel": "Livrables requis",
+      "deliverablesUsed": "· {filled} sur 10 utilisés",
+      "deliverableBadge": "L{n}",
+      "deliverableNamePlaceholder0": "Audit de marque · retours des parties prenantes",
+      "deliverableNamePlaceholder1": "Exploration visuelle · planches d'inspiration",
+      "deliverableNamePlaceholder2": "Remise de la bibliothèque du système",
+      "deliverableNamePlaceholder": "Nom du livrable",
+      "deliverableNameAria": "Nom du livrable {n}",
+      "deliverableDescPlaceholder": "Note courte (facultatif)",
+      "deliverableDescAria": "Description du livrable {n}",
+      "weekAbbr": "Sem.",
+      "deliverableDueWeekAria": "Semaine d'échéance du livrable {n}",
+      "removeDeliverable": "Supprimer le livrable {n}",
+      "addDeliverable": "+ Ajouter un livrable",
+      "deliverablesRange": "Min. 3 · max. 10",
+      "dividerQuestions": "questions de candidature",
+      "questionsLabel": "Posez 1 à 3 questions courtes aux candidats",
+      "questionBadge": "Q{n}",
+      "questionPlaceholder0": "Présentez un système de marque sur lequel vous avez travaillé (lien ou pièce jointe).",
+      "questionPlaceholder1": "Quelle marque, selon vous, réussit son identité ? En une phrase, pourquoi ?",
+      "questionPlaceholder": "Texte de la question",
+      "questionAria": "Question {n}",
+      "questionRequired": "Obligatoire",
+      "removeQuestion": "Supprimer la question",
+      "addQuestion": "+ Ajouter une question {remaining, plural, =0 {(max. 3)} one {(# restante)} other {(# restantes)}}",
+      "dividerVisibility": "visibilité",
+      "visibilityLabel": "Où cette annonce apparaît",
+      "visibilityPublicTitle": "Marketplace public",
+      "visibilityPublicSub": "Tout le monde peut postuler. Inturn gère la boîte de réception.",
+      "visibilityPrivateTitle": "Lien privé uniquement",
+      "visibilityPrivateSub": "À partager avec des candidats désignés. Aucune présence sur le marketplace.",
+      "previewEyebrow": "Aperçu en direct · carte marketplace",
+      "previewTitle": "{title} · {projectName}",
+      "previewOrg": "{orgName} · {location}",
+      "previewDefaultCity": "Tunis",
+      "previewDefaultOrg": "Votre entreprise",
+      "previewDefaultSupervisor": "Vous",
+      "previewPaid": "· rémunéré",
+      "previewUnpaid": "· non rémunéré",
+      "previewDurationMode": "{weeks} semaines · {mode}",
+      "previewLocationSuffix": " · {location}",
+      "previewSlots": "{count} {count, plural, =1 {place} other {places}}",
+      "previewSlotsThreePlus": "3+ places",
+      "previewStarts": " · début {date}",
+      "previewSupervisor": "Encadrant : <b>{name}</b>",
+      "previewSkillsMore": "+{count}",
+      "previewAddSkills": "Ajouter des compétences →",
+      "previewApply": "Postuler",
+      "tbd": "À définir"
     }
   },
   "errors": {
@@ -1116,6 +1813,7 @@
     },
     "suspended": {
       "label": "Compte restreint",
+      "metaSep": "·",
       "body": "Votre compte est actuellement suspendu. Vous pouvez naviguer mais ne pouvez plus postuler, publier ni commenter.",
       "contactSupport": "Contacter le support →"
     },
@@ -1135,7 +1833,9 @@
       "theme": "Thème",
       "light": "Clair",
       "dark": "Sombre",
-      "language": "Langue"
+      "language": "Langue",
+      "langFr": "FR",
+      "langEn": "EN"
     }
   },
   "community": {
@@ -1164,6 +1864,8 @@
       "titlePlaceholder": "Qu'est-ce qui vous occupe ?",
       "bodyLabel": "Contenu",
       "bodyPlaceholder": "Ajoutez du détail, du contexte ou des exemples.",
+      "titleMin": "{count}/6 min",
+      "bodyMin": "{count}/20 min",
       "submit": "Publier",
       "saving": "Publication…",
       "errorTitleMin": "Le titre doit faire au moins 6 caractères.",
@@ -1220,11 +1922,38 @@
       }
     }
   },
+  "fileDrop": {
+    "uploading": "Téléversement…",
+    "prompt": "Déposez votre fichier ou cliquez pour parcourir",
+    "error": "Échec du téléversement. Veuillez réessayer."
+  },
+  "chipInput": {
+    "counter": "{count} / {max} ajoutés · min {min}",
+    "addSkill": "Ajouter une compétence",
+    "capReached": "Limite atteinte",
+    "remove": "Retirer {item}"
+  },
+  "linkRepeater": {
+    "addAnother": "Ajouter un autre lien",
+    "removeLink": "Retirer le lien"
+  },
   "internshipTemplates": {
     "pickerTitle": "Partir d'un modèle",
     "pickerSubtitle": "Brouillons pré-remplis pour les archétypes de stage les plus demandés en Tunisie. Modifiables après application.",
+    "cardMeta": "{sector} · {duration} sem. · {locationType}",
     "applyTemplate": "Utiliser ce modèle",
     "blank": "Commencer à blanc",
+    "sector": {
+      "Design": "Design",
+      "Engineering": "Ingénierie",
+      "Marketing": "Marketing",
+      "Content": "Contenu"
+    },
+    "locationType": {
+      "on-site": "Sur site",
+      "virtual": "À distance",
+      "hybrid": "Hybride"
+    },
     "visualDesigner": {
       "title": "Designer visuel — Identité de marque",
       "description": "Pilotez l'exploration visuelle d'une marque ou d'un produit. Vous portez les moodboards, les associations typographiques, les itérations de logo et les guidelines finales. Crit hebdomadaire avec le lead design ; livrables sur Figma + exports PDF."
@@ -1275,6 +2004,9 @@
       "portfolio": "Ajouter un lien portfolio"
     }
   },
+  "meta": {
+    "ogTagline": "La plateforme de stages pour la Tunisie"
+  },
   "footer": {
     "tagline": "La plateforme de stages pour les universités tunisiennes et les entreprises qui recrutent leurs étudiants.",
     "product": "Produit",
@@ -1286,6 +2018,7 @@
     "privacy": "Confidentialité",
     "cookies": "Cookies",
     "madeIn": "Fait à Tunis",
+    "metaSep": "·",
     "contact": "hello@inturn.tn"
   },
   "cookieBanner": {
@@ -1434,16 +2167,19 @@
     "successBody": "Un administrateur va l'examiner. Merci de garder la plateforme sûre.",
     "close": "Fermer",
     "errorMin": "Veuillez décrire le problème (20 caractères minimum).",
-    "errorGeneric": "Échec de l'envoi. Réessayez."
+    "errorGeneric": "Échec de l'envoi. Réessayez.",
+    "charCount": "{count}/20 min"
   },
   "deliverables": {
     "public": {
       "badge": "Livrable partagé",
       "eyebrow": "Livrable",
+      "metaDescription": "Livrable partagé sur Inturn",
       "about": "À propos",
       "versions": "Historique des versions",
       "version": "Version {n}",
       "submitted": "Soumis",
+      "submittedValue": "Soumis le : {date}",
       "openFile": "Ouvrir le fichier",
       "noFile": "Aucun fichier",
       "copyLink": "Copier le lien",
@@ -1460,14 +2196,19 @@
   "records": {
     "verified": "Document vérifié",
     "eyebrow": "Attestation de stage",
+    "listIntro": "Vos attestations de fin de stage. Partagez le lien avec de futurs recruteurs.",
+    "listEmptyTitle": "Aucune attestation pour l'instant",
+    "listEmptyBody": "Vous recevrez votre première attestation lorsque votre superviseur validera votre stage.",
+    "listBrowseCta": "Parcourir les stages",
+    "metaIssuedBy": "Attestation de stage délivrée par {org}",
     "title": "Attestation de fin de stage",
     "subtitle": "Document officiel délivré par l'entreprise d'accueil",
     "intern": "Stagiaire",
     "organization": "Entreprise",
     "internship": "Stage",
     "deliverables": "Livrables",
-    "review": "Évaluation du superviseur",
-    "supervisor": "Superviseur",
+    "review": "Évaluation de l'encadrant",
+    "supervisor": "Encadrant",
     "signedOn": "Signé le",
     "rating": "Note",
     "statsTasks": "Tâches accomplies",
@@ -1488,7 +2229,8 @@
     "shareLink": "Copier le lien",
     "linkCopied": "Lien copié",
     "issuedBy": "Délivré par",
-    "verifyBlurb": "Cette attestation a été délivrée via Inturn. Le superviseur a validé le travail décrit ci-dessus ; cette URL est l'unique source officielle.",
+    "metaSep": "·",
+    "verifyBlurb": "Cette attestation a été délivrée via Inturn. L'encadrant a validé le travail décrit ci-dessus ; cette URL est l'unique source officielle.",
     "status": {
       "draft": "Brouillon",
       "submitted": "Soumis",
@@ -1508,7 +2250,10 @@
       "successTitle": "Attestation délivrée",
       "successCta": "Voir l'attestation",
       "alreadyExistsHint": "Une attestation active existe. En délivrer une nouvelle révoque l'ancienne.",
-      "minReviewError": "L'évaluation doit faire au moins 40 caractères."
+      "minReviewError": "L'évaluation doit faire au moins 40 caractères.",
+      "charCount": "{count}/40 min",
+      "errorForbidden": "Vous n'avez pas l'autorisation de délivrer cette attestation.",
+      "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
     }
   },
   "company": {
@@ -1519,7 +2264,10 @@
       "close": "Clôturer",
       "closing": "Clôture…",
       "closeConfirm": "Clôturer ce stage ? Il n'acceptera plus de candidatures et sera retiré de la marketplace. Cette action est irréversible.",
-      "closedLabel": "Clôturé"
+      "closedLabel": "Clôturé",
+      "publish": "Publier",
+      "publishing": "Publication…",
+      "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
     },
     "workspaces": {
       "title": "Espaces de travail",
@@ -1535,7 +2283,8 @@
       "open": "Ouvrir l'espace",
       "emptyTitle": "Aucun espace de travail",
       "emptyBody": "Les espaces de travail apparaissent ici une fois que vous acceptez un candidat dans l'un de vos stages.",
-      "emptyCta": "Voir les projets"
+      "emptyCta": "Voir les projets",
+      "sep": "·"
     }
   },
   "university": {
@@ -1555,7 +2304,8 @@
       "coordinatorEmail": "encadrant@universite.edu",
       "send": "Envoyer",
       "sending": "Envoi…",
-      "inviteSent": "Invitation envoyée"
+      "inviteSent": "Invitation envoyée",
+      "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
     },
     "dashboard": {
       "title": "Mes étudiants",
@@ -1592,6 +2342,9 @@
       "bulkSummary": "{invited} invité(s), {skipped} ignoré(s), {invalid} invalide(s)",
       "resend": "Renvoyer",
       "revoke": "Révoquer",
+      "errorRateLimited": "Trop de requêtes. Patientez un instant, puis réessayez.",
+      "errorTooManyRows": "Trop de lignes — 100 étudiants maximum par import.",
+      "errorGeneric": "Impossible d'envoyer cette invitation. Réessayez.",
       "reportStatus": {
         "none": "—",
         "draft": "Brouillon",
@@ -1633,7 +2386,9 @@
       "notePlaceholder": "Note facultative pour votre encadrant…",
       "cancel": "Annuler",
       "send": "Soumettre",
-      "sending": "Envoi…"
+      "sending": "Envoi…",
+      "errorRateLimited": "Trop de requêtes. Patientez un instant, puis réessayez.",
+      "errorGeneric": "Impossible d'envoyer cette version. Réessayez."
     },
     "comments": {
       "placeholder": "Écrire un message…",
@@ -1648,7 +2403,8 @@
       "approve": "Approuver",
       "cancel": "Annuler",
       "feedbackPlaceholder": "Qu'est-ce qui doit changer ?",
-      "sending": "Envoi…"
+      "sending": "Envoi…",
+      "errorGeneric": "Impossible d'effectuer cette action. Réessayez."
     }
   },
   "pulse": {

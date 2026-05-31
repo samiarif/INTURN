@@ -148,7 +148,7 @@ export default async function Page({
                           | 'roleIntern' | 'roleCompany' | 'roleAdmin')}
                       </StatusPill>
                     ) : (
-                      <span className="text-caption text-[var(--ink-4)]">—</span>
+                      <span className="text-caption text-[var(--ink-4)]">{'—'}</span>
                     )}
                   </TableCell>
                   <TableCell className="text-caption text-[var(--ink-3)]">

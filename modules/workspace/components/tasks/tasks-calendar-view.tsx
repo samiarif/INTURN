@@ -174,7 +174,7 @@ export function TasksCalendarView({ tasks, view: _view }: Props) {
                 </div>
               ))}
               {cTasks.length > 3 && (
-                <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>+{cTasks.length - 3} {t('more')}</div>
+                <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>{t('moreCount', { count: cTasks.length - 3 })}</div>
               )}
             </div>
           );

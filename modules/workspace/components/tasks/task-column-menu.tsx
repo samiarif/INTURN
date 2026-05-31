@@ -74,7 +74,7 @@ export function TaskColumnMenu({ status, onAddClick }: Props) {
         type="button"
         onClick={() => setOpen((o) => !o)}
       >
-        ⋯
+        {t('triggerGlyph')}
       </button>
       {open && (
         <div

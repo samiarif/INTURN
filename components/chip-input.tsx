@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type KeyboardEvent } from 'react';
+import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
@@ -9,7 +10,7 @@ export function ChipInput({
   onChange,
   min = 3,
   max = 8,
-  placeholder = 'Add a skill',
+  placeholder,
 }: {
   value: string[];
   onChange: (next: string[]) => void;
@@ -17,8 +18,10 @@ export function ChipInput({
   max?: number;
   placeholder?: string;
 }) {
+  const t = useTranslations('chipInput');
   const [draft, setDraft] = useState('');
   const atMax = value.length >= max;
+  const resolvedPlaceholder = placeholder ?? t('addSkill');
 
   function add() {
     const v = draft.trim();
@@ -54,7 +57,7 @@ export function ChipInput({
               type="button"
               onClick={() => remove(v)}
               className="hover:text-[var(--brand-700)]"
-              aria-label={`Remove ${v}`}
+              aria-label={t('remove', { item: v })}
             >
               <X className="h-3 w-3" />
             </button>
@@ -64,13 +67,13 @@ export function ChipInput({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={onKey}
-          placeholder={atMax ? 'Cap reached' : placeholder}
+          placeholder={atMax ? t('capReached') : resolvedPlaceholder}
           disabled={atMax}
           className="border-0 shadow-none flex-1 min-w-[120px] focus-visible:ring-0 px-1 h-7"
         />
       </div>
       <p className="text-[12px] text-[var(--ink-3)] mt-1">
-        {value.length} / {max} added · min {min}
+        {t('counter', { count: value.length, max, min })}
       </p>
     </div>
   );

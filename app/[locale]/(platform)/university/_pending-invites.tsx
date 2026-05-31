@@ -23,7 +23,7 @@ export function PendingInvites({ invites }: { invites: Pending[] }) {
             <span className="text-[var(--ink-2)]">
               {inv.email}
               {inv.encadrantName && (
-                <span className="ml-2 text-caption text-[var(--ink-4)]">· {inv.encadrantName}</span>
+                <span className="ml-2 text-caption text-[var(--ink-4)]">{'·'} {inv.encadrantName}</span>
               )}
             </span>
             <span className="flex items-center gap-3">

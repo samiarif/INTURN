@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import type { Application, Internship, User, Profile } from '@/db/schema';
+import { formatDateShort, type FormatLocale } from '@/lib/format-time';
 import {
   Table,
   TableHeader,
@@ -13,14 +15,14 @@ import {
   TableCell,
 } from '@/components/ui/table';
 
-const STATUS_OPTIONS: Array<{ value: 'all' | Application['status']; label: string }> = [
-  { value: 'all', label: 'All' },
-  { value: 'new', label: 'New' },
-  { value: 'reviewed', label: 'Reviewed' },
-  { value: 'shortlisted', label: 'Shortlisted' },
-  { value: 'interview', label: 'Interview' },
-  { value: 'accepted', label: 'Accepted' },
-  { value: 'rejected', label: 'Rejected' },
+const STATUS_OPTIONS: Array<'all' | Application['status']> = [
+  'all',
+  'new',
+  'reviewed',
+  'shortlisted',
+  'interview',
+  'accepted',
+  'rejected',
 ];
 
 const STATUS_STYLE: Record<string, string> = {
@@ -40,6 +42,8 @@ type Row = {
 };
 
 export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: string }) {
+  const t = useTranslations('applications');
+  const locale = useLocale() as FormatLocale;
   const [statusFilter, setStatusFilter] = useState<'all' | Application['status']>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -56,18 +60,18 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
     <div>
       <div className="flex items-center justify-between mb-6">
         <div className="inline-flex items-center gap-1 flex-wrap">
-          {STATUS_OPTIONS.map((opt) => (
+          {STATUS_OPTIONS.map((value) => (
             <button
-              key={opt.value}
+              key={value}
               type="button"
-              onClick={() => setStatusFilter(opt.value)}
+              onClick={() => setStatusFilter(value)}
               className={
-                statusFilter === opt.value
+                statusFilter === value
                   ? 'px-3 py-1.5 rounded-full text-label bg-[var(--ink)] text-white'
                   : 'px-3 py-1.5 rounded-full text-label bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
               }
             >
-              {opt.label}
+              {value === 'all' ? t('inbox.filterAll') : t(`status.${value}`)}
             </button>
           ))}
         </div>
@@ -76,7 +80,7 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
             href={`/company/projects/${projectId}/applications/compare?ids=${Array.from(selected).join(',')}`}
             className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
           >
-            Compare {selected.size}
+            {t('inbox.compare', { count: selected.size })}
             <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
           </Link>
         )}
@@ -84,7 +88,7 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
 
       {filtered.length === 0 ? (
         <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-[var(--ink-3)] text-sm">
-          No applications match.
+          {t('inbox.empty')}
         </div>
       ) : (
         <div className="border border-[var(--border-color)] rounded-md overflow-hidden">
@@ -92,10 +96,10 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
             <TableHeader>
               <TableRow>
                 <TableHead className="w-8" />
-                <TableHead>Applicant</TableHead>
-                <TableHead>Internship</TableHead>
-                <TableHead>Applied</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t('inbox.colApplicant')}</TableHead>
+                <TableHead>{t('inbox.colInternship')}</TableHead>
+                <TableHead>{t('inbox.colApplied')}</TableHead>
+                <TableHead>{t('inbox.colStatus')}</TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>
@@ -111,7 +115,7 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
                       checked={selected.has(r.application.id)}
                       disabled={!selected.has(r.application.id) && selected.size >= 4}
                       onChange={() => toggleSelect(r.application.id)}
-                      aria-label={`Select ${r.applicant.firstName} ${r.applicant.lastName}`}
+                      aria-label={t('inbox.selectLabel', { name: `${r.applicant.firstName} ${r.applicant.lastName}` })}
                     />
                   </TableCell>
                   <TableCell>
@@ -119,16 +123,19 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
                       {r.applicant.firstName} {r.applicant.lastName}
                     </div>
                     <div className="text-caption text-[var(--ink-3)]">
-                      {r.profile?.university ?? ''} · {r.profile?.yearOfStudy ?? ''}
+                      {t('inboxMeta', {
+                        university: r.profile?.university ?? '',
+                        year: r.profile?.yearOfStudy ?? '',
+                      })}
                     </div>
                   </TableCell>
                   <TableCell>{r.internship.title}</TableCell>
                   <TableCell className="font-mono text-caption text-[var(--ink-3)] whitespace-nowrap">
-                    {new Date(r.application.createdAt).toLocaleDateString()}
+                    {formatDateShort(new Date(r.application.createdAt), locale)}
                   </TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[r.application.status ?? 'new']}`}>
-                      {r.application.status}
+                      {t(`status.${r.application.status ?? 'new'}`)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
@@ -136,7 +143,7 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
                       href={`/company/projects/${projectId}/applications/${r.application.id}`}
                       className="inline-flex items-center gap-1 text-[var(--brand-600)] hover:text-[var(--brand-700)]"
                     >
-                      Open
+                      {t('inbox.open')}
                       <ArrowRight size={14} strokeWidth={2.25} aria-hidden />
                     </Link>
                   </TableCell>

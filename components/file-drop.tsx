@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export type UploadKind = 'cv' | 'logo' | 'deliverable' | 'registry' | 'report';
 
@@ -22,6 +23,7 @@ export function FileDrop({
   onUploaded: (result: UploadResult) => void;
   helper?: string;
 }) {
+  const t = useTranslations('fileDrop');
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +40,10 @@ export function FileDrop({
       }
       const json: UploadResult = await res.json();
       onUploaded(json);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Upload failed');
+    } catch {
+      // The /api/upload error (body.error / HTTP status) is a machine/English
+      // string — surface a localized generic instead of leaking it raw.
+      setError(t('error'));
     } finally {
       setUploading(false);
     }
@@ -59,7 +63,7 @@ export function FileDrop({
           }}
         />
         <b className="block text-[var(--ink)] font-medium">
-          {uploading ? 'Uploading…' : 'Drop your file or click to browse'}
+          {uploading ? t('uploading') : t('prompt')}
         </b>
         {helper && <span className="block text-[12px] text-[var(--ink-3)] mt-1">{helper}</span>}
       </label>

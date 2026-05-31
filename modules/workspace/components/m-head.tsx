@@ -1,4 +1,4 @@
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { WorkspaceTabBar } from './tab-bar';
 import { MHeadActions } from './m-head-actions';
 
@@ -34,13 +34,15 @@ export async function WorkspaceMHead({
   deliverableCount: number;
 }) {
   const locale = await getLocale();
+  const t = await getTranslations('workspace.topbar');
 
-  // Note: "Welcome back, {name}", "● ACTIVE", "Add note", "Assign task"
-  // do not have plan-vetted FR translations — left as-is until namespace expands.
   const title =
     view === 'intern'
-      ? `Welcome back, ${internFirstName ?? ''}`
-      : `${internFirstName ?? ''} ${internLastName ?? ''} · ${internshipTitle.split('—')[0]?.trim() ?? ''}`;
+      ? t('welcomeBack', { name: internFirstName ?? '' })
+      : t('headTitleSupervisor', {
+          name: `${internFirstName ?? ''} ${internLastName ?? ''}`.trim(),
+          project: internshipTitle.split('—')[0]?.trim() ?? '',
+        });
 
   const range = formatDateRange(startDate, endDate, locale);
 
@@ -50,7 +52,7 @@ export async function WorkspaceMHead({
         <h1 className="ws-mhead-title">{title}</h1>
         <span className="ws-mhead-badge live">
           <span className="ws-live-dot" aria-hidden />
-          ACTIVE
+          {t('activeBadge')}
         </span>
         {range && (
           <span className="ws-mhead-badge mono" style={{ fontFamily: 'var(--font-mono)' }}>

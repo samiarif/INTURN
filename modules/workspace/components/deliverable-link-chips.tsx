@@ -58,11 +58,9 @@ export async function DeliverableLinkChips({ links }: { links: DeliverableLinks 
                   color: 'var(--ink-2)',
                 }}
               >
-                <span aria-hidden style={{ lineHeight: 1 }}>
-                  🔗
-                </span>
+                <span aria-hidden style={{ lineHeight: 1 }}>{'🔗'}</span>
                 <span style={{ color: 'var(--ink)' }}>{d.title}</span>
-                <span style={{ color: 'var(--ink-4)' }}>·</span>
+                <span style={{ color: 'var(--ink-4)' }}>{'·'}</span>
                 <span>{d.internName}</span>
                 <span
                   aria-hidden
@@ -111,11 +109,9 @@ export async function DeliverableLinkChips({ links }: { links: DeliverableLinks 
                   color: 'var(--ink-2)',
                 }}
               >
-                <span aria-hidden style={{ lineHeight: 1 }}>
-                  🔗
-                </span>
+                <span aria-hidden style={{ lineHeight: 1 }}>{'🔗'}</span>
                 <span style={{ color: 'var(--ink)' }}>{d.title}</span>
-                <span style={{ color: 'var(--ink-4)' }}>·</span>
+                <span style={{ color: 'var(--ink-4)' }}>{'·'}</span>
                 <span>{d.internName}</span>
               </span>
             ))}

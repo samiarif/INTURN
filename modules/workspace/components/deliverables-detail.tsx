@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import type { Deliverable, DeliverableRevision } from '@/db/schema';
+import { formatTimeAgo, type FormatLocale } from '@/lib/format-time';
 import { Avatar } from '@/components/avatar';
 import { DelivReviewBar } from './deliv-review-bar';
 import { DelivUploadZone } from './deliv-upload-zone';
@@ -18,15 +19,11 @@ function fmtDateLong(d: Date | string | null, locale: string): string {
 type DeliverableStatusLite = 'draft' | 'submitted' | 'approved' | 'revision-requested';
 type PillVariant = 'review' | 'approved' | 'changes' | 'draft';
 
-function relativeWhen(d: Date | string | null): string {
+// Localized "time ago" via the shared formatter. Returns '' for a null date
+// so callers can compose it into `<relative> · <absolute date>` strings.
+function relativeWhen(d: Date | string | null, locale: string): string {
   if (!d) return '';
-  const ms = Date.now() - new Date(d).getTime();
-  const minutes = Math.max(1, Math.floor(ms / 60_000));
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return formatTimeAgo(d, locale as FormatLocale);
 }
 
 function pillVariantFor(status: DeliverableStatusLite): PillVariant {
@@ -63,13 +60,15 @@ function pillText(
 function userDisplayName(
   userId: string | null,
   data: WorkspaceOverviewData,
+  t: Awaited<ReturnType<typeof getTranslations>>,
 ): string {
   if (!userId) return '—';
   if (data.intern?.id === userId)
-    return data.intern.firstName ?? data.intern.lastName ?? 'Intern';
+    return data.intern.firstName ?? data.intern.lastName ?? t('nameFallbackIntern');
   const supervisor = data.supervisors.find((s) => s.id === userId);
-  if (supervisor) return supervisor.firstName ?? supervisor.lastName ?? 'Reviewer';
-  return 'Member';
+  if (supervisor)
+    return supervisor.firstName ?? supervisor.lastName ?? t('nameFallbackReviewer');
+  return t('nameFallbackMember');
 }
 
 function inferFileKind(name: string | null, type: string | null): string {
@@ -85,7 +84,7 @@ function inferFileKind(name: string | null, type: string | null): string {
 /* ------------------------------------------------------------------ */
 /* File row inside a version body                                       */
 /* ------------------------------------------------------------------ */
-function FileRow({
+async function FileRow({
   fileUrl,
   fileName,
   fileType,
@@ -96,6 +95,7 @@ function FileRow({
   fileType: string | null;
   meta: string;
 }) {
+  const t = await getTranslations('workspace.deliverables.master');
   const kind = inferFileKind(fileName, fileType);
   const knownKinds = new Set(['pdf', 'fig', 'md']);
   const iconKind = knownKinds.has(kind) ? kind : '';
@@ -103,17 +103,17 @@ function FileRow({
     <div className="dv-file">
       <div className={`dv-file-icon ${iconKind}`}>{kind.toUpperCase().slice(0, 3)}</div>
       <div style={{ minWidth: 0 }}>
-        <div className="dv-file-name">{fileName ?? 'Untitled'}</div>
+        <div className="dv-file-name">{fileName ?? t('fileUntitled')}</div>
         <div className="dv-file-meta">{meta}</div>
       </div>
       <div className="dv-file-size" />
       {fileUrl ? (
         <a className="dv-file-act" href={fileUrl} target="_blank" rel="noopener noreferrer">
-          Open
+          {t('openFile')}
         </a>
       ) : (
         <span className="dv-file-act" aria-disabled style={{ opacity: 0.5 }}>
-          —
+          {t('emptyDash')}
         </span>
       )}
     </div>
@@ -123,7 +123,7 @@ function FileRow({
 /* ------------------------------------------------------------------ */
 /* One version (header + body)                                          */
 /* ------------------------------------------------------------------ */
-function Version({
+async function Version({
   version,
   active,
   authorName,
@@ -149,6 +149,7 @@ function Version({
   review: { state: 'approved' | 'changes'; text: string; reviewerName: string; whenLabel: string } | null;
   belowFiles?: React.ReactNode;
 }) {
+  const t = await getTranslations('workspace.deliverables.master');
   const variant = pillVariantFor(status);
   const wrapClass =
     variant === 'review'
@@ -160,21 +161,26 @@ function Version({
           : '';
   const pill =
     variant === 'review'
-      ? 'In review'
+      ? t('statusInReview')
       : variant === 'approved'
-        ? 'Approved'
+        ? t('statusApproved')
         : variant === 'changes'
-          ? 'Changes requested'
-          : 'Draft';
+          ? t('statusChangesRequested')
+          : t('statusDraft');
 
   return (
     <div className={`dv-version ${wrapClass} ${active ? 'active' : ''}`}>
       <div className="dv-version-head">
-        <span className="dv-version-num">v{version}</span>
+        <span className="dv-version-num">{t('version', { n: version })}</span>
         <div className="dv-version-by">
           <div className="who">
-            Submitted by <b>{authorName}</b>
+            {t.rich('submittedByName', {
+              name: authorName,
+              b: (chunks) => <b>{chunks}</b>,
+            })}
           </div>
+          {/* whenLabel is a localized relative-time string built upstream
+              by the detail component (formatTimeAgo). */}
           <div className="when">{whenLabel}</div>
         </div>
         <span className={`dv-version-pill ${variant}`}>
@@ -185,7 +191,11 @@ function Version({
       <div className="dv-version-body">
         {note && (
           <div className="dv-version-note">
-            <b>{authorName}&rsquo;s note:</b> &ldquo;{note}&rdquo;
+            {t.rich('versionNote', {
+              name: authorName,
+              note,
+              b: (chunks) => <b>{chunks}</b>,
+            })}
           </div>
         )}
         {files.length > 0 && (
@@ -201,13 +211,13 @@ function Version({
             <div>
               <div className="dv-review-head">
                 <span className="pill">
-                  {review.state === 'approved' ? 'APPROVED' : 'CHANGES'}
+                  {review.state === 'approved' ? t('approvedPill') : t('changesPill')}
                 </span>
                 <span>
-                  {review.reviewerName} · {review.whenLabel}
+                  {t('reviewerWhen', { name: review.reviewerName, when: review.whenLabel })}
                 </span>
               </div>
-              <div className="dv-review-text">&ldquo;{review.text}&rdquo;</div>
+              <div className="dv-review-text">{t('quotedNote', { note: review.text })}</div>
             </div>
           </div>
         )}
@@ -249,14 +259,14 @@ export async function DelivDetail({
   const totalVersions = 1 + history.length;
   const code = `D${idx + 1}`;
 
-  const ownerName = userDisplayName(data.workspace.internId, data);
+  const ownerName = userDisplayName(data.workspace.internId, data, t);
   const reviewerName = data.supervisors[0]
-    ? userDisplayName(data.supervisors[0].id, data)
-    : 'Unassigned';
+    ? userDisplayName(data.supervisors[0].id, data, t)
+    : t('unassignedReviewer');
 
   const submittedRelative =
     deliverable.submittedAt
-      ? `${relativeWhen(deliverable.submittedAt)} · ${new Date(deliverable.submittedAt).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`
+      ? `${relativeWhen(deliverable.submittedAt, locale)} · ${new Date(deliverable.submittedAt).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`
       : '—';
 
   const reviewBarNote = null as string | null;
@@ -293,7 +303,7 @@ export async function DelivDetail({
               [
                 deliverable.fileType,
                 deliverable.submittedAt
-                  ? `updated ${fmtDateLong(deliverable.submittedAt, locale)}`
+                  ? t('fileUpdated', { date: fmtDateLong(deliverable.submittedAt, locale) })
                   : null,
               ]
                 .filter(Boolean)
@@ -307,7 +317,7 @@ export async function DelivDetail({
             state: 'changes' as const,
             text: deliverable.feedback,
             reviewerName,
-            whenLabel: relativeWhen(deliverable.updatedAt),
+            whenLabel: relativeWhen(deliverable.updatedAt, locale),
           }
         : null,
     active: status === 'submitted',
@@ -315,8 +325,8 @@ export async function DelivDetail({
 
   const historyStack: StackVersion[] = history.map((h) => ({
     version: h.version,
-    authorName: userDisplayName(h.submittedBy, data),
-    whenLabel: `${relativeWhen(h.submittedAt)} · ${new Date(h.submittedAt).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`,
+    authorName: userDisplayName(h.submittedBy, data, t),
+    whenLabel: `${relativeWhen(h.submittedAt, locale)} · ${new Date(h.submittedAt).toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`,
     status: h.status as DeliverableStatusLite,
     note: h.note,
     files: h.fileUrl
@@ -325,7 +335,7 @@ export async function DelivDetail({
             fileUrl: h.fileUrl,
             fileName: h.fileName,
             fileType: h.fileType,
-            meta: [h.fileType, `version ${h.version}`].filter(Boolean).join(' · '),
+            meta: [h.fileType, t('version', { n: h.version })].filter(Boolean).join(' · '),
           },
         ]
       : [],
@@ -333,8 +343,8 @@ export async function DelivDetail({
       ? {
           state: h.review.state,
           text: h.review.text,
-          reviewerName: userDisplayName(h.review.reviewerId, data),
-          whenLabel: relativeWhen(h.review.reviewedAt),
+          reviewerName: userDisplayName(h.review.reviewerId, data, t),
+          whenLabel: relativeWhen(h.review.reviewedAt, locale),
         }
       : null,
     active: false,
@@ -380,10 +390,10 @@ export async function DelivDetail({
     <section className="dv-detail" aria-labelledby={`dv-title-${deliverable.id}`}>
       <div className="dv-detail-head">
         <div className="dv-detail-eyebrow">
-          {t('listTitle').slice(0, -1) /* trim trailing 's' for singular */}
-          <span className="sep">·</span>
+          {t('detailEyebrowSingular')}
+          <span className="sep">{t('detailSep')}</span>
           {code}
-          <span className="sep">·</span>
+          <span className="sep">{t('detailSep')}</span>
           {eyebrowLabel}
         </div>
         <div className="dv-detail-title-row">
@@ -406,19 +416,19 @@ export async function DelivDetail({
             <span>
               <b>{t('due', { date: dueLabel })}</b>
               {deliverable.status !== 'approved' && deliverable.submittedAt && (
-                <> · {t('submittedOnTime')}</>
+                <>{t('submittedOnTimeSuffix')}</>
               )}
             </span>
           ) : (
-            <span>—</span>
+            <span>{t('emptyDash')}</span>
           )}
           <span className="pip" />
           <span>
-            {t('owner')}: <b>{ownerName}</b>
+            {t.rich('ownerLine', { name: ownerName, b: (chunks) => <b>{chunks}</b> })}
           </span>
           <span className="pip" />
           <span>
-            {t('reviewer')}: <b>{reviewerName}</b>
+            {t.rich('reviewerLine', { name: reviewerName, b: (chunks) => <b>{chunks}</b> })}
           </span>
           <span className="pip" />
           <span>
@@ -449,7 +459,7 @@ export async function DelivDetail({
                 deliverableId={deliverable.id}
                 submitterName={ownerName}
                 whenLabel={
-                  deliverable.submittedAt ? relativeWhen(deliverable.submittedAt) : ''
+                  deliverable.submittedAt ? relativeWhen(deliverable.submittedAt, locale) : ''
                 }
                 note={reviewBarNote}
               />
@@ -510,13 +520,19 @@ export async function DelivDetail({
                     <span className="dv-activity-dot" aria-hidden />
                     <div className="dv-activity-body">
                       <div className="dv-activity-head">
-                        <b>v{row.version}</b> · {t(statusKeyFor(row.status))}
+                        {t.rich('activityHead', {
+                          n: row.version,
+                          status: t(statusKeyFor(row.status)),
+                          b: (chunks) => <b>{chunks}</b>,
+                        })}
                       </div>
+                      {/* row.when is a localized relative-time string
+                          (formatTimeAgo via relativeWhen). */}
                       <div className="dv-activity-meta">
-                        {t('submittedBy', { name: row.authorName })} · {row.when}
+                        {t('submittedByWhen', { name: row.authorName, when: row.when })}
                       </div>
                       {row.note && (
-                        <div className="dv-activity-note">&ldquo;{row.note}&rdquo;</div>
+                        <div className="dv-activity-note">{t('quotedNote', { note: row.note })}</div>
                       )}
                       {row.review && (
                         <div className="dv-activity-review">
@@ -526,7 +542,7 @@ export async function DelivDetail({
                               : t('statusChangesRequested')}
                           </span>
                           <span>
-                            {row.review.reviewerName}: &ldquo;{row.review.text}&rdquo;
+                            {t('reviewerQuoted', { name: row.review.reviewerName, text: row.review.text })}
                           </span>
                         </div>
                       )}

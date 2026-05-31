@@ -22,6 +22,7 @@ import {
   updateInternshipAction,
 } from '@/modules/internships/server-actions';
 import { TemplatePicker } from '@/modules/internships/components/template-picker';
+import { INTERNSHIP_SECTORS, sectorKeyFromValue } from '@/modules/internships/sectors';
 import {
   useAssist,
   AssistButton,
@@ -30,7 +31,7 @@ import {
   SuggestDraftPanel,
   type AssistErrorCode,
 } from '@/components/ai/assist';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import type { InternshipTemplate } from '@/lib/internship-templates';
 import type {
   SuggestDeliverablesResult,
@@ -38,28 +39,12 @@ import type {
 } from '@/modules/ai/project-assist';
 import type { Internship } from '@/db/schema';
 
-const SECTORS = [
-  'Design',
-  'Software & tech',
-  'Marketing & comms',
-  'Product',
-  'Data',
-  'Operations',
-  'Finance',
-  'Content',
-  'Other',
-];
-
 type Question = { question: string; required: boolean };
 type Deliverable = { name: string; description: string; dueWeek: number };
 type Mode = 'on-site' | 'virtual' | 'hybrid';
 type Visibility = 'public' | 'private';
 
-const MODE_OPTIONS: Array<{ value: Mode; label: string; sub: string }> = [
-  { value: 'hybrid', label: 'Hybrid', sub: 'On-site + remote' },
-  { value: 'virtual', label: 'Remote', sub: 'Fully distributed' },
-  { value: 'on-site', label: 'On-site', sub: 'Office every day' },
-];
+const MODE_VALUES: Mode[] = ['hybrid', 'virtual', 'on-site'];
 
 const SLOT_OPTIONS = [1, 2, 3] as const;
 
@@ -118,6 +103,10 @@ export function PostInternshipForm({
   const isEdit = Boolean(initialInternship);
   const showUnified = unifiedFlow && !isEdit;
   const tEdit = useTranslations('internships.edit');
+  const tInt = useTranslations('internships');
+  const tn = useTranslations('internships.new');
+  const tf = useTranslations('internships.form');
+  const locale = useLocale();
   const ta = useTranslations('assist');
   const tw = useTranslations('wizard');
 
@@ -183,18 +172,19 @@ export function PostInternshipForm({
 
   // ---- Live preview derived state -------------------------------------
   const filledDeliverables = deliverables.filter((d) => d.name.trim().length > 0).length;
+  // Abbreviate the (English-valued) unit for the compact preview card, then
+  // swap the currency/period tokens for their localized short forms.
+  const compensationUnitShort = compensationUnit
+    .replace(' / ', '/')
+    .replace('month', tf('unitShort.month'))
+    .replace('week', tf('unitShort.week'));
   const compensationDisplay = isPaid
-    ? `${compensation || '—'} ${compensationUnit.replace(' / ', '/').replace('month', 'mo').replace('week', 'wk')}`
-    : 'Unpaid';
+    ? `${compensation || '—'} ${compensationUnitShort}`
+    : tf('unpaid');
   const startLabel = projectStartDate
-    ? new Date(projectStartDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
-    : 'TBD';
-  const modeLabel =
-    locationType === 'hybrid'
-      ? 'Hybrid'
-      : locationType === 'virtual'
-        ? 'Remote'
-        : 'On-site';
+    ? new Date(projectStartDate).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
+    : tf('tbd');
+  const modeLabel = tf(`mode.${locationType}.label`);
 
   // Deliverables payload (drop empties, clamp dueWeek to project duration).
   const deliverablesPayload = useMemo(
@@ -342,8 +332,8 @@ export function PostInternshipForm({
 
       {!isEdit && (
         <DraftBanner
-          title="Draft mode"
-          message={`saving here won't publish — ${projectName} stays private until you hit Publish.`}
+          title={tn('draftBannerTitle')}
+          message={tn('draftBannerMessage', { projectName })}
         />
       )}
 
@@ -394,46 +384,46 @@ export function PostInternshipForm({
                 {isEdit ? (
                   tEdit('heading')
                 ) : (
-                  <>
-                    Add an internship to{' '}
-                    <span className="text-[var(--brand-600)]">{projectName}</span>
-                  </>
+                  tn.rich('heading', {
+                    projectName,
+                    brand: (chunks) => (
+                      <span className="text-[var(--brand-600)]">{chunks}</span>
+                    ),
+                  })
                 )}
               </h1>
               <p className="text-body text-[var(--ink-3)] mt-1">
-                {isEdit
-                  ? tEdit('subheading')
-                  : 'One role, one set of deliverables. You can add more roles to this project anytime — research, copywriting, dev support, etc.'}
+                {isEdit ? tEdit('subheading') : tn('subheading')}
               </p>
             </header>
 
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4">
               <div>
                 <Label htmlFor="title">
-                  Role title <span className="text-[var(--danger)]">*</span>
+                  {tf('titleLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
                 </Label>
                 <Input
                   id="title"
                   name="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Visual designer"
+                  placeholder={tf('titlePlaceholder')}
                   required
                 />
                 <p className="text-caption text-[var(--ink-3)] mt-1">
-                  This is what interns search for — be specific.
+                  {tf('titleHint')}
                 </p>
               </div>
               <div>
-                <Label>Discipline</Label>
+                <Label>{tf('disciplineLabel')}</Label>
                 <Select value={sector} onValueChange={(v) => setSector(v ?? 'Design')}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Discipline" />
+                    <SelectValue placeholder={tf('disciplineLabel')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {SECTORS.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
+                    {INTERNSHIP_SECTORS.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>
+                        {tf(`sector.${s.id}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -443,7 +433,7 @@ export function PostInternshipForm({
 
             <div>
               <Label htmlFor="description">
-                Scope <span className="text-[var(--danger)]">*</span>
+                {tf('scopeLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
               </Label>
               <Textarea
                 id="description"
@@ -453,18 +443,17 @@ export function PostInternshipForm({
                 maxLength={4000}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="What this intern owns — concrete, specific. Different from the project description."
+                placeholder={tf('scopePlaceholder')}
               />
               <p className="text-caption text-[var(--ink-3)] mt-1">
-                What this intern owns. Different from the project description — be concrete
-                about scope.
+                {tf('scopeHint')}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <Label>
-                  Slots <span className="text-[var(--danger)]">*</span>
+                  {tf('slotsLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
                 </Label>
                 <div className="inline-flex items-center w-full rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-label mt-1.5">
                   {SLOT_OPTIONS.map((n) => {
@@ -480,25 +469,25 @@ export function PostInternshipForm({
                             : 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
                         }
                       >
-                        {n === 3 ? '3+' : n}
+                        {n === 3 ? tf('slotsThreePlus') : n}
                       </button>
                     );
                   })}
                 </div>
                 <input type="hidden" name="internCount" value={internCount} />
                 <p className="text-caption text-[var(--ink-3)] mt-1">
-                  How many interns work this role in parallel.
+                  {tf('slotsHint')}
                 </p>
               </div>
               <div>
                 <Label>
-                  Supervisor <span className="text-[var(--danger)]">*</span>
+                  {tf('supervisorLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
                 </Label>
-                <Input value={`${supervisorName} (you)`} disabled />
+                <Input value={tf('supervisorYou', { name: supervisorName })} disabled />
               </div>
               <div>
                 <Label htmlFor="duration">
-                  Duration (weeks) <span className="text-[var(--danger)]">*</span>
+                  {tf('durationLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
                 </Label>
                 <Input
                   id="duration"
@@ -513,21 +502,21 @@ export function PostInternshipForm({
                   required
                 />
                 <p className="text-caption text-[var(--ink-3)] mt-1">
-                  Can&apos;t exceed project length.
+                  {tf('durationHint')}
                 </p>
               </div>
             </div>
 
             <div>
               <Label>
-                Mode <span className="text-[var(--danger)]">*</span>
+                {tf('modeLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1.5">
-                {MODE_OPTIONS.map((opt) => {
-                  const selected = locationType === opt.value;
+                {MODE_VALUES.map((value) => {
+                  const selected = locationType === value;
                   return (
                     <label
-                      key={opt.value}
+                      key={value}
                       className={
                         selected
                           ? 'rounded-md p-3 cursor-pointer bg-[var(--surface-muted)] border-2 border-[var(--ink)]'
@@ -537,15 +526,15 @@ export function PostInternshipForm({
                       <input
                         type="radio"
                         name="mode-picker"
-                        value={opt.value}
+                        value={value}
                         checked={selected}
-                        onChange={() => setLocationType(opt.value)}
+                        onChange={() => setLocationType(value)}
                         className="sr-only"
                       />
                       <b className="block text-label font-semibold text-[var(--ink)] mb-0.5">
-                        {opt.label}
+                        {tf(`mode.${value}.label`)}
                       </b>
-                      <span className="text-caption text-[var(--ink-3)]">{opt.sub}</span>
+                      <span className="text-caption text-[var(--ink-3)]">{tf(`mode.${value}.sub`)}</span>
                     </label>
                   );
                 })}
@@ -555,21 +544,21 @@ export function PostInternshipForm({
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4">
               <div>
                 <Label htmlFor="location">
-                  Location{' '}
-                  {locationType !== 'virtual' && <span className="text-[var(--danger)]">*</span>}
+                  {tf('locationLabel')}{' '}
+                  {locationType !== 'virtual' && <span className="text-[var(--danger)]">{tf('req')}</span>}
                 </Label>
                 <Input
                   id="location"
                   name="location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Tunis"
+                  placeholder={tf('locationPlaceholder')}
                   disabled={locationType === 'virtual'}
                   required={locationType !== 'virtual'}
                 />
               </div>
               <div>
-                <Label>Listing language</Label>
+                <Label>{tf('listingLanguageLabel')}</Label>
                 <Select
                   value={language}
                   onValueChange={(v) => setLanguage((v ?? 'fr') as typeof language)}
@@ -578,34 +567,33 @@ export function PostInternshipForm({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fr">Français</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="ar">العربية</SelectItem>
+                    <SelectItem value="fr">{tf('language.fr')}</SelectItem>
+                    <SelectItem value="en">{tf('language.en')}</SelectItem>
+                    <SelectItem value="ar">{tf('language.ar')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <SectionDivider label="required skills" />
+            <SectionDivider label={tf('dividerSkills')} />
 
             <div>
-              <Label>Skills the intern should have</Label>
+              <Label>{tf('skillsLabel')}</Label>
               <ChipInput
                 value={skills}
                 onChange={setSkills}
                 min={1}
                 max={12}
-                placeholder="Add a skill"
+                placeholder={tf('skillsPlaceholder')}
               />
               <p className="text-caption text-[var(--ink-3)] mt-1">
-                Used to surface this listing in marketplace search. Don&apos;t gate —
-                preferred &gt; required.
+                {tf('skillsHint')}
               </p>
             </div>
 
             <div>
               <Label>
-                Compensation <span className="text-[var(--danger)]">*</span>
+                {tf('compensationLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr_220px] gap-3 items-stretch mt-1.5">
                 <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-label">
@@ -618,7 +606,7 @@ export function PostInternshipForm({
                         : 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
                     }
                   >
-                    Paid
+                    {tf('paid')}
                   </button>
                   <button
                     type="button"
@@ -629,7 +617,7 @@ export function PostInternshipForm({
                         : 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
                     }
                   >
-                    Unpaid
+                    {tf('unpaid')}
                   </button>
                 </div>
                 <Input
@@ -638,7 +626,7 @@ export function PostInternshipForm({
                   placeholder="800"
                   inputMode="numeric"
                   disabled={!isPaid}
-                  aria-label="Compensation amount"
+                  aria-label={tf('compensationAmountAria')}
                 />
                 <Select
                   value={compensationUnit}
@@ -649,20 +637,22 @@ export function PostInternshipForm({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="TND / month">TND / month</SelectItem>
-                    <SelectItem value="TND / week">TND / week</SelectItem>
-                    <SelectItem value="EUR / month">EUR / month</SelectItem>
+                    {/* value stays the canonical English unit (persisted +
+                        parsed by splitCompensation); only the label localizes. */}
+                    <SelectItem value="TND / month">{tf('unit.tndMonth')}</SelectItem>
+                    <SelectItem value="TND / week">{tf('unit.tndWeek')}</SelectItem>
+                    <SelectItem value="EUR / month">{tf('unit.eurMonth')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <p className="text-caption text-[var(--ink-3)] mt-1">
-                Inturn shows this on the listing. Hiding pay is not allowed for paid roles.
+                {tf('compensationHint')}
               </p>
             </div>
 
             <div>
               <Label htmlFor="deadline">
-                Application deadline <span className="text-[var(--danger)]">*</span>
+                {tf('deadlineLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
               </Label>
               <Input
                 id="deadline"
@@ -682,20 +672,19 @@ export function PostInternshipForm({
           >
             <header>
               <h2 className="text-title text-[var(--ink)]">
-                What will they deliver?
+                {tf('deliverablesHeading')}
               </h2>
               <p className="text-body text-[var(--ink-3)] mt-1">
-                Be specific. Deliverables anchor the workspace — vague briefs lead to drift.
-                Required at post-time, not after.
+                {tf('deliverablesIntro')}
               </p>
             </header>
 
             <div>
               <div className="sc-label-row">
                 <Label>
-                  Required deliverables{' '}
+                  {tf('deliverablesLabel')}{' '}
                   <span className="text-[var(--ink-3)] font-normal">
-                    · {filledDeliverables} of 10 used
+                    {tf('deliverablesUsed', { filled: filledDeliverables })}
                   </span>
                 </Label>
                 <span className="sc-spacer" />
@@ -717,7 +706,7 @@ export function PostInternshipForm({
                     className="grid grid-cols-[28px_minmax(0,1fr)_88px_28px] gap-2 items-start p-2.5 border border-[var(--border-color)] rounded-md bg-[var(--surface)]"
                   >
                     <span className="font-mono text-[11px] font-semibold text-[var(--brand-700)] bg-[var(--brand-100)] w-7 h-7 rounded flex items-center justify-center mt-0.5">
-                      D{i + 1}
+                      {tf('deliverableBadge', { n: i + 1 })}
                     </span>
                     <div className="space-y-1 min-w-0">
                       <Input
@@ -725,14 +714,14 @@ export function PostInternshipForm({
                         onChange={(e) => updateDeliverable(i, { name: e.target.value })}
                         placeholder={
                           i === 0
-                            ? 'Brand audit · stakeholder findings'
+                            ? tf('deliverableNamePlaceholder0')
                             : i === 1
-                              ? 'Visual exploration · moodboards'
+                              ? tf('deliverableNamePlaceholder1')
                               : i === 2
-                                ? 'System library handoff'
-                                : 'Deliverable name'
+                                ? tf('deliverableNamePlaceholder2')
+                                : tf('deliverableNamePlaceholder')
                         }
-                        aria-label={`Deliverable ${i + 1} name`}
+                        aria-label={tf('deliverableNameAria', { n: i + 1 })}
                         className="h-8 text-[13px] font-medium"
                       />
                       <Input
@@ -740,14 +729,14 @@ export function PostInternshipForm({
                         onChange={(e) =>
                           updateDeliverable(i, { description: e.target.value })
                         }
-                        placeholder="Short note (optional)"
-                        aria-label={`Deliverable ${i + 1} description`}
+                        placeholder={tf('deliverableDescPlaceholder')}
+                        aria-label={tf('deliverableDescAria', { n: i + 1 })}
                         className="h-7 text-[12px] text-[var(--ink-3)]"
                       />
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="font-mono text-[10px] text-[var(--ink-3)] uppercase">
-                        Wk
+                        {tf('weekAbbr')}
                       </span>
                       <Input
                         type="number"
@@ -762,7 +751,7 @@ export function PostInternshipForm({
                             ),
                           })
                         }
-                        aria-label={`Deliverable ${i + 1} due week`}
+                        aria-label={tf('deliverableDueWeekAria', { n: i + 1 })}
                         className="h-8 text-[12px] text-center"
                       />
                     </div>
@@ -770,7 +759,7 @@ export function PostInternshipForm({
                       type="button"
                       onClick={() => removeDeliverable(i)}
                       className="flex items-center justify-center text-[var(--ink-4)] hover:text-[var(--ink-2)] h-8 self-start mt-0.5"
-                      aria-label={`Remove deliverable ${i + 1}`}
+                      aria-label={tf('removeDeliverable', { n: i + 1 })}
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -784,9 +773,9 @@ export function PostInternshipForm({
                   disabled={deliverables.length >= 10}
                   className="text-label text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
                 >
-                  + Add deliverable
+                  {tf('addDeliverable')}
                 </button>
-                <span className="text-caption text-[var(--ink-3)]">Min 3 · max 10</span>
+                <span className="text-caption text-[var(--ink-3)]">{tf('deliverablesRange')}</span>
               </div>
               {deliverablesAssist.state.status === 'loading' && <AssistThinking />}
               {deliverablesData && (
@@ -815,11 +804,11 @@ export function PostInternshipForm({
               )}
             </div>
 
-            <SectionDivider label="application questions" />
+            <SectionDivider label={tf('dividerQuestions')} />
 
             <div>
               <div className="sc-label-row">
-                <Label>Ask applicants 1–3 short questions</Label>
+                <Label>{tf('questionsLabel')}</Label>
                 <span className="sc-spacer" />
                 {questionsAssisted && <AssistedTag />}
                 <AssistButton
@@ -837,7 +826,7 @@ export function PostInternshipForm({
                     className="grid grid-cols-[28px_minmax(0,1fr)_auto_28px] gap-2 items-center"
                   >
                     <span className="font-mono text-[11px] font-semibold text-[var(--ink)] bg-[var(--surface-muted)] w-7 h-7 rounded flex items-center justify-center">
-                      Q{i + 1}
+                      {tf('questionBadge', { n: i + 1 })}
                     </span>
                     <Input
                       value={q.question}
@@ -850,12 +839,12 @@ export function PostInternshipForm({
                       }
                       placeholder={
                         i === 0
-                          ? "Share a brand system you've worked on (link or attachment)."
+                          ? tf('questionPlaceholder0')
                           : i === 1
-                            ? "What's a brand you think gets identity right? In one sentence, why?"
-                            : 'Question text'
+                            ? tf('questionPlaceholder1')
+                            : tf('questionPlaceholder')
                       }
-                      aria-label={`Question ${i + 1}`}
+                      aria-label={tf('questionAria', { n: i + 1 })}
                       className="h-9"
                     />
                     <label className="inline-flex items-center gap-1.5 text-caption text-[var(--ink-3)] whitespace-nowrap">
@@ -870,13 +859,13 @@ export function PostInternshipForm({
                           )
                         }
                       />
-                      Required
+                      {tf('questionRequired')}
                     </label>
                     <button
                       type="button"
                       onClick={() => setQuestions(questions.filter((_, j) => j !== i))}
                       className="flex items-center justify-center text-[var(--ink-4)] hover:text-[var(--ink-2)] h-9"
-                      aria-label="Remove question"
+                      aria-label={tf('removeQuestion')}
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -889,7 +878,7 @@ export function PostInternshipForm({
                 disabled={questions.length >= 3}
                 className="mt-2 text-label text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
               >
-                + Add question {questions.length >= 3 ? '(max 3)' : `(${3 - questions.length} left)`}
+                {tf('addQuestion', { remaining: 3 - questions.length })}
               </button>
               {questionsAssist.state.status === 'loading' && <AssistThinking />}
               {questionsData && (
@@ -914,22 +903,22 @@ export function PostInternshipForm({
               )}
             </div>
 
-            <SectionDivider label="visibility" />
+            <SectionDivider label={tf('dividerVisibility')} />
 
             <div>
-              <Label>Where this listing appears</Label>
+              <Label>{tf('visibilityLabel')}</Label>
               <div className="flex flex-col gap-2 mt-1.5">
                 <VisibilityChoice
                   selected={visibility === 'public'}
                   onSelect={() => setVisibility('public')}
-                  title="Public marketplace"
-                  subtitle="Anyone can apply. Inturn handles the inbox."
+                  title={tf('visibilityPublicTitle')}
+                  subtitle={tf('visibilityPublicSub')}
                 />
                 <VisibilityChoice
                   selected={visibility === 'private'}
                   onSelect={() => setVisibility('private')}
-                  title="Private link only"
-                  subtitle="Share with named candidates. No marketplace presence."
+                  title={tf('visibilityPrivateTitle')}
+                  subtitle={tf('visibilityPrivateSub')}
                 />
               </div>
             </div>
@@ -941,7 +930,7 @@ export function PostInternshipForm({
                 onClick={() => window.history.back()}
                 className="text-[var(--ink-3)]"
               >
-                {isEdit ? tEdit('back') : <><ArrowLeft size={15} strokeWidth={2.25} aria-hidden />Back</>}
+                {isEdit ? tEdit('back') : <><ArrowLeft size={15} strokeWidth={2.25} aria-hidden />{tn('back')}</>}
               </Button>
               {isEdit ? (
                 <Button
@@ -953,15 +942,18 @@ export function PostInternshipForm({
               ) : (
                 <div className="flex gap-2">
                   <Button type="submit" variant="outline" name="intent" value="draft">
-                    Save as draft
+                    {tn('saveDraft')}
                   </Button>
                   <Button
                     type="submit"
                     name="intent"
                     value="publish"
+                    onClick={(e) => {
+                      if (!window.confirm(tInt('publishConfirm'))) e.preventDefault();
+                    }}
                     className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
                   >
-                    Publish to marketplace
+                    {tn('publishCta')}
                     <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
                   </Button>
                 </div>
@@ -976,35 +968,39 @@ export function PostInternshipForm({
             ============================================================ */}
         <aside className="space-y-4 lg:sticky lg:top-24 self-start">
           <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)]">
-            Live preview · marketplace card
+            {tf('previewEyebrow')}
           </div>
 
           <div className="rounded-xl border border-dashed border-[var(--border-color)] bg-[var(--surface)] p-5">
             <span className="inline-block font-mono text-[10px] tracking-wider uppercase text-[var(--brand-700)] bg-[var(--brand-100)] px-2 py-0.5 rounded mb-2.5 font-medium">
-              {sector || 'Discipline'}
+              {sector ? tf(`sector.${sectorKeyFromValue(sector) ?? 'other'}`) : tf('disciplineLabel')}
             </span>
             <h3 className="text-heading text-[var(--ink)] mb-1 leading-snug">
-              {title || 'Role title'} · {projectName}
+              {tf('previewTitle', { title: title || tf('titleLabel'), projectName })}
             </h3>
             <p className="text-caption text-[var(--ink-3)] mb-3">
-              {orgName} · {orgLocation || 'Tunis'}
+              {tf('previewOrg', { orgName, location: orgLocation || tf('previewDefaultCity') })}
             </p>
             <div className="space-y-1 text-caption text-[var(--ink-2)] pb-3 mb-3 border-b border-dashed border-[var(--border-color)]">
               <div>
                 <b className="font-medium text-[var(--ink)]">{compensationDisplay}</b>{' '}
-                · {isPaid ? 'paid' : 'unpaid'}
+                {isPaid ? tf('previewPaid') : tf('previewUnpaid')}
               </div>
               <div>
-                {duration} weeks · {modeLabel}
-                {locationType !== 'virtual' && location ? ` · ${location}` : ''}
+                {tf('previewDurationMode', { weeks: duration, mode: modeLabel })}
+                {locationType !== 'virtual' && location ? tf('previewLocationSuffix', { location }) : ''}
               </div>
               <div>
-                {internCount === 3 ? '3+ slots' : `${internCount} slot${internCount > 1 ? 's' : ''}`}
-                {' · starts '}
-                {startLabel}
+                {internCount === 3
+                  ? tf('previewSlotsThreePlus')
+                  : tf('previewSlots', { count: internCount })}
+                {tf('previewStarts', { date: startLabel })}
               </div>
               <div>
-                Supervisor: <b className="font-medium text-[var(--ink)]">{supervisorName}</b>
+                {tf.rich('previewSupervisor', {
+                  name: supervisorName,
+                  b: (chunks) => <b className="font-medium text-[var(--ink)]">{chunks}</b>,
+                })}
               </div>
             </div>
             <div className="flex flex-wrap gap-1 mb-3.5">
@@ -1018,16 +1014,16 @@ export function PostInternshipForm({
               ))}
               {skills.length > 3 ? (
                 <span className="text-[10.5px] bg-[var(--surface-muted)] text-[var(--ink-2)] px-2 py-0.5 rounded-full">
-                  +{skills.length - 3}
+                  {tf('previewSkillsMore', { count: skills.length - 3 })}
                 </span>
               ) : skills.length === 0 ? (
                 <span className="text-[10.5px] text-[var(--ink-4)] italic">
-                  Add skills →
+                  {tf('previewAddSkills')}
                 </span>
               ) : null}
             </div>
             <div className="bg-[var(--ink)] text-white rounded-md py-2 px-3 flex items-center justify-center gap-1 text-label">
-              Apply
+              {tf('previewApply')}
               <ArrowRight size={13} strokeWidth={2.25} aria-hidden />
             </div>
           </div>
@@ -1036,21 +1032,20 @@ export function PostInternshipForm({
             <span className="w-2 h-2 rounded-full bg-[var(--status-warn-ink)] flex-shrink-0 mt-1.5" />
             <div className="text-caption text-[var(--status-warn-ink)] leading-relaxed">
               <b className="text-[var(--status-warn-ink)] font-semibold block mb-0.5">
-                Publishing activates the project.
+                {tn('activateTitle')}
               </b>
-              {projectName} goes from Draft → Active the moment this listing is live.
+              {tn('activateBody', { projectName })}
             </div>
           </div>
 
           <div className="px-3.5 py-3 rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] text-caption text-[var(--ink-2)] leading-relaxed">
             <b className="text-label font-semibold text-[var(--ink)] block mb-1">
-              What interns see next
+              {tn('nextTitle')}
             </b>
-            · Public landing page with full scope &amp; deliverables
-            <br />· 1-click apply (profile auto-attaches)
-            <br />· Your {questions.length || 0} question
-            {questions.length === 1 ? '' : 's'} on the apply form
-            <br />· &ldquo;Expected response by&rdquo; date on their tracker
+            {tn('nextScope')}
+            <br />{tn('nextApply')}
+            <br />{tn('nextQuestions', { count: questions.length || 0 })}
+            <br />{tn('nextResponse')}
           </div>
         </aside>
       </div>

@@ -16,18 +16,7 @@ import {
 import { FileDrop } from '@/components/file-drop';
 import { COMPANY_SIZES } from '@/modules/profiles/validators';
 import { saveCompanyProfileAction } from '@/modules/profiles/company-server-actions';
-
-const INDUSTRIES = [
-  'Design & creative',
-  'Software & tech',
-  'Marketing & comms',
-  'Finance',
-  'Education',
-  'Healthcare',
-  'Manufacturing',
-  'Retail',
-  'Other',
-];
+import { COMPANY_INDUSTRIES } from '@/modules/profiles/industries';
 
 type CompanyInitial = Partial<{
   name: string;
@@ -43,9 +32,10 @@ type CompanyInitial = Partial<{
 
 export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
   const t = useTranslations('onboarding.company');
+  const tc = useTranslations('common');
   const [industry, setIndustry] = useState(initial?.industry ?? '');
   const [size, setSize] = useState(initial?.size ?? '');
-  const [country, setCountry] = useState(initial?.country ?? 'Tunisia');
+  const [country, setCountry] = useState(initial?.country ?? t('countryDefault'));
   const [description, setDescription] = useState(initial?.description ?? '');
   const [logoUrl, setLogoUrl] = useState(initial?.logoUrl ?? '');
   const [rneUrl, setRneUrl] = useState(initial?.rneUrl ?? '');
@@ -70,7 +60,7 @@ export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
         </div>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="name">{t('name')} *</Label>
+            <Label htmlFor="name">{t('name')} {tc('requiredMark')}</Label>
             <Input id="name" name="name" defaultValue={initial?.name} required />
           </div>
           <div>
@@ -80,7 +70,7 @@ export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
               name="website"
               type="url"
               defaultValue={initial?.website}
-              placeholder="https://…"
+              placeholder={t('websitePlaceholder')}
             />
           </div>
         </div>
@@ -88,30 +78,30 @@ export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>{t('industry')} *</Label>
+          <Label>{t('industry')} {tc('requiredMark')}</Label>
           <Select value={industry} onValueChange={(v) => setIndustry(v ?? '')}>
             <SelectTrigger>
-              <SelectValue placeholder="Select…" />
+              <SelectValue placeholder={tc('selectPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
-              {INDUSTRIES.map((i) => (
-                <SelectItem key={i} value={i}>
-                  {i}
+              {COMPANY_INDUSTRIES.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {t('industries.' + opt.key)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div>
-          <Label>{t('size')} *</Label>
+          <Label>{t('size')} {tc('requiredMark')}</Label>
           <Select value={size} onValueChange={(v) => setSize(v ?? '')}>
             <SelectTrigger>
-              <SelectValue placeholder="Select…" />
+              <SelectValue placeholder={tc('selectPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
               {COMPANY_SIZES.map((s) => (
                 <SelectItem key={s} value={s}>
-                  {s} employees
+                  {t('sizeOption', { size: s })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -121,7 +111,7 @@ export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="country">{t('country')} *</Label>
+          <Label htmlFor="country">{t('country')} {tc('requiredMark')}</Label>
           <Input
             id="country"
             value={country}
@@ -146,7 +136,7 @@ export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
           rows={4}
         />
         <p className="text-caption text-[var(--ink-3)] mt-1">
-          {description.length} / 280 · {t('descriptionHelper')}
+          {t('descriptionMeta', { count: description.length, helper: t('descriptionHelper') })}
         </p>
       </div>
 
@@ -166,7 +156,7 @@ export function CompanyProfileForm({ initial }: { initial?: CompanyInitial }) {
           onUploaded={(r) => setRneUrl(r.url)}
           helper={t('rneHelper')}
         />
-        {rneUrl && <p className="text-caption text-[var(--success)] mt-1">RNE uploaded</p>}
+        {rneUrl && <p className="text-caption text-[var(--success)] mt-1">{t('rneUploaded')}</p>}
       </div>
 
       <div className="flex justify-between pt-2">

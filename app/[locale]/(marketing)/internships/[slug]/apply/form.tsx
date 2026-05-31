@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -14,6 +15,8 @@ export function ApplyForm({
   internshipId: string;
   customQuestions: Array<{ question: string; required: boolean }>;
 }) {
+  const t = useTranslations('internshipApply');
+  const tc = useTranslations('common');
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const action = applyToInternshipAction.bind(null, internshipId);
   const customAnswers = customQuestions.map((q, i) => ({
@@ -26,13 +29,13 @@ export function ApplyForm({
       <input type="hidden" name="customAnswers" value={JSON.stringify(customAnswers)} />
 
       <div>
-        <Label htmlFor="coverNote">Cover note (optional, 1500 chars max)</Label>
+        <Label htmlFor="coverNote">{t('coverNoteLabel')}</Label>
         <Textarea
           id="coverNote"
           name="coverNote"
           rows={6}
           maxLength={1500}
-          placeholder="Why this internship?"
+          placeholder={t('coverNotePlaceholder')}
         />
       </div>
 
@@ -40,7 +43,7 @@ export function ApplyForm({
         <div key={i}>
           <Label htmlFor={`apply-q-${i}`}>
             {q.question}
-            {q.required && <span className="text-[var(--danger)] ml-1">*</span>}
+            {q.required && <span className="text-[var(--danger)] ml-1">{tc('requiredMark')}</span>}
           </Label>
           <Textarea
             id={`apply-q-${i}`}
@@ -55,7 +58,7 @@ export function ApplyForm({
 
       <div className="flex justify-end pt-2 border-t border-[var(--border-color)]">
         <Button type="submit" className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]">
-          Submit application<ArrowRight aria-hidden />
+          {t('submit')}<ArrowRight aria-hidden />
         </Button>
       </div>
     </form>

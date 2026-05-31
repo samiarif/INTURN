@@ -8,13 +8,13 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { getSession } from '@/modules/auth/session';
 import { listCompanyWorkspaces } from '@/modules/workspace/queries';
 
-function formatDate(d: string | null): string | null {
+function formatDate(d: string | null, locale: string): string | null {
   if (!d) return null;
-  return new Date(d).toLocaleDateString('en-GB', {
+  return new Date(d).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -45,9 +45,10 @@ export default async function Page() {
     redirect(`/${session.role}/dashboard`);
   }
 
-  const [t, workspaces] = await Promise.all([
+  const [t, workspaces, locale] = await Promise.all([
     getTranslations('company.workspaces'),
     listCompanyWorkspaces(session.user.id),
+    getLocale(),
   ]);
 
   const statusLabel = (status: string | null): string => {
@@ -80,8 +81,8 @@ export default async function Page() {
         <div className="flex flex-col gap-2.5 mt-2">
           {workspaces.map((w) => {
             const name = internName(w.internFirstName, w.internLastName);
-            const start = formatDate(w.startDate);
-            const end = formatDate(w.endDate);
+            const start = formatDate(w.startDate, locale);
+            const end = formatDate(w.endDate, locale);
             const dates = start && end ? `${start} — ${end}` : (start ?? end ?? t('noDates'));
             return (
               <Link
@@ -109,7 +110,7 @@ export default async function Page() {
                   </div>
                   <div className="text-caption text-[var(--ink-3)] truncate mt-0.5">
                     {w.projectTitle ?? t('noProject')}
-                    <span className="mx-1.5 text-[var(--ink-4)]">·</span>
+                    <span className="mx-1.5 text-[var(--ink-4)]">{t('sep')}</span>
                     {w.internshipTitle}
                   </div>
                 </div>

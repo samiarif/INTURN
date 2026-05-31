@@ -1,12 +1,15 @@
 import Link from 'next/link';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Package, ArrowRight } from 'lucide-react';
 import type { Deliverable } from '@/db/schema';
 
-const STATUS_LABEL: Record<string, string> = {
-  draft: 'Upcoming',
-  submitted: 'In review',
-  approved: 'Approved',
-  'revision-requested': 'Revise',
+// Maps the persisted status (stable key — never translate) to a short
+// label key under `workspace.deliverables.mini.statusLabel`.
+const STATUS_LABEL_KEY: Record<string, string> = {
+  draft: 'draft',
+  submitted: 'submitted',
+  approved: 'approved',
+  'revision-requested': 'changesRequested',
 };
 
 const STATUS_PILL: Record<string, string> = {
@@ -16,65 +19,78 @@ const STATUS_PILL: Record<string, string> = {
   'revision-requested': 'pill-block',
 };
 
-function formatDueDate(due: string | Date): string {
+// Loose translator handle (messages aren't typed); keys live under
+// `workspace.deliverables.mini.meta`.
+type MiniT = (key: string, vars?: Record<string, string | number>) => string;
+
+function formatDueDate(due: string | Date, tm: MiniT, locale: string): string {
   const d = new Date(due);
-  const day = d.toLocaleDateString('en-US', { weekday: 'short' });
-  const md = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+  const day = d.toLocaleDateString(locale, { weekday: 'short' });
+  const md = d.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
   const daysAway = Math.ceil((d.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  // If due in the next week, show the day name + date; otherwise just date
-  if (daysAway >= 0 && daysAway <= 7) return `Due ${day} ${md}`;
-  return `Due ${md}`;
+  // Within the next week, show weekday + date; otherwise just the date.
+  if (daysAway >= 0 && daysAway <= 7) return tm('meta.dueWeekday', { day, md });
+  return tm('meta.dueDate', { md });
 }
 
-function buildMeta(d: Deliverable): string {
+function buildMeta(d: Deliverable, tm: MiniT, locale: string): string {
   const statusKey = d.status ?? 'draft';
   if (statusKey === 'submitted') {
     if (d.submittedAt) {
-      const when = new Date(d.submittedAt);
-      const md = when.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-      return `Submitted ${md} · waiting on reviewer`;
+      const date = new Date(d.submittedAt).toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+      return tm('meta.submittedWaitingDated', { date });
     }
-    return 'Submitted · waiting on reviewer';
+    return tm('meta.submittedWaiting');
   }
-  if (statusKey === 'approved') return 'Approved';
+  if (statusKey === 'approved') return tm('meta.approved');
   if (statusKey === 'revision-requested') {
-    return d.feedback ? `Changes requested · ${d.feedback.slice(0, 40)}` : 'Changes requested';
+    return d.feedback
+      ? tm('meta.changesRequestedFeedback', { feedback: d.feedback.slice(0, 40) })
+      : tm('meta.changesRequested');
   }
   // draft
-  if (d.dueDate) return formatDueDate(d.dueDate);
-  return 'Upcoming';
+  if (d.dueDate) return formatDueDate(d.dueDate, tm, locale);
+  return tm('meta.upcoming');
 }
 
-export function DeliverablesMini({
+export async function DeliverablesMini({
   deliverables,
   basePath,
 }: {
   deliverables: Deliverable[];
   basePath: string;
 }) {
+  const [t, tm, locale] = await Promise.all([
+    getTranslations('workspace.deliverables'),
+    getTranslations('workspace.deliverables.mini'),
+    getLocale(),
+  ]);
   return (
     <div className="ws-card">
       <div className="ws-card-head">
         <Package size={16} strokeWidth={2.25} className="ws-hico" />
-        <h3>Deliverables</h3>
-        <Link href={`${basePath}?tab=deliverables`} className="ws-link">All versions <ArrowRight size={13} strokeWidth={2.25} aria-hidden /></Link>
+        <h3>{tm('heading')}</h3>
+        <Link href={`${basePath}?tab=deliverables`} className="ws-link">{tm('allVersions')} <ArrowRight size={13} strokeWidth={2.25} aria-hidden /></Link>
       </div>
       <div className="ws-deliv-list">
         {deliverables.map((d) => {
           const statusKey = d.status ?? 'draft';
           const isSubmitted = ['submitted', 'approved', 'revision-requested'].includes(statusKey);
+          const labelKey = STATUS_LABEL_KEY[statusKey];
           return (
             <div key={d.id} className="ws-deliv">
               <div>
                 <div className="ws-deliv-name">{d.title}</div>
-                <div className="ws-deliv-meta">{buildMeta(d)}</div>
+                <div className="ws-deliv-meta">{buildMeta(d, tm, locale)}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span className={`pill ${STATUS_PILL[statusKey] ?? 'pill-todo'}`}>
                   <span className="dot" />
-                  {STATUS_LABEL[statusKey] ?? statusKey}
+                  {labelKey ? tm(`statusLabel.${labelKey}`) : statusKey}
                 </span>
-                <span className="ws-deliv-ver">{isSubmitted ? `v${d.version}` : '—'}</span>
+                <span className="ws-deliv-ver">
+                  {isSubmitted ? t('version', { n: d.version }) : tm('notSubmitted')}
+                </span>
               </div>
             </div>
           );

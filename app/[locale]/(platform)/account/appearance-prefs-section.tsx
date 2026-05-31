@@ -74,10 +74,10 @@ export function AppearancePrefsSection() {
         <div className="text-label text-[var(--ink)]">{t('language')}</div>
         <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-[13px]">
           <SegButton active={locale === 'fr'} onClick={() => setLocale('fr')}>
-            FR
+            {t('langFr')}
           </SegButton>
           <SegButton active={locale === 'en'} onClick={() => setLocale('en')}>
-            EN
+            {t('langEn')}
           </SegButton>
         </div>
       </div>

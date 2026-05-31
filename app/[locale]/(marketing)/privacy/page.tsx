@@ -41,7 +41,7 @@ export default async function Page({
         {sections.map((s, i) => (
           <section key={i}>
             <h2 className="text-heading mb-2 text-[var(--ink)]">
-              {String(i + 1).padStart(2, '0')}. {s.heading}
+              {`${String(i + 1).padStart(2, '0')}. ${s.heading}`}
             </h2>
             <p className="text-body text-[var(--ink-2)] leading-relaxed whitespace-pre-line">
               {s.body}

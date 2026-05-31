@@ -207,6 +207,14 @@ export default async function Page({
             confirmReject: t('confirmReject'),
             confirmAccept: t('confirmAccept'),
             cancel: t('cancel'),
+            steps: {
+              new: tStatus('new'),
+              reviewed: tStatus('reviewed'),
+              shortlisted: tStatus('shortlisted'),
+              interview: tStatus('interview'),
+              accepted: tStatus('accepted'),
+              rejected: tStatus('rejected'),
+            },
           }}
         />
       </section>

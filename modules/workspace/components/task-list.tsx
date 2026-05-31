@@ -19,38 +19,43 @@ const STATUS_PILL_CLASS: Record<string, string> = {
 
 type DueInfo = { label: string; urgent?: boolean };
 
+// Translator for the relative-time labels. Both date branches reuse the shared
+// `dueOn` ("Due {date}") with either a weekday or a month/day; the "done"
+// branches and bare overdue label carry their own keys (plural-aware for weeks).
+type DueT = (
+  key: 'doneOn' | 'doneWeeksAgo' | 'overdueShort' | 'dueOn',
+  vars?: { day?: string; weeks?: number; date?: string },
+) => string;
+
 function formatDue(
   task: Task,
-  labels: { done: string; review: string; overdue: string },
+  t: DueT,
+  doneLabel: string,
+  reviewLabel: string,
   locale: string,
 ): DueInfo {
   if (task.status === 'done') {
-    // Design shows "Done · Mon" / "Done · 2wk ago" — try to derive from updatedAt
+    // Design shows "Done · Mon" / "Done · 2wk ago" — derive from updatedAt.
     if (task.updatedAt) {
       const updated = new Date(task.updatedAt);
       const daysAgo = Math.floor((Date.now() - updated.getTime()) / (1000 * 60 * 60 * 24));
       if (daysAgo < 7) {
-        return {
-          label: `${labels.done} · ${updated.toLocaleDateString(locale, { weekday: 'short' })}`,
-        };
+        return { label: t('doneOn', { day: updated.toLocaleDateString(locale, { weekday: 'short' }) }) };
       }
-      const weeksAgo = Math.floor(daysAgo / 7);
-      if (weeksAgo === 1) return { label: `${labels.done} · 1wk ago` };
-      return { label: `${labels.done} · ${weeksAgo}wk ago` };
+      return { label: t('doneWeeksAgo', { weeks: Math.floor(daysAgo / 7) }) };
     }
-    return { label: labels.done };
+    return { label: doneLabel };
   }
-  if (task.status === 'review') return { label: labels.review };
+  if (task.status === 'review') return { label: reviewLabel };
   if (!task.dueDate) return { label: '—' };
   const due = new Date(task.dueDate);
   const now = new Date();
   const daysAway = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  if (daysAway < 0) return { label: labels.overdue, urgent: true };
+  if (daysAway < 0) return { label: t('overdueShort'), urgent: true };
   if (daysAway <= 7) {
-    const day = due.toLocaleDateString(locale, { weekday: 'short' });
-    return { label: `Due ${day}`, urgent: true };
+    return { label: t('dueOn', { date: due.toLocaleDateString(locale, { weekday: 'short' }) }), urgent: true };
   }
-  return { label: `Due ${due.toLocaleDateString(locale, { month: 'short', day: 'numeric' })}` };
+  return { label: t('dueOn', { date: due.toLocaleDateString(locale, { month: 'short', day: 'numeric' }) }) };
 }
 
 export async function TaskList({
@@ -67,24 +72,18 @@ export async function TaskList({
     getTranslations('workspace.tasksBoard.columns'),
     getLocale(),
   ]);
-  // Strings "Tasks · this week", "See all N →", and the bare "Overdue"
-  // (no days suffix) are not in the plan namespace and remain English.
   return (
     <div className="ws-card">
       <div className="ws-card-head">
         <ListChecks size={16} strokeWidth={2.25} className="ws-hico" />
-        <h3>{view === 'intern' ? t('thisWeek') : 'Tasks · this week'}</h3>
-        <Link href={`${basePath}?tab=tasks`} className="ws-link">See all {tasks.length} <ArrowRight size={13} strokeWidth={2.25} aria-hidden /></Link>
+        <h3>{view === 'intern' ? t('thisWeek') : t('thisWeekSupervisor')}</h3>
+        <Link href={`${basePath}?tab=tasks`} className="ws-link">{t('seeAll', { count: tasks.length })} <ArrowRight size={13} strokeWidth={2.25} aria-hidden /></Link>
       </div>
       <div className="ws-tasks">
         {tasks.map((task) => {
           const statusKey = task.status ?? 'todo';
           const labelKey = STATUS_LABEL_KEY[statusKey] ?? 'todo';
-          const due = formatDue(task, {
-            done: tCols('done'),
-            review: tCols('review'),
-            overdue: 'Overdue',
-          }, locale);
+          const due = formatDue(task, t, tCols('done'), tCols('review'), locale);
           return (
             <div
               key={task.id}

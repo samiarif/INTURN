@@ -20,6 +20,7 @@ type SkillsInitial = Partial<{
 
 export function ProfileSkillsForm({ initial }: { initial?: SkillsInitial }) {
   const t = useTranslations('onboarding.intern.skills');
+  const tc = useTranslations('common');
   const [skills, setSkills] = useState<string[]>(initial?.skills ?? []);
   const [roles, setRoles] = useState<RoleCategory[]>(initial?.roles ?? []);
   const [cvUrl, setCvUrl] = useState<string>(initial?.cvUrl ?? '');
@@ -33,7 +34,7 @@ export function ProfileSkillsForm({ initial }: { initial?: SkillsInitial }) {
       <input type="hidden" name="portfolioLinks" value={JSON.stringify(links)} />
 
       <div>
-        <Label>{t('skillsLabel')} *</Label>
+        <Label>{t('skillsLabel')} {tc('requiredMark')}</Label>
         <ChipInput value={skills} onChange={setSkills} />
       </div>
 
@@ -56,10 +57,13 @@ export function ProfileSkillsForm({ initial }: { initial?: SkillsInitial }) {
         />
         {cvUrl && (
           <p className="text-caption text-[var(--success)] mt-1">
-            CV uploaded ·{' '}
-            <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="underline">
-              view
-            </a>
+            {t.rich('cvUploadedLine', {
+              a: (chunks) => (
+                <a href={cvUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                  {chunks}
+                </a>
+              ),
+            })}
           </p>
         )}
       </div>

@@ -35,9 +35,9 @@ export function SuspendUserButton({
       try {
         await toggleSuspendAction({ userId, reason: 'report' });
         router.refresh();
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : 'failed';
-        window.alert(msg);
+      } catch {
+        // Same shouldn't-happen guards as the users-table suspend button → generic.
+        window.alert(tUsers('errorGeneric'));
       }
     });
   }

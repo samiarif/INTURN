@@ -81,9 +81,9 @@ export default async function Page({
                   </TableCell>
                   <TableCell>
                     {organization.rneUrl ? (
-                      <Check size={15} strokeWidth={2.5} className="text-[var(--success)]" aria-label="RNE provided" />
+                      <Check size={15} strokeWidth={2.5} className="text-[var(--success)]" aria-label={t('rneProvidedAria')} />
                     ) : (
-                      <span className="text-caption text-[var(--ink-4)]">—</span>
+                      <span className="text-caption text-[var(--ink-4)]">{'—'}</span>
                     )}
                   </TableCell>
                   <TableCell>

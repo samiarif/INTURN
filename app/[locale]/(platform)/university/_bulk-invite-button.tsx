@@ -19,6 +19,19 @@ export function BulkInviteButton({
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
 
+  // Map the action's machine error codes to localized copy; unknown/shouldn't-
+  // happen states funnel to a generic line (the established mapError pattern).
+  function mapError(code: string): string {
+    switch (code) {
+      case 'rate_limited':
+        return t('errorRateLimited');
+      case 'too_many_rows':
+        return t('errorTooManyRows');
+      default:
+        return t('errorGeneric');
+    }
+  }
+
   function submit() {
     setMsg(null);
     start(async () => {
@@ -34,7 +47,7 @@ export function BulkInviteButton({
         setCsv('');
         router.refresh();
       } else {
-        setMsg(res.error);
+        setMsg(mapError(res.error));
       }
     });
   }

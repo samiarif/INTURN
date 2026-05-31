@@ -41,7 +41,7 @@ export async function ProfileCompletenessWidget({
           <p className="text-[12.5px] text-[var(--ink-3)]">{t('subtitle')}</p>
         </div>
         <span className="font-mono text-[18px] font-semibold" style={{ color: tone }}>
-          {completeness.percent}%
+          {completeness.percent}{'%'}
         </span>
       </div>
 
@@ -67,14 +67,14 @@ export async function ProfileCompletenessWidget({
               className="inline-flex items-center px-2.5 py-1 rounded-full bg-[var(--surface-muted)] text-[12px] text-[var(--ink-2)]"
             >
               <span className="text-[var(--danger)] mr-1.5" aria-hidden>
-                ○
+                {'○'}
               </span>
               {t(`missing.${m.key}`)}
             </li>
           ))}
           {completeness.missing.length > top3Missing.length && (
             <li className="inline-flex items-center px-2.5 py-1 text-[12px] text-[var(--ink-3)]">
-              + {completeness.missing.length - top3Missing.length} {t('more')}
+              {'+'} {completeness.missing.length - top3Missing.length} {t('more')}
             </li>
           )}
         </ul>

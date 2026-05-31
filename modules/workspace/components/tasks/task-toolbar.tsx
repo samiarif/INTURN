@@ -95,7 +95,7 @@ export function TaskToolbar({ tasks, enableListAndCalendar }: Props) {
         {t('filterAll')} <span className="num">{tasks.length}</span>
       </Chip>
 
-      <PhaseDropdown phases={phases} selected={filter.phase ?? []} onToggle={togglePhase} label={t('filterPhase')} />
+      <PhaseDropdown phases={phases} selected={filter.phase ?? []} onToggle={togglePhase} label={t('filterPhase')} t={t} />
 
       <Chip active={filter.dueIn === '7d'} onClick={toggleDueThisWeek}>
         {t('filterDueThisWeek')}
@@ -161,11 +161,13 @@ function PhaseDropdown({
   selected,
   onToggle,
   label,
+  t,
 }: {
   phases: string[];
   selected: string[];
   onToggle: (p: string) => void;
   label: string;
+  t: (k: string, values?: Record<string, string>) => string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -192,7 +194,7 @@ function PhaseDropdown({
         aria-expanded={open}
       >
         {label}
-        {active ? `: ${selected.join(', ')}` : ''}
+        {active ? t('selectedSuffix', { list: selected.join(', ') }) : ''}
         <span className="caret" />
       </button>
       {open && (
@@ -265,11 +267,11 @@ function SortDropdown({
   value: SortKey;
   onChange: (v: SortKey) => void;
   label: string;
-  t: (k: string) => string;
+  t: (k: string, values?: Record<string, string>) => string;
 }) {
   return (
     <label className="tb-chip">
-      {label}:{' '}
+      {t('selectLabel', { label })}{' '}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as SortKey)}
@@ -293,11 +295,11 @@ function GroupDropdown({
   value: string;
   onChange: (v: string) => void;
   label: string;
-  t: (k: string) => string;
+  t: (k: string, values?: Record<string, string>) => string;
 }) {
   return (
     <label className="tb-chip">
-      {label}:{' '}
+      {t('selectLabel', { label })}{' '}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}

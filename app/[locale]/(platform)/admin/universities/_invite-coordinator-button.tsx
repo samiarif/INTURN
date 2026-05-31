@@ -23,7 +23,9 @@ export function InviteCoordinatorButton({ universityOrgId }: { universityOrgId: 
         setEmail('');
         router.refresh();
       } else {
-        setMsg({ text: res.error, ok: false });
+        // inviteCoordinatorAction only surfaces shouldn't-happen codes
+        // (org_not_found/not_a_university) or thrown errors → generic copy.
+        setMsg({ text: t('errorGeneric'), ok: false });
       }
     });
   }

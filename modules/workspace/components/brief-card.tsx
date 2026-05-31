@@ -1,43 +1,36 @@
+import { getTranslations, getLocale } from 'next-intl/server';
 import type { WorkspaceOverviewData } from '../queries';
 import { Avatar } from '@/components/avatar';
+import { locationLabelKey } from './location-label';
+import { localizeCompensation } from '@/lib/format-compensation';
 
-function formatLocationLabel(locationType: string | null | undefined): string {
-  switch (locationType) {
-    case 'on-site':
-      return 'On-site';
-    case 'virtual':
-      return 'Remote';
-    case 'hybrid':
-      return 'Hybrid';
-    default:
-      return 'Hybrid';
-  }
-}
-
-export function BriefCard({
+export async function BriefCard({
   data,
   view,
 }: {
   data: WorkspaceOverviewData;
   view: 'intern' | 'supervisor';
 }) {
+  const t = await getTranslations('workspace.brief');
+  const locale = await getLocale();
   const internship = data.internship;
   const project = data.project;
   const intern = data.intern;
   const supervisor = data.supervisors[0];
 
-  const eyebrow = `Internship · ${internship?.duration ?? 12} weeks · ${formatLocationLabel(
-    internship?.locationType,
-  )}`;
-  const title = project?.name ?? internship?.title ?? 'Workspace';
+  const eyebrow = t('eyebrow', {
+    weeks: internship?.duration ?? 12,
+    mode: t(`mode.${locationLabelKey(internship?.locationType)}`),
+  });
+  const title = project?.name ?? internship?.title ?? t('workspaceFallback');
   const description = project?.brief ?? internship?.description ?? '';
   const locationType = internship?.locationType;
   const locationHint =
     locationType === 'hybrid'
-      ? '3d/wk on-site'
+      ? t('hintHybrid')
       : locationType === 'on-site'
-        ? 'on-site full week'
-        : 'remote';
+        ? t('hintOnSite')
+        : t('hintRemote');
 
   return (
     <div className="ws-brief">
@@ -60,14 +53,21 @@ export function BriefCard({
         <div className="ws-brief-meta">
           {internship?.location && (
             <span>
-              <b>{internship.location}</b> · {locationHint}
+              {t.rich('locationMeta', {
+                b: (chunks) => <b>{chunks}</b>,
+                location: internship.location,
+                hint: locationHint,
+              })}
             </span>
           )}
           {internship?.isPaid && internship.compensation && (
             <>
               <span className="dot" />
               <span>
-                Paid · <b>{internship.compensation}</b>
+                {t.rich('paidMeta', {
+                  b: (chunks) => <b>{chunks}</b>,
+                  amount: localizeCompensation(internship.compensation, locale),
+                })}
               </span>
             </>
           )}
@@ -78,7 +78,7 @@ export function BriefCard({
           ? supervisor && (
               <>
                 <div className="ws-brief-person">
-                  <div className="role">Supervisor</div>
+                  <div className="role">{t('roleSupervisor')}</div>
                   <div className="name">
                     {supervisor.firstName} {supervisor.lastName}
                   </div>
@@ -95,7 +95,7 @@ export function BriefCard({
           : intern && (
               <>
                 <div className="ws-brief-person">
-                  <div className="role">Intern</div>
+                  <div className="role">{t('roleIntern')}</div>
                   <div className="name">
                     {intern.firstName} {intern.lastName}
                   </div>

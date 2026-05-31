@@ -65,11 +65,7 @@ function newPhaseId() {
   return `ph-${++_phaseCounter}`;
 }
 
-const MODE_OPTIONS: Array<{ value: Mode; label: string; sub: string }> = [
-  { value: 'hybrid', label: 'Hybrid', sub: 'On-site + remote' },
-  { value: 'virtual', label: 'Remote', sub: 'Fully distributed' },
-  { value: 'on-site', label: 'On-site', sub: 'Office every day' },
-];
+const MODE_VALUES: Mode[] = ['hybrid', 'virtual', 'on-site'];
 
 const ON_SITE_DAY_OPTIONS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -90,6 +86,8 @@ function weeksBetween(start?: string | null, end?: string | null): number | null
 
 export function ProjectCreateForm({ initialProject }: { initialProject?: Project }) {
   const t = useTranslations('projects.edit');
+  const tf = useTranslations('projects.form');
+  const tn = useTranslations('projects.new');
   const ta = useTranslations('assist');
   const tw = useTranslations('wizard');
   const isEdit = Boolean(initialProject);
@@ -296,8 +294,8 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
 
       {!isEdit && (
         <DraftBanner
-          title="Draft mode"
-          message="this project stays private until you publish your first internship."
+          title={tn('draftBannerTitle')}
+          message={tn('draftBannerMessage')}
         />
       )}
 
@@ -337,18 +335,16 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
       <section id="basics" className="space-y-6 scroll-mt-24">
         <header>
           <h2 className="text-title text-[var(--ink)]">
-            {isEdit ? t('heading') : 'Create a new project'}
+            {isEdit ? t('heading') : tn('heading')}
           </h2>
           <p className="text-body text-[var(--ink-3)] mt-1">
-            {isEdit
-              ? t('subheading')
-              : 'Projects group your internships. One project = one piece of work; one or more interns work on it together in their own workspaces.'}
+            {isEdit ? t('subheading') : tn('subheading')}
           </p>
         </header>
 
         <div>
           <Label htmlFor="name">
-            Project name <span className="text-[var(--danger)]">*</span>
+            {tf('nameLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
           </Label>
           <Input
             id="name"
@@ -359,17 +355,17 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
               setName(next);
               if (!slugTouched) setSlug(slugify(next));
             }}
-            placeholder="Brand audit & system refresh"
+            placeholder={tf('namePlaceholder')}
             required
           />
           <p className="text-caption text-[var(--ink-3)] mt-1">
-            Visible internally and to applicants once internships go live.
+            {tf('nameHint')}
           </p>
         </div>
 
         <div>
           <Label htmlFor="slug">
-            URL slug <span className="text-[var(--danger)]">*</span>
+            {tf('slugLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
           </Label>
           <Input
             id="slug"
@@ -383,14 +379,14 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             required
           />
           <p className="text-caption text-[var(--ink-3)] mt-1">
-            Used in URLs. Lowercase letters, digits, hyphens only.
+            {tf('slugHint')}
           </p>
         </div>
 
         <div>
           <div className="sc-label-row">
             <Label htmlFor="brief">
-              Short description <span className="text-[var(--danger)]">*</span>
+              {tf('briefLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
             </Label>
             <span className="sc-spacer" />
             {descAssisted && <AssistedTag />}
@@ -409,7 +405,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             maxLength={2000}
             value={brief}
             onChange={(e) => setBrief(e.target.value)}
-            placeholder="A full-funnel audit of Acme's brand and a refreshed system delivered as Figma library + guidelines. Designed for two parallel interns over 12 weeks."
+            placeholder={tf('briefPlaceholder')}
             required
           />
           {descAssist.state.status === 'loading' && <AssistThinking />}
@@ -432,21 +428,20 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             </p>
           )}
           <p className="text-caption text-[var(--ink-3)] mt-1">
-            2–3 sentences. This becomes the brief at the top of every workspace under this
-            project.
+            {tf('briefHint')}
           </p>
         </div>
 
         <div>
           <Label>
-            Mode <span className="text-[var(--danger)]">*</span>
+            {tf('modeLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
           </Label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1.5">
-            {MODE_OPTIONS.map((opt) => {
-              const selected = mode === opt.value;
+            {MODE_VALUES.map((value) => {
+              const selected = mode === value;
               return (
                 <label
-                  key={opt.value}
+                  key={value}
                   className={
                     selected
                       ? 'rounded-md p-3 cursor-pointer bg-[var(--surface-muted)] border-2 border-[var(--ink)]'
@@ -456,15 +451,15 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
                   <input
                     type="radio"
                     name="mode-picker"
-                    value={opt.value}
+                    value={value}
                     checked={selected}
-                    onChange={() => setMode(opt.value)}
+                    onChange={() => setMode(value)}
                     className="sr-only"
                   />
                   <b className="block text-label font-semibold text-[var(--ink)] mb-0.5">
-                    {opt.label}
+                    {tf(`mode.${value}.label`)}
                   </b>
-                  <span className="text-caption text-[var(--ink-3)]">{opt.sub}</span>
+                  <span className="text-caption text-[var(--ink-3)]">{tf(`mode.${value}.sub`)}</span>
                 </label>
               );
             })}
@@ -474,19 +469,19 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         {mode !== 'virtual' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="location-input">Location</Label>
+              <Label htmlFor="location-input">{tf('locationLabel')}</Label>
               <Input
                 id="location-input"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Tunis · Lac 2"
+                placeholder={tf('locationPlaceholder')}
               />
               <p className="text-caption text-[var(--ink-3)] mt-1">
-                Hybrid &amp; on-site projects only.
+                {tf('locationHint')}
               </p>
             </div>
             <div>
-              <Label>On-site days</Label>
+              <Label>{tf('onSiteDaysLabel')}</Label>
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {ON_SITE_DAY_OPTIONS.map((day) => {
                   const selected = onSiteDays.includes(day);
@@ -501,7 +496,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
                           : 'px-3 py-1.5 rounded-md text-label bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
                       }
                     >
-                      {day}
+                      {tf(`day.${day}`)}
                     </button>
                   );
                 })}
@@ -513,7 +508,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="startDate">
-              Start date <span className="text-[var(--danger)]">*</span>
+              {tf('startDateLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
             </Label>
             <Input
               id="startDate"
@@ -526,7 +521,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
           </div>
           <div>
             <Label htmlFor="duration-input">
-              Duration (weeks) <span className="text-[var(--danger)]">*</span>
+              {tf('durationLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
             </Label>
             <Input
               id="duration-input"
@@ -538,7 +533,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
               required
             />
             <p className="text-caption text-[var(--ink-3)] mt-1">
-              Internships can run shorter, never longer. Ends {endDate}.
+              {tf('durationHint', { endDate })}
             </p>
             <input type="hidden" name="endDate" value={endDate} />
           </div>
@@ -549,20 +544,19 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
       <section id="goals" className="space-y-6 scroll-mt-24 pt-2 border-t border-[var(--border-color)]">
         <header className="pt-6">
           <h2 className="text-title text-[var(--ink)]">
-            What does success look like?
+            {tf('goalsHeading')}
           </h2>
           <p className="text-body text-[var(--ink-3)] mt-1">
-            3 short statements. These appear in every workspace under this project — interns
-            read them on day 1, supervisors revisit them at every check-in.
+            {tf('goalsIntro')}
           </p>
         </header>
 
         <div>
           <div className="sc-label-row">
             <Label>
-              Project goals{' '}
+              {tf('goalsLabel')}{' '}
               <span className="text-[var(--ink-3)] font-normal">
-                · {goalsFilled} of 3 used
+                {tf('goalsUsed', { filled: goalsFilled })}
               </span>
             </Label>
             <span className="sc-spacer" />
@@ -583,18 +577,18 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
                 onChange={(e) => updateGoal(i, e.target.value)}
                 placeholder={
                   i === 0
-                    ? 'Clarity of position — a stakeholder-validated story in one paragraph.'
+                    ? tf('goalPlaceholder1')
                     : i === 1
-                      ? 'System, not assets — refresh ships as a token-backed Figma library.'
-                      : 'Handoff that lasts — guidelines a junior can apply day one without us.'
+                      ? tf('goalPlaceholder2')
+                      : tf('goalPlaceholder3')
                 }
                 maxLength={120}
-                aria-label={`Goal ${i + 1}`}
+                aria-label={tf('goalAria', { n: i + 1 })}
               />
             ))}
           </div>
           <p className="text-caption text-[var(--ink-3)] mt-1.5">
-            Limit is 3. If you can&apos;t say it in 3, you don&apos;t know it yet.
+            {tf('goalsHint')}
           </p>
           {goalsAssist.state.status === 'loading' && <AssistThinking />}
           {goalsData && (
@@ -621,14 +615,14 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
           </div>
           <div className="relative flex justify-center">
             <span className="bg-[var(--background)] px-2 text-eyebrow uppercase font-mono text-[var(--ink-3)]">
-              then · optional
+              {tf('thenOptional')}
             </span>
           </div>
         </div>
 
         <div>
           <div className="sc-label-row">
-            <h3 className="text-heading text-[var(--ink)]">Project phases</h3>
+            <h3 className="text-heading text-[var(--ink)]">{tf('phasesHeading')}</h3>
             <span className="sc-spacer" />
             {phasesAssisted && <AssistedTag />}
             <AssistButton
@@ -640,8 +634,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             />
           </div>
           <p className="text-caption text-[var(--ink-3)] mt-1 mb-3">
-            Sketch the project arc. You can edit or skip — the Hub&apos;s phase strip uses
-            these to show progress.
+            {tf('phasesIntro')}
           </p>
 
           <DndContext
@@ -676,9 +669,9 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
               disabled={phases.length >= 12}
               className="text-label text-[var(--brand-600)] hover:text-[var(--brand-700)] disabled:text-[var(--ink-4)]"
             >
-              + Add phase
+              {tf('addPhase')}
             </button>
-            <span className="text-caption text-[var(--ink-3)]">· Skip this section</span>
+            <span className="text-caption text-[var(--ink-3)]">{tf('skipSection')}</span>
           </div>
 
           {phasesAssist.state.status === 'loading' && <AssistThinking />}
@@ -713,12 +706,10 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
       <section id="review" className="space-y-4 scroll-mt-24 pt-2 border-t border-[var(--border-color)]">
         <header className="pt-6">
           <h2 className="text-title text-[var(--ink)]">
-            {isEdit ? t('reviewHeading') : 'Ready to save?'}
+            {t('reviewHeading')}
           </h2>
           <p className="text-body text-[var(--ink-3)] mt-1">
-            {isEdit
-              ? t('reviewSubheading')
-              : 'The project goes live the moment you post your first internship — until then, nobody outside your org sees it.'}
+            {isEdit ? t('reviewSubheading') : tn('reviewSubheading')}
           </p>
         </header>
 
@@ -747,22 +738,21 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         ) : (
           <div className="rounded-lg p-5 bg-[var(--status-warn-bg)] border border-[color-mix(in_srgb,var(--status-warn-ink)_30%,transparent)]">
             <h3 className="text-heading text-[var(--status-warn-ink)]">
-              Next: post your first internship
+              {tn('ctaNextTitle')}
             </h3>
             <p className="text-caption text-[var(--status-warn-ink)] leading-relaxed mt-1.5 mb-3 max-w-[56ch]">
-              The project becomes <b>active</b> the moment your first internship is published. A
-              draft with no internships <b>auto-archives after 30 days</b>.
+              {tn.rich('ctaNextBody', { b: (chunks) => <b>{chunks}</b> })}
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <Button
                 type="submit"
                 className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
               >
-                Save &amp; post first internship
+                {tn('ctaSave')}
                 <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
               </Button>
               <span className="text-caption text-[var(--status-warn-ink)]">
-                Saves a draft and takes you to step 4.
+                {tn('ctaSaveHint')}
               </span>
             </div>
           </div>
@@ -785,6 +775,7 @@ type SortablePhaseRowProps = {
 };
 
 function SortablePhaseRow({ phase, index, duration, reorderLabel, onUpdate, onRemove }: SortablePhaseRowProps) {
+  const tf = useTranslations('projects.form');
   const {
     attributes,
     listeners,
@@ -802,12 +793,12 @@ function SortablePhaseRow({ phase, index, duration, reorderLabel, onUpdate, onRe
 
   const namePlaceholder =
     index === 0
-      ? 'Discovery & audit'
+      ? tf('phaseNamePlaceholder0')
       : index === 1
-        ? 'Explore & moodboard'
+        ? tf('phaseNamePlaceholder1')
         : index === 2
-          ? 'System build'
-          : 'Handoff';
+          ? tf('phaseNamePlaceholder2')
+          : tf('phaseNamePlaceholder3');
 
   return (
     <div
@@ -830,14 +821,14 @@ function SortablePhaseRow({ phase, index, duration, reorderLabel, onUpdate, onRe
           value={phase.name}
           onChange={(e) => onUpdate({ name: e.target.value })}
           placeholder={namePlaceholder}
-          aria-label="Phase name"
+          aria-label={tf('phaseNameAria')}
           className="h-8 text-[13px] font-medium"
         />
         <Input
           value={phase.description}
           onChange={(e) => onUpdate({ description: e.target.value })}
-          placeholder="Short note (optional)"
-          aria-label="Phase description"
+          placeholder={tf('phaseDescPlaceholder')}
+          aria-label={tf('phaseDescAria')}
           className="h-7 text-caption text-[var(--ink-3)]"
         />
       </div>
@@ -851,7 +842,7 @@ function SortablePhaseRow({ phase, index, duration, reorderLabel, onUpdate, onRe
             fromWeek: Math.max(1, Math.min(duration, Number(e.target.value) || 1)),
           })
         }
-        aria-label="From week"
+        aria-label={tf('fromWeekAria')}
         className="h-8 text-[12px] text-center"
       />
       <Input
@@ -864,14 +855,14 @@ function SortablePhaseRow({ phase, index, duration, reorderLabel, onUpdate, onRe
             toWeek: Math.max(1, Math.min(duration, Number(e.target.value) || 1)),
           })
         }
-        aria-label="To week"
+        aria-label={tf('toWeekAria')}
         className="h-8 text-[12px] text-center"
       />
       <button
         type="button"
         onClick={onRemove}
         className="flex items-center justify-center text-[var(--ink-4)] hover:text-[var(--ink-2)] h-8"
-        aria-label="Remove phase"
+        aria-label={tf('removePhase')}
       >
         <X className="h-4 w-4" />
       </button>
@@ -922,51 +913,52 @@ function SummaryCard({
   goals: string[];
   phases: Array<{ name: string; description?: string; fromWeek: number; toWeek: number }>;
 }) {
+  const tf = useTranslations('projects.form');
   return (
     <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface-muted)] p-5 flex flex-col gap-4">
-      <SummaryRow k="Name">
+      <SummaryRow k={tf('summaryName')}>
         <b className="font-semibold">
-          {name || <span className="text-[var(--ink-4)]">(not set)</span>}
+          {name || <span className="text-[var(--ink-4)]">{tf('summaryNotSet')}</span>}
         </b>
       </SummaryRow>
-      <SummaryRow k="Mode">
-        <SummaryPill>{mode.toUpperCase()}</SummaryPill>
+      <SummaryRow k={tf('summaryMode')}>
+        <SummaryPill>{tf(`mode.${mode}.label`).toUpperCase()}</SummaryPill>
         {location && mode !== 'virtual' ? (
           <SummaryPill>{location.toUpperCase()}</SummaryPill>
         ) : null}
         {mode !== 'virtual' && onSiteDays.length ? (
-          <SummaryPill>{onSiteDays.join(' · ').toUpperCase()}</SummaryPill>
+          <SummaryPill>{onSiteDays.map((d) => tf(`day.${d}`)).join(' · ').toUpperCase()}</SummaryPill>
         ) : null}
       </SummaryRow>
-      <SummaryRow k="Schedule">
+      <SummaryRow k={tf('summarySchedule')}>
         <b className="font-semibold">
-          {startDate} → {endDate}
+          {tf('scheduleRange', { start: startDate, end: endDate })}
         </b>{' '}
-        · {duration} weeks
+        {tf('summaryDuration', { n: duration })}
       </SummaryRow>
       <div className="h-px bg-[var(--border-color)]" />
-      <SummaryRow k="Goals">
+      <SummaryRow k={tf('summaryGoals')}>
         {goals.length ? (
           <ul className="space-y-0.5">
             {goals.map((g, i) => (
-              <li key={i}>· {g}</li>
+              <li key={i}>{tf('summaryGoalItem', { goal: g })}</li>
             ))}
           </ul>
         ) : (
-          <span className="text-[var(--ink-4)]">(none yet)</span>
+          <span className="text-[var(--ink-4)]">{tf('summaryNoneYet')}</span>
         )}
       </SummaryRow>
-      <SummaryRow k="Phases">
+      <SummaryRow k={tf('summaryPhases')}>
         {phases.length ? (
           <div className="flex flex-wrap">
             {phases.map((p, i) => (
               <SummaryPill key={i}>
-                {p.name.toUpperCase()} · WK {p.fromWeek}-{p.toWeek}
+                {tf('summaryPhasePill', { name: p.name.toUpperCase(), from: p.fromWeek, to: p.toWeek })}
               </SummaryPill>
             ))}
           </div>
         ) : (
-          <span className="text-[var(--ink-4)]">(skipped)</span>
+          <span className="text-[var(--ink-4)]">{tf('summarySkipped')}</span>
         )}
       </SummaryRow>
     </div>

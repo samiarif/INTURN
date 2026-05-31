@@ -40,6 +40,7 @@ export function ProfileBasicsForm({
   mode?: 'onboarding' | 'account';
 }) {
   const t = useTranslations('onboarding.intern.basics');
+  const tc = useTranslations('common');
   const [firstName, setFirstName] = useState(initial?.firstName ?? '');
   const [lastName, setLastName] = useState(initial?.lastName ?? '');
   const [university, setUniversity] = useState(initial?.university ?? '');
@@ -86,7 +87,7 @@ export function ProfileBasicsForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="firstName">{t('firstName')} *</Label>
+          <Label htmlFor="firstName">{t('firstName')} {tc('requiredMark')}</Label>
           <Input
             id="firstName"
             name="firstName"
@@ -96,7 +97,7 @@ export function ProfileBasicsForm({
           />
         </div>
         <div>
-          <Label htmlFor="lastName">{t('lastName')} *</Label>
+          <Label htmlFor="lastName">{t('lastName')} {tc('requiredMark')}</Label>
           <Input
             id="lastName"
             name="lastName"
@@ -108,22 +109,24 @@ export function ProfileBasicsForm({
       </div>
 
       <div>
-        <Label>{t('university')} *</Label>
+        <Label>{t('university')} {tc('requiredMark')}</Label>
         <Combobox
           options={UNIVERSITIES.map((u) => ({ value: u.id, label: u.name }))}
           value={university}
           onChange={setUniversity}
-          placeholder="Select university…"
+          placeholder={t('universityPlaceholder')}
+          searchPlaceholder={t('universitySearchPlaceholder')}
+          emptyMessage={t('universityNoMatches')}
         />
         <p className="text-caption text-[var(--ink-3)] mt-1">{t('universityHelper')}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>{t('yearOfStudy')} *</Label>
+          <Label>{t('yearOfStudy')} {tc('requiredMark')}</Label>
           <Select value={yearOfStudy} onValueChange={(v) => setYearOfStudy(v ?? '')}>
             <SelectTrigger>
-              <SelectValue placeholder="Select…" />
+              <SelectValue placeholder={tc('selectPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
               {YEARS.map((y) => (
@@ -135,7 +138,7 @@ export function ProfileBasicsForm({
           </Select>
         </div>
         <div>
-          <Label htmlFor="fieldOfStudy">{t('fieldOfStudy')} *</Label>
+          <Label htmlFor="fieldOfStudy">{t('fieldOfStudy')} {tc('requiredMark')}</Label>
           <Input
             id="fieldOfStudy"
             name="fieldOfStudy"
@@ -159,7 +162,7 @@ export function ProfileBasicsForm({
       </div>
 
       <div>
-        <Label>{t('preferredLanguage')} *</Label>
+        <Label>{t('preferredLanguage')} {tc('requiredMark')}</Label>
         <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-[13px]">
           <button
             type="button"
@@ -170,7 +173,7 @@ export function ProfileBasicsForm({
                 : 'px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
             }
           >
-            Français
+            {tc('languages.fr')}
           </button>
           <button
             type="button"
@@ -181,7 +184,7 @@ export function ProfileBasicsForm({
                 : 'px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
             }
           >
-            English
+            {tc('languages.en')}
           </button>
         </div>
         <p className="text-caption text-[var(--ink-3)] mt-1">{t('preferredLanguageHelper')}</p>

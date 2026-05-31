@@ -152,7 +152,7 @@ export default async function Page() {
                           {t('phaseOf', { current: snap.currentPhaseIndex + 1, total: snap.phaseCount })}
                         </StatusPill>
                       ) : (
-                        <span className="text-caption text-[var(--ink-4)]">—</span>
+                        <span className="text-caption text-[var(--ink-4)]">{'—'}</span>
                       )}
                     </TableCell>
                     <TableCell>

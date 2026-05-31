@@ -43,7 +43,7 @@ export default async function Page() {
                   name: existing.name,
                   industry: existing.industry ?? '',
                   size: existing.size ?? '',
-                  country: existing.country ?? 'Tunisia',
+                  country: existing.country ?? t('countryDefault'),
                   city: existing.city ?? '',
                   description: existing.description ?? '',
                   website: existing.website ?? '',

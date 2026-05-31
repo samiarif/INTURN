@@ -50,10 +50,11 @@ export function RoleSelect({
       try {
         await setUserRoleAction({ userId, role: next });
         router.refresh();
-      } catch (e) {
+      } catch {
         setValue(prev);
-        const msg = e instanceof Error ? e.message : 'failed';
-        window.alert(msg);
+        // setUserRoleAction only throws shouldn't-happen guards (self-edit,
+        // invalid role, coordinator-protected) the UI already prevents → generic.
+        window.alert(t('errorGeneric'));
       }
     });
   }

@@ -24,12 +24,15 @@ export function ReportReviewBar({
     cancel: string;
     feedbackPlaceholder: string;
     sending: string;
+    errorGeneric: string;
   };
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [showRequest, setShowRequest] = useState(false);
   const [feedback, setFeedback] = useState('');
+  // Approve/request-revision actions only surface shouldn't-happen codes
+  // (empty feedback is UI-guarded), so every failure funnels to generic copy.
   const [error, setError] = useState<string | null>(null);
 
   function approve() {
@@ -37,7 +40,7 @@ export function ReportReviewBar({
     startTransition(async () => {
       const res = await approveReportAction({ reportId });
       if (res.ok) router.refresh();
-      else setError(res.error);
+      else setError(labels.errorGeneric);
     });
   }
 
@@ -51,7 +54,7 @@ export function ReportReviewBar({
         setShowRequest(false);
         router.refresh();
       } else {
-        setError(res.error);
+        setError(labels.errorGeneric);
       }
     });
   }
@@ -60,7 +63,7 @@ export function ReportReviewBar({
     <div className="rounded-lg border border-[var(--brand-200)] bg-[var(--brand-50)] p-4">
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm text-[var(--ink-2)]">
-          {labels.submittedBy} · {whenLabel}
+          {labels.submittedBy} {'·'} {whenLabel}
         </span>
         <div className="ml-auto flex gap-2">
           <Button variant="outline" size="sm" disabled={pending} onClick={() => setShowRequest((v) => !v)}>

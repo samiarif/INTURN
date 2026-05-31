@@ -113,7 +113,7 @@ export function NudgeModal({ workspaceId, onClose }: Props) {
                     marginTop: 2,
                   }}
                 >
-                  {message.length}/{MAX_LENGTH}
+                  {t('charCount', { count: message.length, max: MAX_LENGTH })}
                 </div>
               </div>
 
@@ -154,7 +154,7 @@ export function NudgeModal({ workspaceId, onClose }: Props) {
                     opacity: pending ? 0.6 : 1,
                   }}
                 >
-                  {pending ? '…' : t('send')}
+                  {pending ? t('sending') : t('send')}
                 </button>
               </div>
             </div>

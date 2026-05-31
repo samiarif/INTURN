@@ -46,7 +46,7 @@ export function NewPostForm() {
           placeholder={t('titlePlaceholder')}
           className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-body"
         />
-        <p className="text-caption text-[var(--ink-3)] mt-1">{title.length}/6 min</p>
+        <p className="text-caption text-[var(--ink-3)] mt-1">{t('titleMin', { count: title.length })}</p>
       </div>
       <div>
         <label className="text-label text-[var(--ink)] mb-1 block">
@@ -59,7 +59,7 @@ export function NewPostForm() {
           placeholder={t('bodyPlaceholder')}
           className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-body font-sans resize-y"
         />
-        <p className="text-caption text-[var(--ink-3)] mt-1">{body.length}/20 min</p>
+        <p className="text-caption text-[var(--ink-3)] mt-1">{t('bodyMin', { count: body.length })}</p>
       </div>
       {error && <p className="text-caption text-[var(--danger)]">{error}</p>}
       <div className="flex justify-end">

@@ -36,7 +36,7 @@ export function WorkspaceTabBar({
     { id: 'tasks', label: t('tasks'), count: String(tasksCount), enabled: true },
     { id: 'deliverables', label: t('deliverables'), count: String(deliverablesCount), enabled: true },
     { id: 'timeline', label: t('timeline'), enabled: true },
-    { id: 'activity', label: t('activity'), count: activityNew ? `${activityNew} new` : undefined, enabled: false },
+    { id: 'activity', label: t('activity'), count: activityNew ? t('activityCount', { count: activityNew }) : undefined, enabled: false },
     { id: 'comments', label: t('comments'), count: commentsNew ? String(commentsNew) : undefined, enabled: true },
   ];
 

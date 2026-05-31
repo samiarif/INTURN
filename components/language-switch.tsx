@@ -28,7 +28,7 @@ export function LanguageSwitch() {
             : 'text-[var(--ink-3)]',
         )}
       >
-        FR
+        {'FR'}
       </button>
       <button
         type="button"
@@ -40,7 +40,7 @@ export function LanguageSwitch() {
             : 'text-[var(--ink-3)]',
         )}
       >
-        EN
+        {'EN'}
       </button>
     </div>
   );

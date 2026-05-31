@@ -155,7 +155,7 @@ export function ProjectSupervisors({
                         {roleLabel[c.role]}
                       </span>
                     </span>
-                    {isBusy ? <span className="text-[11px] text-[var(--ink-4)]">…</span> : null}
+                    {isBusy ? <span className="text-[11px] text-[var(--ink-4)]">{'…'}</span> : null}
                   </button>
                 </li>
               );

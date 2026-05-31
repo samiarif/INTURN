@@ -269,7 +269,7 @@ export function AddTaskModal({ workspaceId, initialStatus, initialTask, onClose 
                   fontFamily: 'var(--font-mono)',
                 }}
               >
-                ✦ {t('aiPanelTitle')}
+                {t('aiPanelHead', { label: t('aiPanelTitle') })}
               </div>
               <button
                 type="button"

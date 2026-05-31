@@ -3,9 +3,11 @@ import { redirect } from 'next/navigation';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { isDevAuthBypassed } from '@/lib/dev-auth';
+import { getTranslations } from 'next-intl/server';
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
   if (isDevAuthBypassed()) redirect('/dev/login');
+  const t = await getTranslations('auth');
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg)]">
       <header className="h-14 flex items-center justify-between px-6 border-b border-[var(--border-color)] bg-[var(--surface)]">
@@ -18,10 +20,10 @@ export default function SignUpPage() {
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <h1 className="text-display font-[family-name:var(--font-display)] text-center mb-2">
-            Create your Inturn account
+            {t('signUpTitle')}
           </h1>
           <p className="text-body text-[var(--ink-3)] text-center mb-8">
-            One profile. Apply once. Work in dedicated workspaces.
+            {t('signUpSubtitle')}
           </p>
           <SignUp
             appearance={{

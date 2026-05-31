@@ -28,6 +28,20 @@ export function IssueRecordButton({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{ token: string } | null>(null);
 
+  // Map the server action's machine error codes to localized copy. Known,
+  // user-meaningful codes get a specific message; everything else (and the
+  // shouldn't-happen states) funnels to a generic line.
+  function mapError(code: string): string {
+    switch (code) {
+      case 'forbidden':
+        return t('errorForbidden');
+      case 'review_too_short':
+        return t('minReviewError');
+      default:
+        return t('errorGeneric');
+    }
+  }
+
   function submit() {
     setError(null);
     if (review.trim().length < 40) {
@@ -41,7 +55,7 @@ export function IssueRecordButton({
         rating,
       });
       if (!res.ok) {
-        setError(res.error);
+        setError(mapError(res.error));
         return;
       }
       setSuccess({ token: res.shareToken });
@@ -94,7 +108,7 @@ export function IssueRecordButton({
       >
         {success ? (
           <div style={{ textAlign: 'center', padding: '12px 0' }}>
-            <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>{'✓'}</div>
             <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, color: 'var(--ink)' }}>
               {t('successTitle')}
             </h3>
@@ -105,7 +119,7 @@ export function IssueRecordButton({
               className="rec-btn rec-btn-primary"
               style={{ textDecoration: 'none', display: 'inline-flex' }}
             >
-              {t('successCta')} ↗
+              {t('successCta')} {'↗'}
             </Link>
           </div>
         ) : (
@@ -140,7 +154,7 @@ export function IssueRecordButton({
                   className="rec-issue-textarea"
                 />
                 <p style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>
-                  {review.length}/40 min
+                  {t('charCount', { count: review.length })}
                 </p>
               </div>
 
@@ -167,7 +181,7 @@ export function IssueRecordButton({
                       className={`rec-issue-star ${rating !== null && n <= rating ? 'active' : ''}`}
                       onClick={() => setRating(rating === n ? null : n)}
                     >
-                      ★
+                      {'★'}
                     </button>
                   ))}
                 </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ArrowUp } from 'lucide-react';
 import type { Task } from '@/db/schema';
 import { TaskCardMenu } from './task-card-menu';
@@ -23,6 +23,12 @@ const COLUMNS: Array<{ key: SortKey | 'phase' | 'status' | 'priority'; tk: strin
 
 export function TasksListView({ tasks, view }: Props) {
   const t = useTranslations('workspace.tasksBoard.list');
+  // Status/priority enums are stored verbatim (hyphenated, e.g. 'in-progress').
+  // Reuse the card-menu label maps rather than duplicating them — keys match
+  // the DB enum values 1:1, so the stored value indexes the map directly.
+  const tStatus = useTranslations('workspace.tasksBoard.cardMenu.status');
+  const tPriority = useTranslations('workspace.tasksBoard.cardMenu.priority');
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -51,7 +57,7 @@ export function TasksListView({ tasks, view }: Props) {
     const days = Math.floor(diff / 86400_000);
     if (days < 1) return t('relativeToday');
     if (days < 7) return t('relativeDays', { n: days });
-    return d.toLocaleDateString();
+    return d.toLocaleDateString(locale);
   }
 
   return (
@@ -81,7 +87,7 @@ export function TasksListView({ tasks, view }: Props) {
                 </th>
               );
             })}
-            <th scope="col" aria-label="actions" />
+            <th scope="col" aria-label={t('actionsAria')} />
           </tr>
         </thead>
         <tbody>
@@ -91,10 +97,10 @@ export function TasksListView({ tasks, view }: Props) {
                 {tk.tag && <span className="tb-card-tag" style={{ marginRight: 8 }}>{tk.tag}</span>}
                 {tk.title}
               </td>
-              <td style={{ padding: 8 }}>{tk.status ?? 'todo'}</td>
+              <td style={{ padding: 8 }}>{tStatus(tk.status ?? 'todo')}</td>
               <td style={{ padding: 8 }}>{phaseOf(tk)}</td>
               <td style={{ padding: 8 }}>{tk.dueDate ?? '—'}</td>
-              <td style={{ padding: 8 }}>{tk.priority ?? 'medium'}</td>
+              <td style={{ padding: 8 }}>{tPriority(tk.priority ?? 'medium')}</td>
               <td style={{ padding: 8 }}>{formatRelative(tk.createdAt)}</td>
               <td style={{ padding: 8, textAlign: 'right' }}>
                 <TaskCardMenu task={tk} view={view} />

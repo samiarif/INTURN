@@ -33,6 +33,20 @@ export function emailLayout({
   return { html, text };
 }
 
+/**
+ * Localized salutation, e.g. `Bonjour Lina,` / `Hi Lina,`. An empty or
+ * whitespace-only name (invited-but-not-onboarded recipients have no name yet)
+ * yields a name-less greeting — `Bonjour,` / `Hi there,` — so a French reader
+ * never sees an English fallback word like "Supervisor" or "there" injected
+ * into an otherwise-localized email. The name is HTML-escaped here, so callers
+ * pass the raw name.
+ */
+export function greeting(name: string, locale: 'fr' | 'en'): string {
+  const clean = name.trim();
+  if (locale === 'fr') return clean ? `Bonjour ${escapeHtml(clean)},` : 'Bonjour,';
+  return clean ? `Hi ${escapeHtml(clean)},` : 'Hi there,';
+}
+
 export function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] ?? c),

@@ -77,7 +77,7 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
         <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{tUni('snapshotTitle')}</h2>
         {snapshot ? (
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[var(--ink-2)]">
-            <span><b>{snapshot.companyName}</b> · {snapshot.internshipTitle}</span>
+            <span><b>{snapshot.companyName}</b> {'·'} {snapshot.internshipTitle}</span>
             {snapshot.phaseCount > 0 && (
               <StatusPill tone="info">
                 {tUni('phaseOf', { current: snapshot.currentPhaseIndex + 1, total: snapshot.phaseCount })}
@@ -101,7 +101,7 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
             <StatusPill tone={toneFor(report.status)}>{statusLabels[report.status]}</StatusPill>
-            <span className="font-mono text-caption text-[var(--ink-3)]">v{report.version}</span>
+            <span className="font-mono text-caption text-[var(--ink-3)]">{`v${report.version}`}</span>
           </div>
 
           {/* Role-gated review bar — only when awaiting review. */}
@@ -117,6 +117,7 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
                 cancel: t('review.cancel'),
                 feedbackPlaceholder: t('review.feedbackPlaceholder'),
                 sending: t('review.sending'),
+                errorGeneric: t('review.errorGeneric'),
               }}
             />
           )}

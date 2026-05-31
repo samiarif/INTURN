@@ -119,8 +119,12 @@ async function onApplicationCreated(event: DispatchInput): Promise<void> {
     .from(users)
     .where(inArray(users.id, supervisorIds));
 
+  // Real applicant name, possibly empty (invited-but-not-onboarded applicants
+  // have no name yet). Keep it RAW in `metadata` so the bell can localize the
+  // empty case at the recipient's render-time locale; the English fallback only
+  // lives where English is correct: the stored `body` (English-only by design).
   const applicantName =
-    `${row.applicant.firstName ?? ''} ${row.applicant.lastName ?? ''}`.trim() || 'Someone';
+    `${row.applicant.firstName ?? ''} ${row.applicant.lastName ?? ''}`.trim();
 
   for (const sup of supervisors) {
     const prefs = prefsFor(sup);
@@ -129,18 +133,25 @@ async function onApplicationCreated(event: DispatchInput): Promise<void> {
       await db.insert(notifications).values({
         recipientId: sup.id,
         type: 'application.received',
-        body: `${applicantName} applied to ${row.internship.title}`,
+        body: `${applicantName || 'Someone'} applied to ${row.internship.title}`,
         href: row.project
           ? `/company/projects/${row.project.id}/applications/${row.app.id}`
           : `/company/applications/${row.app.id}`,
-        metadata: { applicationId: row.app.id, internshipId: row.internship.id },
+        metadata: {
+          applicationId: row.app.id,
+          internshipId: row.internship.id,
+          applicantName,
+          internshipTitle: row.internship.title,
+        },
       });
     }
 
     if (prefs.notifyEmail) {
       const locale = await localeFor(sup.id);
       const tpl = applicationReceivedTemplate({
-        supervisorName: sup.firstName ?? 'Supervisor',
+        // Pass raw names; the template localizes empty fallbacks (FR emails must
+        // not say "Bonjour Supervisor," or "… Someone vient de postuler").
+        supervisorName: sup.firstName ?? '',
         internshipTitle: row.internship.title,
         applicantName,
         applicationId: row.app.id,
@@ -188,8 +199,9 @@ async function notifyApplicant(
   if (!row) return;
 
   const note = row.app.decisionNote ?? null;
+  // Raw name (possibly empty); the email template localizes the greeting.
   const applicantName =
-    `${row.applicant.firstName ?? ''} ${row.applicant.lastName ?? ''}`.trim() || 'there';
+    `${row.applicant.firstName ?? ''} ${row.applicant.lastName ?? ''}`.trim();
   const prefs = prefsFor(row.applicant);
 
   if (prefs.notifyInApp) {
@@ -198,7 +210,12 @@ async function notifyApplicant(
       type: 'application.status',
       body: `Your application to ${row.internship.title} was ${status}`,
       href: `/intern/applications/${row.app.id}`,
-      metadata: { applicationId: row.app.id, internshipId: row.internship.id, to: status },
+      metadata: {
+        applicationId: row.app.id,
+        internshipId: row.internship.id,
+        to: status,
+        internshipTitle: row.internship.title,
+      },
     });
   }
 
@@ -259,14 +276,14 @@ async function onCheckinDue(event: DispatchInput): Promise<void> {
       type: 'checkin.due',
       body: `Weekly check-in due for ${row.internship.title}`,
       href: `/intern/workspaces/${row.workspace.id}/check-in`,
-      metadata: { workspaceId: row.workspace.id },
+      metadata: { workspaceId: row.workspace.id, internshipTitle: row.internship.title },
     });
   }
 
   if (prefs.notifyEmail) {
     const locale = await localeFor(row.intern.id);
     const tpl = checkInReminderTemplate({
-      internName: row.intern.firstName ?? 'there',
+      internName: row.intern.firstName ?? '',
       workspaceTitle: row.internship.title,
       workspaceId: row.workspace.id,
       locale,
@@ -293,8 +310,10 @@ async function onAcademicReportSubmitted(event: DispatchInput): Promise<void> {
   if (!row) return;
 
   const version = (event.metadata?.version as number | undefined) ?? row.report.version;
+  // Raw student name (possibly empty); the bell localizes the empty case at
+  // render time. English fallback stays only on the English-only stored `body`.
   const studentName =
-    `${row.student.firstName ?? ''} ${row.student.lastName ?? ''}`.trim() || 'A student';
+    `${row.student.firstName ?? ''} ${row.student.lastName ?? ''}`.trim();
 
   // Recipient = the student's assigned encadrant; fall back to the head (org
   // owner) when unassigned or the encadrant is no longer an active coordinator.
@@ -350,16 +369,23 @@ async function onAcademicReportSubmitted(event: DispatchInput): Promise<void> {
       await db.insert(notifications).values({
         recipientId: coord.id,
         type: 'academicReport.submitted',
-        body: `${studentName} submitted their report (v${version})`,
+        body: `${studentName || 'A student'} submitted their report (v${version})`,
         href: `/university/students/${row.report.studentUserId}`,
-        metadata: { reportId: row.report.id, studentUserId: row.report.studentUserId, version },
+        // `studentName` is carried in metadata so the notification bell can
+        // render a localized line (the stored `body` is English-only).
+        metadata: {
+          reportId: row.report.id,
+          studentUserId: row.report.studentUserId,
+          version,
+          studentName,
+        },
       });
     }
 
     if (prefs.notifyEmail) {
       const locale = await localeFor(coord.id);
       const tpl = academicReportSubmittedTemplate({
-        coordinatorName: coord.firstName ?? 'Coordinator',
+        coordinatorName: coord.firstName ?? '',
         studentName,
         version,
         studentUserId: row.report.studentUserId,
@@ -390,7 +416,8 @@ async function onAcademicReportReviewed(
     .limit(1);
   if (!row) return;
 
-  const studentName = row.student.firstName ?? 'there';
+  // Raw first name (possibly empty); the email template localizes the greeting.
+  const studentName = row.student.firstName ?? '';
   const feedback = (event.metadata?.note as string | undefined) ?? undefined;
   const prefs = prefsFor(row.student);
 

@@ -14,12 +14,13 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; token: string }>;
 }): Promise<Metadata> {
-  const { token } = await params;
+  const { token, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'deliverables.public' });
   const deliverable = await getDeliverableByShareToken(token);
-  if (!deliverable) return { title: 'Inturn — Deliverable' };
+  if (!deliverable) return { title: `Inturn — ${t('eyebrow')}` };
   return {
     title: `${deliverable.title} · Inturn`,
-    description: 'Shared deliverable on Inturn',
+    description: t('metaDescription'),
     robots: { index: false, follow: false },
   };
 }
@@ -138,7 +139,7 @@ export default async function PublicDeliverablePage({
                   )}
                 </span>
                 <span className={`rec-badge rec-badge-${v.status}`}>{t(`status.${v.status}`)}</span>
-                <span className="rec-label">{t('submitted')}: {formatDate(v.submittedAt, locale)}</span>
+                <span className="rec-label">{t('submittedValue', { date: formatDate(v.submittedAt, locale) })}</span>
               </li>
             ))}
           </ul>

@@ -14,11 +14,12 @@ export default async function Page({
   const filter = (sp.status ?? 'open') as 'open' | 'reviewed' | 'resolved' | 'all';
   const statuses =
     filter === 'all' ? (['open', 'reviewed', 'resolved'] as const) : ([filter] as const);
-  const [rows, t, tStatus, tReason, locale] = await Promise.all([
+  const [rows, t, tStatus, tReason, tType, locale] = await Promise.all([
     listReportsByStatus([...statuses]),
     getTranslations('admin.reports'),
     getTranslations('admin.status'),
     getTranslations('admin.reasons'),
+    getTranslations('admin.subjectType'),
     getLocale(),
   ]);
 
@@ -60,7 +61,7 @@ export default async function Page({
                         {tStatus(report.status as 'open' | 'reviewed' | 'resolved')}
                       </StatusPill>
                       <span className="text-eyebrow uppercase font-mono text-[var(--ink-3)]">
-                        {report.subjectType} ·{' '}
+                        {tType(report.subjectType)} {t('metaSep')}{' '}
                         {tReason(
                           report.reason as
                             | 'scam' | 'misleading' | 'inappropriate' | 'spam' | 'unsafe' | 'other',
@@ -69,7 +70,7 @@ export default async function Page({
                     </div>
                     <p className="text-body text-[var(--ink)] line-clamp-2 mb-1">{report.body}</p>
                     <p className="text-caption text-[var(--ink-3)]">
-                      {t('reportedBy', { email: reporter?.email ?? t('deletedUser') })} ·{' '}
+                      {t('reportedBy', { email: reporter?.email ?? t('deletedUser') })} {t('metaSep')}{' '}
                       {new Date(report.createdAt).toLocaleString(
                         locale === 'fr' ? 'fr-FR' : 'en-US',
                       )}

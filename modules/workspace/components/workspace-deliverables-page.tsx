@@ -97,7 +97,7 @@ async function DelivList({
         <div className="dv-list-foot">
           <div className="label">
             <span>{t('progressLabel')}</span>
-            <span style={{ marginLeft: 'auto', color: 'var(--ink-2)' }}>{progressPct}%</span>
+            <span style={{ marginLeft: 'auto', color: 'var(--ink-2)' }}>{t('progressPct', { pct: progressPct })}</span>
           </div>
           <div className="bar">
             <div className="fill" style={{ width: `${progressPct}%` }} />

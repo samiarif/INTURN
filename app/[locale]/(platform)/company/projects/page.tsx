@@ -190,7 +190,7 @@ export default async function Page({
                 {statusFilter === 'archived' ? t('showActive') : t('archived')}
               </Link>
               <Link href="/company/projects/new" className="pi-head-btn">
-                <span aria-hidden>+</span> {t('addProject')}
+                <span aria-hidden>{t('addIcon')}</span> {t('addProject')}
               </Link>
             </div>
           </div>
@@ -276,7 +276,7 @@ export default async function Page({
         </form>
 
         <Link href="/company/projects/new" className="pi-head-btn">
-          <span aria-hidden>+</span> {t('addProject')}
+          <span aria-hidden>{t('addIcon')}</span> {t('addProject')}
         </Link>
       </div>
 
@@ -297,7 +297,7 @@ export default async function Page({
               <div className="pi-card-progress">
                 <div className="row">
                   <span>{t('cardProgress')}</span>
-                  <b>{progress}%</b>
+                  <b>{t('cardPercent', { progress })}</b>
                 </div>
                 <div className="bar">
                   <div
@@ -314,9 +314,7 @@ export default async function Page({
                     aria-hidden
                   />
                   <span>
-                    <b>
-                      {rollup.done}/{rollup.total}
-                    </b>{' '}
+                    <b>{t('cardCount', { done: rollup.done, total: rollup.total })}</b>{' '}
                     {t('cardTasks')}
                   </span>
                 </span>
@@ -333,7 +331,7 @@ export default async function Page({
 
           {/* "+ New project" dashed CTA card — always last in the grid. */}
           <Link href="/company/projects/new" className="pi-card add" aria-label={t('newProject')}>
-            <span className="plus-big" aria-hidden>+</span>
+            <span className="plus-big" aria-hidden>{t('addIcon')}</span>
             <span>{t('newProject')}</span>
           </Link>
         </div>
@@ -358,7 +356,7 @@ export default async function Page({
               <div className="pi-list-progress">
                 <div className="row">
                   <span>{t('cardProgress')}</span>
-                  <b>{progress}%</b>
+                  <b>{t('cardPercent', { progress })}</b>
                 </div>
                 <div className="bar">
                   <div
@@ -368,9 +366,7 @@ export default async function Page({
                 </div>
               </div>
               <span className="pi-list-tasks">
-                <b>
-                  {rollup.done}/{rollup.total}
-                </b>{' '}
+                <b>{t('cardCount', { done: rollup.done, total: rollup.total })}</b>{' '}
                 {t('cardTasks')}
               </span>
               <span className="pi-list-tail">
@@ -386,7 +382,7 @@ export default async function Page({
 
           {/* "+ New project" dashed row — parity with the grid's add-card. */}
           <Link href="/company/projects/new" className="pi-list-row add" aria-label={t('newProject')}>
-            <span className="pi-list-plus" aria-hidden>+</span>
+            <span className="pi-list-plus" aria-hidden>{t('addIcon')}</span>
             <span className="pi-list-name">{t('newProject')}</span>
           </Link>
         </div>

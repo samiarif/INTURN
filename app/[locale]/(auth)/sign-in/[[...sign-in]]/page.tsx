@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { LanguageSwitch } from '@/components/language-switch';
 import { isDevAuthBypassed } from '@/lib/dev-auth';
+import { getTranslations } from 'next-intl/server';
 
 /**
  * Safe relative-path allowlist for redirect_url after sign-in.
@@ -28,6 +29,8 @@ export default async function SignInPage({
   const safeRedirectUrl =
     rawRedirect && SAFE_REDIRECT_PATTERN.test(rawRedirect) ? rawRedirect : undefined;
 
+  const t = await getTranslations('auth');
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg)]">
       <header className="h-14 flex items-center justify-between px-6 border-b border-[var(--border-color)] bg-[var(--surface)]">
@@ -40,10 +43,10 @@ export default async function SignInPage({
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <h1 className="text-display font-[family-name:var(--font-display)] text-center mb-2">
-            Welcome back
+            {t('signInTitle')}
           </h1>
           <p className="text-body text-[var(--ink-3)] text-center mb-8">
-            Sign in to your workspace.
+            {t('signInSubtitle')}
           </p>
           <SignIn
             {...(safeRedirectUrl

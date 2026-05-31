@@ -23,6 +23,25 @@ describe('academicReportSubmittedTemplate', () => {
     expect(tpl.html).toContain('&lt;x&gt;');
     expect(tpl.html).not.toContain('<x>');
   });
+
+  it('localizes empty student + coordinator names (FR) — no English leak', () => {
+    const tpl = academicReportSubmittedTemplate({
+      coordinatorName: '', studentName: '', version: 1, studentUserId: 'stu1', locale: 'fr',
+    });
+    expect(tpl.html).toContain('Un·e étudiant·e');
+    expect(tpl.html).toContain('Bonjour,');
+    expect(tpl.subject).toContain('Un·e étudiant·e');
+    expect(tpl.html).not.toContain('A student');
+    expect(tpl.html).not.toContain('Coordinator');
+  });
+
+  it('localizes empty names (EN) — "A student" + "Hi there,"', () => {
+    const tpl = academicReportSubmittedTemplate({
+      coordinatorName: '', studentName: '', version: 1, studentUserId: 'stu1', locale: 'en',
+    });
+    expect(tpl.html).toContain('A student');
+    expect(tpl.html).toContain('Hi there,');
+  });
 });
 
 describe('academicReportReviewedTemplate', () => {
@@ -46,5 +65,16 @@ describe('academicReportReviewedTemplate', () => {
     const tpl = academicReportReviewedTemplate({ ...base, locale: 'fr' });
     expect(tpl.html.toLowerCase()).toContain('approuvé');
     expect(tpl.html).toContain('/intern/university');
+  });
+
+  it('localizes an empty student name in the greeting (FR → "Bonjour,")', () => {
+    const tpl = academicReportReviewedTemplate({ studentName: '', outcome: 'approved', locale: 'fr' });
+    expect(tpl.html).toContain('Bonjour,');
+    expect(tpl.html).not.toContain('there');
+  });
+
+  it('localizes an empty student name in the greeting (EN → "Hi there,")', () => {
+    const tpl = academicReportReviewedTemplate({ studentName: '', outcome: 'approved', locale: 'en' });
+    expect(tpl.html).toContain('Hi there,');
   });
 });

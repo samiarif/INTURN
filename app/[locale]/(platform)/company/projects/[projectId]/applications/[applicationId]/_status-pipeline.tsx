@@ -10,12 +10,15 @@ import {
   type ApplicationStatus,
 } from '@/modules/applications/state-machine';
 
-const STEPS: Array<{ value: ApplicationStatus; label: string }> = [
-  { value: 'new', label: 'New' },
-  { value: 'reviewed', label: 'Reviewed' },
-  { value: 'shortlisted', label: 'Shortlisted' },
-  { value: 'interview', label: 'Interview' },
-  { value: 'accepted', label: 'Accepted' },
+// Ordered pipeline steps. Labels are injected via the `labels.steps` prop so
+// the rendered copy stays localized (the parent sources it from the shared
+// `applications.status` namespace).
+const STEPS: Array<{ value: ApplicationStatus }> = [
+  { value: 'new' },
+  { value: 'reviewed' },
+  { value: 'shortlisted' },
+  { value: 'interview' },
+  { value: 'accepted' },
 ];
 
 export type StatusPipelineLabels = {
@@ -25,6 +28,7 @@ export type StatusPipelineLabels = {
   confirmReject: string;
   confirmAccept: string;
   cancel: string;
+  steps: Record<ApplicationStatus, string>;
 };
 
 export function StatusPipeline({
@@ -87,7 +91,7 @@ export function StatusPipeline({
                       : 'px-3 py-1.5 rounded-full text-label bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] opacity-50 cursor-not-allowed'
               }
             >
-              {step.label}
+              {labels.steps[step.value]}
             </button>
           );
         })}

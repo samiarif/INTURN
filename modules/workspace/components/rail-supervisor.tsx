@@ -2,14 +2,15 @@ import type { WorkspaceOverviewData } from '../queries';
 import { ScheduleCheckInButton } from './schedule-check-in';
 import { IssueRecordButton } from '@/modules/records/components/issue-record-button';
 import { findActiveRecordByWorkspace } from '@/modules/records/queries';
-import { getLocale } from 'next-intl/server';
-import { type FormatLocale } from '@/lib/format-time';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { formatDateShort, type FormatLocale } from '@/lib/format-time';
 import { getPulse } from '@/modules/pulse/engine';
 import { PulseCard } from '@/modules/pulse/components/pulse-card';
 import { RefreshPulseButton } from '@/modules/pulse/components/refresh-pulse-button';
 
 export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) {
   const locale = (await getLocale()) as FormatLocale;
+  const t = await getTranslations('workspace.supervisorRail');
   const [activeRecord, pulse] = await Promise.all([
     findActiveRecordByWorkspace(data.workspace.id),
     getPulse(data.workspace.id, locale),
@@ -29,10 +30,7 @@ export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) 
 
   // Today's date for the "This week · 30 May" eyebrow
   const today = new Date();
-  const thisWeekLabel = `This week · ${today.toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'short',
-  })}`;
+  const thisWeekLabel = t('thisWeekLabel', { date: formatDateShort(today, locale) });
 
   return (
     <>
@@ -47,18 +45,15 @@ export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) 
       )}
 
       <div className="ws-rail-cta">
-        <h4>Need a sync?</h4>
-        <p>Schedule a check-in. Inturn generates the link and adds it to the timeline.</p>
+        <h4>{t('needSyncTitle')}</h4>
+        <p>{t('needSyncBody')}</p>
         <ScheduleCheckInButton workspaceId={data.workspace.id} />
       </div>
 
       {hasSubmittedDeliverables && (
         <div className="ws-rail-cta">
-          <h4>Wrap-up</h4>
-          <p>
-            Issue the end-of-internship record. Snapshots deliverables, your review, and a
-            rating. Generates a shareable PDF for the intern.
-          </p>
+          <h4>{t('wrapUpTitle')}</h4>
+          <p>{t('wrapUpBody')}</p>
           <IssueRecordButton
             workspaceId={data.workspace.id}
             hasActiveRecord={Boolean(activeRecord)}
@@ -74,20 +69,20 @@ export async function RailSupervisor({ data }: { data: WorkspaceOverviewData }) 
           {pendingReviews.length === 0 && tasksInReview.length === 0 ? (
             <li>
               <span className="dot" />
-              Nothing waiting on you
+              {t('nothingWaiting')}
             </li>
           ) : (
             <>
               {pendingReviews.map((d) => (
                 <li key={d.id} className="urgent">
                   <span className="dot" />
-                  Review {d.title}
+                  {t('review', { title: d.title })}
                 </li>
               ))}
-              {tasksInReview.map((t) => (
-                <li key={t.id} className="next">
+              {tasksInReview.map((task) => (
+                <li key={task.id} className="next">
                   <span className="dot" />
-                  Annotate {t.title}
+                  {t('annotate', { title: task.title })}
                 </li>
               ))}
             </>

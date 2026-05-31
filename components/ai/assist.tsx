@@ -159,7 +159,7 @@ export type SuggestDraft = {
  * whether there's still `room` to add more (respecting the form's limits).
  */
 export function SuggestDraftPanel({
-  title = 'Suggestions',
+  title,
   drafts,
   used,
   canAddMore,
@@ -172,7 +172,7 @@ export function SuggestDraftPanel({
   dismissLabel,
 }: {
   /** Per-assist heading — the host form passes a localized string. */
-  title?: string;
+  title: string;
   drafts: SuggestDraft[];
   /** Parallel to `drafts`: which have been accepted. */
   used: boolean[];

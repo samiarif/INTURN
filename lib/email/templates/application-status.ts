@@ -1,4 +1,4 @@
-import { baseUrl, emailLayout, escapeHtml } from './_layout';
+import { baseUrl, emailLayout, escapeHtml, greeting } from './_layout';
 
 const STATUS_FR: Record<string, string> = {
   reviewed: 'examinée',
@@ -43,8 +43,8 @@ export function applicationStatusTemplate({
     ? `Votre candidature à ${internshipTitle} a été ${statusLabel}`
     : `Your application to ${internshipTitle} was ${statusLabel}`;
   const intro = fr
-    ? `<p>Bonjour ${escapeHtml(applicantName)},</p><p>L'entreprise a mis à jour votre candidature à <strong>${escapeHtml(internshipTitle)}</strong>. Statut : <strong>${statusLabel}</strong>.</p>`
-    : `<p>Hi ${escapeHtml(applicantName)},</p><p>The company updated your application to <strong>${escapeHtml(internshipTitle)}</strong>. Status: <strong>${statusLabel}</strong>.</p>`;
+    ? `<p>${greeting(applicantName, locale)}</p><p>L'entreprise a mis à jour votre candidature à <strong>${escapeHtml(internshipTitle)}</strong>. Statut : <strong>${statusLabel}</strong>.</p>`
+    : `<p>${greeting(applicantName, locale)}</p><p>The company updated your application to <strong>${escapeHtml(internshipTitle)}</strong>. Status: <strong>${statusLabel}</strong>.</p>`;
 
   // Optional company→candidate feedback. Quoted block, rendered ONLY when the
   // company attached a non-empty note; absent otherwise (graceful, unchanged).

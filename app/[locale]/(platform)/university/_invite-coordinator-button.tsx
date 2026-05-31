@@ -14,6 +14,12 @@ export function InviteCoordinatorButton() {
   const [pending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
+  // Map the action's machine error codes to localized copy; unknown/shouldn't-
+  // happen states funnel to a generic line (the established mapError pattern).
+  function mapError(code: string): string {
+    return code === 'rate_limited' ? t('errorRateLimited') : t('errorGeneric');
+  }
+
   function submit() {
     setMsg(null);
     startTransition(async () => {
@@ -23,7 +29,7 @@ export function InviteCoordinatorButton() {
         setEmail('');
         router.refresh();
       } else {
-        setMsg({ text: res.error, ok: false });
+        setMsg({ text: mapError(res.error), ok: false });
       }
     });
   }

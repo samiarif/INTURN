@@ -266,12 +266,16 @@ function Section({
   countLabel: string;
   children: React.ReactNode;
 }) {
+  // The count nouns (membres/stagiaires · members/interns) all pluralize with a
+  // trailing "s", so drop it for the singular to avoid "1 membres". Revisit if
+  // this dictionary migrates to next-intl plural rules.
+  const label = count === 1 ? countLabel.replace(/s$/, '') : countLabel;
   return (
     <section className="flex flex-col gap-2">
       <h2 className="flex items-baseline gap-2 text-sm font-semibold text-foreground">
         {title}
         <span className="text-xs font-normal text-muted-foreground">
-          {count} {countLabel}
+          {count} {label}
         </span>
       </h2>
       <div className="overflow-hidden rounded-xl border border-border bg-card">{children}</div>

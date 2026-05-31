@@ -28,89 +28,6 @@ function timeAgo(
   return t('daysAgo', { n: days });
 }
 
-function actorName(actorId: string | null, actors: ActorLookup): string {
-  if (!actorId) return 'Someone';
-  const a = actors.get(actorId);
-  if (!a) return 'Someone';
-  return a.firstName ?? a.lastName ?? 'Someone';
-}
-
-function describe(event: Event, actors: ActorLookup, locale: string): React.ReactNode {
-  const meta = (event.metadata ?? {}) as Record<string, unknown>;
-  const who = actorName(event.actorId, actors);
-  switch (event.type) {
-    case 'deliverable.submitted': {
-      const v = meta.version ? ` (v${String(meta.version)})` : '';
-      return (
-        <>
-          <b>{who}</b> submitted <b>{String(meta.name ?? 'a deliverable')}</b>
-          {v}
-        </>
-      );
-    }
-    case 'deliverable.approved':
-      return (
-        <>
-          <b>{who}</b> approved <b>{String(meta.name ?? 'a deliverable')}</b>
-        </>
-      );
-    case 'deliverable.revision.requested':
-      return (
-        <>
-          <b>{who}</b> requested changes on <b>{String(meta.name ?? 'a deliverable')}</b>
-          {meta.note ? ` — "${String(meta.note)}"` : ''}
-        </>
-      );
-    case 'comment.added': {
-      const scopeLabel =
-        meta.scope === 'task'
-          ? 'a task'
-          : meta.scope === 'deliverable'
-            ? 'a deliverable'
-            : 'the workspace';
-      return (
-        <>
-          <b>{who}</b> commented on <b>{scopeLabel}</b>
-          {meta.text ? ` — "${String(meta.text)}"` : ''}
-        </>
-      );
-    }
-    case 'task.moved':
-      return (
-        <>
-          <b>{who}</b> moved <span className="tag">{String(meta.tag ?? '')}</span> to{' '}
-          <b>{String(meta.to ?? '')}</b>
-        </>
-      );
-    case 'system.checkin.scheduled': {
-      const when = meta.scheduledAt
-        ? new Date(String(meta.scheduledAt)).toLocaleString(locale, {
-            weekday: 'short',
-            day: 'numeric',
-            month: 'short',
-            hour: 'numeric',
-            minute: '2-digit',
-          })
-        : meta.for
-          ? String(meta.for)
-          : '';
-      return (
-        <>
-          <b>{who}</b> scheduled a check-in {when ? `for ${when}` : ''}
-        </>
-      );
-    }
-    case 'checkin.submitted':
-      return (
-        <>
-          <b>{who}</b> sent the weekly check-in
-        </>
-      );
-    default:
-      return <span>{event.type}</span>;
-  }
-}
-
 export async function ActivityFeed({
   events,
   actors,
@@ -122,16 +39,104 @@ export async function ActivityFeed({
     getTranslations('workspace.activity'),
     getLocale(),
   ]);
-  // "Recent activity" header, "Full timeline →" link, and the per-event
-  // copy inside `describe()` (verbs like "submitted", "approved",
-  // "commented on", scope words, etc.) are not in the plan namespace and
-  // remain English. Empty-state copy uses `activity.empty`.
+
+  // Bold chunks for the rich per-event sentences. The verbs, scope words,
+  // and word order are translator-controlled via `workspace.activity.event.*`
+  // — this is the unified event-activity humanizer (replaces the old English
+  // describe()). Names, deliverable titles, and tags stay verbatim (data).
+  const bold = (chunks: React.ReactNode) => <b>{chunks}</b>;
+
+  function actorName(actorId: string | null): string {
+    if (!actorId) return t('someone');
+    const a = actors.get(actorId);
+    if (!a) return t('someone');
+    return a.firstName ?? a.lastName ?? t('someone');
+  }
+
+  function describe(event: Event): React.ReactNode {
+    const meta = (event.metadata ?? {}) as Record<string, unknown>;
+    const who = actorName(event.actorId);
+    switch (event.type) {
+      case 'deliverable.submitted': {
+        const version = meta.version ? ` (v${String(meta.version)})` : '';
+        return t.rich('event.submitted', {
+          b: bold,
+          who,
+          name: String(meta.name ?? t('aDeliverable')),
+          version,
+        });
+      }
+      case 'deliverable.approved':
+        return t.rich('event.approved', {
+          b: bold,
+          who,
+          name: String(meta.name ?? t('aDeliverable')),
+        });
+      case 'deliverable.revision.requested':
+        return (
+          <>
+            {t.rich('event.revisionRequested', {
+              b: bold,
+              who,
+              name: String(meta.name ?? t('aDeliverable')),
+            })}
+            {meta.note ? t('event.note', { text: String(meta.note) }) : ''}
+          </>
+        );
+      case 'comment.added': {
+        const scope =
+          meta.scope === 'task'
+            ? t('scope.task')
+            : meta.scope === 'deliverable'
+              ? t('scope.deliverable')
+              : t('scope.workspace');
+        return (
+          <>
+            {t.rich('event.commented', { b: bold, who, scope })}
+            {meta.text ? t('event.note', { text: String(meta.text) }) : ''}
+          </>
+        );
+      }
+      case 'task.moved':
+        return t.rich('event.taskMoved', {
+          b: bold,
+          tag: (chunks) => <span className="tag">{chunks}</span>,
+          who,
+          tagText: String(meta.tag ?? ''),
+          to: String(meta.to ?? ''),
+        });
+      case 'system.checkin.scheduled': {
+        const when = meta.scheduledAt
+          ? new Date(String(meta.scheduledAt)).toLocaleString(locale, {
+              weekday: 'short',
+              day: 'numeric',
+              month: 'short',
+              hour: 'numeric',
+              minute: '2-digit',
+            })
+          : meta.for
+            ? String(meta.for)
+            : '';
+        return (
+          <>
+            {t.rich('event.checkinScheduled', { b: bold, who })}
+            {when ? t('event.checkinFor', { when }) : ''}
+          </>
+        );
+      }
+      case 'checkin.submitted':
+        return t.rich('event.checkinSubmitted', { b: bold, who });
+      default:
+        return <span>{event.type}</span>;
+    }
+  }
+
   return (
     <div className="ws-card">
       <div className="ws-card-head">
         <Activity size={16} strokeWidth={2.25} className="ws-hico" />
-        <h3>Recent activity</h3>
-        <a className="ws-link">Full timeline <ArrowRight size={13} strokeWidth={2.25} aria-hidden /></a>
+        <h3>{t('recentTitle')}</h3>
+        <a className="ws-link">{t('fullTimeline')} <ArrowRight size={13} strokeWidth={2.25} aria-hidden /></a>
       </div>
       <div className="ws-activity">
         {events.length === 0 ? (
@@ -144,7 +149,7 @@ export async function ActivityFeed({
                 <span className={`ws-act-bullet ${bullet}`}>
                   <i />
                 </span>
-                <span className="ws-act-text">{describe(e, actors, locale)}</span>
+                <span className="ws-act-text">{describe(e)}</span>
                 <span className="ws-act-time">{timeAgo(new Date(e.createdAt), t)}</span>
               </div>
             );

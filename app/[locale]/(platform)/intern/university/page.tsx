@@ -79,7 +79,7 @@ export default async function Page() {
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
             <StatusPill tone={toneFor(report.status)}>{statusLabels[report.status]}</StatusPill>
-            <span className="font-mono text-caption text-[var(--ink-3)]">v{report.version}</span>
+            <span className="font-mono text-caption text-[var(--ink-3)]">{`v${report.version}`}</span>
             {(report.status === 'draft' || report.status === 'revision-requested') && (
               <span className="ml-auto">
                 <ReportUploadZone
@@ -91,6 +91,8 @@ export default async function Page() {
                     cancel: t('upload.cancel'),
                     send: t('upload.send'),
                     sending: t('upload.sending'),
+                    errorRateLimited: t('upload.errorRateLimited'),
+                    errorGeneric: t('upload.errorGeneric'),
                   }}
                 />
               </span>

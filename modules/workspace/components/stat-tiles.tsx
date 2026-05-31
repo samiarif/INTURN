@@ -1,4 +1,5 @@
 import { TrendingUp } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import type { WorkspaceOverviewData } from '../queries';
 import { computeDaysRemaining } from '../queries';
 
@@ -19,7 +20,7 @@ function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
-export function StatTiles({
+export async function StatTiles({
   data,
   view,
   locale,
@@ -28,6 +29,7 @@ export function StatTiles({
   view: 'intern' | 'supervisor';
   locale: string;
 }) {
+  const t = await getTranslations('workspace.statTiles');
   const tasks = data.tasks;
   const openTasks = tasks.filter((t) => t.status !== 'done').length;
   const doneTasks = tasks.filter((t) => t.status === 'done').length;
@@ -50,61 +52,61 @@ export function StatTiles({
   // `Brand audit · 1 pending review` (supervisor). Fall back gracefully.
   const delivFoot = latestSubmitted
     ? view === 'intern'
-      ? `✓ ${truncate(latestSubmitted.title, 22)} · v${latestSubmitted.version} sent`
+      ? t('delivSent', { title: truncate(latestSubmitted.title, 22), version: latestSubmitted.version ?? 1 })
       : pendingReview > 0
-        ? `${pendingReview} pending review`
-        : `✓ ${truncate(latestSubmitted.title, 22)} reviewed`
+        ? t('delivPendingReview', { count: pendingReview })
+        : t('delivReviewed', { title: truncate(latestSubmitted.title, 22) })
     : view === 'intern'
-      ? 'Nothing submitted yet'
-      : 'Nothing pending';
+      ? t('delivNothingSubmitted')
+      : t('delivNothingPending');
 
   return (
     <div className="ws-stats">
       <div className="ws-stat">
-        <div className="ws-stat-label">Tasks</div>
+        <div className="ws-stat-label">{t('tasksLabel')}</div>
         <div className="ws-stat-value">
           <b>{openTasks}</b>
-          <small>of {tasks.length} open</small>
+          <small>{t('ofOpen', { total: tasks.length })}</small>
         </div>
         <div className="ws-stat-foot">
-          {doneTasks} done · {inReviewTasks} in review
+          {t('tasksFoot', { done: doneTasks, review: inReviewTasks })}
         </div>
       </div>
       <div className="ws-stat">
-        <div className="ws-stat-label">Deliverables</div>
+        <div className="ws-stat-label">{t('deliverablesLabel')}</div>
         <div className="ws-stat-value">
           <b>{submitted.length}</b>
-          <small>of {deliverables.length} submitted</small>
+          <small>{t('ofSubmitted', { total: deliverables.length })}</small>
         </div>
         <div className={`ws-stat-foot ${latestSubmitted ? 'good' : ''}`}>{delivFoot}</div>
       </div>
       <div className="ws-stat">
-        <div className="ws-stat-label">Days remaining</div>
+        <div className="ws-stat-label">{t('daysRemainingLabel')}</div>
         <div className="ws-stat-value">
           <b>{daysRemaining}</b>
-          <small>days</small>
+          <small>{t('daysUnit')}</small>
         </div>
         <div className="ws-stat-foot">
           {endDate
-            ? `Ends ${endDate.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' })}`
-            : '—'}
+            ? t('endsOn', { date: endDate.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' }) })
+            : t('emptyDash')}
         </div>
       </div>
       <div className="ws-stat">
         <div className="ws-stat-label">
-          {view === 'intern' ? 'Events this week' : 'Activity score'}
+          {view === 'intern' ? t('eventsThisWeekLabel') : t('activityScoreLabel')}
         </div>
         <div className="ws-stat-value">
           <b>{view === 'intern' ? eventsThisWeek : activityScore}</b>
-          <small>{view === 'intern' ? 'logged' : '/ 100'}</small>
+          <small>{view === 'intern' ? t('eventsUnit') : t('scoreUnit')}</small>
         </div>
         <div className="ws-stat-foot good">
           <TrendingUp size={12} strokeWidth={2.25} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 2 }} />{' '}
           {view === 'intern'
-            ? `${data.events.length} total this internship`
+            ? t('eventsTotal', { count: data.events.length })
             : activityScore >= 70
-              ? 'Above the floor of 70'
-              : 'Below floor — flag for nudge'}
+              ? t('aboveFloor')
+              : t('belowFloor')}
         </div>
       </div>
     </div>

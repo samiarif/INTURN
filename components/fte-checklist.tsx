@@ -149,7 +149,7 @@ export function FteChecklist({
                     : 'border-[var(--brand-700)] text-transparent')
                 }
               >
-                ✓
+                {'✓'}
               </span>
               <span
                 className={

@@ -75,7 +75,7 @@ export function ReportButton({ subjectType, subjectId }: Props) {
           >
             {success ? (
               <div style={{ textAlign: 'center', padding: '12px 0' }}>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>✓</div>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>{'✓'}</div>
                 <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: 'var(--ink)' }}>
                   {t('successTitle')}
                 </h3>
@@ -157,7 +157,7 @@ export function ReportButton({ subjectType, subjectId }: Props) {
                       }}
                     />
                     <p style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>
-                      {body.length}/20 min
+                      {t('charCount', { count: body.length })}
                     </p>
                   </div>
                   {error && <p style={{ fontSize: 13, color: 'var(--danger)', margin: 0 }}>{error}</p>}

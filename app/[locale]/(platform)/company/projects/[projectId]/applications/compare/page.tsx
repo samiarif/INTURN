@@ -34,6 +34,7 @@ export default async function Page({
   apps.sort((a, b) => idList.indexOf(a.application.id) - idList.indexOf(b.application.id));
 
   const t = await getTranslations('applications.compare');
+  const tStatus = await getTranslations('applications.status');
 
   // Match skills against the first application's internship (assumes all are
   // for the same internship; if not, skill matching falls back to no highlight).
@@ -72,11 +73,15 @@ export default async function Page({
               {applicant.firstName} {applicant.lastName}
             </h2>
             <div className="text-caption text-[var(--ink-3)] mb-3">
-              {profile?.university ?? '—'} · {profile?.yearOfStudy ?? '—'} · {profile?.fieldOfStudy ?? '—'}
+              {t('meta', {
+                university: profile?.university ?? '—',
+                year: profile?.yearOfStudy ?? '—',
+                field: profile?.fieldOfStudy ?? '—',
+              })}
             </div>
             <div className="mb-4">
               <StatusPill tone={toneForApplicationStatus(application.status)}>
-                {application.status}
+                {tStatus(application.status ?? 'new')}
               </StatusPill>
             </div>
             <div className="mb-4">

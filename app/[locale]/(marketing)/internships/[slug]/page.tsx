@@ -7,6 +7,12 @@ import { getTranslations } from 'next-intl/server';
 import { getInternshipWithOrgById } from '@/modules/internships/queries';
 import { getProfileWithUserByClerkId } from '@/modules/profiles/queries';
 import { ReportButton } from '@/modules/reports/components/report-button';
+import { localizeCompensation } from '@/lib/format-compensation';
+
+// locationType is a stored enum ('on-site' | 'virtual' | 'hybrid'). Guard the
+// dynamic t() lookup with the known set so a legacy/unknown value falls back to
+// the raw string instead of a missing-key warning (mirrors STATUS_KEYS).
+const LOCATION_TYPE_KEYS = new Set(['on-site', 'virtual', 'hybrid']);
 
 export async function generateMetadata({
   params,
@@ -14,13 +20,14 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'internshipDetail' });
   const row = await getInternshipWithOrgById(slug);
-  if (!row) return { title: 'Not found' };
+  if (!row) return { title: t('metaNotFound') };
   return {
     title: `${row.internship.title} — ${row.organization.name}`,
     description:
       row.internship.description?.slice(0, 160) ??
-      `Internship at ${row.organization.name}`,
+      t('metaFallbackDescription', { org: row.organization.name }),
     alternates: {
       canonical: locale === 'fr' ? `/internships/${slug}` : `/en/internships/${slug}`,
       languages: {
@@ -53,6 +60,7 @@ export default async function Page({
   }
 
   const t = await getTranslations({ locale, namespace: 'internshipDetail' });
+  const tc = await getTranslations({ locale, namespace: 'common' });
 
   // Apply CTA logic — derive what to link to based on auth state
   const { userId: clerkId } = await auth();
@@ -72,30 +80,34 @@ export default async function Page({
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
       <div className="font-mono text-eyebrow text-[var(--ink-3)] uppercase mb-2">
-        {organization.name} · {organization.city ?? organization.country ?? ''}
+        {t('orgLocation', { name: organization.name, place: organization.city ?? organization.country ?? '' })}
       </div>
       <h1 className="text-display font-[family-name:var(--font-display)] mb-4">{internship.title}</h1>
       <div className="flex flex-wrap items-center gap-3 text-caption text-[var(--ink-3)] mb-8">
         {internship.duration && <span>{t('weeks', { n: internship.duration })}</span>}
-        <span>·</span>
-        <span className="capitalize">{internship.locationType}</span>
+        <span>{t('metaSep')}</span>
+        <span>
+          {internship.locationType && LOCATION_TYPE_KEYS.has(internship.locationType)
+            ? t(`locationType.${internship.locationType}`)
+            : internship.locationType}
+        </span>
         {internship.location && (
           <>
-            <span>·</span>
+            <span>{t('metaSep')}</span>
             <span>{internship.location}</span>
           </>
         )}
         {internship.isPaid && (
           <>
-            <span>·</span>
+            <span>{t('metaSep')}</span>
             <span className="text-[var(--status-success-ink)] font-medium">
               {internship.compensation
-                ? t('paidWith', { amount: internship.compensation })
+                ? t('paidWith', { amount: localizeCompensation(internship.compensation, locale) })
                 : t('paid')}
             </span>
           </>
         )}
-        <span>·</span>
+        <span>{t('metaSep')}</span>
         <span className="uppercase">{internship.language}</span>
       </div>
 
@@ -134,7 +146,7 @@ export default async function Page({
                 </span>
                 <span>
                   {q.question}
-                  {q.required && <span className="text-[var(--danger)] ml-1">*</span>}
+                  {q.required && <span className="text-[var(--danger)] ml-1">{tc('requiredMark')}</span>}
                 </span>
               </li>
             ))}

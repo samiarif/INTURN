@@ -85,7 +85,7 @@ export function CvImportButton() {
       <div className="flex items-start gap-3 mb-3 flex-wrap">
         <div className="flex-1 min-w-[200px]">
           <p className="text-[11px] font-mono uppercase tracking-[0.06em] text-[var(--brand-700)] mb-1">
-            ✦ {t('eyebrow')}
+            {'✦'} {t('eyebrow')}
           </p>
           <h3 className="text-[14px] font-semibold tracking-tight text-[var(--ink)] mb-1">
             {t('title')}

@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { TasksListView } from './tasks-list-view';
 import type { Task } from '@/db/schema';
 
-vi.mock('next-intl', () => ({ useTranslations: () => (k: string) => k }));
+vi.mock('next-intl', () => ({ useTranslations: () => (k: string) => k, useLocale: () => 'en' }));
 vi.mock('next/navigation', () => {
   const params = new URLSearchParams();
   return {

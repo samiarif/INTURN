@@ -1,4 +1,4 @@
-import { baseUrl, emailLayout, escapeHtml } from './_layout';
+import { baseUrl, emailLayout, escapeHtml, greeting } from './_layout';
 
 /** Notify a student that their coordinator approved or requested a revision. */
 export function academicReportReviewedTemplate({
@@ -13,7 +13,7 @@ export function academicReportReviewedTemplate({
   locale: 'fr' | 'en';
 }): { subject: string; text: string; html: string } {
   const fr = locale === 'fr';
-  const student = escapeHtml(studentName);
+  const hello = greeting(studentName, locale);
   const subject =
     outcome === 'approved'
       ? fr
@@ -26,11 +26,11 @@ export function academicReportReviewedTemplate({
   const intro =
     outcome === 'approved'
       ? fr
-        ? `<p>Bonjour ${student},</p><p>Votre encadrant a <strong>approuvé</strong> votre rapport académique. Félicitations !</p>`
-        : `<p>Hi ${student},</p><p>Your coordinator <strong>approved</strong> your academic report. Congratulations!</p>`
+        ? `<p>${hello}</p><p>Votre encadrant a <strong>approuvé</strong> votre rapport académique. Félicitations !</p>`
+        : `<p>${hello}</p><p>Your coordinator <strong>approved</strong> your academic report. Congratulations!</p>`
       : fr
-        ? `<p>Bonjour ${student},</p><p>Votre encadrant a demandé une <strong>révision</strong> de votre rapport.</p>`
-        : `<p>Hi ${student},</p><p>Your coordinator requested a <strong>revision</strong> of your report.</p>`;
+        ? `<p>${hello}</p><p>Votre encadrant a demandé une <strong>révision</strong> de votre rapport.</p>`
+        : `<p>${hello}</p><p>Your coordinator requested a <strong>revision</strong> of your report.</p>`;
 
   const trimmed = feedback?.trim();
   const heading = fr ? "Retour de l'encadrant" : 'Coordinator feedback';

@@ -65,11 +65,11 @@ export default async function Page({
       : '/api/admin/audit/export';
 
   const filterChipLabels: Record<string, string> = {
-    all: locale === 'fr' ? 'Toutes' : 'All',
-    org: locale === 'fr' ? 'Organisations' : 'Organizations',
-    report: locale === 'fr' ? 'Signalements' : 'Reports',
-    internship: locale === 'fr' ? 'Stages' : 'Internships',
-    user: locale === 'fr' ? 'Utilisateurs' : 'Users',
+    all: t('filterAll'),
+    org: t('filterOrg'),
+    report: t('filterReport'),
+    internship: t('filterInternship'),
+    user: t('filterUser'),
   };
 
   return (
@@ -121,7 +121,7 @@ export default async function Page({
                     {new Date(log.createdAt).toLocaleString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                   </TableCell>
                   <TableCell>
-                    {actor?.email ?? <span className="italic text-[var(--ink-3)]">—</span>}
+                    {actor?.email ?? <span className="italic text-[var(--ink-3)]">{'—'}</span>}
                   </TableCell>
                   <TableCell>
                     <StatusPill tone={toneForAction(log.action)} mono>
@@ -129,7 +129,7 @@ export default async function Page({
                     </StatusPill>
                   </TableCell>
                   <TableCell className="font-mono text-caption text-[var(--ink-3)]">
-                    {log.targetType}/{log.targetId?.slice(0, 8) ?? '—'}
+                    {log.targetType}{'/'}{log.targetId?.slice(0, 8) ?? '—'}
                   </TableCell>
                 </TableRow>
               ))}

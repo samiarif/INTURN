@@ -157,16 +157,14 @@ export function CommandCenterFilter({
                     }
                   >
                     {d.blocked ? (
-                      <span aria-hidden className="leading-none">
-                        🔒
-                      </span>
+                      <span aria-hidden className="leading-none">{'🔒'}</span>
                     ) : (
                       <span className="dot" />
                     )}
                     {d.title}
                     {d.blocked && (
                       <span className="ml-1 text-[var(--ink-4)] font-normal">
-                        · {t('blockedShort')}
+                        {'·'} {t('blockedShort')}
                       </span>
                     )}
                   </span>

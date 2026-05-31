@@ -18,6 +18,10 @@ export function TemplatePicker({
   onPick: (template: InternshipTemplate) => void;
 }) {
   const t = useTranslations('internshipTemplates');
+  // sector and locationType are stored as raw enum values on the template;
+  // localize each via its own sub-map before interpolating into cardMeta.
+  const tSector = useTranslations('internshipTemplates.sector');
+  const tLoc = useTranslations('internshipTemplates.locationType');
 
   return (
     <section className="mb-8 border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5">
@@ -38,7 +42,11 @@ export function TemplatePicker({
             className="text-left border border-[var(--border-color)] rounded-md bg-[var(--surface)] p-3 hover:border-[var(--brand-500)] hover:bg-[var(--brand-50)] transition-colors group"
           >
             <div className="font-mono uppercase tracking-[0.06em] text-[10px] text-[var(--ink-3)] mb-1">
-              {template.sector} · {template.duration}wk · {template.locationType}
+              {t('cardMeta', {
+                sector: tSector(template.sector),
+                duration: template.duration,
+                locationType: tLoc(template.locationType),
+              })}
             </div>
             <h3 className="text-[13.5px] font-semibold text-[var(--ink)] mb-1 leading-snug">
               {t(`${template.id}.title`)}

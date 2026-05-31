@@ -57,7 +57,7 @@ export function ScheduleCheckInButton({
         setSuccess({ url: result.meetingUrl, when: result.scheduledAt });
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to schedule');
+        setError(e instanceof Error ? e.message : t('errorGeneric'));
       }
     });
   }
@@ -75,9 +75,6 @@ export function ScheduleCheckInButton({
     }
   }
 
-  // "When", "Duration", "15/30/45 minutes", "1 hour", "Agenda (optional)",
-  // the agenda placeholder, and "Scheduling…" are not in the plan namespace
-  // and remain English.
   return (
     <div
       className="ws-card"
@@ -145,7 +142,7 @@ export function ScheduleCheckInButton({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div>
               <Label htmlFor="when" style={{ fontSize: 12 }}>
-                When
+                {t('whenLabel')}
               </Label>
               <Input
                 id="when"
@@ -155,28 +152,28 @@ export function ScheduleCheckInButton({
               />
             </div>
             <div>
-              <Label style={{ fontSize: 12 }}>Duration</Label>
+              <Label style={{ fontSize: 12 }}>{t('durationLabel')}</Label>
               <Select value={duration} onValueChange={(v) => setDuration(v ?? '30')}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="15">15 minutes</SelectItem>
-                  <SelectItem value="30">30 minutes</SelectItem>
-                  <SelectItem value="45">45 minutes</SelectItem>
-                  <SelectItem value="60">1 hour</SelectItem>
+                  <SelectItem value="15">{t('duration15')}</SelectItem>
+                  <SelectItem value="30">{t('duration30')}</SelectItem>
+                  <SelectItem value="45">{t('duration45')}</SelectItem>
+                  <SelectItem value="60">{t('duration60')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
               <Label htmlFor="note" style={{ fontSize: 12 }}>
-                Agenda (optional)
+                {t('agendaLabel')}
               </Label>
               <Input
                 id="note"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="e.g. Review v2, plan next sprint"
+                placeholder={t('agendaPlaceholder')}
               />
             </div>
             {error && (
@@ -197,7 +194,7 @@ export function ScheduleCheckInButton({
                 disabled={pending}
                 className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
               >
-                {pending ? 'Scheduling…' : t('submit')}
+                {pending ? t('scheduling') : t('submit')}
               </Button>
             </div>
           </div>

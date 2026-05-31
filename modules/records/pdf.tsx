@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import type { RecordSnapshot } from '@/db/schema';
+import { sectorKeyFromValue } from '@/modules/internships/sectors';
 
 /**
  * End-of-internship record PDF. Bilingual (FR / EN) — locale picked from
@@ -162,6 +163,17 @@ const COPY = {
     fieldOfStudy: 'Domaine',
     title2: 'Intitulé',
     sector: 'Secteur',
+    sectors: {
+      design: 'Design',
+      softwareTech: 'Logiciel & tech',
+      marketingComms: 'Marketing & communication',
+      product: 'Produit',
+      data: 'Données',
+      operations: 'Opérations',
+      finance: 'Finance',
+      content: 'Contenu',
+      other: 'Autre',
+    },
     duration: 'Durée',
     period: 'Période',
     location: 'Localisation',
@@ -196,6 +208,17 @@ const COPY = {
     fieldOfStudy: 'Field of study',
     title2: 'Title',
     sector: 'Sector',
+    sectors: {
+      design: 'Design',
+      softwareTech: 'Software & tech',
+      marketingComms: 'Marketing & comms',
+      product: 'Product',
+      data: 'Data',
+      operations: 'Operations',
+      finance: 'Finance',
+      content: 'Content',
+      other: 'Other',
+    },
     duration: 'Duration',
     period: 'Period',
     location: 'Location',
@@ -234,6 +257,17 @@ function statusBadgeStyle(status: string) {
   if (status === 'revision-requested') return styles.badgeRevision;
   if (status === 'submitted') return styles.badge;
   return styles.badgeDraft;
+}
+
+/**
+ * Sector is stored as its canonical English `value`; map it to the localized
+ * label, falling back to the raw value for legacy/free-text sectors so an old
+ * row still prints *something*.
+ */
+function sectorText(value: string, t: (typeof COPY)['fr' | 'en']): string {
+  const key = sectorKeyFromValue(value);
+  if (!key) return value;
+  return (t.sectors as Record<string, string>)[key] ?? value;
 }
 
 export type RecordPdfProps = {
@@ -324,7 +358,7 @@ export function RecordPdf({ snapshot, shareUrl }: RecordPdfProps) {
             {snapshot.internship.sector && (
               <View style={styles.row}>
                 <Text style={styles.label}>{t.sector}</Text>
-                <Text style={styles.value}>{snapshot.internship.sector}</Text>
+                <Text style={styles.value}>{sectorText(snapshot.internship.sector, t)}</Text>
               </View>
             )}
             {snapshot.internship.duration != null && (
@@ -339,7 +373,7 @@ export function RecordPdf({ snapshot, shareUrl }: RecordPdfProps) {
               <View style={styles.row}>
                 <Text style={styles.label}>{t.period}</Text>
                 <Text style={styles.value}>
-                  {formatDate(snapshot.internship.startDate, snapshot.locale)} →{' '}
+                  {formatDate(snapshot.internship.startDate, snapshot.locale)} {'→'}{' '}
                   {formatDate(snapshot.internship.endDate, snapshot.locale)}
                 </Text>
               </View>

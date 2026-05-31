@@ -1,4 +1,7 @@
-export default function Loading() {
+import { getTranslations } from 'next-intl/server';
+
+export default async function Loading() {
+  const t = await getTranslations('workspace.tabs');
   return (
     <div className="ws-shell ws" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <div className="ws-topbar">
@@ -17,9 +20,9 @@ export default function Loading() {
               <div style={{ width: 280, height: 28, background: 'var(--surface-muted)', borderRadius: 6 }} />
             </div>
             <div className="ws-mhead-tabs">
-              {['Overview', 'Tasks', 'Deliverables', 'Comments'].map((t) => (
-                <span key={t} className="ws-mhead-tab">
-                  {t}
+              {(['overview', 'tasks', 'deliverables', 'comments'] as const).map((k) => (
+                <span key={k} className="ws-mhead-tab">
+                  {t(k)}
                 </span>
               ))}
             </div>

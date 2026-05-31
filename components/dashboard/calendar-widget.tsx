@@ -25,7 +25,7 @@ type CalendarWidgetProps = {
   /** Pre-localised header label, e.g. "May 2026". */
   monthLabel: string;
   /** Pre-localised eyebrow, defaults to "Calendar". */
-  eyebrow?: string;
+  eyebrow: string;
 };
 
 export function CalendarWidget({
@@ -33,7 +33,7 @@ export function CalendarWidget({
   eventDays,
   weekdayLabels,
   monthLabel,
-  eyebrow = 'Calendar',
+  eyebrow,
 }: CalendarWidgetProps) {
   const year = now.getFullYear();
   const month = now.getMonth(); // 0-indexed

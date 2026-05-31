@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { findRecordByShareToken } from '@/modules/records/queries';
+import { sectorKeyFromValue } from '@/modules/internships/sectors';
 import { GradientStar } from '@/components/brand/gradient-star';
 import { CopyLinkButton } from './copy-link-button';
 
@@ -11,12 +12,13 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; token: string }>;
 }): Promise<Metadata> {
-  const { token } = await params;
+  const { token, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'records' });
   const record = await findRecordByShareToken(token);
-  if (!record) return { title: 'Inturn — Record' };
+  if (!record) return { title: `Inturn — ${t('eyebrow')}` };
   return {
     title: `${record.snapshot.intern.name} · ${record.snapshot.internship.title} · Inturn`,
-    description: `Internship record issued by ${record.snapshot.organization.name}`,
+    description: t('metaIssuedBy', { org: record.snapshot.organization.name }),
     robots: { index: false, follow: false },
   };
 }
@@ -42,8 +44,13 @@ export default async function PublicRecordPage({
   if (!record) notFound();
 
   const t = await getTranslations({ locale, namespace: 'records' });
+  const tSector = await getTranslations({ locale, namespace: 'internships.form.sector' });
   const snap = record.snapshot;
   const approved = snap.deliverables.filter((d) => d.status === 'approved').length;
+  // Sector is stored as its canonical English `value`; localize via the shared
+  // key map, falling back to the raw value for legacy/free-text sectors.
+  const sectorKey = sectorKeyFromValue(snap.internship.sector);
+  const sectorLabel = sectorKey ? tSector(sectorKey) : snap.internship.sector;
 
   return (
     <div className="rec-shell">
@@ -107,7 +114,7 @@ export default async function PublicRecordPage({
           <h2 className="rec-section-title">{t('internship')}</h2>
           <div className="rec-card-body">
             <Row label={t('title2')} value={snap.internship.title} />
-            {snap.internship.sector && <Row label={t('sector')} value={snap.internship.sector} />}
+            {snap.internship.sector && <Row label={t('sector')} value={sectorLabel} />}
             {snap.internship.duration != null && (
               <Row label={t('duration')} value={`${snap.internship.duration} ${t('weeks')}`} />
             )}
@@ -185,7 +192,7 @@ export default async function PublicRecordPage({
 
       <footer className="rec-footer">
         <p>
-          {t('issuedBy')} <strong>{snap.organization.name}</strong> ·{' '}
+          {t('issuedBy')} <strong>{snap.organization.name}</strong> {t('metaSep')}{' '}
           {formatDate(snap.signature.signedAt, locale)}
         </p>
         <p className="rec-verify">{t('verifyBlurb')}</p>

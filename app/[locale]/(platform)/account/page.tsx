@@ -8,11 +8,20 @@ import { eq } from 'drizzle-orm';
 import { DeleteAccountSection } from './delete-account-section';
 import { NotificationPrefsSection } from './notification-prefs-section';
 import { AppearancePrefsSection } from './appearance-prefs-section';
+import { industryKeyFromValue } from '@/modules/profiles/industries';
 
 export default async function Page() {
   const session = await requireSession();
   const t = await getTranslations('account');
+  const tIndustry = await getTranslations('onboarding.company.industries');
   const locale = await getLocale();
+  // Industry is stored as its canonical English value; localize via the shared
+  // key map, falling back to the raw value (or notSet when empty).
+  const industryLabel = (value: string | null): string => {
+    if (!value) return t('notSet');
+    const key = industryKeyFromValue(value);
+    return key ? tIndustry(key) : value;
+  };
 
   const [profileRow] = await db.select().from(profiles).where(eq(profiles.userId, session.user.id)).limit(1);
   const [orgRow] = session.role === 'company'
@@ -97,7 +106,7 @@ export default async function Page() {
           </div>
           <div className="space-y-2 text-body">
             <Row label={t('orgName')} value={orgRow.name} />
-            <Row label={t('industry')} value={orgRow.industry ?? t('notSet')} />
+            <Row label={t('industry')} value={industryLabel(orgRow.industry)} />
             <Row label={t('city')} value={orgRow.city ?? orgRow.country ?? t('notSet')} />
             <Row
               label={t('verificationStatus')}

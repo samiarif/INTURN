@@ -58,13 +58,13 @@ export async function ProjectCommandCenter({
           {phaseLabel && (
             <>
               <span>{phaseLabel}</span>
-              <span aria-hidden>·</span>
+              <span aria-hidden>{'·'}</span>
             </>
           )}
           <span>{t('internsCount', { count: lanes.length })}</span>
           {shownStatuses.map((s) => (
             <span key={s} aria-hidden className="inline-flex items-center gap-1">
-              <span aria-hidden>·</span>
+              <span aria-hidden>{'·'}</span>
               <PulseStatusDot status={s} />
               {counts[s]}
             </span>

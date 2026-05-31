@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   resolveReportAction,
   reopenReportAction,
@@ -23,20 +24,35 @@ export function ResolveReportForm({
   subjectExists: boolean;
 }) {
   const router = useRouter();
+  const t = useTranslations('admin.reportDetail');
+  const tStatus = useTranslations('admin.status');
   const [resolution, setResolution] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
+  // Localize the resolve action's machine error codes; unknown codes fall back
+  // to the generic message.
+  function mapError(code: string): string {
+    switch (code) {
+      case 'resolution_required':
+        return t('validationMin');
+      case 'not_found':
+        return t('errorNotFound');
+      default:
+        return t('genericError');
+    }
+  }
+
   function submit(nextStatus: 'reviewed' | 'resolved') {
     setError(null);
     if (resolution.trim().length < 5) {
-      setError('Add a short resolution note (min 5 chars).');
+      setError(t('validationMin'));
       return;
     }
     startTransition(async () => {
       const res = await resolveReportAction({ reportId, status: nextStatus, resolution });
       if (!res.ok) {
-        setError(res.error ?? 'failed');
+        setError(mapError(res.error ?? ''));
         return;
       }
       router.refresh();
@@ -53,7 +69,7 @@ export function ResolveReportForm({
 
   function unpublishSubject() {
     if (subjectType !== 'internship' || !subjectExists) return;
-    if (!window.confirm('Unpublish this internship from the marketplace?')) return;
+    if (!window.confirm(t('confirmUnpublish'))) return;
     startTransition(async () => {
       await unpublishInternshipAction(subjectId);
       router.refresh();
@@ -63,13 +79,13 @@ export function ResolveReportForm({
   return (
     <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5">
       <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
-        Triage
+        {t('triage')}
       </h2>
 
       {status !== 'open' ? (
         <div className="flex items-center justify-between">
           <p className="text-caption text-[var(--ink-3)]">
-            This report is {status}. Re-open to make changes.
+            {t('reopenHint', { status: tStatus(status).toLowerCase() })}
           </p>
           <button
             type="button"
@@ -77,7 +93,7 @@ export function ResolveReportForm({
             disabled={pending}
             className="px-3 py-1.5 rounded-md text-label font-medium border border-[var(--border-color)] hover:bg-[var(--surface-muted)]"
           >
-            Re-open
+            {t('reopen')}
           </button>
         </div>
       ) : (
@@ -86,7 +102,7 @@ export function ResolveReportForm({
             value={resolution}
             onChange={(e) => setResolution(e.target.value)}
             rows={4}
-            placeholder="What did you do about it? (e.g. unpublished internship, contacted org, no action)"
+            placeholder={t('placeholder')}
             className="w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--surface)] text-sm resize-y"
           />
           {error && <p className="text-caption text-[var(--danger)]">{error}</p>}
@@ -98,7 +114,7 @@ export function ResolveReportForm({
                 disabled={pending}
                 className="px-3 py-1.5 rounded-md text-label font-medium border border-[var(--status-danger-border)] text-[var(--status-danger-ink)] hover:bg-[var(--status-danger-bg)]"
               >
-                Unpublish internship
+                {t('unpublishInternship')}
               </button>
             )}
             <span className="flex-1" />
@@ -108,7 +124,7 @@ export function ResolveReportForm({
               disabled={pending}
               className="px-3 py-1.5 rounded-md text-label font-medium border border-[var(--border-color)] hover:bg-[var(--surface-muted)]"
             >
-              Mark reviewed
+              {t('markReviewed')}
             </button>
             <button
               type="button"
@@ -116,7 +132,7 @@ export function ResolveReportForm({
               disabled={pending}
               className="px-3 py-1.5 rounded-md text-label font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
             >
-              {pending ? 'Saving…' : 'Resolve'}
+              {pending ? t('saving') : t('resolve')}
             </button>
           </div>
         </div>

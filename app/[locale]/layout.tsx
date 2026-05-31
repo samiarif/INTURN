@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import { ClerkProvider } from '@clerk/nextjs';
 import { NextIntlClientProvider } from 'next-intl';
 import { hasLocale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { frFR, enUS } from '@clerk/localizations';
@@ -37,10 +38,18 @@ const bricolage = localFont({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: 'inturn',
-  description: 'La plateforme de stages pour la Tunisie',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'landing' });
+  return {
+    title: 'inturn',
+    description: t('title'),
+  };
+}
 
 export default async function LocaleLayout({
   children,

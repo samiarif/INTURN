@@ -159,7 +159,7 @@ export type TimelineRow =
       actorId: string | null;
       metadata: Record<string, unknown> | null;
     }
-  | { kind: 'milestone'; id: string; at: Date; label: string };
+  | { kind: 'milestone'; id: string; at: Date; labelKey: 'workspaceStarted' | 'deadline' };
 
 export async function getWorkspaceTimeline(workspaceId: string): Promise<TimelineRow[]> {
   // Events in the workspace target either the workspace itself OR child
@@ -206,7 +206,7 @@ export async function getWorkspaceTimeline(workspaceId: string): Promise<Timelin
       kind: 'milestone',
       id: `${workspaceId}:started`,
       at: new Date(ws.startDate),
-      label: 'Workspace started',
+      labelKey: 'workspaceStarted',
     });
   }
   if (ws?.endDate) {
@@ -214,7 +214,7 @@ export async function getWorkspaceTimeline(workspaceId: string): Promise<Timelin
       kind: 'milestone',
       id: `${workspaceId}:deadline`,
       at: new Date(ws.endDate),
-      label: 'Deadline',
+      labelKey: 'deadline',
     });
   }
 

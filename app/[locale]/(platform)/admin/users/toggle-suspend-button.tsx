@@ -25,9 +25,10 @@ export function ToggleSuspendButton({
       try {
         await toggleSuspendAction({ userId });
         router.refresh();
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : 'failed';
-        window.alert(msg);
+      } catch {
+        // toggleSuspendAction only throws shouldn't-happen guards (self,
+        // not-found, admin-protected) the UI already prevents → generic.
+        window.alert(t('errorGeneric'));
       }
     });
   }

@@ -30,9 +30,9 @@ import { CalendarWidget } from '@/components/dashboard/calendar-widget';
 import { FteChecklist } from '@/components/fte-checklist';
 import { getPulse } from '@/modules/pulse/engine';
 import { PulseDigest, type PulseDigestItem } from '@/modules/pulse/components/pulse-digest';
+import { formatShortAge } from '@/lib/format-time';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
-const MS_PER_HOUR = 1000 * 60 * 60;
 
 function greetingKey(hour: number): 'greetingMorning' | 'greetingAfternoon' | 'greetingEvening' {
   if (hour < 12) return 'greetingMorning';
@@ -61,15 +61,6 @@ function initialsOf(first?: string | null, last?: string | null, email?: string 
   const b = (last ?? '').trim()[0] ?? '';
   if (a || b) return (a + b).toUpperCase();
   return (email ?? '?').slice(0, 2).toUpperCase();
-}
-
-/** "2h" / "3d" / "5m" — coarse age stamp for the review tile. */
-function shortAge(from: Date, now: Date): string {
-  const ms = now.getTime() - from.getTime();
-  if (ms < 60_000) return '<1m';
-  if (ms < MS_PER_HOUR) return `${Math.floor(ms / 60_000)}m`;
-  if (ms < MS_PER_DAY) return `${Math.floor(ms / MS_PER_HOUR)}h`;
-  return `${Math.floor(ms / MS_PER_DAY)}d`;
 }
 
 const TASK_STATUS_CLASS: Record<string, 'review' | 'progress' | 'todo' | 'done'> = {
@@ -460,7 +451,11 @@ export default async function Page() {
         <div className="db-welcome">
           <div className="db-welcome-eyebrow">{eyebrow}</div>
           <h1>
-            {greeting}, <span className="name">{user.firstName ?? 'there'}</span>
+            {tDash.rich('greetingLine', {
+              greeting,
+              name: user.firstName ?? tDash('greetingFallbackName'),
+              hl: (chunks) => <span className="name">{chunks}</span>,
+            })}
           </h1>
           <p>{subtitle}</p>
 
@@ -512,7 +507,7 @@ export default async function Page() {
               </span>
               <div className="min-w-0">
                 <p className="text-eyebrow font-mono uppercase text-[var(--status-warn-ink)] mb-1">
-                  {tDash('verifyHeading')} · {tDash('verifySla')}
+                  {tDash('verifyLine', { heading: tDash('verifyHeading'), sla: tDash('verifySla') })}
                 </p>
                 <p className="text-body text-[var(--ink-2)] leading-relaxed">
                   {tDash('verifyBody')}
@@ -544,7 +539,7 @@ export default async function Page() {
             <span className={`delta${waitingReviewCount > 0 ? ' warn' : ' muted'}`}>
               {waitingReviewCount === 0 || !oldestReview
                 ? tDash('kpiReviewEmpty')
-                : tDash('kpiReviewOldest', { age: shortAge(oldestReview, now) })}
+                : tDash('kpiReviewOldest', { age: formatShortAge(oldestReview, now, locale === 'en' ? 'en' : 'fr') })}
             </span>
           </Link>
           <div className="db-stat app">
@@ -632,7 +627,7 @@ export default async function Page() {
                             ? tDash('recentWeekOf', { current: currentWeek, total: totalWeeks })
                             : tDash('recentNoClock')}
                         </span>
-                        <b>{progress}%</b>
+                        <b>{tDash('cardPercent', { progress })}</b>
                       </div>
                       <div className="bar">
                         <div
@@ -764,13 +759,15 @@ export default async function Page() {
                     <div className="db-meet-body">
                       <div className="title">
                         {s.note ??
-                          (project ? `Weekly check-in · ${project.name}` : 'Weekly check-in')}
+                          (project
+                            ? tDash('syncCheckinProject', { project: project.name })
+                            : tDash('syncCheckin'))}
                       </div>
                       <div className="sub">
                         {tDash('syncsDurationMin', { n: s.durationMinutes })}
-                        {s.meetingUrl ? ' · Jitsi' : ''}
+                        {s.meetingUrl ? tDash('syncJitsi') : ''}
                         {intern
-                          ? ` · ${intern.firstName ?? intern.email}`
+                          ? tDash('syncIntern', { name: intern.firstName ?? intern.email })
                           : ''}
                       </div>
                       {internInitials && (

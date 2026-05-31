@@ -8,6 +8,7 @@ import { Milestone, Users, Plus } from 'lucide-react';
 import { BackLink } from '@/components/ui/back-link';
 import { notFound, redirect } from 'next/navigation';
 import { getTranslations, getLocale } from 'next-intl/server';
+import { formatDayRelative } from '@/lib/format-time';
 import { inArray, eq, desc } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -66,16 +67,16 @@ function internshipCode(title: string): string {
   return (parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '').toUpperCase().replace(/[^A-Z]/i, '');
 }
 
-function formatDateShort(d: Date | string | null | undefined): string {
+function formatDateShort(d: Date | string | null | undefined, locale: string): string {
   if (!d) return '—';
   const date = d instanceof Date ? d : new Date(d);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase();
+  return date.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short' }).toUpperCase();
 }
 
-function formatDateLong(d: Date | string | null | undefined): string {
+function formatDateLong(d: Date | string | null | undefined, locale: string): string {
   if (!d) return '—';
   const date = d instanceof Date ? d : new Date(d);
-  return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+  return date.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', { weekday: 'long', day: 'numeric', month: 'short' });
 }
 
 // ---------------------------------------------------------------------------
@@ -410,13 +411,13 @@ export default async function Page({
         {published === '1' && (
           <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[var(--status-success-bg)] border border-[color-mix(in_srgb,var(--status-success-ink)_28%,transparent)] text-[var(--status-success-ink)] text-label font-medium">
             <span className="w-2 h-2 rounded-full bg-[var(--status-success-ink)] flex-shrink-0" />
-            Internship published to the marketplace.
+            {t('publishedBanner')}
           </div>
         )}
         {published === 'blocked' && (
           <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[var(--status-warn-bg)] border border-[color-mix(in_srgb,var(--status-warn-ink)_30%,transparent)] text-[var(--status-warn-ink)] text-label font-medium">
             <span className="w-2 h-2 rounded-full bg-[var(--status-warn-ink)] flex-shrink-0" />
-            Saved as draft. Your organization must be verified before you can publish.
+            {t('blockedBanner')}
           </div>
         )}
         {/* =============== Title bar =============== */}
@@ -436,12 +437,15 @@ export default async function Page({
               {project.status === 'active' && (
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success-ink)]" />
               )}
-              {project.status}
+              {t(`projectStatus.${project.status}`)}
             </span>
             {startDate && endDate && (
               <span className="inline-flex items-center px-2 py-0.5 rounded text-eyebrow font-mono text-[var(--ink-3)] bg-[var(--surface)] border border-[var(--border-color)]">
-                {formatDateShort(startDate)} — {formatDateShort(endDate)}
-                {durationWeeks ? ` · ${durationWeeks} WK` : ''}
+                {t('scheduleRange', {
+                  start: formatDateShort(startDate, locale),
+                  end: formatDateShort(endDate, locale),
+                })}
+                {durationWeeks ? t('scheduleWeeks', { n: durationWeeks }) : ''}
               </span>
             )}
 
@@ -472,14 +476,16 @@ export default async function Page({
             <section className="ph-brief">
               <div>
                 <div className="ph-eyebrow">
-                  Project
-                  <span className="sep">·</span>
-                  {durationWeeks ? `${durationWeeks} weeks` : 'Open-ended'}
-                  <span className="sep">·</span>
-                  {internships.length} internships
+                  {t('eyebrowProject')}
+                  <span className="sep">{t('eyebrowSep')}</span>
+                  {durationWeeks
+                    ? t('eyebrowDuration', { n: durationWeeks })
+                    : t('eyebrowOpenEnded')}
+                  <span className="sep">{t('eyebrowSep')}</span>
+                  {t('eyebrowInternships', { n: internships.length })}
                   {project.organizationId && organization?.city && (
                     <>
-                      <span className="sep">·</span>
+                      <span className="sep">{t('eyebrowSep')}</span>
                       {organization.city.toUpperCase()}
                     </>
                   )}
@@ -529,16 +535,19 @@ export default async function Page({
 
                 <div className="ph-brief-meta">
                   <span>
-                    Created <b>{formatDateShort(project.createdAt)}</b>
+                    {t.rich('createdOn', {
+                      date: formatDateShort(project.createdAt, locale),
+                      b: (chunks) => <b>{chunks}</b>,
+                    })}
                   </span>
                   {supervisorUsers[0] && (
                     <>
                       <span className="pip" />
                       <span>
-                        by{' '}
-                        <b>
-                          {supervisorUsers[0].firstName} {supervisorUsers[0].lastName}
-                        </b>
+                        {t.rich('createdBy', {
+                          name: `${supervisorUsers[0].firstName} ${supervisorUsers[0].lastName}`,
+                          b: (chunks) => <b>{chunks}</b>,
+                        })}
                       </span>
                     </>
                   )}
@@ -546,7 +555,7 @@ export default async function Page({
               </div>
 
               <aside className="ph-brief-team">
-                <h6>Project team</h6>
+                <h6>{t('projectTeam')}</h6>
                 {supervisorUsers.map((s) => (
                   <div key={s.id} className="ph-brief-team-row">
                     <span className="ph-avatar company">{initialsOf(s.firstName, s.lastName)}</span>
@@ -554,7 +563,7 @@ export default async function Page({
                       <div className="name">
                         {s.firstName} {s.lastName}
                       </div>
-                      <div className="role">Supervisor</div>
+                      <div className="role">{t('supervisorRole')}</div>
                     </div>
                   </div>
                 ))}
@@ -567,13 +576,13 @@ export default async function Page({
                     ))}
                     {workspaceRows.length === 0 && (
                       <span className="ph-avatar !bg-transparent !border-dashed !border-[var(--border-color)] !text-[var(--ink-4)]">
-                        ?
+                        {t('avatarPlaceholder')}
                       </span>
                     )}
                   </div>
                   <div className="meta">
-                    <div className="name">{filledSlots} interns placed</div>
-                    <div className="role">{Math.max(0, totalSlots - filledSlots)} open slots</div>
+                    <div className="name">{t('internsPlaced', { n: filledSlots })}</div>
+                    <div className="role">{t('openSlots', { n: Math.max(0, totalSlots - filledSlots) })}</div>
                   </div>
                 </div>
               </aside>
@@ -597,11 +606,11 @@ export default async function Page({
                   )}
                   <span className="ml-auto inline-flex items-center gap-2.5">
                     <span className="text-eyebrow font-mono uppercase text-[var(--ink-4)]">
-                      PHASE {currentPhaseIdx + 1} OF {phases.length}
+                      {t('phaseOf', { current: currentPhaseIdx + 1, total: phases.length })}
                     </span>
                     <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--status-success-bg)] text-[var(--status-success-ink)] text-[10.5px] font-semibold uppercase tracking-wider">
                       <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success-ink)]" />
-                      On track
+                      {t('onTrack')}
                     </span>
                   </span>
                 </div>
@@ -621,12 +630,12 @@ export default async function Page({
                       <div key={i} className={`ph-phase ${state}`}>
                         <span className="pip" />
                         <div className="num">
-                          PHASE {String(i + 1).padStart(2, '0')}
-                          {state === 'now' ? ' · NOW' : ''}
+                          {t('phaseNum', { n: String(i + 1).padStart(2, '0') })}
+                          {state === 'now' ? t('phaseNumNow') : ''}
                         </div>
                         <div className="name">{p.name}</div>
                         <div className="wks">
-                          Wk {p.fromWeek} → {p.toWeek}
+                          {t('phaseWeeks', { from: p.fromWeek, to: p.toWeek })}
                         </div>
                       </div>
                     );
@@ -654,37 +663,37 @@ export default async function Page({
               <StatTile
                 label={t('statInternships')}
                 value={String(activeInternshipCount)}
-                sublabel="active"
+                sublabel={t('statActive')}
                 footer={
                   draftInternshipCount > 0
-                    ? `${filledSlots} filled · ${draftInternshipCount} draft`
+                    ? t('statSomeFilled', { filled: filledSlots, draft: draftInternshipCount })
                     : filledSlots > 0
-                      ? `Both filled · no draft`
-                      : 'No interns placed yet'
+                      ? t('statBothFilled')
+                      : t('statNoInterns')
                 }
               />
               <StatTile
                 label={t('statTasks')}
                 value={String(openTasks)}
-                sublabel={`of ${allTasks.length} open`}
-                footer={`${doneTasks} done · ${reviewTasks} in review`}
+                sublabel={t('statTasksOpen', { total: allTasks.length })}
+                footer={t('statTasksFooter', { done: doneTasks, review: reviewTasks })}
               />
               <StatTile
                 label={t('statDeliverables')}
                 value={String(submittedDelivs)}
-                sublabel={`of ${allDelivs.length}`}
+                sublabel={t('statDelivsOf', { total: allDelivs.length })}
                 footer={
                   pendingDelivs > 0
-                    ? `${pendingDelivs} needs review · ${approvedDelivs} approved`
-                    : `${approvedDelivs} approved`
+                    ? t('statDelivsFooter', { pending: pendingDelivs, approved: approvedDelivs })
+                    : t('statDelivsApproved', { approved: approvedDelivs })
                 }
                 footerKind="good"
               />
               <StatTile
                 label={t('statDays')}
                 value={daysRemaining != null ? String(daysRemaining) : '—'}
-                sublabel="days"
-                footer={endDate ? `Ends ${formatDateLong(endDate)}` : 'No end date set'}
+                sublabel={t('statDaysSub')}
+                footer={endDate ? t('statEnds', { date: formatDateLong(endDate, locale) }) : t('statNoEndDate')}
               />
             </div>
 
@@ -735,7 +744,7 @@ export default async function Page({
                       ['submitted', 'approved', 'revision-requested'].includes(d.status ?? ''),
                     ).length;
                     const wsInReview = wsDelivs.filter((d) => d.status === 'submitted').length;
-                    const filledSuffix = intern ? 'filled' : 'open';
+                    const filledSuffix = intern ? t('rosterFilled') : t('rosterOpen');
                     const idShort = i.id.slice(0, 8).toUpperCase();
                     return (
                       <div className="ph-intern" key={i.id}>
@@ -743,7 +752,11 @@ export default async function Page({
                         <div className="ph-intern-role">
                           <div className="role-name">{i.title}</div>
                           <div className="role-meta">
-                            INT-{idShort} · {i.internCount ?? 1} slot · {filledSuffix}
+                            {t('rosterMeta', {
+                              id: idShort,
+                              n: i.internCount ?? 1,
+                              fill: filledSuffix,
+                            })}
                           </div>
                         </div>
                         <div className="ph-intern-person">
@@ -767,13 +780,13 @@ export default async function Page({
                           ) : (
                             <>
                               <span className="ph-avatar !bg-transparent !border-dashed !border-[var(--border-color)] !text-[var(--ink-4)]">
-                                ?
+                                {t('avatarPlaceholder')}
                               </span>
                               <div className="who">
                                 <div className="pn text-[var(--ink-3)] italic">
                                   {countByInternship[i.id]
-                                    ? `${countByInternship[i.id]} applicants`
-                                    : 'Awaiting candidate'}
+                                    ? t('rosterApplicants', { n: countByInternship[i.id] })
+                                    : t('rosterAwaiting')}
                                 </div>
                                 <div className="pm">
                                   <span
@@ -781,7 +794,7 @@ export default async function Page({
                                       INTERNSHIP_STATUS_STYLE[i.status ?? 'draft']
                                     }`}
                                   >
-                                    {i.status}
+                                    {t(`internshipStatusLabel.${i.status ?? 'draft'}`)}
                                   </span>
                                 </div>
                               </div>
@@ -790,25 +803,25 @@ export default async function Page({
                         </div>
                         <div className="ph-intern-prog">
                           <div className="col">
-                            <span className="label">Tasks</span>
+                            <span className="label">{t('rosterTasks')}</span>
                             <span className="value">
-                              {wsTasksDone} / {wsTasks.length || 0}
+                              {t('rosterCount', { done: wsTasksDone, total: wsTasks.length || 0 })}
                             </span>
                           </div>
                           <div className="col">
-                            <span className="label">Deliv.</span>
+                            <span className="label">{t('rosterDelivs')}</span>
                             <span className="value">
-                              {wsDelivsSubmitted} / {wsDelivs.length || 0}
+                              {t('rosterCount', { done: wsDelivsSubmitted, total: wsDelivs.length || 0 })}
                             </span>
                           </div>
                           <div className="col">
-                            <span className="label">Status</span>
+                            <span className="label">{t('rosterStatus')}</span>
                             <span className="value">
                               <small>
                                 {wsInReview > 0
-                                  ? `${wsInReview} in review`
+                                  ? t('rosterInReview', { n: wsInReview })
                                   : intern
-                                    ? 'On track'
+                                    ? t('rosterOnTrack')
                                     : '—'}
                               </small>
                             </span>
@@ -867,7 +880,7 @@ export default async function Page({
                 <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-[var(--surface-muted)] text-[var(--ink-2)]">
                   <Plus size={11} strokeWidth={2.5} aria-hidden />
                 </span>
-                Add another internship under this project
+                {t('addAnotherInternship')}
               </Link>
             </section>
           </div>
@@ -878,24 +891,24 @@ export default async function Page({
             <div className="ph-signal">
               <div className="ph-signal-head">
                 <h4>{t('projectSignal')}</h4>
-                <span className="ml-auto ph-signal-tag">DATA · LIVE</span>
+                <span className="ml-auto ph-signal-tag">{t('signalDataLive')}</span>
               </div>
               <div className="ph-signal-metric">
                 <b>
                   {onPacePct}
-                  <span style={{ fontSize: 16, marginLeft: 2 }}>%</span>
+                  <span style={{ fontSize: 16, marginLeft: 2 }}>{t('signalPercent')}</span>
                 </b>
-                <span className="delta">on-pace, both roles</span>
+                <span className="delta">{t('signalOnPace')}</span>
               </div>
               <div className="ph-signal-bench">
                 {phases.length > 0 && currentPhaseIdx < phases.length ? (
-                  <>
-                    Phase {currentPhaseIdx + 1} runs through{' '}
-                    <b>Wk {phases[currentPhaseIdx].toWeek}</b>. No interventions needed across
-                    either workspace.
-                  </>
+                  t.rich('signalBenchPhase', {
+                    current: currentPhaseIdx + 1,
+                    week: phases[currentPhaseIdx].toWeek,
+                    b: (chunks) => <b>{chunks}</b>,
+                  })
                 ) : (
-                  <>No interventions needed across either workspace.</>
+                  t('signalBenchNoPhase')
                 )}
               </div>
               {/* Sparkline — visual placeholder using the mock's path until we
@@ -905,7 +918,7 @@ export default async function Page({
                 viewBox="0 0 280 36"
                 preserveAspectRatio="none"
                 role="img"
-                aria-label="Project pace sparkline"
+                aria-label={t('signalSparkAria')}
               >
                 <defs>
                   <linearGradient id="phSparkGrad" x1="0" x2="0" y1="0" y2="1">
@@ -959,7 +972,7 @@ export default async function Page({
                       </div>
                       <div className="rl">{idx === 0 ? t('leadSupervisor') : t('coSupervisor')}</div>
                     </div>
-                    {idx === 0 && <span className="ld">LEAD</span>}
+                    {idx === 0 && <span className="ld">{t('leadBadge')}</span>}
                   </div>
                 ))}
                 {workspaceRows.map((r) => {
@@ -973,7 +986,7 @@ export default async function Page({
                         <div className="nm">
                           {r.intern.firstName} {r.intern.lastName}
                         </div>
-                        <div className="rl">Intern · {i?.title ?? '—'}</div>
+                        <div className="rl">{t('internRole', { title: i?.title ?? '—' })}</div>
                       </div>
                     </div>
                   );
@@ -984,10 +997,12 @@ export default async function Page({
             {/* This week */}
             <div className="ph-week">
               <h4>
-                {t('thisWeek')} ·{' '}
-                {today
-                  .toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-                  .toUpperCase()}
+                {t('thisWeekDate', {
+                  week: t('thisWeek'),
+                  date: today
+                    .toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short' })
+                    .toUpperCase(),
+                })}
               </h4>
               <ul>
                 {recentEvents.length > 0 ? (
@@ -998,12 +1013,18 @@ export default async function Page({
                         : e.type.includes('comment')
                           ? 'next'
                           : '';
+                    const seg = eventTypeSegment(e.type);
+                    const eventLabel = EVENT_VERB_SEGMENTS.has(seg)
+                      ? t(`eventVerb.${seg}` as 'eventVerb.submitted')
+                      : seg.charAt(0).toUpperCase() + seg.slice(1);
                     return (
                       <li key={e.id} className={cls}>
                         <span className="dot" />
                         <span className="truncate">
-                          {humanizeEventType(e.type)} ·{' '}
-                          {formatRelative(new Date(e.createdAt), today)}
+                          {t('eventLine', {
+                            event: eventLabel,
+                            time: formatDayRelative(new Date(e.createdAt), today, locale === 'en' ? 'en' : 'fr'),
+                          })}
                         </span>
                       </li>
                     );
@@ -1011,13 +1032,13 @@ export default async function Page({
                 ) : (
                   <li>
                     <span className="dot" />
-                    No activity in this project yet.
+                    {t('noActivity')}
                   </li>
                 )}
                 {currentWeek && currentPhaseIdx >= 0 && phases[currentPhaseIdx] && (
                   <li>
                     <span className="dot" />
-                    Phase {currentPhaseIdx + 1} ends Wk {phases[currentPhaseIdx].toWeek}
+                    {t('phaseEndsWeek', { n: currentPhaseIdx + 1, week: phases[currentPhaseIdx].toWeek })}
                   </li>
                 )}
               </ul>
@@ -1070,17 +1091,20 @@ function StatTile({
   );
 }
 
-/** Human-readable label for an event type — keeps the rail readable. */
-function humanizeEventType(type: string): string {
-  const parts = type.split(/[._:-]/);
-  const last = parts[parts.length - 1] ?? type;
-  return last.charAt(0).toUpperCase() + last.slice(1).replace(/_/g, ' ');
-}
+/**
+ * Last path segment of an event type ("deliverable.submitted" -> "submitted").
+ * The rail renders a localized verb via `projectHub.eventVerb.<segment>`;
+ * EVENT_VERB_SEGMENTS is the allowlist of segments that have a label — anything
+ * else falls back to a capitalized raw segment, which keeps new event types
+ * readable until a label is added.
+ */
+const EVENT_VERB_SEGMENTS = new Set<string>([
+  'signup', 'login', 'created', 'updated', 'deleted', 'saved', 'selected',
+  'changed', 'moved', 'added', 'submitted', 'approved', 'requested',
+  'scheduled', 'signaled', 'published', 'unpublished', 'closed', 'accepted',
+]);
 
-function formatRelative(date: Date, now: Date): string {
-  const diff = Math.floor((now.getTime() - date.getTime()) / MS_PER_DAY);
-  if (diff <= 0) return 'today';
-  if (diff === 1) return 'yesterday';
-  if (diff < 7) return `${diff}d ago`;
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+function eventTypeSegment(type: string): string {
+  const parts = type.split(/[._:-]/);
+  return parts[parts.length - 1] ?? type;
 }

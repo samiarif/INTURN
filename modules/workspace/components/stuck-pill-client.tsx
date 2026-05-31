@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { addCommentAction } from '@/modules/comments/server-actions';
 
 type Props = {
@@ -27,6 +28,7 @@ type Props = {
  * Human-in-the-loop per the brief: AI suggests, intern decides.
  */
 export function StuckPillClient(props: Props) {
+  const t = useTranslations('workspace.stuck');
   const [open, setOpen] = useState(false);
   const [blocker, setBlocker] = useState('');
   const [draft, setDraft] = useState<string | null>(null);
@@ -49,13 +51,13 @@ export function StuckPillClient(props: Props) {
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        setError(j.error === 'rate_limited' ? 'Too many requests. Wait a moment.' : 'AI failed');
+        setError(j.error === 'rate_limited' ? t('rateLimited') : t('aiFailed'));
       } else {
         const j = (await res.json()) as { draft: string };
         setDraft(j.draft);
       }
     } catch {
-      setError('Network error');
+      setError(t('networkError'));
     } finally {
       setDrafting(false);
     }
@@ -155,7 +157,7 @@ export function StuckPillClient(props: Props) {
                     marginBottom: 6,
                   }}
                 >
-                  ✦ {props.draftBadgeLabel}
+                  {t('draftBadgeGlyph', { label: props.draftBadgeLabel })}
                 </div>
                 <textarea
                   value={draft}
@@ -223,7 +225,7 @@ export function StuckPillClient(props: Props) {
                   opacity: drafting || blocker.trim().length < 10 ? 0.6 : 1,
                 }}
               >
-                {drafting ? 'Drafting…' : draft ? props.regenerateLabel : '✦ AI draft'}
+                {drafting ? t('drafting') : draft ? props.regenerateLabel : t('aiDraft')}
               </button>
               <button
                 type="button"

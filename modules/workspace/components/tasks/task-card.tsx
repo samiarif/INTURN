@@ -2,7 +2,7 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import type { Task } from '@/db/schema';
 import { Avatar } from '@/components/avatar';
 import { TaskCardMenu } from './task-card-menu';
@@ -14,15 +14,19 @@ type TaskWithMeta = Task & {
   attachments?: number;
 };
 
-const LABELS_BY_TAG_PREFIX: Record<string, { kind: string; text: string }> = {
-  BA: { kind: 'design', text: 'Design' },
-  UX: { kind: 'research', text: 'Research' },
+// Maps a tag prefix to its visual kind, which doubles as both the CSS modifier
+// (`.tb-card-label.design`/`.research`) and the i18n key suffix
+// (`card.tagLabel.design`/`.research`). The displayed label text is localized at
+// render time, not stored here.
+const TAG_KIND_BY_PREFIX: Record<string, 'design' | 'research'> = {
+  BA: 'design',
+  UX: 'research',
 };
 
-function deriveLabel(tag: string | null): { kind: string; text: string } | null {
+function deriveTagKind(tag: string | null): 'design' | 'research' | null {
   if (!tag) return null;
   const prefix = tag.split('-')[0];
-  return LABELS_BY_TAG_PREFIX[prefix] ?? null;
+  return TAG_KIND_BY_PREFIX[prefix] ?? null;
 }
 
 export type DueInfo =
@@ -62,6 +66,7 @@ export type TaskCardProps = {
 
 export function SortableTaskCard({ task, status, view, internName, renderDue }: TaskCardProps) {
   const locale = useLocale();
+  const t = useTranslations('workspace.tasksBoard');
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: task.id, data: { columnId: status } });
 
@@ -72,7 +77,7 @@ export function SortableTaskCard({ task, status, view, internName, renderDue }: 
   };
 
   const due = formatDue(task, locale);
-  const label = deriveLabel(task.tag);
+  const tagKind = deriveTagKind(task.tag);
   const showNeedsReview = view === 'supervisor' && status === 'review';
   const cardClass = [
     'tb-card',
@@ -90,11 +95,11 @@ export function SortableTaskCard({ task, status, view, internName, renderDue }: 
       style={style}
       {...attributes}
       {...listeners}
-      aria-roledescription="Draggable task"
+      aria-roledescription={t('card.roleDescription')}
     >
       <div className="tb-card-top">
         {task.tag && <span className="tb-card-tag">{task.tag}</span>}
-        {label && <span className={`tb-card-label ${label.kind}`}>{label.text}</span>}
+        {tagKind && <span className={`tb-card-label ${tagKind}`}>{t(`card.tagLabel.${tagKind}`)}</span>}
         <TaskCardMenu task={task} view={view} />
       </div>
       <div className="tb-card-title">{task.title}</div>

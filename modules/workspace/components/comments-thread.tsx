@@ -62,7 +62,7 @@ export function CommentsThread({
   }
 
   function remove(commentId: string) {
-    if (!confirm('Delete this comment?')) return;
+    if (!confirm(t('deleteConfirm'))) return;
     startTransition(async () => {
       await deleteCommentAction({ commentId, workspaceId });
       router.refresh();
@@ -91,7 +91,7 @@ export function CommentsThread({
         />
         <div className="mt-2.5 flex items-center justify-between gap-3">
           <span className="text-caption font-mono text-[var(--ink-4)]">
-            ⌘/Ctrl + Enter · {body.length} / 4000
+            {t('charCount', { count: body.length })}
           </span>
           <Button
             type="button"
@@ -100,7 +100,7 @@ export function CommentsThread({
             className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
           >
             <Send aria-hidden />
-            {pending ? 'Sending…' : t('post')}
+            {pending ? t('sending') : t('post')}
           </Button>
         </div>
       </Card>

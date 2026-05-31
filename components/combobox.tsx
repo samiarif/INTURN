@@ -19,16 +19,18 @@ export function Combobox({
   options,
   value,
   onChange,
-  placeholder = 'Select…',
-  searchPlaceholder = 'Search…',
-  emptyMessage = 'No matches.',
+  placeholder,
+  searchPlaceholder,
+  emptyMessage,
 }: {
   options: ComboboxOption[];
   value?: string;
   onChange: (value: string) => void;
-  placeholder?: string;
-  searchPlaceholder?: string;
-  emptyMessage?: string;
+  // Required (no English defaults): every caller passes localized copy so this
+  // shared primitive never renders an untranslated string.
+  placeholder: string;
+  searchPlaceholder: string;
+  emptyMessage: string;
 }) {
   const [open, setOpen] = useState(false);
   const selected = options.find((o) => o.value === value);

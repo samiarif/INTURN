@@ -23,7 +23,7 @@ export function UserButtonShim({ bypassed }: { bypassed: boolean }) {
         className="inline-flex items-center gap-2 h-9 px-3 rounded-full bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)] text-[11px] font-mono uppercase tracking-wider hover:opacity-80"
         title={t('switchUser')}
       >
-        ⚠ Dev
+        {'⚠ Dev'}
       </Link>
     );
   }

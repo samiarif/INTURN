@@ -146,7 +146,7 @@ export function ManageDependenciesDialog({
                     <span className="truncate text-[var(--ink)] font-medium">
                       {edge.upstream.title}
                     </span>
-                    <span className="text-[var(--ink-4)]">·</span>
+                    <span className="text-[var(--ink-4)]">{'·'}</span>
                     <span className="truncate text-[var(--ink-3)]">
                       {edge.upstream.internName}
                     </span>
@@ -159,7 +159,7 @@ export function ManageDependenciesDialog({
                     <span className="truncate text-[var(--ink)] font-medium">
                       {edge.downstream.title}
                     </span>
-                    <span className="text-[var(--ink-4)]">·</span>
+                    <span className="text-[var(--ink-4)]">{'·'}</span>
                     <span className="truncate text-[var(--ink-3)]">
                       {edge.downstream.internName}
                     </span>

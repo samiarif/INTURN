@@ -72,6 +72,9 @@ export function ReportVersionStack({
   }));
   const stack = [current, ...past];
 
+  // Typographic quotes around free-text notes/feedback — French uses guillemets.
+  const [lq, rq] = locale === 'fr' ? ['« ', ' »'] : ['“', '”'];
+
   return (
     <div className="flex flex-col gap-3">
       {stack.map((v) => (
@@ -83,7 +86,7 @@ export function ReportVersionStack({
           }
         >
           <div className="mb-2 flex items-center gap-2">
-            <span className="font-mono text-caption text-[var(--ink-3)]">v{v.version}</span>
+            <span className="font-mono text-caption text-[var(--ink-3)]">{`v${v.version}`}</span>
             <span className="text-sm text-[var(--ink-2)]">{authorName}</span>
             {v.submittedAt && (
               <span className="font-mono text-caption text-[var(--ink-4)]">{fmt(v.submittedAt, locale)}</span>
@@ -93,11 +96,11 @@ export function ReportVersionStack({
             </span>
           </div>
           {v.note && (
-            <p className="mb-2 text-sm text-[var(--ink-2)]">&ldquo;{v.note}&rdquo;</p>
+            <p className="mb-2 text-sm text-[var(--ink-2)]">{lq}{v.note}{rq}</p>
           )}
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded bg-[var(--surface-muted)] font-mono text-[10px] text-[var(--ink-2)]">
-              PDF
+              {'PDF'}
             </div>
             <div className="min-w-0 flex-1 truncate text-sm text-[var(--ink)]">
               {v.fileName ?? noFileLabel}
@@ -120,7 +123,7 @@ export function ReportVersionStack({
                   {v.review.state === 'approved' ? statusLabels['approved'] : statusLabels['revision-requested']}
                 </StatusPill>
               </div>
-              <p className="text-sm text-[var(--ink-2)]">&ldquo;{v.review.text}&rdquo;</p>
+              <p className="text-sm text-[var(--ink-2)]">{lq}{v.review.text}{rq}</p>
             </div>
           )}
         </div>

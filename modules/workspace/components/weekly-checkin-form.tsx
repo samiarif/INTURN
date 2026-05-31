@@ -13,6 +13,7 @@ import {
 
 export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
   const t = useTranslations('workspace.checkIn');
+  const tForm = useTranslations('workspace.checkInForm');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [generating, startGenerating] = useTransition();
@@ -32,8 +33,8 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
         setStuck(draft.stuck);
         setNext(draft.next);
         setSource(draft.source);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to generate draft');
+      } catch {
+        setError(tForm('errorGenerateFailed'));
       }
     });
   }
@@ -45,15 +46,12 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
         await submitWeeklyCheckInAction({ workspaceId, shipped, stuck, next });
         setSubmitted(true);
         router.refresh();
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to send');
+      } catch {
+        setError(tForm('errorSendFailed'));
       }
     });
   }
 
-  // Strings without plan-vetted FR translations (sent confirmation,
-  // template-draft notice, "Sending…", "Drafting…", "Send to supervisor →")
-  // stay English until the namespace expands.
   if (submitted) {
     return (
       <div className="ws-card" style={{ textAlign: 'center', padding: 32 }}>
@@ -73,9 +71,9 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
         >
           <Check size={22} strokeWidth={2.5} />
         </div>
-        <h3 className="text-heading" style={{ marginBottom: 4 }}>Check-in sent</h3>
+        <h3 className="text-heading" style={{ marginBottom: 4 }}>{tForm('sentTitle')}</h3>
         <p className="text-caption" style={{ color: 'var(--ink-3)' }}>
-          Your supervisor will see this in the timeline and dashboard.
+          {tForm('sentBody')}
         </p>
       </div>
     );
@@ -93,7 +91,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
         >
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
             <Sparkles size={13} strokeWidth={2} aria-hidden />
-            {generating ? 'Drafting…' : source === 'ai' ? t('regenerate') : 'Generate draft'}
+            {generating ? tForm('drafting') : source === 'ai' ? t('regenerate') : tForm('generateDraft')}
           </span>
         </button>
       </div>
@@ -115,7 +113,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
               {t('draftedByAi')}
             </span>
           ) : (
-            'Template draft (no AI key configured). Edit anything before sending.'
+            tForm('templateNote')
           )}
         </div>
       )}
@@ -208,7 +206,7 @@ export function WeeklyCheckInForm({ workspaceId }: { workspaceId: string }) {
             disabled={pending || (!shipped && !stuck && !next)}
             className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
           >
-            {pending ? 'Sending…' : t('submit')}
+            {pending ? tForm('sending') : t('submit')}
           </Button>
         </div>
       </div>

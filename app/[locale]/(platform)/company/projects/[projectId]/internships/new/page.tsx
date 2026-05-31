@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { db } from '@/db';
 import { organizations } from '@/db/schema';
 import { eq } from 'drizzle-orm';
@@ -34,9 +35,13 @@ export default async function Page({
     .limit(1);
 
   // Build the supervisor's display name for the live-preview rail. Falls back
-  // to email if name fields are empty (older onboarding rows).
+  // to email if name fields are empty (older onboarding rows), then to a
+  // localized "You" as a last resort.
+  const tf = await getTranslations('internships.form');
   const supervisorName =
-    [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email || 'You';
+    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+    user.email ||
+    tf('previewDefaultSupervisor');
 
   return (
     <div className="max-w-[1200px] mx-auto p-6 sm:p-8">
@@ -44,7 +49,7 @@ export default async function Page({
         projectId={projectId}
         projectName={project.name}
         projectStartDate={project.startDate ?? null}
-        orgName={org?.name ?? 'Your company'}
+        orgName={org?.name ?? tf('previewDefaultOrg')}
         orgLocation={org?.city ?? org?.location ?? ''}
         supervisorName={supervisorName}
         unifiedFlow={flow === 'create'}

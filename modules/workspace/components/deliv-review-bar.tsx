@@ -56,9 +56,9 @@ export function DelivReviewBar({
         <Avatar name={submitterName} size="sm" />
         <div className="who">
           <span className="title">
-            {t('submittedBy', { name: submitterName })} · {whenLabel}
+            {t('submittedByWhen', { name: submitterName, when: whenLabel })}
           </span>
-          {note && <span className="sub">&ldquo;{note}&rdquo;</span>}
+          {note && <span className="sub">{t('quotedNote', { note })}</span>}
         </div>
         <div className="actions">
           <button

@@ -11,20 +11,30 @@ import {
 import { ToggleSuspendButton } from '../toggle-suspend-button';
 import { RoleSelect } from '../role-select';
 import type { Role } from '@/modules/admin/users/server-actions';
+import { industryKeyFromValue } from '@/modules/profiles/industries';
 
 export default async function Page({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;
 
-  const [detail, session, t, locale] = await Promise.all([
+  const [detail, session, t, tStatus, tAppStatus, tIndustry, locale] = await Promise.all([
     getUserDetail(userId),
     getSession(),
     getTranslations('admin.users'),
+    getTranslations('admin.status'),
+    getTranslations('applications.status'),
+    getTranslations('onboarding.company.industries'),
     getLocale(),
   ]);
 
   if (!detail) notFound();
 
   const { user, profile, organization, applications, workspaces } = detail;
+  // Industry is stored as its canonical English value; localize via the shared
+  // key map, falling back to the raw value for legacy/free-text industries.
+  const industryLabel = (value: string): string => {
+    const key = industryKeyFromValue(value);
+    return key ? tIndustry(key) : value;
+  };
   const fullName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
   const dateFmt = (d: Date | string) =>
     new Date(d).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US');
@@ -133,12 +143,12 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
                   <dt className="text-[var(--ink-3)] text-caption">{t('detailOrgStatus')}</dt>
                   <dd>
                     <StatusPill tone={toneForVerificationStatus(organization.verificationStatus)}>
-                      {organization.verificationStatus}
+                      {tStatus(organization.verificationStatus)}
                     </StatusPill>
                   </dd>
                 </div>
                 {organization.industry && (
-                  <DetailRow label={t('detailOrgIndustry')} value={organization.industry} />
+                  <DetailRow label={t('detailOrgIndustry')} value={industryLabel(organization.industry)} />
                 )}
                 {organization.city && (
                   <DetailRow label={t('detailCity')} value={organization.city} />
@@ -185,12 +195,12 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
                         {internship.title}
                       </Link>
                     ) : (
-                      <span className="text-[var(--ink-4)]">—</span>
+                      <span className="text-[var(--ink-4)]">{'—'}</span>
                     )}
                   </td>
                   <td className="py-2 pr-3">
                     <StatusPill tone={toneForApplicationStatus(application.status)}>
-                      {application.status ?? 'new'}
+                      {tAppStatus(application.status ?? 'new')}
                     </StatusPill>
                   </td>
                   <td className="py-2 text-[var(--ink-3)] font-mono text-caption whitespace-nowrap">
@@ -228,7 +238,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
                           : 'info'
                     }
                   >
-                    {workspace.status ?? 'active'}
+                    {t(`workspaceStatus.${workspace.status ?? 'active'}`)}
                   </StatusPill>
                   <span className="text-caption text-[var(--ink-3)] font-mono whitespace-nowrap">
                     {dateFmt(workspace.createdAt)}

@@ -66,7 +66,7 @@ export default async function Page() {
         </div>
         {rows.length > 0 && (
           <span className="text-eyebrow font-mono uppercase text-[var(--ink-3)]">
-            {tApps('countLabel')} · {rows.length}
+            {tApps('countLabel')} {tApps('metaSep')} {rows.length}
           </span>
         )}
       </div>

@@ -35,6 +35,21 @@ export function EditGoalsPhasesDialog({
       : [{ name: '', fromWeek: 1, toWeek: 4 }],
   );
 
+  // Localize the update action's machine error codes; unknown/absent codes
+  // fall back to the generic message.
+  function mapError(code: string): string {
+    switch (code) {
+      case 'too_many_goals':
+        return t('errorTooManyGoals');
+      case 'too_many_phases':
+        return t('errorTooManyPhases');
+      case 'account_suspended':
+        return t('errorSuspended');
+      default:
+        return t('errorGeneric');
+    }
+  }
+
   function save() {
     setError(null);
     startTransition(async () => {
@@ -47,7 +62,7 @@ export function EditGoalsPhasesDialog({
             : undefined,
       });
       if (!res.ok) {
-        setError(res.error ?? 'failed');
+        setError(mapError(res.error ?? ''));
         return;
       }
       setOpen(false);
@@ -142,7 +157,7 @@ export function EditGoalsPhasesDialog({
                       className="text-[var(--ink-3)] hover:text-[var(--danger)] text-[16px] leading-none px-2"
                       aria-label={t('removePhase')}
                     >
-                      ×
+                      {'×'}
                     </button>
                   )}
                 </div>
@@ -203,7 +218,7 @@ export function EditGoalsPhasesDialog({
                 }
                 className="text-[13px] text-[var(--brand-700)] hover:underline self-start"
               >
-                + {t('addPhase')}
+                {'+'} {t('addPhase')}
               </button>
             )}
           </div>

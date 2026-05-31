@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useTranslations } from 'next-intl';
 import type { Task } from '@/db/schema';
 import type { TaskStatus } from '@/modules/tasks/state-machine';
 import { SortableTaskCard, type DueInfo } from './task-card';
@@ -41,6 +42,7 @@ export function TaskColumn({
   emptyDropLabel,
   onAddClick,
 }: TaskColumnProps) {
+  const t = useTranslations('workspace.tasksBoard');
   const { setNodeRef } = useDroppable({ id: `column-${status}`, data: { columnId: status } });
   const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
 
@@ -53,7 +55,7 @@ export function TaskColumn({
       <div className="tb-col-head">
         <span className="pip" aria-hidden="true" />
         <span className="name">{label}</span>
-        <span className="count" aria-label={`${tasks.length} tasks`}>
+        <span className="count" aria-label={t('columnCount', { count: tasks.length })}>
           {tasks.length}
         </span>
         <TaskColumnMenu status={status} onAddClick={onAddClick} />
@@ -74,7 +76,7 @@ export function TaskColumn({
         {tasks.length === 0 && <div className="tb-card-ghost">{emptyDropLabel}</div>}
       </div>
       <button className="tb-col-add" type="button" onClick={onAddClick}>
-        <span className="plus">+</span>
+        <span className="plus">{t('addGlyph')}</span>
         <span>{addTaskLabel}</span>
       </button>
     </div>

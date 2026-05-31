@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { Textarea } from '@/components/ui/textarea';
 import { updateInternalNotesAction } from '@/modules/applications/server-actions';
 
@@ -13,6 +14,8 @@ export function NotesEditor({
   projectId: string;
   initialNotes: string;
 }) {
+  const t = useTranslations('applications.notes');
+  const locale = useLocale();
   const [notes, setNotes] = useState(initialNotes);
   const [savedAt, setSavedAt] = useState<Date | null>(initialNotes ? new Date() : null);
   const [pending, startTransition] = useTransition();
@@ -39,14 +42,14 @@ export function NotesEditor({
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         rows={5}
-        placeholder="Internal notes (never shown to the applicant)…"
+        placeholder={t('placeholder')}
       />
       <p className="text-caption text-[var(--ink-3)] mt-1 font-mono">
         {pending
-          ? 'Saving…'
+          ? t('saving')
           : savedAt
-            ? `Saved · ${savedAt.toLocaleTimeString()}`
-            : 'Auto-saves as you type'}
+            ? t('saved', { time: savedAt.toLocaleTimeString(locale) })
+            : t('autoSaves')}
       </p>
     </div>
   );

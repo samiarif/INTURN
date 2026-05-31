@@ -1,11 +1,15 @@
 // Pure state machine for task status transitions — safe to import from client.
 export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'done';
 
-export const TASK_COLUMNS: Array<{ status: TaskStatus; label: string; cls: string }> = [
-  { status: 'todo', label: 'To do', cls: 'todo' },
-  { status: 'in-progress', label: 'In progress', cls: 'prog' },
-  { status: 'review', label: 'In review', cls: 'review' },
-  { status: 'done', label: 'Done', cls: 'done' },
+// Column order + CSS class per status. Display labels are NOT stored here —
+// callers localize via next-intl off `status` (workspace.tasksBoard.* status
+// maps), so keeping an English `label` would be dead data and a future
+// no-literal-string violation.
+export const TASK_COLUMNS: Array<{ status: TaskStatus; cls: string }> = [
+  { status: 'todo', cls: 'todo' },
+  { status: 'in-progress', cls: 'prog' },
+  { status: 'review', cls: 'review' },
+  { status: 'done', cls: 'done' },
 ];
 
 // Any transition is allowed — boards are fluid. Tracking the transition in

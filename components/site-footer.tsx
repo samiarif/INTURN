@@ -71,7 +71,7 @@ export async function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-[var(--border-color)] px-6 py-4 text-[12px] text-[var(--ink-3)] flex flex-wrap justify-between gap-2 max-w-6xl mx-auto">
-        <span>© {year} Inturn · {t('madeIn')}</span>
+        <span>{`© ${year} Inturn`} {t('metaSep')} {t('madeIn')}</span>
         <span>{t('contact')}</span>
       </div>
     </footer>

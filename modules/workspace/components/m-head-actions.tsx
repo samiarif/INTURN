@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { AddTaskModal } from './add-task-modal';
 import { AddNoteModal } from './add-note-modal';
 import { ScheduleCheckInButton } from './schedule-check-in';
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function MHeadActions({ view, workspaceId }: Props) {
+  const t = useTranslations('workspace.topbar');
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [noteModalOpen, setNoteModalOpen] = useState(false);
   const router = useRouter();
@@ -33,14 +35,14 @@ export function MHeadActions({ view, workspaceId }: Props) {
           className="ws-btn ghost tiny"
           onClick={() => setNoteModalOpen(true)}
         >
-          <span className="plus">+</span> Add note
+          <span className="plus">{t('addGlyph')}</span> {t('addNote')}
         </button>
         <button
           type="button"
           className="ws-btn brand tiny"
           onClick={() => setTaskModalOpen(true)}
         >
-          <span className="plus">+</span> Assign task
+          <span className="plus">{t('addGlyph')}</span> {t('assignTask')}
         </button>
         {taskModalOpen && (
           <AddTaskModal
@@ -67,14 +69,14 @@ export function MHeadActions({ view, workspaceId }: Props) {
         className="ws-btn ghost tiny"
         onClick={goToCheckIn}
       >
-        Weekly check-in →
+        {t('weeklyCheckIn')}
       </button>
       <button
         type="button"
         className="ws-btn brand tiny"
         onClick={() => setNoteModalOpen(true)}
       >
-        <span className="plus">+</span> Add note
+        <span className="plus">{t('addGlyph')}</span> {t('addNote')}
       </button>
       {noteModalOpen && (
         <AddNoteModal

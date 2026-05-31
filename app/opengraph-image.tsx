@@ -1,4 +1,6 @@
 import { ImageResponse } from 'next/og';
+import { getTranslations } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
 
 export const runtime = 'edge';
 export const alt = 'Inturn — the internship platform for Tunisia';
@@ -6,6 +8,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 export default async function Image() {
+  const t = await getTranslations({ locale: routing.defaultLocale, namespace: 'meta' });
   return new ImageResponse(
     (
       <div
@@ -24,7 +27,7 @@ export default async function Image() {
       >
         <div>Inturn</div>
         <div style={{ fontSize: 28, marginTop: 16, opacity: 0.9 }}>
-          The internship platform for Tunisia
+          {t('ogTagline')}
         </div>
       </div>
     ),

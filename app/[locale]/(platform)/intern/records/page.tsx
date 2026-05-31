@@ -21,26 +21,22 @@ export default async function InternRecordsPage() {
         {t('eyebrow')}
       </h1>
       <p className="text-body text-[var(--ink-3)] mb-8">
-        {locale === 'fr'
-          ? 'Vos attestations de fin de stage. Partagez le lien avec de futurs recruteurs.'
-          : 'Your end-of-internship records. Share the link with future employers.'}
+        {t('listIntro')}
       </p>
 
       {rows.length === 0 ? (
         <div className="border border-dashed border-[var(--border-color)] rounded-lg p-12 text-center">
           <p className="text-[var(--ink-2)] font-medium mb-1">
-            {locale === 'fr' ? 'Aucune attestation pour l’instant' : 'No records yet'}
+            {t('listEmptyTitle')}
           </p>
           <p className="text-[var(--ink-3)] text-sm mb-4">
-            {locale === 'fr'
-              ? 'Vous recevrez votre première attestation lorsque votre superviseur validera votre stage.'
-              : 'You will receive your first record when a supervisor signs off on your internship.'}
+            {t('listEmptyBody')}
           </p>
           <Link
             href="/marketplace"
             className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
           >
-            {locale === 'fr' ? 'Parcourir les stages' : 'Browse internships'}
+            {t('listBrowseCta')}
             <ArrowRight size={14} strokeWidth={2.25} aria-hidden />
           </Link>
         </div>

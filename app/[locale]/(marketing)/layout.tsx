@@ -6,9 +6,11 @@ import { getSession } from '@/modules/auth/session';
 import { SiteFooter } from '@/components/site-footer';
 import { UserButtonShim } from '@/components/auth/user-button-shim';
 import { isDevAuthBypassed } from '@/lib/dev-auth';
+import { getTranslations } from 'next-intl/server';
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
+  const t = await getTranslations('landing.nav');
   const devBypassed = isDevAuthBypassed();
   const dashHref =
     session?.role === 'admin'
@@ -26,16 +28,16 @@ export default async function MarketingLayout({ children }: { children: React.Re
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-[14px] text-[var(--ink-2)]">
           <Link href="/marketplace" className="hover:text-[var(--ink)]">
-            Browse internships
+            {t('marketplace')}
           </Link>
           {!session && (
             <Link href="/sign-up?role=company" className="hover:text-[var(--ink)]">
-              For companies
+              {t('forCompanies')}
             </Link>
           )}
           {session && (
             <Link href={dashHref} className="hover:text-[var(--ink)]">
-              Dashboard
+              {t('dashboard')}
             </Link>
           )}
         </nav>
@@ -48,7 +50,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
               href="/dev/login"
               className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)]"
             >
-              <TriangleAlert size={13} strokeWidth={2.5} aria-hidden />Dev login
+              <TriangleAlert size={13} strokeWidth={2.5} aria-hidden />{t('devLogin')}
             </Link>
           ) : (
             <>
@@ -56,13 +58,13 @@ export default async function MarketingLayout({ children }: { children: React.Re
                 href="/sign-in"
                 className="text-[14px] font-medium text-[var(--ink-2)] hover:text-[var(--ink)]"
               >
-                Log in
+                {t('logIn')}
               </Link>
               <Link
                 href="/sign-up"
                 className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
               >
-                Sign up
+                {t('signUp')}
               </Link>
             </>
           )}

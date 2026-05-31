@@ -26,8 +26,10 @@ export function UnpublishInternshipButton({ internshipId }: { internshipId: stri
       try {
         await companyUnpublishInternshipAction(internshipId);
         router.refresh();
-      } catch (e) {
-        window.alert(e instanceof Error ? e.message : 'failed');
+      } catch {
+        // Unpublish/close only throw shouldn't-happen state/authz guards the
+        // UI already prevents → localized generic copy.
+        window.alert(t('errorGeneric'));
       }
     });
   }
@@ -55,8 +57,10 @@ export function CloseInternshipButton({ internshipId }: { internshipId: string }
       try {
         await closeInternshipAction(internshipId);
         router.refresh();
-      } catch (e) {
-        window.alert(e instanceof Error ? e.message : 'failed');
+      } catch {
+        // Unpublish/close only throw shouldn't-happen state/authz guards the
+        // UI already prevents → localized generic copy.
+        window.alert(t('errorGeneric'));
       }
     });
   }

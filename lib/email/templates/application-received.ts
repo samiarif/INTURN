@@ -1,4 +1,4 @@
-import { baseUrl, emailLayout, escapeHtml } from './_layout';
+import { baseUrl, emailLayout, escapeHtml, greeting } from './_layout';
 
 export function applicationReceivedTemplate({
   supervisorName,
@@ -17,9 +17,15 @@ export function applicationReceivedTemplate({
   const title = fr
     ? `Nouvelle candidature — ${internshipTitle}`
     : `New application — ${internshipTitle}`;
+  // Applicant name may be empty (not-yet-onboarded) — localize the fallback.
+  const applicant = applicantName.trim()
+    ? escapeHtml(applicantName)
+    : fr
+      ? "Quelqu'un"
+      : 'Someone';
   const body = fr
-    ? `<p>Bonjour ${escapeHtml(supervisorName)},</p><p><strong>${escapeHtml(applicantName)}</strong> vient de postuler à <strong>${escapeHtml(internshipTitle)}</strong>.</p>`
-    : `<p>Hi ${escapeHtml(supervisorName)},</p><p><strong>${escapeHtml(applicantName)}</strong> just applied to <strong>${escapeHtml(internshipTitle)}</strong>.</p>`;
+    ? `<p>${greeting(supervisorName, locale)}</p><p><strong>${applicant}</strong> vient de postuler à <strong>${escapeHtml(internshipTitle)}</strong>.</p>`
+    : `<p>${greeting(supervisorName, locale)}</p><p><strong>${applicant}</strong> just applied to <strong>${escapeHtml(internshipTitle)}</strong>.</p>`;
   return {
     ...emailLayout({
       title,

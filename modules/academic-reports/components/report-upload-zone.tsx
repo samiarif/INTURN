@@ -19,6 +19,8 @@ export function ReportUploadZone({
     cancel: string;
     send: string;
     sending: string;
+    errorRateLimited: string;
+    errorGeneric: string;
   };
 }) {
   const router = useRouter();
@@ -27,6 +29,12 @@ export function ReportUploadZone({
   const [staged, setStaged] = useState<{ url: string; fileName: string; contentType: string } | null>(null);
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  // Map the action's machine error codes to localized copy; unknown/shouldn't-
+  // happen states funnel to a generic line (the established mapError pattern).
+  function mapError(code: string): string {
+    return code === 'rate_limited' ? labels.errorRateLimited : labels.errorGeneric;
+  }
 
   function submit() {
     if (!staged) return;
@@ -45,7 +53,7 @@ export function ReportUploadZone({
         setOpen(false);
         router.refresh();
       } else {
-        setError(res.error);
+        setError(mapError(res.error));
       }
     });
   }

@@ -13,7 +13,7 @@ export async function SuspendedBanner() {
       role="status"
       className="bg-[var(--status-danger-bg)] border-b border-[var(--status-danger-border)] px-6 py-3 text-center text-[13px] text-[var(--status-danger-ink)]"
     >
-      <strong className="font-semibold">{t('label')}</strong> · {t('body')}{' '}
+      <strong className="font-semibold">{t('label')}</strong> {t('metaSep')} {t('body')}{' '}
       <a
         href="mailto:support@inturn.tn"
         className="underline underline-offset-2 hover:opacity-80"
