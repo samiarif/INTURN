@@ -19,8 +19,7 @@ import {
   getPendingStudentInvites,
   type UniversityCoordinator,
 } from '@/modules/university/queries';
-import { countReportsAwaitingReview, getReportStatusByStudent } from '@/modules/academic-reports/queries';
-import { toneFor } from '@/modules/academic-reports/status-tone';
+import { countReportsAwaitingReview, getAwaitingReviewCountByStudent } from '@/modules/academic-reports/queries';
 import Link from 'next/link';
 import { InviteStudentButton } from '../_invite-student-button';
 import { InviteCoordinatorButton } from '../_invite-coordinator-button';
@@ -56,10 +55,10 @@ export default async function Page() {
   // an encadrant (admin) sees only the students assigned to them.
   const isHead = current.role === 'owner';
 
-  const [students, awaitingReview, reportStatus] = await Promise.all([
+  const [students, awaitingReview, awaitingByStudent] = await Promise.all([
     getManagedStudents(current.org.id, isHead ? undefined : { forCoordinatorId: session.user.id }),
     countReportsAwaitingReview(current.org.id),
-    getReportStatusByStudent(current.org.id),
+    getAwaitingReviewCountByStudent(current.org.id),
   ]);
 
   const coordinators: UniversityCoordinator[] = isHead
@@ -125,7 +124,6 @@ export default async function Page() {
               {students.map((s, i) => {
                 const snap = snapshots[i];
                 const name = [s.firstName, s.lastName].filter(Boolean).join(' ') || s.email;
-                const rStatus = s.userId ? reportStatus.get(s.userId) : undefined;
                 return (
                   <TableRow key={s.memberId}>
                     <TableCell className="font-medium text-[var(--ink)]">
@@ -156,13 +154,12 @@ export default async function Page() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {rStatus ? (
-                        <StatusPill tone={toneFor(rStatus)}>
-                          {t(`reportStatus.${rStatus === 'revision-requested' ? 'revisionRequested' : rStatus}`)}
-                        </StatusPill>
-                      ) : (
-                        <span className="text-caption text-[var(--ink-4)]">{t('reportStatus.none')}</span>
-                      )}
+                      {(() => {
+                        const n = s.userId ? (awaitingByStudent.get(s.userId) ?? 0) : 0;
+                        return n > 0
+                          ? <StatusPill tone="warn">{t('reportStatus.awaiting', { count: n })}</StatusPill>
+                          : <span className="text-caption text-[var(--ink-4)]">—</span>;
+                      })()}
                     </TableCell>
                     {isHead && (
                       <TableCell>
