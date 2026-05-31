@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { PULSE_SEVERITY, type Pulse } from '../types';
-import { PulseStatusDot } from './pulse-status-dot';
+import { PulseDigestRow } from './pulse-digest-row';
 
 export type PulseDigestItem = {
   workspaceId: string;
@@ -47,25 +46,12 @@ export async function PulseDigest({
       ) : (
         <div className="flex flex-col">
           {sorted.map(({ workspaceId, internName, pulse }) => (
-            <Link
+            <PulseDigestRow
               key={workspaceId}
+              internName={internName}
+              pulse={pulse}
               href={hrefFor(workspaceId)}
-              className="group flex items-center gap-3 py-2.5 border-b border-[var(--border-color)] last:border-b-0 hover:bg-[var(--surface-muted)] -mx-2 px-2 rounded transition-colors"
-            >
-              <PulseStatusDot status={pulse.status} />
-              <span className="text-label font-medium text-[var(--ink)] flex-shrink-0">
-                {internName}
-              </span>
-              <span className="text-caption text-[var(--ink-3)] truncate flex-1 min-w-0">
-                {pulse.headline}
-              </span>
-              <span
-                aria-hidden
-                className="text-[var(--ink-3)] group-hover:text-[var(--brand-700)] flex-shrink-0"
-              >
-                →
-              </span>
-            </Link>
+            />
           ))}
         </div>
       )}

@@ -1620,6 +1620,7 @@
     "refreshing": "Analyse…",
     "basedOn": "D'après",
     "empty": "Aucun stagiaire actif pour le moment.",
+    "openWorkspace": "Ouvrir l'espace",
     "status": {
       "on-track": "Sur les rails",
       "attention": "À surveiller",

@@ -1620,6 +1620,7 @@
     "refreshing": "Analyzing…",
     "basedOn": "Based on",
     "empty": "No active interns yet.",
+    "openWorkspace": "Open workspace",
     "status": {
       "on-track": "On track",
       "attention": "Needs attention",
