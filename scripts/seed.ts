@@ -963,22 +963,24 @@ async function seedUniversity(ctx: {
   });
   await ensureMember(student2.id, 'student', student2.email, prof.id);
 
-  // 5. One submitted rapport for Yasmine (references her Acme internship).
-  const [existingReport] = await db
+  // 5. Submitted rapport for Yasmine (references her Acme internship).
+  const [existingRapport] = await db
     .select()
     .from(academicReports)
     .where(
       and(
         eq(academicReports.studentUserId, ctx.yasmineId),
         eq(academicReports.universityOrgId, uni.id),
+        eq(academicReports.kind, 'rapport'),
       ),
     )
     .limit(1);
-  if (!existingReport) {
+  if (!existingRapport) {
     await db.insert(academicReports).values({
       studentUserId: ctx.yasmineId,
       universityOrgId: uni.id,
       internshipId: ctx.yasmineInternshipId,
+      kind: 'rapport',
       title: 'Rapport de stage — Brand audit',
       description: 'Premier jet du rapport de stage couvrant la phase de découverte.',
       status: 'submitted',
@@ -986,11 +988,40 @@ async function seedUniversity(ctx: {
       submittedAt: new Date(),
       fileName: 'rapport-stage-v1.pdf',
       fileType: 'application/pdf',
+      revisionHistory: [],
+    });
+  }
+
+  // 5b. Draft diagram (second livrable) for Yasmine — shows mixed-status list.
+  const [existingDiagram] = await db
+    .select()
+    .from(academicReports)
+    .where(
+      and(
+        eq(academicReports.studentUserId, ctx.yasmineId),
+        eq(academicReports.universityOrgId, uni.id),
+        eq(academicReports.kind, 'diagram'),
+      ),
+    )
+    .limit(1);
+  if (!existingDiagram) {
+    await db.insert(academicReports).values({
+      studentUserId: ctx.yasmineId,
+      universityOrgId: uni.id,
+      internshipId: ctx.yasmineInternshipId,
+      kind: 'diagram',
+      title: "Diagramme d'architecture",
+      status: 'draft',
+      version: 1,
+      fileUrl: null,
+      fileName: null,
+      fileType: null,
+      revisionHistory: [],
     });
   }
 
   console.log(
-    `✓ University seed: ENIT (demo) + coordinator prof.saidi@enit.utm.tn (university role) + 2 managed students (Yasmine placed) + 1 submitted rapport`,
+    `✓ University seed: ENIT (demo) + coordinator prof.saidi@enit.utm.tn (university role) + 2 managed students (Yasmine placed) + 1 submitted rapport + 1 draft diagram`,
   );
 }
 
