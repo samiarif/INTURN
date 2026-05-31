@@ -91,6 +91,7 @@ beforeEach(() => {
 
 describe('createReportDraft', () => {
   it('inserts a draft report for the student+university pair', async () => {
+    mocks.selectQueue.push([]); // existing-count query → none
     await createReportDraft({
       studentUserId: 'stu1',
       universityOrgId: 'uni1',
@@ -105,6 +106,19 @@ describe('createReportDraft', () => {
       status: 'draft',
       version: 1,
     });
+  });
+
+  it('createReportDraft persists kind and defaults version/status', async () => {
+    mocks.selectQueue.push([]); // existing-count query → none
+    await createReportDraft({ studentUserId: 's1', universityOrgId: 'u1', kind: 'diagram', title: 'Schéma' });
+    const vals = mocks.insertValues.mock.calls[0][0] as Record<string, unknown>;
+    expect(vals).toMatchObject({ kind: 'diagram', status: 'draft', version: 1, title: 'Schéma' });
+  });
+
+  it('createReportDraft rejects when the student already has 20 deliverables', async () => {
+    mocks.selectQueue.push(Array.from({ length: 20 }, (_, i) => ({ id: String(i) }))); // count query
+    await expect(createReportDraft({ studentUserId: 's1', universityOrgId: 'u1', kind: 'rapport' }))
+      .rejects.toThrow('too_many_deliverables');
   });
 });
 

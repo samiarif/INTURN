@@ -4,9 +4,10 @@ import {
   academicReportComments,
   type AcademicReportRevision,
 } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
 import { nextReviewState, type ReviewStatus } from '@/modules/review/state-machine';
+import type { DeliverableKind } from './kinds';
 
 /** First-create a draft rapport for a student+university pair. */
 export async function createReportDraft(input: {
@@ -15,7 +16,21 @@ export async function createReportDraft(input: {
   internshipId?: string | null;
   title?: string | null;
   description?: string | null;
+  kind?: DeliverableKind;
 }) {
+  // Anti-spam cap: at most 20 deliverables per (student, university).
+  const existing = await db
+    .select({ id: academicReports.id })
+    .from(academicReports)
+    .where(
+      and(
+        eq(academicReports.studentUserId, input.studentUserId),
+        eq(academicReports.universityOrgId, input.universityOrgId),
+      ),
+    )
+    .limit(21);
+  if (existing.length >= 20) throw new Error('too_many_deliverables');
+
   const [created] = await db
     .insert(academicReports)
     .values({
@@ -24,6 +39,7 @@ export async function createReportDraft(input: {
       internshipId: input.internshipId ?? null,
       title: input.title ?? null,
       description: input.description ?? null,
+      kind: input.kind ?? 'rapport',
       status: 'draft',
       version: 1,
     })
