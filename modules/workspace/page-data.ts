@@ -32,6 +32,8 @@ export type WorkspaceShell = {
   viewer: { initials: string; name: string; subtitle: string };
   shell: {
     workspaceId: string;
+    projectId: string | null;
+    organizationId: string;
     organizationName: string;
     projectOrInternshipLabel: string;
     internFirstName: string | null;
@@ -193,6 +195,8 @@ export const loadWorkspaceShell = cache(async (
     viewer,
     shell: {
       workspaceId: row.workspaceId,
+      projectId: row.projectId,
+      organizationId: row.organizationId,
       organizationName: row.orgName,
       projectOrInternshipLabel: row.projectName ?? row.internshipTitle,
       internFirstName: row.internFirstName,

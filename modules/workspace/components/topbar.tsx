@@ -1,8 +1,16 @@
 import '../workspace.css';
-import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Search, Inbox, CircleHelp } from 'lucide-react';
+import { WorkspaceSwitcher } from './workspace-switcher';
+import type { SiblingWorkspace } from '../queries';
 
-export type Crumb = { label: string; bold?: boolean };
+export type Crumb = {
+  label: string;
+  href?: string;
+  bold?: boolean;
+  switcher?: { current: string; siblings: SiblingWorkspace[] };
+};
 
 /**
  * Workspace topbar. Lives inside the platform sidebar's main content
@@ -24,14 +32,28 @@ export async function WorkspaceTopBar({
   crumbs: Crumb[];
   modeChip?: { label: string };
 }) {
-  const t = await getTranslations('workspace.topbar');
+  const [t, locale] = await Promise.all([getTranslations('workspace.topbar'), getLocale()]);
   return (
     <div className="ws-topbar">
       <div className="ws-tb-crumbs">
         {crumbs.map((c, i) => (
           <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             {i > 0 && <span className="sep">/</span>}
-            {c.bold ? <b>{c.label}</b> : <span>{c.label}</span>}
+            {c.switcher ? (
+              <WorkspaceSwitcher
+                currentWorkspaceId={c.switcher.current}
+                siblings={c.switcher.siblings}
+                locale={locale}
+              />
+            ) : c.href ? (
+              <Link href={c.href} className="ws-tb-crumb-link">
+                {c.bold ? <b>{c.label}</b> : <span>{c.label}</span>}
+              </Link>
+            ) : c.bold ? (
+              <b>{c.label}</b>
+            ) : (
+              <span>{c.label}</span>
+            )}
           </span>
         ))}
         {modeChip && (

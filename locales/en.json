@@ -260,6 +260,9 @@
     "crumbs": {
       "myWorkspaces": "My workspaces"
     },
+    "switcher": {
+      "switchLabel": "Switch intern"
+    },
     "stuck": {
       "label": "I'm stuck",
       "title": "Tell us what's blocking you",

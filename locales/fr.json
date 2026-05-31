@@ -260,6 +260,9 @@
     "crumbs": {
       "myWorkspaces": "Mes workspaces"
     },
+    "switcher": {
+      "switchLabel": "Changer de stagiaire"
+    },
     "stuck": {
       "label": "Je suis bloqué·e",
       "title": "Dites-nous ce qui vous bloque",

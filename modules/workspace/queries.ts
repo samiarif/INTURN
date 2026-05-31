@@ -290,6 +290,40 @@ export const getSupervisorSidebarData = cache(async (supervisorUserId: string): 
   };
 });
 
+export type SiblingWorkspace = { workspaceId: string; internName: string };
+
+/**
+ * Every workspace under a project's internships, with the intern's display
+ * name — feeds the supervisor breadcrumb's workspace switcher. Mirrors the
+ * workspace → internship → user join used elsewhere, but pivots on the
+ * project's internships (internships.projectId) so siblings span the whole
+ * project, not just one org.
+ *
+ * Supervisor-only by construction: the caller gates on `view === 'supervisor'`
+ * before invoking this. Interns must never see teammate workspaces (privacy).
+ */
+export async function getProjectSiblingWorkspaces(
+  projectId: string,
+): Promise<SiblingWorkspace[]> {
+  const rows = await db
+    .select({
+      workspaceId: workspaces.id,
+      internFirstName: users.firstName,
+      internLastName: users.lastName,
+    })
+    .from(workspaces)
+    .innerJoin(internships, eq(internships.id, workspaces.internshipId))
+    .innerJoin(users, eq(users.id, workspaces.internId))
+    .where(eq(internships.projectId, projectId))
+    .orderBy(users.firstName, users.lastName);
+
+  return rows.map((r) => ({
+    workspaceId: r.workspaceId,
+    internName:
+      `${r.internFirstName ?? ''} ${r.internLastName ?? ''}`.trim() || 'Intern',
+  }));
+}
+
 export type CompanyWorkspaceRow = {
   id: string;
   status: 'active' | 'completed' | 'cancelled' | null;
