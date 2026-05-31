@@ -2358,7 +2358,8 @@
         "draft": "Draft",
         "submitted": "In review",
         "approved": "Approved",
-        "revisionRequested": "Changes requested"
+        "revisionRequested": "Changes requested",
+        "awaiting": "{count, plural, one {# to review} other {# to review}}"
       }
     },
     "review": {
@@ -2380,7 +2381,19 @@
       "versionsTitle": "Report versions",
       "commentsTitle": "Discussion",
       "noFile": "No file yet",
-      "open": "Open"
+      "open": "Open",
+      "addDeliverable": "Add a deliverable",
+      "kindLabel": "Type",
+      "titleLabel": "Title",
+      "create": "Create",
+      "creating": "Creating…",
+      "noDeliverables": "No deliverables yet."
+    },
+    "kind": {
+      "rapport": "Internship report",
+      "presentation": "Presentation",
+      "diagram": "Diagram",
+      "other": "Other"
     },
     "status": {
       "draft": "Draft",

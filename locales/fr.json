@@ -2358,7 +2358,8 @@
         "draft": "Brouillon",
         "submitted": "En relecture",
         "approved": "Approuvé",
-        "revisionRequested": "Révision demandée"
+        "revisionRequested": "Révision demandée",
+        "awaiting": "{count, plural, one {# à relire} other {# à relire}}"
       }
     },
     "review": {
@@ -2380,7 +2381,19 @@
       "versionsTitle": "Versions du rapport",
       "commentsTitle": "Échanges",
       "noFile": "Aucun fichier",
-      "open": "Ouvrir"
+      "open": "Ouvrir",
+      "addDeliverable": "Ajouter un livrable",
+      "kindLabel": "Type",
+      "titleLabel": "Titre",
+      "create": "Créer",
+      "creating": "Création…",
+      "noDeliverables": "Aucun livrable pour le moment."
+    },
+    "kind": {
+      "rapport": "Rapport de stage",
+      "presentation": "Présentation",
+      "diagram": "Diagramme",
+      "other": "Autre"
     },
     "status": {
       "draft": "Brouillon",
