@@ -133,6 +133,7 @@ export async function updateInternshipAction(internshipId: string, formData: For
 
 export async function publishInternshipAction(internshipId: string) {
   const { user } = await requireActiveSession();
+  await requireSupervisorOfInternship(internshipId, user.id);
   await publishInternship({ internshipId, actorId: user.id });
   updateTag(MARKETPLACE_TAG);
 }
