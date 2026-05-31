@@ -33,3 +33,12 @@ describe('ratelimit', () => {
     expect(r2.remaining).toBe(18);
   });
 });
+
+describe('ai-feedback-draft bucket', () => {
+  it('allows the first call and is keyed by name+key', () => {
+    const r = ratelimit('ai-feedback-draft').limit('user-feedback-1');
+    expect(r.success).toBe(true);
+    expect(r.limit).toBe(20);
+    expect(r.remaining).toBe(19);
+  });
+});

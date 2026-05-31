@@ -34,6 +34,7 @@ export type LimitName =
   | 'ai-checkin-draft'
   | 'ai-cv-parse'
   | 'ai-project-assist'
+  | 'ai-feedback-draft'
   | 'team-invite'
   | 'university-bulk-invite';
 
@@ -47,6 +48,8 @@ const LIMITS: Record<LimitName, { max: number; windowMs: number }> = {
   'ai-cv-parse': { max: 5, windowMs: 60_000 },
   // Inline creation assists — several per field is normal while drafting.
   'ai-project-assist': { max: 20, windowMs: 60_000 },
+  // Deliverable revision-feedback draft/reformulate — a few per review session.
+  'ai-feedback-draft': { max: 20, windowMs: 60_000 },
   // Inviting team members — tight cap to block enumeration/spam.
   'team-invite': { max: 10, windowMs: 60_000 },
   // Bulk cohort import — a few imports per minute, each up to 100 students.
