@@ -77,6 +77,22 @@ describe('createReportDraftAction — student-membership gate', () => {
     );
     expect(res).toEqual({ ok: true });
   });
+
+  it('createReportDraftAction forwards a valid kind', async () => {
+    requireActiveSession.mockResolvedValue({ user: { id: 'stu1' }, role: 'intern' });
+    getActiveMembership.mockResolvedValue({ role: 'student' });
+    svc.createReportDraft.mockResolvedValue({});
+    await createReportDraftAction({ universityOrgId: 'u1', kind: 'diagram', title: 'Schéma' });
+    expect(svc.createReportDraft).toHaveBeenCalledWith(expect.objectContaining({ kind: 'diagram', title: 'Schéma' }));
+  });
+
+  it('createReportDraftAction coerces an unknown kind to rapport', async () => {
+    requireActiveSession.mockResolvedValue({ user: { id: 'stu1' }, role: 'intern' });
+    getActiveMembership.mockResolvedValue({ role: 'student' });
+    svc.createReportDraft.mockResolvedValue({});
+    await createReportDraftAction({ universityOrgId: 'u1', kind: 'bogus' as never });
+    expect(svc.createReportDraft).toHaveBeenCalledWith(expect.objectContaining({ kind: 'rapport' }));
+  });
 });
 
 describe('submitReportAction — student owns the report', () => {

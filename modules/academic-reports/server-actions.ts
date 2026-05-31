@@ -15,6 +15,7 @@ import {
   requestReportRevision,
   addReportComment,
 } from './service';
+import { isDeliverableKind, type DeliverableKind } from './kinds';
 
 type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -39,6 +40,7 @@ export async function createReportDraftAction(input: {
   universityOrgId: string;
   internshipId?: string | null;
   title?: string | null;
+  kind?: string;
 }): Promise<ActionResult> {
   try {
     const { user } = await requireActiveSession();
@@ -46,11 +48,14 @@ export async function createReportDraftAction(input: {
     const m = await getActiveMembership(user.id, input.universityOrgId);
     if (!m || m.role !== 'student') return { ok: false, error: 'Forbidden' };
 
+    const kind: DeliverableKind = isDeliverableKind(input.kind) ? input.kind : 'rapport';
+
     await createReportDraft({
       studentUserId: user.id,
       universityOrgId: input.universityOrgId,
       internshipId: input.internshipId ?? null,
       title: input.title ?? null,
+      kind,
     });
     revalidateReport(user.id);
     return { ok: true };
