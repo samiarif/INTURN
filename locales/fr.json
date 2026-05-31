@@ -848,7 +848,15 @@
     "coSupervisor": "Co-superviseur",
     "thisWeek": "Cette semaine",
     "openWorkspace": "Ouvrir l'espace →",
-    "applicationsLink": "Candidatures →"
+    "applicationsLink": "Candidatures →",
+    "commandCenter": {
+      "title": "Centre de pilotage",
+      "filterAll": "Tous",
+      "internsCount": "{count, plural, =0 {Aucun stagiaire} one {# stagiaire} other {# stagiaires}}",
+      "deliverables": "Livrables",
+      "tasksCount": "{done}/{total} tâches",
+      "empty": "Aucun stagiaire placé sur ce projet pour l'instant."
+    }
   },
   "internshipDetail": {
     "weeks": "{n, plural, one {# semaine} other {# semaines}}",

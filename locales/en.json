@@ -848,7 +848,15 @@
     "coSupervisor": "Co-supervisor",
     "thisWeek": "This week",
     "openWorkspace": "Open workspace →",
-    "applicationsLink": "Applications →"
+    "applicationsLink": "Applications →",
+    "commandCenter": {
+      "title": "Command center",
+      "filterAll": "All",
+      "internsCount": "{count, plural, =0 {No interns} one {# intern} other {# interns}}",
+      "deliverables": "Deliverables",
+      "tasksCount": "{done}/{total} tasks",
+      "empty": "No interns placed on this project yet."
+    }
   },
   "internshipDetail": {
     "weeks": "{n, plural, one {# week} other {# weeks}}",

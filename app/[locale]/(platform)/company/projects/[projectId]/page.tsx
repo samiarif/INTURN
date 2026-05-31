@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Milestone, Users, Plus } from 'lucide-react';
 import { BackLink } from '@/components/ui/back-link';
 import { notFound, redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { inArray, eq, desc } from 'drizzle-orm';
 import { db } from '@/db';
 import {
@@ -25,7 +25,13 @@ import { getProjectById, getProjectsByOrganization } from '@/modules/projects/qu
 import { getInternshipsByProject } from '@/modules/internships/queries';
 import { getActiveMembership, canManageOrg } from '@/modules/team/authz';
 import { computeCurrentPhase } from '@/modules/workspace/phase';
+import { getPulse } from '@/modules/pulse/engine';
+import { PULSE_SEVERITY } from '@/modules/pulse/types';
 import { getOrgMembers } from '@/modules/team/queries';
+import {
+  ProjectCommandCenter,
+  type CommandCenterLane,
+} from '@/modules/projects/components/project-command-center';
 import {
   ProjectSupervisors,
   type SupervisorCandidate,
@@ -97,6 +103,9 @@ export default async function Page({
   const { user, role } = session;
   const t = await getTranslations('projectHub');
   const tStatus = await getTranslations('company.internshipStatus');
+  const localeRaw = await getLocale();
+  // getPulse is typed to the supported set; fall back to the default locale.
+  const locale: 'fr' | 'en' = localeRaw === 'en' ? 'en' : 'fr';
   const { published } = await searchParams;
 
   const { projectId } = await params;
@@ -263,6 +272,49 @@ export default async function Page({
   // pip to midpoint of the current "now" pip.
   const phaseProgressPct =
     phases.length === 0 ? 0 : ((currentPhaseIdx + 0.5) / phases.length) * 100;
+
+  // ------ Command Center lanes (supervisor-only; Phase 1, view). ------
+  // One lane per placed intern: their deliverables + task tally (from the maps
+  // already built above) plus a Pulse read. Pulse only runs for ACTIVE
+  // workspaces — completed/cancelled ones get a null lane.pulse. Lanes are
+  // sorted worst-Pulse-first so the supervisor's eye lands on trouble.
+  let commandCenterLanes: CommandCenterLane[] = [];
+  let commandCenterPhaseLabel: string | null = null;
+  if (isSupervisor) {
+    const pulses = await Promise.all(
+      workspaceRows.map((r) =>
+        r.workspace.status === 'active'
+          ? getPulse(r.workspace.id, locale).catch(() => null)
+          : Promise.resolve(null),
+      ),
+    );
+    commandCenterLanes = workspaceRows.map((r, idx) => {
+      const wsId = r.workspace.id;
+      const wsTasks = tasksByWorkspace.get(wsId) ?? [];
+      const wsDelivs = delivsByWorkspace.get(wsId) ?? [];
+      const internName =
+        [r.intern.firstName, r.intern.lastName].filter(Boolean).join(' ').trim() ||
+        r.intern.email;
+      return {
+        workspaceId: wsId,
+        internName,
+        pulse: pulses[idx],
+        deliverables: wsDelivs.map((d) => ({ title: d.title, status: d.status ?? 'draft' })),
+        tasks: {
+          done: wsTasks.filter((tk) => tk.status === 'done').length,
+          total: wsTasks.length,
+        },
+      };
+    });
+    commandCenterLanes.sort((a, b) => {
+      // Workspaces without a Pulse (inactive) sink below the rated ones.
+      const sa = a.pulse ? PULSE_SEVERITY[a.pulse.status] : 99;
+      const sb = b.pulse ? PULSE_SEVERITY[b.pulse.status] : 99;
+      return sa - sb;
+    });
+    commandCenterPhaseLabel =
+      phases.length > 0 && phases[currentPhaseIdx] ? phases[currentPhaseIdx].name : null;
+  }
 
   // Rough on-pace heuristic for the Project signal card: tasks closed-or-in-flight
   // out of total. Cheap, no separate tracking column needed.
@@ -596,6 +648,15 @@ export default async function Page({
                 footer={endDate ? `Ends ${formatDateLong(endDate)}` : 'No end date set'}
               />
             </div>
+
+            {/* ----- Command Center (cross-intern roll-up; supervisors only) ----- */}
+            {isSupervisor && (
+              <ProjectCommandCenter
+                lanes={commandCenterLanes}
+                phaseLabel={commandCenterPhaseLabel}
+                locale={locale}
+              />
+            )}
 
             {/* ----- Internships roster ----- */}
             <section className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface)] p-5">
