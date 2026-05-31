@@ -8,6 +8,7 @@ import { Avatar } from '@/components/avatar';
 import {
   approveDeliverableAction,
   requestRevisionAction,
+  draftRevisionFeedbackAction,
 } from '@/modules/deliverables/server-actions';
 
 /**
@@ -32,6 +33,23 @@ export function DelivReviewBar({
   const [pending, startTransition] = useTransition();
   const [showRequest, setShowRequest] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [drafting, startDrafting] = useTransition();
+  const [hint, setHint] = useState<string | null>(null);
+
+  function onDraft() {
+    startDrafting(async () => {
+      const r = await draftRevisionFeedbackAction({
+        deliverableId,
+        draft: feedback.trim() || undefined,
+      });
+      if (r.ok) {
+        setFeedback(r.text);
+        setHint(t(r.source === 'ai' ? 'aiAssistedHint' : 'genericDraftHint'));
+      } else {
+        setHint(t('draftError'));
+      }
+    });
+  }
 
   function approve() {
     startTransition(async () => {
@@ -85,6 +103,23 @@ export function DelivReviewBar({
           <label htmlFor={`dv-changes-${deliverableId}`} className="sr-only">
             {t('feedbackChangesRequired')}
           </label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <button
+              type="button"
+              className="dv-btn-changes"
+              disabled={pending || drafting}
+              onClick={onDraft}
+            >
+              {drafting
+                ? feedback.trim()
+                  ? t('reformulating')
+                  : t('drafting')
+                : feedback.trim()
+                  ? t('reformulate')
+                  : t('draftWithPulse')}
+            </button>
+            {hint && <span className="sub" style={{ fontSize: 12, color: 'var(--ink-3)' }}>{hint}</span>}
+          </div>
           <Textarea
             id={`dv-changes-${deliverableId}`}
             value={feedback}
