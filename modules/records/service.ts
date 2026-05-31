@@ -34,13 +34,10 @@ export async function issueRecord(input: IssueRecordInput): Promise<InternshipRe
   if (!ws) throw new Error('Workspace not found');
 
   const existing = await findActiveRecordByWorkspace(input.workspaceId);
-  if (existing) {
-    await db
-      .update(internshipRecords)
-      .set({ revokedAt: new Date() })
-      .where(eq(internshipRecords.id, existing.id));
-  }
 
+  // Build the snapshot BEFORE touching any record. neon-http has no
+  // transactions, so a failure here must not have already revoked the intern's
+  // existing credential.
   const snapshot = await buildRecordSnapshot({
     workspaceId: input.workspaceId,
     reviewText: input.reviewText,
@@ -49,6 +46,10 @@ export async function issueRecord(input: IssueRecordInput): Promise<InternshipRe
     locale: input.locale,
   });
 
+  // Insert the NEW record first; only revoke the old one once the replacement
+  // exists. A crash anywhere before the revoke leaves the existing record valid
+  // — worst case a brief overlap of two active records, never a gap with none.
+  let created: InternshipRecord | null = null;
   let lastErr: unknown = null;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
@@ -64,14 +65,24 @@ export async function issueRecord(input: IssueRecordInput): Promise<InternshipRe
           snapshot,
         })
         .returning();
-      return row;
+      created = row;
+      break;
     } catch (e: unknown) {
       lastErr = e;
       const msg = e instanceof Error ? e.message : String(e);
       if (!msg.includes('share_token')) throw e;
     }
   }
-  throw lastErr ?? new Error('Failed to issue record after 3 attempts');
+  if (!created) throw lastErr ?? new Error('Failed to issue record after 3 attempts');
+
+  if (existing) {
+    await db
+      .update(internshipRecords)
+      .set({ revokedAt: new Date() })
+      .where(eq(internshipRecords.id, existing.id));
+  }
+
+  return created;
 }
 
 /**
