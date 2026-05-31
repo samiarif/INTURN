@@ -5,6 +5,9 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getProfileByUserId, getUserByClerkId } from '@/modules/profiles/queries';
 import { getProjectById } from '@/modules/projects/queries';
+import { db } from '@/db';
+import { applications, internships } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import { applyFormSchema } from './validators';
 import {
   acceptApplication,
@@ -23,10 +26,27 @@ async function requireUser() {
   return user;
 }
 
-async function assertProjectSupervisor(projectId: string, userId: string) {
-  const project = await getProjectById(projectId);
-  if (!project) throw new Error('Project not found');
-  if (!project.supervisorIds?.includes(userId)) {
+/**
+ * Authorize a company action on an application by DERIVING the project from the
+ * application itself — the client-supplied projectId is used only for cache
+ * revalidation, never for authz. Closes the IDOR where a supervisor of project A
+ * could accept/reject/annotate project B's application by passing A's id here.
+ */
+async function requireSupervisorOfApplication(applicationId: string, userId: string) {
+  const [application] = await db
+    .select()
+    .from(applications)
+    .where(eq(applications.id, applicationId))
+    .limit(1);
+  if (!application) throw new Error('Application not found');
+  const [internship] = await db
+    .select()
+    .from(internships)
+    .where(eq(internships.id, application.internshipId))
+    .limit(1);
+  if (!internship?.projectId) throw new Error('Forbidden');
+  const project = await getProjectById(internship.projectId);
+  if (!project?.supervisorIds?.includes(userId)) {
     throw new Error('Forbidden');
   }
   return project;
@@ -86,7 +106,7 @@ export async function transitionApplicationStatusAction(input: {
   decisionNote?: string;
 }) {
   const user = await requireUser();
-  await assertProjectSupervisor(input.projectId, user.id);
+  await requireSupervisorOfApplication(input.applicationId, user.id);
   await transitionApplicationStatus({
     applicationId: input.applicationId,
     to: input.to,
@@ -107,7 +127,7 @@ export async function updateInternalNotesAction(input: {
   notes: string;
 }) {
   const user = await requireUser();
-  await assertProjectSupervisor(input.projectId, user.id);
+  await requireSupervisorOfApplication(input.applicationId, user.id);
   await updateInternalNotes({
     applicationId: input.applicationId,
     notes: input.notes,
@@ -121,7 +141,7 @@ export async function acceptApplicationAction(input: {
   decisionNote?: string;
 }) {
   const user = await requireUser();
-  await assertProjectSupervisor(input.projectId, user.id);
+  await requireSupervisorOfApplication(input.applicationId, user.id);
   const result = await acceptApplication({
     applicationId: input.applicationId,
     actorId: user.id,
