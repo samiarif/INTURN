@@ -16,6 +16,7 @@ type Props = {
   unreadCount: number;
   devBypassed?: boolean;
   hasStudentMembership?: boolean;
+  hasActiveWorkspace?: boolean;
 };
 
 export function PlatformMobileTopStrip(props: Props) {

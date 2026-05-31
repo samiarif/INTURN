@@ -8,6 +8,7 @@ import {
   listRecentNotifications,
 } from '@/modules/notifications/queries';
 import { getViewerMemberships } from '@/modules/team/authz';
+import { getInternSidebarData } from '@/modules/workspace/queries';
 import { SuspendedBanner } from '@/components/suspended-banner';
 import { isDevAuthBypassed } from '@/lib/dev-auth';
 
@@ -25,9 +26,15 @@ export default async function PlatformLayout({ children }: { children: React.Rea
   // An intern who is also a managed university student gets a conditional nav
   // link. Only query for interns (others never show the link).
   let hasStudentMembership = false;
+  let hasActiveWorkspace = false;
   if (session.role === 'intern') {
-    const memberships = await getViewerMemberships(session.user.id);
+    const [memberships, sidebarData] = await Promise.all([
+      getViewerMemberships(session.user.id),
+      getInternSidebarData(session.user.id),
+    ]);
     hasStudentMembership = memberships.some((m) => m.role === 'student');
+    hasActiveWorkspace =
+      sidebarData.role === 'intern' && sidebarData.activeWorkspaces.length > 0;
   }
 
   const userProps = {
@@ -43,6 +50,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
     unreadCount,
     devBypassed: isDevAuthBypassed(),
     hasStudentMembership,
+    hasActiveWorkspace,
   };
 
   return (

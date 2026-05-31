@@ -38,6 +38,8 @@ type Props = {
   forceVisible?: boolean;
   /** Intern viewer holds an active university 'student' membership → show the link. */
   hasStudentMembership?: boolean;
+  /** Intern viewer has at least one workspace → show the Workspace link. */
+  hasActiveWorkspace?: boolean;
 };
 
 export function PlatformSidebar({
@@ -48,6 +50,7 @@ export function PlatformSidebar({
   devBypassed = false,
   forceVisible = false,
   hasStudentMembership = false,
+  hasActiveWorkspace = false,
 }: Props) {
   const tNav = useTranslations('platformNav');
   const tNotif = useTranslations('notifications');
@@ -65,6 +68,9 @@ export function PlatformSidebar({
   // and Browse — conditionally included when the intern holds a student membership.
   const internItems: { href: string; label: string; icon: LucideIcon }[] = [
     { href: '/intern/dashboard',     label: tNav('dashboard'),    icon: LayoutDashboard },
+    ...(hasActiveWorkspace
+      ? [{ href: '/intern/workspaces', label: tNav('workspace'), icon: Briefcase }]
+      : []),
     { href: '/intern/applications',  label: tNav('applications'), icon: Send },
     { href: '/intern/saved',         label: tNav('saved'),        icon: Bookmark },
     { href: '/intern/records',       label: tNav('records'),      icon: Award },
