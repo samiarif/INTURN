@@ -94,7 +94,7 @@ export default async function Page() {
 
               <div className="mb-4 flex items-center gap-3">
                 <StatusPill tone={toneFor(report.status)}>{statusLabels[report.status]}</StatusPill>
-                <span className="font-mono text-caption text-[var(--ink-3)]">v{report.version}</span>
+                <span className="font-mono text-caption text-[var(--ink-3)]">{`v${report.version}`}</span>
                 {(report.status === 'draft' || report.status === 'revision-requested') && (
                   <span className="ml-auto">
                     <ReportUploadZone

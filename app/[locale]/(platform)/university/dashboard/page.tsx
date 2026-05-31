@@ -158,7 +158,7 @@ export default async function Page() {
                         const n = s.userId ? (awaitingByStudent.get(s.userId) ?? 0) : 0;
                         return n > 0
                           ? <StatusPill tone="warn">{t('reportStatus.awaiting', { count: n })}</StatusPill>
-                          : <span className="text-caption text-[var(--ink-4)]">—</span>;
+                          : <span className="text-caption text-[var(--ink-4)]">{'—'}</span>;
                       })()}
                     </TableCell>
                     {isHead && (
