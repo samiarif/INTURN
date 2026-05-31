@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, date, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, date, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { internships } from './internships';
 import { users } from './users';
 import { organizations } from './organizations';
@@ -27,6 +27,10 @@ export const workspaces = pgTable(
     index('workspaces_organization_idx').on(table.organizationId),
     index('workspaces_internship_idx').on(table.internshipId),
     index('workspaces_status_idx').on(table.status),
+    // One workspace per (intern, internship) — backstops the app-level
+    // idempotency guard so a concurrent double-accept can't create twin
+    // workspaces (split deliverables/tasks). See db/migrations/0020.
+    uniqueIndex('workspaces_intern_internship_idx').on(table.internId, table.internshipId),
   ],
 );
 
