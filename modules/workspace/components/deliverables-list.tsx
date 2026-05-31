@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import type { Deliverable } from '@/db/schema';
+import type { DeliverableLinks } from '@/modules/deliverables/dependencies';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { FileDrop } from '@/components/file-drop';
@@ -30,6 +31,92 @@ const STATUS_PILL: Record<string, string> = {
   'revision-requested': 'pill-block',
 };
 
+// Deliverable status → dot colour for the dependency chips, aligned with the
+// status rail elsewhere in the workspace.
+function linkStatusColor(status: string): string {
+  if (status === 'submitted') return 'var(--brand)';
+  if (status === 'approved') return 'var(--success)';
+  if (status === 'revision-requested') return 'var(--danger)';
+  return 'var(--ink-4)';
+}
+
+/**
+ * Read-only cross-intern dependency awareness for one deliverable row (client
+ * variant — the file is 'use client'; the server pages use
+ * DeliverableLinkChips instead). Subtle, muted, never gates. Renders nothing
+ * when there are no links.
+ */
+function DeliverableLinkChipsInline({ links }: { links: DeliverableLinks }) {
+  const t = useTranslations('projectHub.dependencies');
+  if (links.dependsOn.length === 0 && links.feedsInto.length === 0) return null;
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 11,
+    fontFamily: 'var(--font-mono)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.04em',
+    color: 'var(--ink-3)',
+    flexShrink: 0,
+  };
+  const chipStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    padding: '2px 8px',
+    borderRadius: 99,
+    border: '1px solid var(--border-color)',
+    background: 'var(--surface-muted)',
+    fontSize: 12,
+    color: 'var(--ink-2)',
+  };
+
+  return (
+    <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {links.dependsOn.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+          <span style={labelStyle}>{t('dependsOn')}</span>
+          <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
+            {links.dependsOn.map((d) => (
+              <span key={d.id} style={chipStyle}>
+                <span aria-hidden style={{ lineHeight: 1 }}>🔗</span>
+                <span style={{ color: 'var(--ink)' }}>{d.title}</span>
+                <span style={{ color: 'var(--ink-4)' }}>·</span>
+                <span>{d.internName}</span>
+                <span
+                  aria-hidden
+                  title={d.status}
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: 99,
+                    background: linkStatusColor(d.status),
+                    flexShrink: 0,
+                  }}
+                />
+              </span>
+            ))}
+          </span>
+        </div>
+      )}
+      {links.feedsInto.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+          <span style={labelStyle}>{t('feedsInto')}</span>
+          <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
+            {links.feedsInto.map((d) => (
+              <span key={d.id} style={chipStyle}>
+                <span aria-hidden style={{ lineHeight: 1 }}>🔗</span>
+                <span style={{ color: 'var(--ink)' }}>{d.title}</span>
+                <span style={{ color: 'var(--ink-4)' }}>·</span>
+                <span>{d.internName}</span>
+              </span>
+            ))}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function fmtDate(d: Date | string | null, locale: string): string {
   if (!d) return '';
   const date = new Date(d);
@@ -50,9 +137,11 @@ function relativeDate(d: Date | string | null): string {
 function DeliverableRow({
   deliverable,
   view,
+  links,
 }: {
   deliverable: Deliverable;
   view: 'intern' | 'supervisor';
+  links?: DeliverableLinks | null;
 }) {
   const locale = useLocale();
   const t = useTranslations('workspace.deliverables');
@@ -183,6 +272,8 @@ function DeliverableRow({
               <b>{tStatus('changesRequested')}:</b> {deliverable.feedback}
             </div>
           )}
+
+          {links ? <DeliverableLinkChipsInline links={links} /> : null}
         </div>
       </div>
 
@@ -307,9 +398,16 @@ function DeliverableRow({
 export function DeliverablesList({
   deliverables,
   view,
+  linksByDeliverable,
 }: {
   deliverables: Deliverable[];
   view: 'intern' | 'supervisor';
+  /**
+   * Cross-intern dependency awareness per deliverable id (Phase 2). Optional —
+   * threaded from the page that loads it (one batched query via
+   * getWorkspaceDeliverableLinks). Absent ids simply render no chips.
+   */
+  linksByDeliverable?: Record<string, DeliverableLinks>;
 }) {
   // Empty-state copy ("No deliverables yet.", subline) is not in the plan
   // namespace and remains English until the namespace expands.
@@ -328,7 +426,12 @@ export function DeliverablesList({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {deliverables.map((d) => (
-        <DeliverableRow key={d.id} deliverable={d} view={view} />
+        <DeliverableRow
+          key={d.id}
+          deliverable={d}
+          view={view}
+          links={linksByDeliverable?.[d.id] ?? null}
+        />
       ))}
     </div>
   );

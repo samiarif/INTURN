@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import type { Deliverable } from '@/db/schema';
 import { WorkspaceMHead } from './m-head';
 import { getDeliverableComments } from '@/modules/comments/queries';
+import { getWorkspaceDeliverableLinks } from '@/modules/deliverables/dependencies';
 import type { WorkspaceOverviewData } from '../queries';
 import type { WorkspaceView } from '../types';
 import { DelivDetail } from './deliverables-detail';
@@ -140,11 +141,19 @@ export async function WorkspaceDeliverablesPage({
     (selectedIdParam && items.find((d) => d.id === selectedIdParam)) || preferred;
   const selectedIdx = selected ? items.findIndex((d) => d.id === selected.id) : -1;
 
-  const [t, locale, selectedComments] = await Promise.all([
+  const [t, locale, selectedComments, linksMap] = await Promise.all([
     getTranslations('workspace.deliverables.master'),
     getLocale(),
     selected ? getDeliverableComments(selected.id) : Promise.resolve([]),
+    // Cross-intern dependency awareness for the selected deliverable (one
+    // batched query). Empty when nothing is selected or no edges exist.
+    selected
+      ? getWorkspaceDeliverableLinks([selected.id])
+      : Promise.resolve(new Map()),
   ]);
+  const selectedLinks = selected
+    ? (linksMap.get(selected.id) ?? { dependsOn: [], feedsInto: [] })
+    : null;
 
   return (
     <>
@@ -180,6 +189,7 @@ export async function WorkspaceDeliverablesPage({
               locale={locale}
               comments={selectedComments}
               currentUserId={currentUserId}
+              links={selectedLinks}
             />
           ) : (
             <div className="dv-detail">

@@ -855,7 +855,33 @@
       "internsCount": "{count, plural, =0 {No interns} one {# intern} other {# interns}}",
       "deliverables": "Deliverables",
       "tasksCount": "{done}/{total} tasks",
-      "empty": "No interns placed on this project yet."
+      "empty": "No interns placed on this project yet.",
+      "blockedShort": "waiting",
+      "blockedHint": "Waiting on \"{title}\" (not yet approved)"
+    },
+    "dependencies": {
+      "manageTitle": "Manage dependencies",
+      "manageHint": "Link deliverables: upstream feeds downstream. Awareness only, never a gate.",
+      "existingLabel": "Existing dependencies",
+      "empty": "No dependencies yet.",
+      "needTwo": "You need at least two deliverables in this project to create a dependency.",
+      "addLabel": "Add",
+      "adding": "Adding…",
+      "upstreamLabel": "Upstream",
+      "downstreamLabel": "Downstream",
+      "selectPlaceholder": "Choose a deliverable",
+      "remove": "Remove",
+      "close": "Close",
+      "dependsOn": "Depends on",
+      "feedsInto": "Feeds into",
+      "errors": {
+        "self": "A deliverable can't depend on itself.",
+        "duplicate": "That dependency already exists.",
+        "cycle": "Can't add: this would create a circular dependency.",
+        "wrong_project": "Both deliverables must belong to this project.",
+        "forbidden": "You don't have permission to manage dependencies.",
+        "generic": "Something went wrong. Please try again."
+      }
     }
   },
   "internshipDetail": {

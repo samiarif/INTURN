@@ -21,10 +21,17 @@ export async function ProjectCommandCenter({
   lanes,
   phaseLabel,
   locale,
+  editor,
 }: {
   lanes: CommandCenterLane[];
   phaseLabel: string | null;
   locale: string;
+  /**
+   * Supervisor-only dependency editor trigger (the ManageDependenciesDialog
+   * client component), rendered in the header. Passed from the project hub so
+   * this server component stays data-agnostic. Omitted for non-managers.
+   */
+  editor?: React.ReactNode;
 }) {
   const t = await getTranslations('projectHub.commandCenter');
 
@@ -63,6 +70,7 @@ export async function ProjectCommandCenter({
             </span>
           ))}
         </span>
+        {editor ? <div className="ml-2 shrink-0">{editor}</div> : null}
       </div>
 
       {lanes.length === 0 ? (

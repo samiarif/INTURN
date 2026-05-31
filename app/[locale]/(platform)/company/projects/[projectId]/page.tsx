@@ -32,6 +32,11 @@ import {
   ProjectCommandCenter,
   type CommandCenterLane,
 } from '@/modules/projects/components/project-command-center';
+import { ManageDependenciesDialog } from '@/modules/projects/components/manage-dependencies-dialog';
+import {
+  getProjectDependencies,
+  getProjectDeliverablesForLinking,
+} from '@/modules/deliverables/dependencies';
 import {
   ProjectSupervisors,
   type SupervisorCandidate,
@@ -280,14 +285,37 @@ export default async function Page({
   // sorted worst-Pulse-first so the supervisor's eye lands on trouble.
   let commandCenterLanes: CommandCenterLane[] = [];
   let commandCenterPhaseLabel: string | null = null;
+  // Dependency layer (Phase 2): the project's edges (for the stuck signal) +
+  // the full deliverable list (for the editor's dropdowns). Fetched only for
+  // supervisors, in parallel with the per-workspace Pulse reads.
+  let projectDependencies: Awaited<ReturnType<typeof getProjectDependencies>> = [];
+  let linkableDeliverables: Awaited<
+    ReturnType<typeof getProjectDeliverablesForLinking>
+  > = [];
   if (isSupervisor) {
-    const pulses = await Promise.all(
-      workspaceRows.map((r) =>
-        r.workspace.status === 'active'
-          ? getPulse(r.workspace.id, locale).catch(() => null)
-          : Promise.resolve(null),
+    const [pulses, deps, linkable] = await Promise.all([
+      Promise.all(
+        workspaceRows.map((r) =>
+          r.workspace.status === 'active'
+            ? getPulse(r.workspace.id, locale).catch(() => null)
+            : Promise.resolve(null),
+        ),
       ),
-    );
+      getProjectDependencies(projectId),
+      getProjectDeliverablesForLinking(projectId),
+    ]);
+    projectDependencies = deps;
+    linkableDeliverables = linkable;
+
+    // downstreamId → upstream endpoints feeding it. A deliverable is "blocked"
+    // when ANY upstream is not yet approved — surfaced as a lock on its chip.
+    const upstreamsByDownstream = new Map<string, typeof deps>();
+    for (const edge of deps) {
+      const arr = upstreamsByDownstream.get(edge.downstream.id) ?? [];
+      arr.push(edge);
+      upstreamsByDownstream.set(edge.downstream.id, arr);
+    }
+
     commandCenterLanes = workspaceRows.map((r, idx) => {
       const wsId = r.workspace.id;
       const wsTasks = tasksByWorkspace.get(wsId) ?? [];
@@ -299,7 +327,18 @@ export default async function Page({
         workspaceId: wsId,
         internName,
         pulse: pulses[idx],
-        deliverables: wsDelivs.map((d) => ({ title: d.title, status: d.status ?? 'draft' })),
+        deliverables: wsDelivs.map((d) => {
+          const blockers = (upstreamsByDownstream.get(d.id) ?? []).filter(
+            (e) => e.upstream.status !== 'approved',
+          );
+          const blocker = blockers[0];
+          return {
+            title: d.title,
+            status: d.status ?? 'draft',
+            blocked: blockers.length > 0,
+            waitingOn: blocker?.upstream.title,
+          };
+        }),
         tasks: {
           done: wsTasks.filter((tk) => tk.status === 'done').length,
           total: wsTasks.length,
@@ -655,6 +694,13 @@ export default async function Page({
                 lanes={commandCenterLanes}
                 phaseLabel={commandCenterPhaseLabel}
                 locale={locale}
+                editor={
+                  <ManageDependenciesDialog
+                    projectId={projectId}
+                    deliverables={linkableDeliverables}
+                    edges={projectDependencies}
+                  />
+                }
               />
             )}
 

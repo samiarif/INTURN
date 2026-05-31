@@ -63,3 +63,8 @@ export {
   type MemberRole,
   type MemberStatus,
 } from './organization-members';
+export {
+  deliverableDependencies,
+  type DeliverableDependency,
+  type NewDeliverableDependency,
+} from './deliverable-dependencies';

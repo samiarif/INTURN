@@ -855,7 +855,33 @@
       "internsCount": "{count, plural, =0 {Aucun stagiaire} one {# stagiaire} other {# stagiaires}}",
       "deliverables": "Livrables",
       "tasksCount": "{done}/{total} tâches",
-      "empty": "Aucun stagiaire placé sur ce projet pour l'instant."
+      "empty": "Aucun stagiaire placé sur ce projet pour l'instant.",
+      "blockedShort": "en attente",
+      "blockedHint": "En attente de « {title} » (pas encore approuvé)"
+    },
+    "dependencies": {
+      "manageTitle": "Gérer les dépendances",
+      "manageHint": "Reliez les livrables : « en amont » alimente « en aval ». Sensibilisation seulement, jamais de blocage.",
+      "existingLabel": "Dépendances existantes",
+      "empty": "Aucune dépendance pour l'instant.",
+      "needTwo": "Il faut au moins deux livrables dans ce projet pour créer une dépendance.",
+      "addLabel": "Ajouter",
+      "adding": "Ajout…",
+      "upstreamLabel": "En amont",
+      "downstreamLabel": "En aval",
+      "selectPlaceholder": "Choisir un livrable",
+      "remove": "Retirer",
+      "close": "Fermer",
+      "dependsOn": "Dépend de",
+      "feedsInto": "Alimente",
+      "errors": {
+        "self": "Un livrable ne peut pas dépendre de lui-même.",
+        "duplicate": "Cette dépendance existe déjà.",
+        "cycle": "Impossible : cela créerait une dépendance circulaire.",
+        "wrong_project": "Les deux livrables doivent appartenir à ce projet.",
+        "forbidden": "Vous n'avez pas l'autorisation de gérer les dépendances.",
+        "generic": "Une erreur s'est produite. Réessayez."
+      }
     }
   },
   "internshipDetail": {

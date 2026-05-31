@@ -5,7 +5,9 @@ import { DelivReviewBar } from './deliv-review-bar';
 import { DelivUploadZone } from './deliv-upload-zone';
 import { ShareLinkButton } from './share-link-button';
 import { DelivDetailTabs } from './deliverables-detail-tabs';
+import { DeliverableLinkChips } from './deliverable-link-chips';
 import type { CommentWithAuthor } from '@/modules/comments/queries';
+import type { DeliverableLinks } from '@/modules/deliverables/dependencies';
 import type { WorkspaceOverviewData } from '../queries';
 
 function fmtDateLong(d: Date | string | null, locale: string): string {
@@ -226,6 +228,7 @@ export async function DelivDetail({
   locale,
   comments,
   currentUserId,
+  links,
 }: {
   deliverable: Deliverable;
   idx: number;
@@ -234,6 +237,8 @@ export async function DelivDetail({
   locale: string;
   comments: CommentWithAuthor[];
   currentUserId: string;
+  /** Cross-intern dependency awareness (depends-on / feeds-into). Optional. */
+  links?: DeliverableLinks | null;
 }) {
   const t = await getTranslations('workspace.deliverables.master');
   const status = (deliverable.status ?? 'draft') as DeliverableStatusLite;
@@ -422,6 +427,11 @@ export async function DelivDetail({
               : t('versionsCount', { n: totalVersions })}
           </span>
         </div>
+        {links ? (
+          <div style={{ marginTop: 10 }}>
+            <DeliverableLinkChips links={links} />
+          </div>
+        ) : null}
       </div>
 
       <DelivDetailTabs

@@ -16,7 +16,18 @@ export type CommandCenterLane = {
   workspaceId: string;
   internName: string;
   pulse: Pulse | null;
-  deliverables: Array<{ title: string; status: string }>;
+  deliverables: Array<{
+    title: string;
+    status: string;
+    /**
+     * True when this deliverable has at least one upstream dependency whose
+     * status is not 'approved' — the cross-project "stuck flow" signal. The
+     * lane chip shows a lock + a waiting hint. Awareness only; never gates.
+     */
+    blocked?: boolean;
+    /** Title of an upstream this deliverable is waiting on (for the hint). */
+    waitingOn?: string;
+  }>;
   tasks: { done: number; total: number };
 };
 
@@ -139,10 +150,25 @@ export function CommandCenterFilter({
                   <span
                     key={`${lane.workspaceId}-${i}`}
                     className={`pill ${DELIV_PILL[d.status] ?? 'pill-todo'}`}
-                    title={d.status}
+                    title={
+                      d.blocked && d.waitingOn
+                        ? t('blockedHint', { title: d.waitingOn })
+                        : d.status
+                    }
                   >
-                    <span className="dot" />
+                    {d.blocked ? (
+                      <span aria-hidden className="leading-none">
+                        🔒
+                      </span>
+                    ) : (
+                      <span className="dot" />
+                    )}
                     {d.title}
+                    {d.blocked && (
+                      <span className="ml-1 text-[var(--ink-4)] font-normal">
+                        · {t('blockedShort')}
+                      </span>
+                    )}
                   </span>
                 ))}
               </div>
