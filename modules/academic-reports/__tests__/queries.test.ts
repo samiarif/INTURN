@@ -28,6 +28,8 @@ import {
   getReportComments,
   countReportsAwaitingReview,
   getReportStatusByStudent,
+  getReportsForStudent,
+  getAwaitingReviewCountByStudent,
 } from '../queries';
 
 beforeEach(() => {
@@ -78,5 +80,25 @@ describe('getReportStatusByStudent', () => {
     const map = await getReportStatusByStudent('uni1');
     expect(map.get('stu1')).toBe('approved');
     expect(map.get('stu2')).toBe('submitted');
+  });
+});
+
+describe('getReportsForStudent', () => {
+  it('returns all deliverables for the pair', async () => {
+    mocks.selectQueue.push([
+      { id: 'r1', kind: 'rapport', status: 'submitted' },
+      { id: 'r2', kind: 'diagram', status: 'draft' },
+    ]);
+    const rows = await getReportsForStudent('s1', 'u1');
+    expect(rows).toHaveLength(2);
+  });
+});
+
+describe('getAwaitingReviewCountByStudent', () => {
+  it('tallies submitted per student', async () => {
+    mocks.selectQueue.push([{ studentUserId: 's1' }, { studentUserId: 's1' }, { studentUserId: 's2' }]);
+    const map = await getAwaitingReviewCountByStudent('u1');
+    expect(map.get('s1')).toBe(2);
+    expect(map.get('s2')).toBe(1);
   });
 });

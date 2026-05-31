@@ -48,6 +48,43 @@ export async function countReportsAwaitingReview(universityOrgId: string): Promi
   return rows.length;
 }
 
+/** All deliverables (livrables) for a (student, university) pair, oldest-first. */
+export async function getReportsForStudent(
+  studentUserId: string,
+  universityOrgId: string,
+): Promise<AcademicReport[]> {
+  return db
+    .select()
+    .from(academicReports)
+    .where(
+      and(
+        eq(academicReports.studentUserId, studentUserId),
+        eq(academicReports.universityOrgId, universityOrgId),
+      ),
+    )
+    .orderBy(asc(academicReports.createdAt))
+    .limit(100);
+}
+
+/** Map of studentUserId → count of submitted deliverables (roster "à relire" pill). */
+export async function getAwaitingReviewCountByStudent(
+  universityOrgId: string,
+): Promise<Map<string, number>> {
+  const rows = await db
+    .select({ studentUserId: academicReports.studentUserId })
+    .from(academicReports)
+    .where(
+      and(
+        eq(academicReports.universityOrgId, universityOrgId),
+        eq(academicReports.status, 'submitted'),
+      ),
+    )
+    .limit(2000);
+  const map = new Map<string, number>();
+  for (const r of rows) map.set(r.studentUserId, (map.get(r.studentUserId) ?? 0) + 1);
+  return map;
+}
+
 /**
  * Per-student latest report status for the dashboard roster pill. Returns a
  * map of studentUserId → status. One query, no per-row N+1.
