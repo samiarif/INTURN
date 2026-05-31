@@ -1,8 +1,30 @@
-# inturn — Session Handoff (updated 2026-05-30 — University product (Plan 1 + Plan 2) · Team mgmt · design system · smart-create · close-the-loop)
+# inturn — Session Handoff (updated 2026-05-30 — Post-QA fix sprint + exhaustive-i18n plan · University product (Plan 1 + Plan 2) · Team mgmt · design system · smart-create · close-the-loop)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
-## TL;DR — Where we are (2026-05-30, LATEST — University product)
+## TL;DR — Where we are (2026-05-30, LATEST — Post-QA fix sprint + exhaustive-i18n plan)
+
+A module-by-module **behavioral QA pass** (drove the real running app with real writes — not HTTP-200 smoke) found the platform solid with **one real bug** + a pile of i18n/UX polish. Two outcomes, BOTH on **local worktrees off `main`, NOT yet pushed/merged**:
+
+### A · Post-QA fix sprint — DONE + verified, awaiting merge
+Linear stack (off `main@061a8fc`); each branch verified by driving the app on a sourced-env dev server (`set -a && . .env.local && set +a && pnpm exec next dev -p 3001`) + crafted dev cookies (`inturn-dev-session = <clerkId>.<hmac(clerkId, DEV_AUTH_SECRET)>`); typecheck + lint clean:
+- **`fix/record-pdf-share`** (`6b7f642`) — **P0 access-control bug.** Public `/records/[token]` linked "Télécharger le PDF" → `/api/records/[id]/pdf`, which required a session → anonymous share recipients got **401**. Now the route authorizes via the record's **share token** (`?token=`) OR a stakeholder session; revoked still 410. Verified: anon+token→200 PDF (7907B), no/wrong/empty token→401, stakeholder→200, authed non-stakeholder→403.
+- **`fix/i18n-sweep`** (`56316d6`) — localized supervisor rail, weekly check-in form, deliverable badge, admin report-detail, admin verification actions; fixed team "1 membres" plural. (3 QA "re-check" findings — community doubled count, users badge plural, "Rôle: supervisor" — confirmed **non-bugs** on live render.)
+- **`fix/ux-polish`** (`727f46b`) — applications inbox fully FR (incl. the **Refusé** status badge), notification bell (FR + popover off-screen `maxWidth` cap), publish-to-marketplace `window.confirm`, `/intern/workspaces` 404→redirect to dashboard.
+
+⚠️ **Merge note:** the stack was a clean FF off `main@061a8fc`, but `main` then advanced to **`5694e87`** (the university merges) — so it now **needs a rebase onto current `main`** before it'll FF (resolve `locales/{fr,en}.json` as a **union** of both sides' additions). Then FF `fix/record-pdf-share` (ships the P0) then `fix/ux-polish` (carries i18n-sweep with it).
+
+### B · Exhaustive bilingual i18n (FR/EN) — SPEC + PLAN written, execution PAUSED
+Make the **entire** product bilingual, enforced by `eslint i18next/no-literal-string` so it can't regress. Decisions locked: **exhaustive** bar (UI + emails + PDF + validation + aria), **big-bang single branch**, **`users.localePref`** drives per-recipient email locale (column **already exists** in `db/schema/users.ts` → no migration).
+- **Where bilingual happens →** branch **`feat/i18n-exhaustive`**, worktree **`../inturn-i18n`** (`/Users/mac/code/inturn-hub/inturn-i18n`), stacked on `fix/ux-polish` so it builds on the sweep above.
+- **Spec:** `docs/superpowers/specs/2026-05-30-exhaustive-i18n-design.md` · **Plan:** `docs/superpowers/plans/2026-05-30-exhaustive-i18n.md`
+- **Plan shape:** Phase 0 foundation (rebase onto `main`, add the lint guardrail as `warn` + capture the per-dir inventory, locale-parity + render harness, `localePref` toggle in `account/edit`, email i18n infra via `getTranslations({locale})`) → Phase 1 directory-scoped localization batches against the lint burn-down (components → intern → company → admin → **university** → public → emails → PDF → validation) → Phase 2 flip lint to `error` + the 2 visual gaps (public-page floating-avatar leak, `/admin/verifications` static subtitle).
+- **Resume:** new session → `cd ../inturn-i18n` → read the plan → **Phase 0 Task 0** (rebase onto current `main`, which now has the university surfaces to localize too). **The lint burn-down IS "what's left."**
+- **Supersedes** the long-standing punch-list item "i18n workspace UI" + the Sprint C i18n follow-ups — this is the systematic full pass.
+
+> All of the above is LOCAL (this repo's `.git`), nothing pushed. Fix branches: `git branch --list 'fix/*'`. Worktree: `git worktree list`.
+
+## TL;DR — Where we are (2026-05-30 — University product)
 
 - **University product shipped** — two milestones, both FF-merged to `main` (subagent-driven, each task spec-reviewed + code-quality-reviewed):
   - **Plan 1 — foundation & provisioning:** a university is an `organizations` row with a new `kind='university'`; the coordinator gets the new global `university` role + `requireUniversityRole`; admin provisions a university + invites the coordinator; the coordinator invites `student`-role `organization_members`; the firewalled `getStudentInternshipSnapshot` lets a coordinator see a student's internship *phase* but NEVER the company workspace; `/admin/universities` + `/university/dashboard` roster. **Migration `0017`.**
@@ -55,7 +77,7 @@ Fixes the **silent status-change notification bug** — the dispatcher now emits
 
 ## Completeness Sprints S1–S4 (this session, 2026-05-28)
 
-**Why:** a functional-completeness audit (read every interactive element's code, not HTTP 200) found the platform was ~70% wired with a **silent production-breaker: the "Publish to marketplace" button only saved a draft**. Four sprints closed the gap. Audit + plan: `docs/SPRINT_PLAN_COMPLETENESS.md`.
+**Why:** a functional-completeness audit (read every interactive element's code, not HTTP 200) found the platform was ~70% wired with a **silent production-breaker: the "Publish to marketplace" button only saved a draft**. Four sprints closed the gap. Audit + plan: `docs/archive/SPRINT_PLAN_COMPLETENESS.md`.
 
 - **S1 — Core loop:** fixed the publish stub (now really publishes, guarded by 3 regression tests); wired Assign-task, both check-in buttons, the broken rail check-in link, overview "See all"/"All versions" links; let interns create tasks. New features: **Workspace Notes** (author-private), **Nudge** (supervisor→intern notification+email, 24h rate-limit), **Deliverable share links** (`/deliverables/[token]` public view). Schema migration `0013` (workspace_notes + deliverables.share_token).
 - **S2 — Lifecycle & management:** **edit project** + **edit internship** (reuse create forms in edit mode); **unpublish/close** internship; **company workspaces index** (`/company/workspaces`); admin **suspend-from-report**, **role change** (DB + best-effort Clerk sync), **user detail page**, **audit pagination + CSV export**.
@@ -76,7 +98,7 @@ Fixes the **silent status-change notification bug** — the dispatcher now emits
 3. Verify commands: `pnpm tsc --noEmit` · `pnpm lint` · `pnpm vitest run` (276) · `pnpm build`.
 
 ## What's next (not started)
-The dev roadmap (`docs/DEV_ROADMAP.md`, 70 items) Phase 1 is done. Untouched: **Phase 2 — AI moat** (E8 AI matching, E9 candidate summary, E10 mock interview, E11 deliverable feedback, E12 check-in synthesizer, E13 brief expander, E14 task suggestions), then engagement loops, university product, trust-at-scale, **Arabic + RTL** (E38/E39 — big addressable-market unlock for Tunisia). The earlier strategist review is in `docs/PRODUCT_STRATEGY.md`.
+The dev roadmap (`docs/planning/DEV_ROADMAP.md`, 70 items) Phase 1 is done. Untouched: **Phase 2 — AI moat** (E8 AI matching, E9 candidate summary, E10 mock interview, E11 deliverable feedback, E12 check-in synthesizer, E13 brief expander, E14 task suggestions), then engagement loops, university product, trust-at-scale, **Arabic + RTL** (E38/E39 — big addressable-market unlock for Tunisia). The earlier strategist review is in `docs/product/PRODUCT_STRATEGY.md`.
 
 ---
 
@@ -465,7 +487,12 @@ If you want to **go deeper on perf**:
 
 ```
 docs/
-  HANDOFF.md                          ← this file
+  README.md                           ← index / map (start here)
+  inturn-project-brief.md             ← founding product brief
+  technical/                          ← TECHNICAL_OVERVIEW.md · DIAGRAMS.md
+  product/                            ← PRODUCT_OVERVIEW.md · PRODUCT_STRATEGY.md
+  planning/                           ← DEV_ROADMAP.md · HANDOFF.md (← this file)
+  archive/                            ← SPRINT_PLAN_COMPLETENESS.md (superseded)
   superpowers/specs/                  ← design specs by sprint
   superpowers/plans/                  ← implementation plans by sprint
   design-bundle/                      ← Studio mocks + tokens
