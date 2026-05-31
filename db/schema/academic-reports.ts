@@ -44,6 +44,9 @@ export const academicReports = pgTable(
     // Nullable: a report may start as a bare draft before the student fills metadata.
     title: text('title'),
     description: text('description'),
+    kind: text('kind', { enum: ['rapport', 'presentation', 'diagram', 'other'] })
+      .notNull()
+      .default('rapport'),
     fileUrl: text('file_url'),
     fileName: text('file_name'),
     fileType: text('file_type'),
