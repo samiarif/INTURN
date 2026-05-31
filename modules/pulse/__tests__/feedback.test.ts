@@ -28,9 +28,16 @@ const ctx: FeedbackContext = {
 
 const savedKey = process.env.ANTHROPIC_API_KEY;
 const savedFlag = process.env.PULSE_ENABLED;
+// Restore precisely — assigning `undefined` to process.env coerces to the
+// truthy string "undefined", which would leak an enabled-AI state into other
+// test files in the same worker. Delete when there was no original value.
+function restoreEnv(name: string, value: string | undefined) {
+  if (value === undefined) delete process.env[name];
+  else process.env[name] = value;
+}
 afterEach(() => {
-  process.env.ANTHROPIC_API_KEY = savedKey;
-  process.env.PULSE_ENABLED = savedFlag;
+  restoreEnv('ANTHROPIC_API_KEY', savedKey);
+  restoreEnv('PULSE_ENABLED', savedFlag);
 });
 beforeEach(() => create.mockReset());
 
