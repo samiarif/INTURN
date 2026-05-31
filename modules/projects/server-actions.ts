@@ -130,6 +130,10 @@ export async function activateProjectAction(projectId: string) {
   const user = await getUserByClerkId(clerkId);
   if (!user) throw new Error('User not found');
 
+  const project = await getProjectById(projectId);
+  if (!project) throw new Error('Project not found');
+  if (!project.supervisorIds?.includes(user.id)) throw new Error('Forbidden');
+
   await transitionProjectStatus({
     projectId,
     to: 'active',
