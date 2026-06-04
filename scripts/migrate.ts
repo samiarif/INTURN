@@ -29,7 +29,8 @@
  * before `next build`. Skips silently when DATABASE_URL is unset
  * (local dev without the env, or CI lint-only jobs).
  */
-import { Client } from '@neondatabase/serverless';
+import { Client as NeonClient } from '@neondatabase/serverless';
+import { Client as PgClient } from 'pg';
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -48,7 +49,10 @@ async function main() {
     return;
   }
 
-  const client = new Client(url);
+  // Neon (prod/preview) over HTTP-WS; a non-Neon URL = local Postgres (offline dev).
+  const client = (
+    url.includes('neon.tech') ? new NeonClient(url) : new PgClient(url)
+  ) as unknown as NeonClient;
   await client.connect();
   try {
     await client.query(`

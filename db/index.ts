@@ -1,5 +1,7 @@
 import { neon, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle, type NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
 import { requireEnv } from '@/lib/env';
 import * as schema from './schema';
 
@@ -59,8 +61,22 @@ const retryingFetch: typeof fetch = async (input, init) => {
   throw lastErr;
 };
 
-neonConfig.fetchFunction = retryingFetch;
+const url = requireEnv('DATABASE_URL');
 
-const sql = neon(requireEnv('DATABASE_URL'));
+// Driver is chosen by the connection string. Neon (prod/preview) uses the
+// HTTP driver with the retrying fetch above. A non-Neon URL — i.e. a local
+// Postgres for offline dev — uses node-postgres. The drizzle query API is
+// identical across both, so the rest of the app stays driver-agnostic; we
+// expose a single db type and cast the local client to it.
+let db: NeonHttpDatabase<typeof schema>;
+if (url.includes('neon.tech')) {
+  neonConfig.fetchFunction = retryingFetch;
+  db = drizzle({ client: neon(url), schema });
+} else {
+  db = drizzlePg({
+    client: new Pool({ connectionString: url }),
+    schema,
+  }) as unknown as NeonHttpDatabase<typeof schema>;
+}
 
-export const db = drizzle({ client: sql, schema });
+export { db };
