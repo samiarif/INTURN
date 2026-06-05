@@ -2444,7 +2444,7 @@
   },
   "sprints": {
     "title": "Sprints",
-    "empty": "Aucun sprint. Ajoutez-en un manuellement ou générez un plan avec l'IA.",
+    "empty": "Aucun sprint pour le moment.",
     "addSprint": "Ajouter un sprint",
     "sprintNamePlaceholder": "Nom du sprint",
     "sprintGoalPlaceholder": "Objectif (optionnel)",
@@ -2459,7 +2459,7 @@
     "generating": "Génération…",
     "acceptPlan": "Accepter le plan",
     "discardPlan": "Ignorer",
-    "aiError": "IA indisponible — vous pouvez ajouter des sprints manuellement.",
+    "aiError": "L'IA n'a pas pu répondre. Réessayez.",
     "retry": "Réessayer",
     "brainstormTasks": "Brainstormer les tâches",
     "brainstorming": "Brainstorming…",

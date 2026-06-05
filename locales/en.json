@@ -2444,7 +2444,7 @@
   },
   "sprints": {
     "title": "Sprints",
-    "empty": "No sprints yet. Add one manually or generate a plan with AI.",
+    "empty": "No sprints yet.",
     "addSprint": "Add sprint",
     "sprintNamePlaceholder": "Sprint name",
     "sprintGoalPlaceholder": "Goal (optional)",
@@ -2459,7 +2459,7 @@
     "generating": "Generating…",
     "acceptPlan": "Accept plan",
     "discardPlan": "Discard",
-    "aiError": "AI unavailable — you can still add sprints manually.",
+    "aiError": "The AI couldn't respond. Try again.",
     "retry": "Retry",
     "brainstormTasks": "Brainstorm tasks",
     "brainstorming": "Brainstorming…",
