@@ -18,6 +18,8 @@ import {
   draftPhases,
   suggestDeliverables,
   suggestQuestions,
+  generateSprintPlan,
+  brainstormSprintTasks,
 } from '../project-assist';
 
 /** Queue the model's next text reply (object is JSON-stringified). */
@@ -184,5 +186,183 @@ describe('suggestQuestions', () => {
     await expect(
       suggestQuestions({ title: 'Visual designer', description: 'desc' }),
     ).rejects.toThrow();
+  });
+});
+
+describe('generateSprintPlan', () => {
+  it('returns parsed sprints with name and goal', async () => {
+    reply({
+      sprints: [
+        { name: 'Sprint 1', goal: 'Set up project foundations' },
+        { name: 'Sprint 2', goal: 'Build core feature' },
+        { name: 'Sprint 3', goal: 'Testing and polish' },
+      ],
+    });
+    const out = await generateSprintPlan({ name: 'Brand Redesign' });
+    expect(out.sprints).toHaveLength(3);
+    expect(out.sprints[0].name).toBe('Sprint 1');
+    expect(out.sprints[0].goal).toBe('Set up project foundations');
+  });
+
+  it('caps at 8 sprints and drops extras', async () => {
+    reply({
+      sprints: Array.from({ length: 10 }, (_, i) => ({
+        name: `Sprint ${i + 1}`,
+        goal: 'Do something',
+      })),
+    });
+    const out = await generateSprintPlan({ name: 'Long Project' });
+    expect(out.sprints).toHaveLength(8);
+  });
+
+  it('clamps name to 80 chars and goal to 160 chars', async () => {
+    reply({
+      sprints: [{ name: 'n'.repeat(100), goal: 'g'.repeat(200) }],
+    });
+    const out = await generateSprintPlan({ name: 'Test' });
+    expect(out.sprints[0].name.length).toBe(80);
+    expect(out.sprints[0].goal?.length).toBe(160);
+  });
+
+  it('drops sprints with no name', async () => {
+    reply({
+      sprints: [
+        { name: '', goal: 'Orphan goal' },
+        { name: 'Valid Sprint', goal: 'Real goal' },
+      ],
+    });
+    const out = await generateSprintPlan({ name: 'Test' });
+    expect(out.sprints).toHaveLength(1);
+    expect(out.sprints[0].name).toBe('Valid Sprint');
+  });
+
+  it('omits goal key when goal is empty string', async () => {
+    reply({ sprints: [{ name: 'Sprint 1', goal: '' }] });
+    const out = await generateSprintPlan({ name: 'Test' });
+    expect(out.sprints[0]).not.toHaveProperty('goal');
+  });
+
+  it('throws when AI returns no usable sprints', async () => {
+    reply({ sprints: [] });
+    await expect(generateSprintPlan({ name: 'Test' })).rejects.toThrow(
+      'AI returned no usable sprints',
+    );
+  });
+
+  it('throws when AI returns only nameless sprints', async () => {
+    reply({ sprints: [{ name: '', goal: 'something' }, { name: '   ', goal: 'other' }] });
+    await expect(generateSprintPlan({ name: 'Test' })).rejects.toThrow(
+      'AI returned no usable sprints',
+    );
+  });
+
+  it('throws when AI returns garbage (no JSON)', async () => {
+    reply('I cannot generate a sprint plan right now.');
+    await expect(generateSprintPlan({ name: 'Test' })).rejects.toThrow();
+  });
+
+  it('extracts JSON even when wrapped in prose', async () => {
+    reply({ sprints: [{ name: 'Discovery', goal: 'Understand the scope' }] }, { prose: true });
+    const out = await generateSprintPlan({ name: 'Test' });
+    expect(out.sprints[0].name).toBe('Discovery');
+  });
+});
+
+describe('brainstormSprintTasks', () => {
+  it('returns parsed tasks with title and description', async () => {
+    reply({
+      tasks: [
+        { title: 'Set up repo', description: 'Initialize git and CI' },
+        { title: 'Write specs', description: 'Define acceptance criteria' },
+        { title: 'Implement feature', description: 'Build the core logic' },
+      ],
+    });
+    const out = await brainstormSprintTasks({
+      sprintName: 'Sprint 1',
+      projectName: 'Brand Redesign',
+    });
+    expect(out.tasks).toHaveLength(3);
+    expect(out.tasks[0].title).toBe('Set up repo');
+    expect(out.tasks[0].description).toBe('Initialize git and CI');
+  });
+
+  it('caps at 8 tasks and drops extras', async () => {
+    reply({
+      tasks: Array.from({ length: 12 }, (_, i) => ({
+        title: `Task ${i + 1}`,
+        description: 'Do the thing',
+      })),
+    });
+    const out = await brainstormSprintTasks({
+      sprintName: 'Sprint 1',
+      projectName: 'Test Project',
+    });
+    expect(out.tasks).toHaveLength(8);
+  });
+
+  it('clamps title to 120 chars and description to 240 chars', async () => {
+    reply({
+      tasks: [{ title: 't'.repeat(150), description: 'd'.repeat(300) }],
+    });
+    const out = await brainstormSprintTasks({
+      sprintName: 'Sprint 1',
+      projectName: 'Test',
+    });
+    expect(out.tasks[0].title.length).toBe(120);
+    expect(out.tasks[0].description?.length).toBe(240);
+  });
+
+  it('drops tasks with no title', async () => {
+    reply({
+      tasks: [
+        { title: '', description: 'Orphan task' },
+        { title: 'Real task', description: 'Valid' },
+      ],
+    });
+    const out = await brainstormSprintTasks({
+      sprintName: 'Sprint 1',
+      projectName: 'Test',
+    });
+    expect(out.tasks).toHaveLength(1);
+    expect(out.tasks[0].title).toBe('Real task');
+  });
+
+  it('omits description key when description is empty string', async () => {
+    reply({ tasks: [{ title: 'Do something', description: '' }] });
+    const out = await brainstormSprintTasks({
+      sprintName: 'Sprint 1',
+      projectName: 'Test',
+    });
+    expect(out.tasks[0]).not.toHaveProperty('description');
+  });
+
+  it('throws when AI returns no usable tasks', async () => {
+    reply({ tasks: [] });
+    await expect(
+      brainstormSprintTasks({ sprintName: 'Sprint 1', projectName: 'Test' }),
+    ).rejects.toThrow('AI returned no usable tasks');
+  });
+
+  it('throws when AI returns only titleless tasks', async () => {
+    reply({ tasks: [{ title: '', description: 'x' }, { title: '  ', description: 'y' }] });
+    await expect(
+      brainstormSprintTasks({ sprintName: 'Sprint 1', projectName: 'Test' }),
+    ).rejects.toThrow('AI returned no usable tasks');
+  });
+
+  it('throws when AI returns garbage (no JSON)', async () => {
+    reply('I cannot help with that.');
+    await expect(
+      brainstormSprintTasks({ sprintName: 'Sprint 1', projectName: 'Test' }),
+    ).rejects.toThrow();
+  });
+
+  it('extracts JSON even when wrapped in prose', async () => {
+    reply({ tasks: [{ title: 'Research competitors', description: 'Analyse top 5' }] }, { prose: true });
+    const out = await brainstormSprintTasks({
+      sprintName: 'Sprint 1',
+      projectName: 'Test',
+    });
+    expect(out.tasks[0].title).toBe('Research competitors');
   });
 });

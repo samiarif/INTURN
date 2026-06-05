@@ -7,6 +7,8 @@ import {
   draftPhases,
   suggestDeliverables,
   suggestQuestions,
+  generateSprintPlan,
+  brainstormSprintTasks,
 } from '@/modules/ai/project-assist';
 
 /** Bad client input — distinct from an AI failure so we can return 400 vs 502. */
@@ -63,6 +65,17 @@ async function runAssist(body: Record<string, unknown>): Promise<unknown> {
       const description = str(body.description);
       if (!title) throw new BadRequestError('title_required');
       return suggestQuestions({ title, description, skills: strArray(body.skills) });
+    }
+    case 'sprint-plan': {
+      const name = str(body.name);
+      if (!name) throw new BadRequestError('name_required');
+      return generateSprintPlan({ name, brief: str(body.brief) || undefined, goals: strArray(body.goals), duration: num(body.duration) });
+    }
+    case 'sprint-tasks': {
+      const sprintName = str(body.sprintName);
+      const projectName = str(body.projectName);
+      if (!sprintName || !projectName) throw new BadRequestError('fields_required');
+      return brainstormSprintTasks({ sprintName, sprintGoal: str(body.sprintGoal) || undefined, projectName, brief: str(body.brief) || undefined });
     }
     default:
       throw new BadRequestError('unknown_kind');

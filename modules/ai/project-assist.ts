@@ -230,6 +230,80 @@ export async function suggestDeliverables(
   return { deliverables };
 }
 
+/* ================================================================ sprints == */
+
+export type GenerateSprintPlanInput = { name: string; brief?: string; goals?: string[]; duration?: number };
+export type DraftSprint = { name: string; goal?: string };
+export type GenerateSprintPlanResult = { sprints: DraftSprint[] };
+
+const SPRINT_PLAN_SYSTEM = `You break a company's internship project into a sequence of sprints (1–2 week iterations) an intern works through.
+
+Rules:
+- Between 2 and 8 sprints, in order.
+- Each sprint: a short name (under 80 chars) and a one-line goal (under 160 chars) describing the outcome of that sprint.
+- Make them specific to the project and its goals, not generic.
+
+Reply in the SAME language as the input. Return JSON only:
+
+{ "sprints": [ { "name": "...", "goal": "..." } ] }`;
+
+export async function generateSprintPlan(input: GenerateSprintPlanInput): Promise<GenerateSprintPlanResult> {
+  const user = [
+    `Project: ${input.name}`,
+    input.brief ? `Brief: ${input.brief}` : null,
+    input.goals?.length ? `Goals:\n- ${input.goals.join('\n- ')}` : null,
+    input.duration ? `Duration: ${input.duration} weeks` : null,
+  ].filter(Boolean).join('\n');
+  const text = await complete(SPRINT_PLAN_SYSTEM, user, 800);
+  const raw = extractJson<{ sprints?: unknown }>(text);
+  const sprints: DraftSprint[] = [];
+  for (const s of asArray(raw.sprints).slice(0, 8)) {
+    const obj = s as { name?: unknown; goal?: unknown };
+    const name = clampStr(obj.name, 80);
+    if (!name) continue;
+    const goal = clampStr(obj.goal, 160);
+    sprints.push({ name, ...(goal ? { goal } : {}) });
+  }
+  if (sprints.length === 0) throw new Error('AI returned no usable sprints');
+  return { sprints };
+}
+
+export type BrainstormSprintTasksInput = { sprintName: string; sprintGoal?: string; projectName: string; brief?: string };
+export type DraftSprintTask = { title: string; description?: string };
+export type BrainstormSprintTasksResult = { tasks: DraftSprintTask[] };
+
+const SPRINT_TASKS_SYSTEM = `You propose the concrete tasks an intern does to complete one sprint of an internship project.
+
+Rules:
+- Between 3 and 8 tasks, ordered logically.
+- Each: a short imperative title (under 120 chars) and an optional one-line description (under 240 chars).
+- Specific and actionable for THIS sprint's goal — not generic filler.
+
+Reply in the SAME language as the input. Return JSON only:
+
+{ "tasks": [ { "title": "...", "description": "..." } ] }`;
+
+export async function brainstormSprintTasks(input: BrainstormSprintTasksInput): Promise<BrainstormSprintTasksResult> {
+  const user = [
+    `Project: ${input.projectName}`,
+    input.brief ? `Brief: ${input.brief}` : null,
+    `Sprint: ${input.sprintName}`,
+    input.sprintGoal ? `Sprint goal: ${input.sprintGoal}` : null,
+  ].filter(Boolean).join('\n');
+  const text = await complete(SPRINT_TASKS_SYSTEM, user, 900);
+  const raw = extractJson<{ tasks?: unknown }>(text);
+  const tasks: DraftSprintTask[] = [];
+  for (const t of asArray(raw.tasks).slice(0, 8)) {
+    const obj = t as { title?: unknown; description?: unknown };
+    const title = clampStr(obj.title, 120);
+    if (!title) continue;
+    const description = clampStr(obj.description, 240);
+    tasks.push({ title, ...(description ? { description } : {}) });
+  }
+  if (tasks.length === 0) throw new Error('AI returned no usable tasks');
+  return { tasks };
+}
+
 /* ============================================================ questions === */
 
 export type SuggestQuestionsInput = {
