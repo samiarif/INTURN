@@ -24,6 +24,7 @@ import {
 import { getSession } from '@/modules/auth/session';
 import { getProjectById, getProjectsByOrganization } from '@/modules/projects/queries';
 import { getInternshipsByProject } from '@/modules/internships/queries';
+import { getProjectSprints } from '@/modules/sprints/queries';
 import { getActiveMembership, canManageOrg } from '@/modules/team/authz';
 import { computeCurrentPhase } from '@/modules/workspace/phase';
 import { getPulse } from '@/modules/pulse/engine';
@@ -48,6 +49,7 @@ import {
   UnpublishInternshipButton,
 } from './_lifecycle-buttons';
 import { EditGoalsPhasesDialog } from '@/modules/projects/components/edit-goals-phases-dialog';
+import { SprintsSection } from './_sprints-section';
 
 // ---------------------------------------------------------------------------
 // Helpers (pure — easy to test later if any of this grows hair).
@@ -109,6 +111,7 @@ export default async function Page({
   const { user, role } = session;
   const t = await getTranslations('projectHub');
   const tStatus = await getTranslations('company.internshipStatus');
+  const tSprints = await getTranslations('sprints');
   const localeRaw = await getLocale();
   // getPulse is typed to the supported set; fall back to the default locale.
   const locale: 'fr' | 'en' = localeRaw === 'en' ? 'en' : 'fr';
@@ -131,6 +134,7 @@ export default async function Page({
 
   const internships = await getInternshipsByProject(projectId);
   const internshipIds = internships.map((i) => i.id);
+  const sprints = isSupervisor ? await getProjectSprints(project.id) : [];
   const supervisorIds = project.supervisorIds ?? [];
 
   // ------ Fan-out (everything is independent here). ------
@@ -710,6 +714,46 @@ export default async function Page({
                     edges={projectDependencies}
                   />
                 }
+              />
+            )}
+
+            {/* ----- Sprints section (supervisors/managers only) ----- */}
+            {isSupervisor && (
+              <SprintsSection
+                projectId={project.id}
+                projectName={project.name}
+                brief={project.brief}
+                goals={goals.length > 0 ? goals : null}
+                sprints={sprints}
+                labels={{
+                  title: tSprints('title'),
+                  empty: tSprints('empty'),
+                  addSprint: tSprints('addSprint'),
+                  sprintNamePlaceholder: tSprints('sprintNamePlaceholder'),
+                  sprintGoalPlaceholder: tSprints('sprintGoalPlaceholder'),
+                  save: tSprints('save'),
+                  cancel: tSprints('cancel'),
+                  edit: tSprints('edit'),
+                  delete: tSprints('delete'),
+                  moveUp: tSprints('moveUp'),
+                  moveDown: tSprints('moveDown'),
+                  tasks: (n: number) => tSprints('tasks', { n }),
+                  generatePlan: tSprints('generatePlan'),
+                  generating: tSprints('generating'),
+                  acceptPlan: tSprints('acceptPlan'),
+                  discardPlan: tSprints('discardPlan'),
+                  aiError: tSprints('aiError'),
+                  retry: tSprints('retry'),
+                  brainstormTasks: tSprints('brainstormTasks'),
+                  brainstorming: tSprints('brainstorming'),
+                  saveTasks: tSprints('saveTasks'),
+                  taskTitlePlaceholder: tSprints('taskTitlePlaceholder'),
+                  taskDescPlaceholder: tSprints('taskDescPlaceholder'),
+                  addTask: tSprints('addTask'),
+                  removeTask: tSprints('removeTask'),
+                  durationLabel: tSprints('durationLabel'),
+                  durationPlaceholder: tSprints('durationPlaceholder'),
+                }}
               />
             )}
 

@@ -40,8 +40,7 @@ async function gate(projectId: string) {
 }
 
 function revalidate(projectId: string) {
-  revalidatePath(`/projects/${projectId}`);
-  revalidatePath(`/projects/${projectId}/sprints`);
+  revalidatePath(`/company/projects/${projectId}`);
 }
 
 // ---------------------------------------------------------------------------

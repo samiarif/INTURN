@@ -2441,5 +2441,34 @@
       "at-risk": "En risque",
       "too-early": "Trop tôt"
     }
+  },
+  "sprints": {
+    "title": "Sprints",
+    "empty": "Aucun sprint. Ajoutez-en un manuellement ou générez un plan avec l'IA.",
+    "addSprint": "Ajouter un sprint",
+    "sprintNamePlaceholder": "Nom du sprint",
+    "sprintGoalPlaceholder": "Objectif (optionnel)",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "tasks": "{n, plural, =0 {aucune tâche} one {# tâche} other {# tâches}}",
+    "generatePlan": "Générer un plan avec l'IA",
+    "generating": "Génération…",
+    "acceptPlan": "Accepter le plan",
+    "discardPlan": "Ignorer",
+    "aiError": "IA indisponible — vous pouvez ajouter des sprints manuellement.",
+    "retry": "Réessayer",
+    "brainstormTasks": "Brainstormer les tâches",
+    "brainstorming": "Brainstorming…",
+    "saveTasks": "Enregistrer les tâches",
+    "taskTitlePlaceholder": "Titre de la tâche",
+    "taskDescPlaceholder": "Description (optionnel)",
+    "addTask": "Ajouter une tâche",
+    "removeTask": "Supprimer",
+    "durationLabel": "Durée (semaines)",
+    "durationPlaceholder": "12"
   }
 }

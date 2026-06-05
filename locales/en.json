@@ -2441,5 +2441,34 @@
       "at-risk": "At risk",
       "too-early": "Too early"
     }
+  },
+  "sprints": {
+    "title": "Sprints",
+    "empty": "No sprints yet. Add one manually or generate a plan with AI.",
+    "addSprint": "Add sprint",
+    "sprintNamePlaceholder": "Sprint name",
+    "sprintGoalPlaceholder": "Goal (optional)",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "tasks": "{n, plural, =0 {no tasks} one {# task} other {# tasks}}",
+    "generatePlan": "Generate plan with AI",
+    "generating": "Generating…",
+    "acceptPlan": "Accept plan",
+    "discardPlan": "Discard",
+    "aiError": "AI unavailable — you can still add sprints manually.",
+    "retry": "Retry",
+    "brainstormTasks": "Brainstorm tasks",
+    "brainstorming": "Brainstorming…",
+    "saveTasks": "Save tasks",
+    "taskTitlePlaceholder": "Task title",
+    "taskDescPlaceholder": "Description (optional)",
+    "addTask": "Add task",
+    "removeTask": "Remove",
+    "durationLabel": "Duration (weeks)",
+    "durationPlaceholder": "12"
   }
 }
