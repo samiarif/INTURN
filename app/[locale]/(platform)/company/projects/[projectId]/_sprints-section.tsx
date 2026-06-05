@@ -18,6 +18,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { ChevronUp, ChevronDown, Pencil, Trash2, ListChecks, Plus, X, Sparkles } from 'lucide-react';
 import type { ProjectSprint, SprintTaskBlueprint } from '@/db/schema';
 import {
@@ -36,54 +37,12 @@ import {
 type DraftSprint = { name: string; goal?: string };
 type DraftTask = { title: string; description?: string };
 
-interface SprintsLabels {
-  title: string;
-  empty: string;
-  addSprint: string;
-  sprintNamePlaceholder: string;
-  sprintGoalPlaceholder: string;
-  save: string;
-  cancel: string;
-  edit: string;
-  delete: string;
-  moveUp: string;
-  moveDown: string;
-  tasks: (n: number) => string;
-  generatePlan: string;
-  generating: string;
-  acceptPlan: string;
-  discardPlan: string;
-  aiError: string;
-  retry: string;
-  brainstormTasks: string;
-  brainstorming: string;
-  saveTasks: string;
-  taskTitlePlaceholder: string;
-  taskDescPlaceholder: string;
-  addTask: string;
-  removeTask: string;
-  durationLabel: string;
-  durationPlaceholder: string;
-  aiSuggestions: string;
-  aiPlanCount: (count: number) => string;
-  taskDescSeparator: string;
-}
-
 interface Props {
   projectId: string;
   projectName: string;
   brief?: string | null;
   goals?: string[] | null;
   sprints: ProjectSprint[];
-  labels: SprintsLabels;
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function taskCountLabel(n: number, labelFn: (n: number) => string): string {
-  return labelFn(n);
 }
 
 // ---------------------------------------------------------------------------
@@ -92,11 +51,11 @@ function taskCountLabel(n: number, labelFn: (n: number) => string): string {
 
 function TaskEditor({
   tasks,
-  labels,
+  t,
   onChange,
 }: {
   tasks: DraftTask[];
-  labels: Pick<SprintsLabels, 'taskTitlePlaceholder' | 'taskDescPlaceholder' | 'addTask' | 'removeTask' | 'save' | 'cancel' | 'saveTasks' | 'brainstorming'>;
+  t: ReturnType<typeof useTranslations<'sprints'>>;
   onChange: (tasks: DraftTask[]) => void;
 }) {
   function update(i: number, patch: Partial<DraftTask>) {
@@ -121,14 +80,14 @@ function TaskEditor({
               type="text"
               value={task.title}
               onChange={(e) => update(i, { title: e.target.value })}
-              placeholder={labels.taskTitlePlaceholder}
+              placeholder={t('taskTitlePlaceholder')}
               className="flex-1 text-label bg-transparent border-b border-[var(--border-color)] focus:border-[var(--brand-500)] outline-none py-0.5 text-[var(--ink)] placeholder:text-[var(--ink-4)]"
             />
             <button
               type="button"
               onClick={() => remove(i)}
               className="text-[var(--ink-4)] hover:text-[var(--danger)] transition-colors"
-              title={labels.removeTask}
+              title={t('removeTask')}
             >
               <X size={14} />
             </button>
@@ -137,7 +96,7 @@ function TaskEditor({
             type="text"
             value={task.description ?? ''}
             onChange={(e) => update(i, { description: e.target.value })}
-            placeholder={labels.taskDescPlaceholder}
+            placeholder={t('taskDescPlaceholder')}
             className="text-caption bg-transparent border-b border-transparent focus:border-[var(--border-color)] outline-none py-0.5 text-[var(--ink-3)] placeholder:text-[var(--ink-4)]"
           />
         </div>
@@ -148,7 +107,7 @@ function TaskEditor({
         className="flex items-center gap-1 text-caption text-[var(--brand-600)] hover:text-[var(--brand-500)] transition-colors w-fit"
       >
         <Plus size={12} />
-        {labels.addTask}
+        {t('addTask')}
       </button>
     </div>
   );
@@ -162,7 +121,7 @@ function SprintRow({
   sprint,
   index,
   total,
-  labels,
+  t,
   isPending,
   onMoveUp,
   onMoveDown,
@@ -175,7 +134,7 @@ function SprintRow({
   sprint: ProjectSprint;
   index: number;
   total: number;
-  labels: SprintsLabels;
+  t: ReturnType<typeof useTranslations<'sprints'>>;
   isPending: boolean;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -240,7 +199,7 @@ function SprintRow({
       });
       if (!res.ok) {
         setBrainstormStatus('error');
-        setBrainstormError(labels.aiError);
+        setBrainstormError(t('aiError'));
         return;
       }
       const data = (await res.json()) as { tasks?: DraftTask[] };
@@ -248,7 +207,7 @@ function SprintRow({
       setBrainstormStatus('ready');
     } catch {
       setBrainstormStatus('error');
-      setBrainstormError(labels.aiError);
+      setBrainstormError(t('aiError'));
     }
   }
 
@@ -280,7 +239,7 @@ function SprintRow({
             onClick={onMoveUp}
             disabled={index === 0 || isPending}
             className="text-[var(--ink-4)] hover:text-[var(--ink-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            title={labels.moveUp}
+            title={t('moveUp')}
           >
             <ChevronUp size={14} />
           </button>
@@ -289,7 +248,7 @@ function SprintRow({
             onClick={onMoveDown}
             disabled={index === total - 1 || isPending}
             className="text-[var(--ink-4)] hover:text-[var(--ink-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            title={labels.moveDown}
+            title={t('moveDown')}
           >
             <ChevronDown size={14} />
           </button>
@@ -308,7 +267,7 @@ function SprintRow({
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                placeholder={labels.sprintNamePlaceholder}
+                placeholder={t('sprintNamePlaceholder')}
                 className="text-label font-semibold text-[var(--ink)] bg-transparent border-b border-[var(--brand-500)] outline-none pb-0.5"
                 autoFocus
               />
@@ -316,7 +275,7 @@ function SprintRow({
                 type="text"
                 value={editGoal}
                 onChange={(e) => setEditGoal(e.target.value)}
-                placeholder={labels.sprintGoalPlaceholder}
+                placeholder={t('sprintGoalPlaceholder')}
                 className="text-caption text-[var(--ink-3)] bg-transparent border-b border-[var(--border-color)] focus:border-[var(--brand-500)] outline-none pb-0.5"
               />
               <div className="flex items-center gap-2">
@@ -326,14 +285,14 @@ function SprintRow({
                   disabled={!editName.trim() || isPending}
                   className="text-caption px-2 py-0.5 rounded bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-50 transition-colors"
                 >
-                  {labels.save}
+                  {t('save')}
                 </button>
                 <button
                   type="button"
                   onClick={cancelEdit}
                   className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors"
                 >
-                  {labels.cancel}
+                  {t('cancel')}
                 </button>
               </div>
             </div>
@@ -344,7 +303,7 @@ function SprintRow({
                 <div className="text-caption text-[var(--ink-3)] mt-0.5 line-clamp-2">{sprint.goal}</div>
               )}
               <div className="text-caption text-[var(--ink-4)] mt-0.5">
-                {taskCountLabel(taskCount, labels.tasks)}
+                {t('tasks', { n: taskCount })}
               </div>
             </>
           )}
@@ -358,7 +317,7 @@ function SprintRow({
               onClick={() => setShowTasks((s) => !s)}
               disabled={isPending}
               className={`p-1.5 rounded text-[var(--ink-3)] hover:text-[var(--brand-600)] hover:bg-[var(--surface)] transition-colors ${showTasks ? 'text-[var(--brand-600)] bg-[var(--surface)]' : ''}`}
-              title={labels.brainstormTasks}
+              title={t('brainstormTasks')}
             >
               <ListChecks size={15} />
             </button>
@@ -367,7 +326,7 @@ function SprintRow({
               onClick={() => { setIsEditing(true); }}
               disabled={isPending}
               className="p-1.5 rounded text-[var(--ink-3)] hover:text-[var(--ink)] hover:bg-[var(--surface)] transition-colors"
-              title={labels.edit}
+              title={t('edit')}
             >
               <Pencil size={14} />
             </button>
@@ -376,7 +335,7 @@ function SprintRow({
               onClick={onDelete}
               disabled={isPending}
               className="p-1.5 rounded text-[var(--ink-4)] hover:text-[var(--danger)] hover:bg-[var(--surface)] transition-colors"
-              title={labels.delete}
+              title={t('delete')}
             >
               <Trash2 size={14} />
             </button>
@@ -395,13 +354,13 @@ function SprintRow({
               className="flex items-center gap-1.5 text-caption text-[var(--brand-600)] hover:text-[var(--brand-500)] mb-3 transition-colors"
             >
               <Sparkles size={13} />
-              {labels.brainstormTasks}
+              {t('brainstormTasks')}
             </button>
           )}
           {brainstormStatus === 'loading' && (
             <div className="flex items-center gap-1.5 text-caption text-[var(--ink-3)] mb-3">
               <Sparkles size={13} className="animate-pulse" />
-              {labels.brainstorming}
+              {t('brainstorming')}
             </div>
           )}
           {brainstormStatus === 'error' && (
@@ -412,7 +371,7 @@ function SprintRow({
                 onClick={triggerBrainstorm}
                 className="underline hover:no-underline"
               >
-                {labels.retry}
+                {t('retry')}
               </button>
             </div>
           )}
@@ -420,7 +379,7 @@ function SprintRow({
             <div className="mb-3 rounded border border-[var(--border-color)] p-3 bg-[var(--bg)]">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-caption font-semibold text-[var(--ink-2)]">
-                  {labels.aiSuggestions}
+                  {t('aiSuggestions')}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -428,23 +387,23 @@ function SprintRow({
                     onClick={acceptBrainstorm}
                     className="text-caption px-2 py-0.5 rounded bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] transition-colors"
                   >
-                    {labels.acceptPlan}
+                    {t('acceptPlan')}
                   </button>
                   <button
                     type="button"
                     onClick={discardBrainstorm}
                     className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors"
                   >
-                    {labels.discardPlan}
+                    {t('discardPlan')}
                   </button>
                 </div>
               </div>
               <ul className="flex flex-col gap-1">
-                {brainstormTasks.map((t, i) => (
+                {brainstormTasks.map((bt, i) => (
                   <li key={i} className="text-caption text-[var(--ink-2)]">
-                    <span className="font-medium">{t.title}</span>
-                    {t.description && (
-                      <span className="text-[var(--ink-4)] ml-1">{labels.taskDescSeparator}{t.description}</span>
+                    <span className="font-medium">{bt.title}</span>
+                    {bt.description && (
+                      <span className="text-[var(--ink-4)] ml-1">{t('taskDescSeparator')}{bt.description}</span>
                     )}
                   </li>
                 ))}
@@ -455,7 +414,7 @@ function SprintRow({
           {/* Manual task editor */}
           <TaskEditor
             tasks={editTasks}
-            labels={labels}
+            t={t}
             onChange={handleTasksChange}
           />
 
@@ -467,7 +426,7 @@ function SprintRow({
                 disabled={isPending}
                 className="text-caption px-3 py-1 rounded bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-50 transition-colors"
               >
-                {labels.saveTasks}
+                {t('saveTasks')}
               </button>
             </div>
           )}
@@ -487,9 +446,9 @@ export function SprintsSection({
   brief,
   goals,
   sprints: initialSprints,
-  labels,
 }: Props) {
   const router = useRouter();
+  const t = useTranslations('sprints');
   const [isPending, startTransition] = useTransition();
 
   // Local sprint list (optimistic)
@@ -590,7 +549,7 @@ export function SprintsSection({
       });
       if (!res.ok) {
         setPlanStatus('error');
-        setPlanError(labels.aiError);
+        setPlanError(t('aiError'));
         return;
       }
       const data = (await res.json()) as { sprints?: DraftSprint[] };
@@ -600,7 +559,7 @@ export function SprintsSection({
       setPlanStatus('ready');
     } catch {
       setPlanStatus('error');
-      setPlanError(labels.aiError);
+      setPlanError(t('aiError'));
     }
   }
 
@@ -640,7 +599,7 @@ export function SprintsSection({
       <div className="flex items-center gap-2 mb-4">
         <ListChecks size={16} strokeWidth={2.25} className="text-[var(--brand-600)] shrink-0" />
         <h3 className="text-heading text-[var(--ink)] font-[family-name:var(--font-display)]">
-          {labels.title}
+          {t('title')}
         </h3>
         <span className="text-caption text-[var(--ink-4)] font-mono ml-1">
           {sprints.length}
@@ -655,13 +614,13 @@ export function SprintsSection({
             className="ml-auto flex items-center gap-1.5 text-caption text-[var(--ink-3)] hover:text-[var(--brand-600)] border border-[var(--border-color)] hover:border-[var(--brand-500)] px-2.5 py-1 rounded-md transition-colors disabled:opacity-50"
           >
             <Sparkles size={13} />
-            {labels.generatePlan}
+            {t('generatePlan')}
           </button>
         )}
         {planStatus === 'loading' && (
           <span className="ml-auto flex items-center gap-1.5 text-caption text-[var(--ink-3)]">
             <Sparkles size={13} className="animate-pulse" />
-            {labels.generating}
+            {t('generating')}
           </span>
         )}
       </div>
@@ -675,7 +634,7 @@ export function SprintsSection({
             onClick={triggerPlanGeneration}
             className="underline hover:no-underline"
           >
-            {labels.retry}
+            {t('retry')}
           </button>
           <button
             type="button"
@@ -692,7 +651,7 @@ export function SprintsSection({
         <div className="mb-4 rounded border border-[var(--border-color)] p-4 bg-[var(--bg)]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-label font-semibold text-[var(--ink)]">
-              {labels.aiPlanCount(planDraft.length)}
+              {t('aiPlanCount', { count: planDraft.length })}
             </span>
             <div className="flex items-center gap-2">
               <button
@@ -701,14 +660,14 @@ export function SprintsSection({
                 disabled={isPending}
                 className="text-label px-3 py-1 rounded bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-50 transition-colors"
               >
-                {labels.acceptPlan}
+                {t('acceptPlan')}
               </button>
               <button
                 type="button"
                 onClick={discardPlan}
                 className="text-label text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors"
               >
-                {labels.discardPlan}
+                {t('discardPlan')}
               </button>
             </div>
           </div>
@@ -732,7 +691,7 @@ export function SprintsSection({
                     type="text"
                     value={s.goal ?? ''}
                     onChange={(e) => updatePlanDraft(i, { goal: e.target.value })}
-                    placeholder={labels.sprintGoalPlaceholder}
+                    placeholder={t('sprintGoalPlaceholder')}
                     className="text-caption text-[var(--ink-3)] bg-transparent border-b border-transparent focus:border-[var(--border-color)] outline-none pb-0.5 placeholder:text-[var(--ink-4)]"
                   />
                 </div>
@@ -750,7 +709,7 @@ export function SprintsSection({
 
           {/* Duration picker for context (no-op after generation, helps set expectation) */}
           <div className="mt-3 flex items-center gap-2">
-            <label className="text-caption text-[var(--ink-3)]">{labels.durationLabel}</label>
+            <label className="text-caption text-[var(--ink-3)]">{t('durationLabel')}</label>
             <input
               type="number"
               value={duration}
@@ -766,7 +725,7 @@ export function SprintsSection({
       {/* Duration picker (shown when idle, before generating) */}
       {planStatus === 'idle' && (
         <div className="flex items-center gap-2 mb-3">
-          <label className="text-caption text-[var(--ink-3)]">{labels.durationLabel}</label>
+          <label className="text-caption text-[var(--ink-3)]">{t('durationLabel')}</label>
           <input
             type="number"
             value={duration}
@@ -781,7 +740,7 @@ export function SprintsSection({
       {/* Sprint list */}
       {sprints.length === 0 && planStatus === 'idle' ? (
         <div className="text-center py-6 text-caption text-[var(--ink-3)] italic">
-          {labels.empty}
+          {t('empty')}
         </div>
       ) : (
         <div className="flex flex-col gap-2 mb-3">
@@ -791,7 +750,7 @@ export function SprintsSection({
               sprint={sprint}
               index={i}
               total={sprints.length}
-              labels={labels}
+              t={t}
               isPending={isPending}
               onMoveUp={() => handleMoveUp(i)}
               onMoveDown={() => handleMoveDown(i)}
@@ -812,7 +771,7 @@ export function SprintsSection({
             type="text"
             value={addName}
             onChange={(e) => setAddName(e.target.value)}
-            placeholder={labels.sprintNamePlaceholder}
+            placeholder={t('sprintNamePlaceholder')}
             className="text-label text-[var(--ink)] bg-transparent border-b border-[var(--brand-500)] outline-none pb-0.5"
             autoFocus
             onKeyDown={(e) => {
@@ -824,7 +783,7 @@ export function SprintsSection({
             type="text"
             value={addGoal}
             onChange={(e) => setAddGoal(e.target.value)}
-            placeholder={labels.sprintGoalPlaceholder}
+            placeholder={t('sprintGoalPlaceholder')}
             className="text-caption text-[var(--ink-3)] bg-transparent border-b border-[var(--border-color)] focus:border-[var(--brand-500)] outline-none pb-0.5 placeholder:text-[var(--ink-4)]"
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleCreate();
@@ -838,14 +797,14 @@ export function SprintsSection({
               disabled={!addName.trim() || isPending}
               className="text-caption px-3 py-1 rounded bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-50 transition-colors"
             >
-              {labels.save}
+              {t('save')}
             </button>
             <button
               type="button"
               onClick={() => { setShowAdd(false); setAddName(''); setAddGoal(''); }}
               className="text-caption text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors"
             >
-              {labels.cancel}
+              {t('cancel')}
             </button>
           </div>
         </div>
@@ -859,7 +818,7 @@ export function SprintsSection({
           <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-[var(--surface-muted)] text-[var(--ink-2)]">
             <Plus size={11} strokeWidth={2.5} aria-hidden />
           </span>
-          {labels.addSprint}
+          {t('addSprint')}
         </button>
       )}
     </section>
