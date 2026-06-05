@@ -2468,7 +2468,10 @@
     "taskDescPlaceholder": "Description (optional)",
     "addTask": "Add task",
     "removeTask": "Remove",
-    "durationLabel": "Duration (weeks)",
-    "durationPlaceholder": "12"
+    "durationLabel": "Duration:",
+    "durationPlaceholder": "12",
+    "aiSuggestions": "AI suggestions",
+    "aiPlanCount": "AI plan ({count, plural, one {# sprint} other {# sprints}})",
+    "taskDescSeparator": "— "
   }
 }

@@ -753,6 +753,9 @@ export default async function Page({
                   removeTask: tSprints('removeTask'),
                   durationLabel: tSprints('durationLabel'),
                   durationPlaceholder: tSprints('durationPlaceholder'),
+                  aiSuggestions: tSprints('aiSuggestions'),
+                  aiPlanCount: (count: number) => tSprints('aiPlanCount', { count }),
+                  taskDescSeparator: tSprints('taskDescSeparator'),
                 }}
               />
             )}

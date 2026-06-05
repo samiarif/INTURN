@@ -64,6 +64,9 @@ interface SprintsLabels {
   removeTask: string;
   durationLabel: string;
   durationPlaceholder: string;
+  aiSuggestions: string;
+  aiPlanCount: (count: number) => string;
+  taskDescSeparator: string;
 }
 
 interface Props {
@@ -417,7 +420,7 @@ function SprintRow({
             <div className="mb-3 rounded border border-[var(--border-color)] p-3 bg-[var(--bg)]">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-caption font-semibold text-[var(--ink-2)]">
-                  AI suggestions
+                  {labels.aiSuggestions}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -441,7 +444,7 @@ function SprintRow({
                   <li key={i} className="text-caption text-[var(--ink-2)]">
                     <span className="font-medium">{t.title}</span>
                     {t.description && (
-                      <span className="text-[var(--ink-4)] ml-1">— {t.description}</span>
+                      <span className="text-[var(--ink-4)] ml-1">{labels.taskDescSeparator}{t.description}</span>
                     )}
                   </li>
                 ))}
@@ -689,7 +692,7 @@ export function SprintsSection({
         <div className="mb-4 rounded border border-[var(--border-color)] p-4 bg-[var(--bg)]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-label font-semibold text-[var(--ink)]">
-              AI plan ({planDraft.length} sprints)
+              {labels.aiPlanCount(planDraft.length)}
             </span>
             <div className="flex items-center gap-2">
               <button
@@ -747,7 +750,7 @@ export function SprintsSection({
 
           {/* Duration picker for context (no-op after generation, helps set expectation) */}
           <div className="mt-3 flex items-center gap-2">
-            <label className="text-caption text-[var(--ink-3)]">{labels.durationLabel}:</label>
+            <label className="text-caption text-[var(--ink-3)]">{labels.durationLabel}</label>
             <input
               type="number"
               value={duration}
@@ -763,7 +766,7 @@ export function SprintsSection({
       {/* Duration picker (shown when idle, before generating) */}
       {planStatus === 'idle' && (
         <div className="flex items-center gap-2 mb-3">
-          <label className="text-caption text-[var(--ink-3)]">{labels.durationLabel}:</label>
+          <label className="text-caption text-[var(--ink-3)]">{labels.durationLabel}</label>
           <input
             type="number"
             value={duration}
