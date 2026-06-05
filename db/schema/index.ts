@@ -68,3 +68,9 @@ export {
   type DeliverableDependency,
   type NewDeliverableDependency,
 } from './deliverable-dependencies';
+export {
+  projectSprints,
+  type ProjectSprint,
+  type NewProjectSprint,
+  type SprintTaskBlueprint,
+} from './project-sprints';
