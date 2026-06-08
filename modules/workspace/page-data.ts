@@ -305,6 +305,7 @@ export async function loadWorkspacePage(
 
 export type WorkspaceTasksSprintData = {
   sprints: ProjectSprint[];
+  /** Array POSITION of the active sprint within `sprints` (ascending orderIndex order); non-null when `sprints.length > 0`. */
   activeIndex: number | null;
   taskCountsBySprint: Map<string, SprintProgress>;
 };

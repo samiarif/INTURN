@@ -744,6 +744,26 @@
 .ws .ws-main::-webkit-scrollbar { display: none; }
 .ws .ws-main { scrollbar-width: none; }
 
+/* =================== SPRINT SECTION HEADER (all-view) =================== */
+.ws .ws-sprint-section-header {
+  margin-bottom: 12px;
+}
+.ws .ws-sprint-section-header .eyebrow {
+  font-family: var(--font-mono), 'Geist Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 2px;
+}
+.ws .ws-sprint-section-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+
 /* ==========================================================================
  * Tasks board — kanban CSS pasted from docs/design-bundle/project/mocks/tasks-board.css
  * Scoped via .ws-shell. Edits should stay minimal — update the bundle first.

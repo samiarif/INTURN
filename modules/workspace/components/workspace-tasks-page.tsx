@@ -65,6 +65,7 @@ export async function WorkspaceTasksPage({
   // ──────────────────────────────────────────────────────────────────────────
   // Sprint-aware path. sprints.length > 0 here, so activeIndex is non-null.
   // ──────────────────────────────────────────────────────────────────────────
+  const tasksContentStyle = { gridTemplateColumns: '1fr', paddingTop: 20, paddingBottom: 40 };
   const { sprints, activeIndex, taskCountsBySprint } = sprintData;
   const t = await getTranslations('sprintWorkspace');
 
@@ -131,7 +132,7 @@ export async function WorkspaceTasksPage({
         {head}
         <div
           className="ws-content"
-          style={{ gridTemplateColumns: '1fr', paddingTop: 20, paddingBottom: 40 }}
+          style={tasksContentStyle}
         >
           {banner}
           {sprints.map((s) => (
@@ -177,9 +178,9 @@ export async function WorkspaceTasksPage({
     // here because sprints.length > 0.
     const selectedSprintId =
       selectedKey === '__default__'
-        ? sprints[activeIndex as number].id
+        ? (activeIndex != null ? sprints[activeIndex]?.id : undefined)
         : selectedKey;
-    filteredTasks = data.tasks.filter((tk) => tk.sprintId === selectedSprintId);
+    filteredTasks = data.tasks.filter((tk) => !!selectedSprintId && tk.sprintId === selectedSprintId);
   }
 
   return (
@@ -187,7 +188,7 @@ export async function WorkspaceTasksPage({
       {head}
       <div
         className="ws-content"
-        style={{ gridTemplateColumns: '1fr', paddingTop: 20, paddingBottom: 40 }}
+        style={tasksContentStyle}
       >
         {banner}
         <TasksViewsShell
@@ -210,32 +211,9 @@ function SprintSectionHeader({
   title: string;
 }) {
   return (
-    <header style={{ marginBottom: 12 }}>
-      {eyebrow && (
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: 'var(--ink-4)',
-            marginBottom: 2,
-          }}
-        >
-          {eyebrow}
-        </div>
-      )}
-      <h3
-        style={{
-          margin: 0,
-          fontSize: 14,
-          fontWeight: 600,
-          color: 'var(--ink)',
-          letterSpacing: '-0.005em',
-        }}
-      >
-        {title}
-      </h3>
+    <header className="ws-sprint-section-header">
+      {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+      <h3>{title}</h3>
     </header>
   );
 }
