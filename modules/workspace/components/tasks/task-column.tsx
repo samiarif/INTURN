@@ -27,6 +27,8 @@ export type TaskColumnProps = {
   addTaskLabel: string;
   emptyDropLabel: string;
   onAddClick: () => void;
+  /** sprintId → "S{n}" chip label. Present only on the sprint-aware Tasks path. */
+  sprintBadgeBySprintId?: Map<string, string>;
 };
 
 export function TaskColumn({
@@ -41,6 +43,7 @@ export function TaskColumn({
   addTaskLabel,
   emptyDropLabel,
   onAddClick,
+  sprintBadgeBySprintId,
 }: TaskColumnProps) {
   const t = useTranslations('workspace.tasksBoard');
   const { setNodeRef } = useDroppable({ id: `column-${status}`, data: { columnId: status } });
@@ -70,6 +73,9 @@ export function TaskColumn({
               view={view}
               internName={internName}
               renderDue={renderDue}
+              sprintBadge={
+                task.sprintId ? sprintBadgeBySprintId?.get(task.sprintId) : undefined
+              }
             />
           ))}
         </SortableContext>

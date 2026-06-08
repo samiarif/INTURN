@@ -22,6 +22,9 @@ import {
 import { eq, count } from 'drizzle-orm';
 import type { SidebarData, WorkspaceView, UserRole } from './types';
 import type { Session } from '@/modules/auth/session';
+import { getSprintsForWorkspace, getTaskCountsBySprint } from '@/modules/sprints/queries';
+import { resolveActiveSprintIndex, type SprintProgress } from '@/modules/sprints/active-sprint';
+import type { ProjectSprint } from '@/db/schema';
 
 export type WorkspaceShell = {
   session: Session;
@@ -299,3 +302,48 @@ export async function loadWorkspacePage(
 
   return { session, data, sidebar, view, basePath, viewer };
 }
+
+export type WorkspaceTasksSprintData = {
+  sprints: ProjectSprint[];
+  activeIndex: number | null;
+  taskCountsBySprint: Map<string, SprintProgress>;
+};
+
+/**
+ * Tasks-tab-only loader for sprint context. Deliberately NOT folded into
+ * `loadWorkspacePage` (which every workspace tab calls) so deliverables /
+ * comments / check-in don't pay for these two extra queries on every render —
+ * only the Tasks tab fetches sprints + per-sprint task counts.
+ *
+ * `cache`d so the two route variants (intern / company) that both call it for a
+ * single request de-dupe. Returns an empty `sprints` array when the project has
+ * no sprint plan — the Tasks page uses that to take the byte-identical
+ * non-sprint render path.
+ */
+export const loadWorkspaceTasksSprintData = cache(
+  async (workspaceId: string): Promise<WorkspaceTasksSprintData> => {
+    const [sprints, taskCountsBySprint] = await Promise.all([
+      getSprintsForWorkspace(workspaceId),
+      getTaskCountsBySprint(workspaceId),
+    ]);
+    // Sprint start/end are date-only strings parsed as UTC midnight, so `today`
+    // must also be UTC midnight — a raw `new Date()` carries a wall-clock time
+    // that pushes `today` past `endDate`'s 00:00 and wrongly excludes a sprint's
+    // final day. Building from UTC y/m/d zeroes the time component.
+    const now = new Date();
+    const today = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+    const activeIndex = resolveActiveSprintIndex(
+      sprints.map((s) => ({
+        id: s.id,
+        orderIndex: s.orderIndex,
+        startDate: s.startDate,
+        endDate: s.endDate,
+      })),
+      today,
+      taskCountsBySprint,
+    );
+    return { sprints, activeIndex, taskCountsBySprint };
+  },
+);

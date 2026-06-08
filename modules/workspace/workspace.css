@@ -1009,6 +1009,7 @@
 .ws .tb-card-label.design { background: #EDE9FE; color: var(--brand-600); }
 .ws .tb-card-label.research { background: #FCE7F3; color: #9D174D; }
 .ws .tb-card-label.deliverable { background: #DBEAFE; color: #1D4ED8; }
+.ws .tb-card-label.sprint { background: var(--surface-muted); color: var(--ink-3); }
 
 .ws .tb-card-menu {
   margin-left: auto;

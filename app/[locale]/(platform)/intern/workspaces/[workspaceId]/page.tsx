@@ -1,4 +1,8 @@
-import { loadWorkspaceShell, loadWorkspacePage } from '@/modules/workspace/page-data';
+import {
+  loadWorkspaceShell,
+  loadWorkspacePage,
+  loadWorkspaceTasksSprintData,
+} from '@/modules/workspace/page-data';
 import { WorkspaceRoute } from '@/modules/workspace/components/workspace-route';
 import { WorkspaceOverview } from '@/modules/workspace/components/workspace-overview';
 import { WorkspaceTasksPage } from '@/modules/workspace/components/workspace-tasks-page';
@@ -12,19 +16,30 @@ export default async function Page({
   searchParams,
 }: {
   params: Promise<{ workspaceId: string }>;
-  searchParams: Promise<{ tab?: string; selected?: string }>;
+  searchParams: Promise<{ tab?: string; selected?: string; sprint?: string }>;
 }) {
   const { workspaceId } = await params;
-  const { selected } = await searchParams;
-  const [shell, ctx] = await Promise.all([
+  const { tab, selected, sprint } = await searchParams;
+  // Sprint context is Tasks-tab-only; skip its two queries on every other tab.
+  const wantSprints = (tab ?? 'overview') === 'tasks';
+  const [shell, ctx, sprintData] = await Promise.all([
     loadWorkspaceShell(workspaceId, 'intern'),
     loadWorkspacePage(workspaceId, 'intern'),
+    wantSprints ? loadWorkspaceTasksSprintData(workspaceId) : Promise.resolve(undefined),
   ]);
   return (
     <WorkspaceRoute
       tabs={{
         overview: <WorkspaceOverview shell={shell} />,
-        tasks: <WorkspaceTasksPage data={ctx.data} view="intern" basePath={ctx.basePath} />,
+        tasks: (
+          <WorkspaceTasksPage
+            data={ctx.data}
+            view="intern"
+            basePath={ctx.basePath}
+            sprintData={sprintData}
+            sprintParam={sprint}
+          />
+        ),
         deliverables: (
           <WorkspaceDeliverablesPage
             data={ctx.data}

@@ -62,9 +62,18 @@ export type TaskCardProps = {
   view: 'intern' | 'supervisor';
   internName: string;
   renderDue: (d: DueInfo) => string;
+  /** Localized "S{n}" sprint chip. Set only on the sprint-aware Tasks path. */
+  sprintBadge?: string;
 };
 
-export function SortableTaskCard({ task, status, view, internName, renderDue }: TaskCardProps) {
+export function SortableTaskCard({
+  task,
+  status,
+  view,
+  internName,
+  renderDue,
+  sprintBadge,
+}: TaskCardProps) {
   const locale = useLocale();
   const t = useTranslations('workspace.tasksBoard');
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -98,6 +107,7 @@ export function SortableTaskCard({ task, status, view, internName, renderDue }: 
       aria-roledescription={t('card.roleDescription')}
     >
       <div className="tb-card-top">
+        {sprintBadge && <span className="tb-card-label sprint">{sprintBadge}</span>}
         {task.tag && <span className="tb-card-tag">{task.tag}</span>}
         {tagKind && <span className={`tb-card-label ${tagKind}`}>{t(`card.tagLabel.${tagKind}`)}</span>}
         <TaskCardMenu task={task} view={view} />

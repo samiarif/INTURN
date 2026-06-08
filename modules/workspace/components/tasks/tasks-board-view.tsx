@@ -43,6 +43,11 @@ export type TasksBoardViewProps = {
   internName: string;
   workspaceId: string;
   enableListAndCalendar?: boolean;
+  /** sprintId → "S{n}" chip label. Present only on the sprint-aware Tasks path. */
+  sprintBadgeBySprintId?: Map<string, string>;
+  /** Suppress the per-board toolbar — used for the stacked All-sprints view, which
+   *  carries a single shared toolbar context rather than one per sprint section. */
+  hideToolbar?: boolean;
 };
 
 const COLUMN_LABEL_KEY: Record<TaskStatus, 'todo' | 'inProgress' | 'review' | 'done'> = {
@@ -58,6 +63,8 @@ export function TasksBoardView({
   internName,
   workspaceId,
   enableListAndCalendar = false,
+  sprintBadgeBySprintId,
+  hideToolbar = false,
 }: TasksBoardViewProps) {
   const t = useTranslations('workspace.tasksBoard');
   const tCols = useTranslations('workspace.tasksBoard.columns');
@@ -161,7 +168,9 @@ export function TasksBoardView({
 
   return (
     <div className="ws-col-main" style={{ gap: 0 }}>
-      <TaskToolbar tasks={tasks} enableListAndCalendar={enableListAndCalendar} />
+      {!hideToolbar && (
+        <TaskToolbar tasks={tasks} enableListAndCalendar={enableListAndCalendar} />
+      )}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -187,6 +196,7 @@ export function TasksBoardView({
                 addTaskLabel={t('addTask')}
                 emptyDropLabel={t('emptyDrop')}
                 onAddClick={() => setAddingForColumn(col.status as TaskStatus)}
+                sprintBadgeBySprintId={sprintBadgeBySprintId}
               />
             );
           })}

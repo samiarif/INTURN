@@ -24,9 +24,17 @@ type Props = {
   view: 'intern' | 'supervisor';
   internName: string;
   workspaceId: string;
+  /** sprintId → "S{n}" chip label. Present only on the sprint-aware Tasks path. */
+  sprintBadgeBySprintId?: Map<string, string>;
 };
 
-export function TasksViewsShell({ tasks, view, internName, workspaceId }: Props) {
+export function TasksViewsShell({
+  tasks,
+  view,
+  internName,
+  workspaceId,
+  sprintBadgeBySprintId,
+}: Props) {
   const params = useSearchParams();
   const which = params.get('view') ?? 'board';
   const filter = parseFilterParam(params.get('filter'));
@@ -43,6 +51,7 @@ export function TasksViewsShell({ tasks, view, internName, workspaceId }: Props)
       internName={internName}
       workspaceId={workspaceId}
       enableListAndCalendar
+      sprintBadgeBySprintId={sprintBadgeBySprintId}
     />
   );
 }
