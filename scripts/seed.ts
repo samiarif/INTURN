@@ -18,6 +18,7 @@ import {
   reports,
   academicReports,
   organizationMembers,
+  projectSprints,
 } from '../db/schema';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 
@@ -141,6 +142,10 @@ async function seedSamAccounts(ctx: { candidateApplicants: Array<typeof users.$i
   let visualInternshipId: string | null = null;
   let uxResearcherInternshipId: string | null = null;
   let activeWorkspaceId: string | null = null;
+  // Sprint ids keyed by name, captured when the Brand-audit sprint plan is
+  // upserted below, so Sami's hand-crafted tasks can be assigned to a sprint
+  // directly (instead of seeding duplicate blueprint tasks into his board).
+  const sprintIdByName = new Map<string, string>();
 
   if (dazzsemi) {
     // Keep role 'company' (already set by Clerk onboarding).
@@ -220,6 +225,9 @@ async function seedSamAccounts(ctx: { candidateApplicants: Array<typeof users.$i
       const endDate = new Date(today);
       endDate.setDate(endDate.getDate() + 70); // ~10 weeks out
       const isoDate = (d: Date) => d.toISOString().slice(0, 10);
+      // ISO date `n` days from today (negative = past). Used to date the sprint
+      // windows relative to the seed run so they shift with the calendar.
+      const dayOffset = (n: number) => isoDate(new Date(today.getTime() + n * 24 * 3600_000));
 
       const [existingProject] = await db
         .select()
@@ -250,6 +258,100 @@ async function seedSamAccounts(ctx: { candidateApplicants: Array<typeof users.$i
       } else {
         const [created] = await db.insert(projects).values(projectValues).returning();
         dazzProjectId = created.id;
+      }
+
+      // --- Sprint plan for the Brand audit project ---
+      // 3 sprints with 2–3 blueprint tasks each.
+      // Idempotency: keyed by (projectId, name) — insert if absent, else update
+      // the mutable fields in place (no new rows on re-run).
+      if (dazzProjectId) {
+        // Three contiguous 28-day sprints dated relative to the seed run so the
+        // AUDIT sprint always spans TODAY (active per resolveActiveSprintIndex
+        // rule 1). Sprint 1 is fully in the past, Sprint 3 fully in the future.
+        // This matches the demo task statuses: Sprint 1 done, Sprint 2 live,
+        // Sprint 3 todo. (See Sami's hand-crafted board below.)
+        const sprintDefs = [
+          {
+            name: 'Sprint 1 · Discovery',
+            goal: 'Run stakeholder interviews and surface positioning gaps. Deliver a validated audit brief.',
+            startDate: dayOffset(-35),
+            endDate: dayOffset(-8),
+            orderIndex: 0,
+            taskBlueprint: [
+              { title: 'Kickoff brief sign-off', description: 'Align on scope and success criteria with Dazz Studio.' },
+              { title: 'Stakeholder interviews · 6 of 6', description: 'Conduct and record all discovery interviews.' },
+              { title: 'Audit slide deck', description: 'Synthesise interviews and visual audit into a findings deck.' },
+            ],
+          },
+          {
+            name: 'Sprint 2 · Audit & analysis',
+            goal: 'Analyse the discovery findings, run the competitive and brand audit, and shape the first directions to take into exploration.',
+            startDate: dayOffset(-7),
+            endDate: dayOffset(20),
+            orderIndex: 1,
+            taskBlueprint: [
+              { title: 'Visual exploration · moodboards', description: 'Produce 3 distinct moodboard directions.' },
+              { title: 'Type pairings · 3 options', description: 'Present three typographic pairings with rationale.' },
+              { title: 'Logo refresh · round 1', description: 'Refined marks based on the chosen moodboard direction.' },
+            ],
+          },
+          {
+            name: 'Sprint 3 · Recommendations',
+            goal: 'Build the token-backed Figma library and deliver written guidelines the team can use on day one.',
+            startDate: dayOffset(21),
+            endDate: dayOffset(48),
+            orderIndex: 2,
+            taskBlueprint: [
+              { title: 'Design system library · Figma', description: 'Token-backed library: type, colour, components.' },
+              { title: 'Written guidelines + examples', description: 'Brand usage doc a junior designer can follow.' },
+            ],
+          },
+        ];
+
+        for (const sd of sprintDefs) {
+          const [existing] = await db
+            .select()
+            .from(projectSprints)
+            .where(
+              and(
+                eq(projectSprints.projectId, dazzProjectId),
+                eq(projectSprints.name, sd.name),
+              ),
+            )
+            .limit(1);
+          if (existing) {
+            // Keep the same row (idempotent on (projectId, name)) but refresh
+            // the mutable fields. The date windows are computed relative to the
+            // seed run, so re-seeding on a later day re-anchors them (and the
+            // active sprint) to the new "today" instead of freezing at the
+            // first run's values.
+            await db
+              .update(projectSprints)
+              .set({
+                goal: sd.goal,
+                orderIndex: sd.orderIndex,
+                startDate: sd.startDate,
+                endDate: sd.endDate,
+                taskBlueprint: sd.taskBlueprint,
+              })
+              .where(eq(projectSprints.id, existing.id));
+            sprintIdByName.set(sd.name, existing.id);
+          } else {
+            const [created] = await db
+              .insert(projectSprints)
+              .values({
+                projectId: dazzProjectId,
+                name: sd.name,
+                goal: sd.goal,
+                orderIndex: sd.orderIndex,
+                startDate: sd.startDate,
+                endDate: sd.endDate,
+                taskBlueprint: sd.taskBlueprint,
+              })
+              .returning();
+            sprintIdByName.set(sd.name, created.id);
+          }
+        }
       }
 
       // --- 2 internships under the Brand audit project ---
@@ -629,16 +731,29 @@ async function seedSamAccounts(ctx: { candidateApplicants: Array<typeof users.$i
 
       // Wipe + re-insert: scoped to wsId (we own it). The deliverables
       // contain a revisionHistory snapshot for D1.
+      //
+      // These are the demo board's hand-crafted tasks. We assign each one to a
+      // sprint directly (sprintId, captured above when the Brand-audit plan was
+      // upserted) rather than calling seedWorkspaceFromSprints — that service
+      // would insert a SECOND set of blueprint-titled tasks and leave this board
+      // with 14 rows / 6 duplicate titles stuck in Unsorted. Distribution by
+      // content: Discovery work → Sprint 1 (done, past), audit/analysis work →
+      // Sprint 2 (live, spans today = active sprint), system work → Sprint 3
+      // (todo, upcoming). Wipe+re-insert keeps the sprintId assignment idempotent.
+      const s1Id = sprintIdByName.get('Sprint 1 · Discovery') ?? null;
+      const s2Id = sprintIdByName.get('Sprint 2 · Audit & analysis') ?? null;
+      const s3Id = sprintIdByName.get('Sprint 3 · Recommendations') ?? null;
+      const dueIn = (n: number) => new Date(todayTs + n * 24 * 3600_000).toISOString().slice(0, 10);
       await db.delete(tasks).where(eq(tasks.workspaceId, wsId));
       const taskRows = await db
         .insert(tasks)
         .values([
-          { workspaceId: wsId, tag: 'BA-001', title: 'Kickoff brief sign-off', status: 'done', priority: 'medium', order: 1, dueDate: '2026-05-12' },
-          { workspaceId: wsId, tag: 'BA-002', title: 'Stakeholder interviews · 6 of 6', status: 'done', priority: 'high', order: 2, dueDate: '2026-05-18' },
-          { workspaceId: wsId, tag: 'BA-003', title: 'Audit slide deck · in review', status: 'review', priority: 'high', order: 3, dueDate: '2026-05-22' },
-          { workspaceId: wsId, tag: 'BA-005', title: 'Visual exploration · moodboards', status: 'in-progress', priority: 'high', order: 4, dueDate: '2026-05-30' },
-          { workspaceId: wsId, tag: 'BA-006', title: 'Type pairings · 3 options', status: 'in-progress', priority: 'medium', order: 5, dueDate: '2026-05-30' },
-          { workspaceId: wsId, tag: 'BA-007', title: 'Logo refresh · round 1', status: 'todo', priority: 'medium', order: 6, dueDate: '2026-06-06' },
+          { workspaceId: wsId, sprintId: s1Id, tag: 'BA-001', title: 'Kickoff brief sign-off', status: 'done', priority: 'medium', order: 1, dueDate: dueIn(-30) },
+          { workspaceId: wsId, sprintId: s1Id, tag: 'BA-002', title: 'Stakeholder interviews · 6 of 6', status: 'done', priority: 'high', order: 2, dueDate: dueIn(-22) },
+          { workspaceId: wsId, sprintId: s2Id, tag: 'BA-003', title: 'Audit slide deck · in review', status: 'review', priority: 'high', order: 3, dueDate: dueIn(-3) },
+          { workspaceId: wsId, sprintId: s2Id, tag: 'BA-005', title: 'Visual exploration · moodboards', status: 'in-progress', priority: 'high', order: 4, dueDate: dueIn(5) },
+          { workspaceId: wsId, sprintId: s2Id, tag: 'BA-006', title: 'Type pairings · 3 options', status: 'in-progress', priority: 'medium', order: 5, dueDate: dueIn(5) },
+          { workspaceId: wsId, sprintId: s3Id, tag: 'BA-007', title: 'Logo refresh · round 1', status: 'todo', priority: 'medium', order: 6, dueDate: dueIn(25) },
         ])
         .returning();
       const taskByTag = new Map(taskRows.map((t) => [t.tag, t]));
