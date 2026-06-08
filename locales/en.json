@@ -390,6 +390,8 @@
         "changeDue": "Change due…",
         "changePriority": "Change priority…",
         "moveTo": "Move to…",
+        "moveToSprint": "Move to sprint",
+        "unsorted": "Unsorted",
         "delete": "Delete",
         "deleteConfirm": "Delete this task? This cannot be undone.",
         "priority": {

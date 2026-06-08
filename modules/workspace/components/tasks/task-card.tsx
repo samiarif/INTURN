@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import type { Task } from '@/db/schema';
 import { Avatar } from '@/components/avatar';
 import { TaskCardMenu } from './task-card-menu';
+import type { SprintOption } from './task-card-menu';
 import type { TaskStatus } from '@/modules/tasks/state-machine';
 
 type TaskWithMeta = Task & {
@@ -64,6 +65,8 @@ export type TaskCardProps = {
   renderDue: (d: DueInfo) => string;
   /** Localized "S{n}" sprint chip. Set only on the sprint-aware Tasks path. */
   sprintBadge?: string;
+  /** Sprint options for the move-to-sprint menu. Present only on the sprint-aware path. */
+  sprintOptions?: SprintOption[];
 };
 
 export function SortableTaskCard({
@@ -73,6 +76,7 @@ export function SortableTaskCard({
   internName,
   renderDue,
   sprintBadge,
+  sprintOptions,
 }: TaskCardProps) {
   const locale = useLocale();
   const t = useTranslations('workspace.tasksBoard');
@@ -110,7 +114,7 @@ export function SortableTaskCard({
         {sprintBadge && <span className="tb-card-label sprint">{sprintBadge}</span>}
         {task.tag && <span className="tb-card-tag">{task.tag}</span>}
         {tagKind && <span className={`tb-card-label ${tagKind}`}>{t(`card.tagLabel.${tagKind}`)}</span>}
-        <TaskCardMenu task={task} view={view} />
+        <TaskCardMenu task={task} view={view} sprintOptions={sprintOptions} />
       </div>
       <div className="tb-card-title">{task.title}</div>
       {task.description && <div className="tb-card-sub">{task.description}</div>}

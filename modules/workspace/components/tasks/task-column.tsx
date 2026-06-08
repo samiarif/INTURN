@@ -8,6 +8,7 @@ import type { Task } from '@/db/schema';
 import type { TaskStatus } from '@/modules/tasks/state-machine';
 import { SortableTaskCard, type DueInfo } from './task-card';
 import { TaskColumnMenu } from './task-column-menu';
+import type { SprintOption } from './task-card-menu';
 
 type TaskWithMeta = Task & {
   needsReview?: boolean;
@@ -29,6 +30,8 @@ export type TaskColumnProps = {
   onAddClick: () => void;
   /** sprintId → "S{n}" chip label. Present only on the sprint-aware Tasks path. */
   sprintBadgeBySprintId?: Map<string, string>;
+  /** Sprint options for the move-to-sprint menu. Present only on the sprint-aware path. */
+  sprintOptions?: SprintOption[];
 };
 
 export function TaskColumn({
@@ -44,6 +47,7 @@ export function TaskColumn({
   emptyDropLabel,
   onAddClick,
   sprintBadgeBySprintId,
+  sprintOptions,
 }: TaskColumnProps) {
   const t = useTranslations('workspace.tasksBoard');
   const { setNodeRef } = useDroppable({ id: `column-${status}`, data: { columnId: status } });
@@ -76,6 +80,7 @@ export function TaskColumn({
               sprintBadge={
                 task.sprintId ? sprintBadgeBySprintId?.get(task.sprintId) : undefined
               }
+              sprintOptions={sprintOptions}
             />
           ))}
         </SortableContext>

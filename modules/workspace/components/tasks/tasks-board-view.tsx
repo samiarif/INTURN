@@ -29,6 +29,7 @@ import dynamic from 'next/dynamic';
 import { TaskColumn } from './task-column';
 import { type DueInfo } from './task-card';
 import { TaskToolbar } from './task-toolbar';
+import type { SprintOption } from './task-card-menu';
 
 const AddTaskModal = dynamic(
   () => import('../add-task-modal').then((m) => ({ default: m.AddTaskModal })),
@@ -45,6 +46,8 @@ export type TasksBoardViewProps = {
   enableListAndCalendar?: boolean;
   /** sprintId → "S{n}" chip label. Present only on the sprint-aware Tasks path. */
   sprintBadgeBySprintId?: Map<string, string>;
+  /** Sprint options for the move-to-sprint menu. Present only on the sprint-aware path. */
+  sprintOptions?: SprintOption[];
   /** Suppress the per-board toolbar — used for the stacked All-sprints view, which
    *  carries a single shared toolbar context rather than one per sprint section. */
   hideToolbar?: boolean;
@@ -64,6 +67,7 @@ export function TasksBoardView({
   workspaceId,
   enableListAndCalendar = false,
   sprintBadgeBySprintId,
+  sprintOptions,
   hideToolbar = false,
 }: TasksBoardViewProps) {
   const t = useTranslations('workspace.tasksBoard');
@@ -197,6 +201,7 @@ export function TasksBoardView({
                 emptyDropLabel={t('emptyDrop')}
                 onAddClick={() => setAddingForColumn(col.status as TaskStatus)}
                 sprintBadgeBySprintId={sprintBadgeBySprintId}
+                sprintOptions={sprintOptions}
               />
             );
           })}

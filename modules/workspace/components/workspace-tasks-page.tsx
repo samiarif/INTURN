@@ -91,6 +91,10 @@ export async function WorkspaceTasksPage({
     sprints.map((s) => [s.id, t('sprintBadge', { n: s.orderIndex + 1 })]),
   );
 
+  // Sprint options for the move-to-sprint card menu (ordered by orderIndex,
+  // which is the sort order from the query). Only on the sprint-aware path.
+  const sprintOptions = sprints.map((s) => ({ id: s.id, name: s.name }));
+
   const banner = (
     <SprintBanner
       sprints={bannerSprints}
@@ -160,6 +164,7 @@ export async function WorkspaceTasksPage({
                 internName={internName}
                 workspaceId={data.workspace.id}
                 sprintBadgeBySprintId={sprintBadgeBySprintId}
+                sprintOptions={sprintOptions}
                 hideToolbar
               />
             </section>
@@ -173,6 +178,7 @@ export async function WorkspaceTasksPage({
                 internName={internName}
                 workspaceId={data.workspace.id}
                 sprintBadgeBySprintId={sprintBadgeBySprintId}
+                sprintOptions={sprintOptions}
                 hideToolbar
               />
             </section>
@@ -211,6 +217,7 @@ export async function WorkspaceTasksPage({
           internName={internName}
           workspaceId={data.workspace.id}
           sprintBadgeBySprintId={sprintBadgeBySprintId}
+          sprintOptions={sprintOptions}
         />
       </div>
     </>

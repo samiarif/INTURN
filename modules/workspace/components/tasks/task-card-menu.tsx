@@ -9,16 +9,20 @@ import {
   deleteTaskAction,
   updateTaskAction,
 } from '@/modules/tasks/server-actions';
+import { setTaskSprintAction } from '@/modules/workspace/sprint-actions';
 import { AddTaskModal } from '../add-task-modal';
+
+export type SprintOption = { id: string; name: string };
 
 type Props = {
   task: Task;
   view: 'intern' | 'supervisor';
+  sprintOptions?: SprintOption[];
 };
 
-type Panel = 'main' | 'due' | 'priority' | 'move' | null;
+type Panel = 'main' | 'due' | 'priority' | 'move' | 'sprint' | null;
 
-export function TaskCardMenu({ task, view }: Props) {
+export function TaskCardMenu({ task, view, sprintOptions }: Props) {
   const t = useTranslations('workspace.tasksBoard.cardMenu');
   const router = useRouter();
   const [panel, setPanel] = useState<Panel>(null);
@@ -100,6 +104,9 @@ export function TaskCardMenu({ task, view }: Props) {
               <MenuItem onClick={() => setPanel('due')}>{t('changeDue')}</MenuItem>
               <MenuItem onClick={() => setPanel('priority')}>{t('changePriority')}</MenuItem>
               <MenuItem onClick={() => setPanel('move')}>{t('moveTo')}</MenuItem>
+              {sprintOptions && sprintOptions.length > 0 && (
+                <MenuItem onClick={() => setPanel('sprint')}>{t('moveToSprint')}</MenuItem>
+              )}
               {view === 'supervisor' && (
                 <MenuItem onClick={onDelete} danger>
                   {t('delete')}
@@ -143,6 +150,47 @@ export function TaskCardMenu({ task, view }: Props) {
               ))}
             </div>
           )}
+          {panel === 'sprint' && (() => {
+            // sprintOptions is guaranteed non-empty here: this panel is only
+            // reachable when the "Move to sprint" item is rendered, which is
+            // gated on `sprintOptions && sprintOptions.length > 0`.
+            const opts = sprintOptions ?? [];
+            return (
+              <div style={{ padding: 4 }}>
+                {opts.map((s) => (
+                  <MenuItem
+                    key={s.id}
+                    onClick={() => {
+                      startTransition(async () => {
+                        const res = await setTaskSprintAction({ taskId: task.id, sprintId: s.id });
+                        if (res.ok) {
+                          router.refresh();
+                          setPanel(null);
+                        }
+                      });
+                    }}
+                    disabled={pending || task.sprintId === s.id}
+                  >
+                    {s.name}
+                  </MenuItem>
+                ))}
+                <MenuItem
+                  onClick={() => {
+                    startTransition(async () => {
+                      const res = await setTaskSprintAction({ taskId: task.id, sprintId: null });
+                      if (res.ok) {
+                        router.refresh();
+                        setPanel(null);
+                      }
+                    });
+                  }}
+                  disabled={pending || task.sprintId === null}
+                >
+                  {t('unsorted')}
+                </MenuItem>
+              </div>
+            );
+          })()}
         </div>
       )}
       {editing && (

@@ -11,6 +11,7 @@ import {
   type SortKey,
 } from '@/modules/workspace/utils/task-view-state';
 import { TasksBoardView } from './tasks-board-view';
+import type { SprintOption } from './task-card-menu';
 
 const TasksListView = dynamic(() =>
   import('./tasks-list-view').then((m) => ({ default: m.TasksListView })),
@@ -26,6 +27,8 @@ type Props = {
   workspaceId: string;
   /** sprintId → "S{n}" chip label. Present only on the sprint-aware Tasks path. */
   sprintBadgeBySprintId?: Map<string, string>;
+  /** Sprint options for the move-to-sprint menu. Present only on the sprint-aware path. */
+  sprintOptions?: SprintOption[];
 };
 
 export function TasksViewsShell({
@@ -34,6 +37,7 @@ export function TasksViewsShell({
   internName,
   workspaceId,
   sprintBadgeBySprintId,
+  sprintOptions,
 }: Props) {
   const params = useSearchParams();
   const which = params.get('view') ?? 'board';
@@ -42,6 +46,8 @@ export function TasksViewsShell({
 
   const prepared = useMemo(() => sortTasks(filterTasks(tasks, filter), sortKey), [tasks, filter, sortKey]);
 
+  // sprintOptions intentionally omitted for list and calendar: those views have
+  // no task card menu and therefore no "Move to sprint" affordance.
   if (which === 'list') return <TasksListView tasks={prepared} view={view} />;
   if (which === 'calendar') return <TasksCalendarView tasks={prepared} view={view} />;
   return (
@@ -52,6 +58,7 @@ export function TasksViewsShell({
       workspaceId={workspaceId}
       enableListAndCalendar
       sprintBadgeBySprintId={sprintBadgeBySprintId}
+      sprintOptions={sprintOptions}
     />
   );
 }
