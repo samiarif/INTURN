@@ -2,6 +2,7 @@ import { db } from '@/db';
 import { applications, internships, workspaces } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { recordEvent } from '@/modules/events/service';
+import { seedWorkspaceFromSprints } from '@/modules/workspace/sprint-seed';
 
 export type ApplicationStatus =
   | 'new'
@@ -185,6 +186,17 @@ export async function acceptApplication(input: {
         })
         .returning()
     )[0];
+
+  // Best-effort seed: if the project has sprints, copy the blueprint into the
+  // new workspace. seedWorkspaceFromSprints is idempotent + no-ops when there
+  // are no sprints, so it's safe to always call (covers both fresh-insert and
+  // idempotency-reuse paths above).
+  try {
+    await seedWorkspaceFromSprints(workspace.id);
+  } catch (err) {
+    console.error('[acceptApplication] seedWorkspaceFromSprints failed:', err, { workspaceId: workspace.id });
+    // Don't fail the acceptance — the intern can still "Apply sprint plan" later.
+  }
 
   // Write 2: only after the workspace exists, mark the application accepted. The
   // optional decision note rides on this same UPDATE, before recordEvent fires.

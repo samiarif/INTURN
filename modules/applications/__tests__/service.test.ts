@@ -130,7 +130,12 @@ vi.mock('@/modules/events/service', () => ({
   }),
 }));
 
+vi.mock('@/modules/workspace/sprint-seed', () => ({
+  seedWorkspaceFromSprints: vi.fn(async () => undefined),
+}));
+
 import { acceptApplication, transitionApplicationStatus } from '../service';
+import { seedWorkspaceFromSprints } from '@/modules/workspace/sprint-seed';
 
 const fakeApplication = {
   id: 'app1',
@@ -199,6 +204,35 @@ describe('acceptApplication — write-order invariant', () => {
 
     expect(mocks.callOrder).not.toContain('insert:workspaces');
     expect(mocks.callOrder).not.toContain('update:applications');
+  });
+
+  it('calls seedWorkspaceFromSprints with the created workspace id after insert', async () => {
+    mocks.selectQueue.push([fakeApplication], [fakeInternship], []);
+
+    await acceptApplication({ applicationId: 'app1', actorId: 'actor1' });
+
+    expect(seedWorkspaceFromSprints).toHaveBeenCalledOnce();
+    expect(seedWorkspaceFromSprints).toHaveBeenCalledWith('ws1');
+  });
+
+  it('calls seedWorkspaceFromSprints with the existing workspace id on the idempotency path', async () => {
+    const existingWorkspace = { id: 'ws-existing', internId: 'i1', internshipId: 'int1' };
+    mocks.selectQueue.push([fakeApplication], [fakeInternship], [existingWorkspace]);
+
+    await acceptApplication({ applicationId: 'app1', actorId: 'actor1' });
+
+    expect(seedWorkspaceFromSprints).toHaveBeenCalledOnce();
+    expect(seedWorkspaceFromSprints).toHaveBeenCalledWith('ws-existing');
+  });
+
+  it('does NOT fail acceptApplication when seedWorkspaceFromSprints throws', async () => {
+    mocks.selectQueue.push([fakeApplication], [fakeInternship], []);
+    vi.mocked(seedWorkspaceFromSprints).mockRejectedValueOnce(new Error('seed boom'));
+
+    await acceptApplication({ applicationId: 'app1', actorId: 'actor1' }); // throws if it rejects
+
+    expect(mocks.callOrder).toContain('insert:workspaces');
+    expect(mocks.callOrder).toContain('update:applications');
   });
 });
 
