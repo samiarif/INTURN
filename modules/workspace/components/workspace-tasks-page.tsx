@@ -3,6 +3,7 @@ import { WorkspaceMHead } from './m-head';
 import { TasksViewsShell } from './tasks/tasks-views-shell';
 import { TasksBoardView } from './tasks/tasks-board-view';
 import { SprintBanner, type SprintForBanner } from './sprint-banner';
+import { ApplySprintPlanCallout } from './apply-sprint-plan-callout';
 import type { WorkspaceOverviewData } from '../queries';
 import type { WorkspaceTasksSprintData } from '../page-data';
 import type { WorkspaceView } from '../types';
@@ -100,6 +101,17 @@ export async function WorkspaceTasksPage({
     />
   );
 
+  // Show the call-out only when tasks have not yet been seeded from the sprint
+  // plan. taskCountsBySprint only counts sprint-linked tasks, so size === 0
+  // means no task in this workspace has a sprintId yet.
+  const callout =
+    taskCountsBySprint.size === 0 ? (
+      <ApplySprintPlanCallout
+        workspaceId={data.workspace.id}
+        sprintCount={sprints.length}
+      />
+    ) : null;
+
   const head = (
     <WorkspaceMHead
       view={view}
@@ -134,6 +146,7 @@ export async function WorkspaceTasksPage({
           className="ws-content"
           style={tasksContentStyle}
         >
+          {callout}
           {banner}
           {sprints.map((s) => (
             <section key={s.id} style={{ marginBottom: 28 }}>
@@ -190,6 +203,7 @@ export async function WorkspaceTasksPage({
         className="ws-content"
         style={tasksContentStyle}
       >
+        {callout}
         {banner}
         <TasksViewsShell
           tasks={filteredTasks}
