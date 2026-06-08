@@ -7,8 +7,15 @@ export type SprintForResolver = {
 };
 
 /**
- * Returns the orderIndex of the active sprint, or null if there are no sprints.
+ * Returns the array INDEX (position) of the active sprint within `sprints`
+ * when ordered ascending by orderIndex, or null if there are no sprints.
  * Pure — no DB, no clock. `today` and `progress` are supplied by the caller.
+ *
+ * The returned number is a POSITION, not an orderIndex value. Callers pass (and
+ * index into) a sprints array sorted ascending by orderIndex — e.g. the result
+ * of getSprintsForWorkspace. This is robust to non-contiguous orderIndex values
+ * (e.g. after a sprint is deleted and not re-compacted), unlike returning the
+ * orderIndex directly.
  *
  * Rules (in order):
  *   1) today between sprint.startDate..endDate → that sprint. Multiple match
@@ -24,21 +31,23 @@ export function resolveActiveSprintIndex(
   if (sprints.length === 0) return null;
   const ordered = [...sprints].sort((a, b) => a.orderIndex - b.orderIndex);
 
-  // Rule 1: today within [startDate, endDate]
-  const dateMatches = ordered.filter((s) => {
+  // Rule 1: today within [startDate, endDate]; first match in ascending
+  // orderIndex order = lowest orderIndex.
+  const rule1 = ordered.findIndex((s) => {
     if (!s.startDate || !s.endDate) return false;
     const start = new Date(s.startDate);
     const end = new Date(s.endDate);
     return today >= start && today <= end;
   });
-  if (dateMatches.length > 0) return dateMatches[0].orderIndex;
+  if (rule1 !== -1) return rule1;
 
-  // Rule 2: first with any non-done task
-  for (const s of ordered) {
+  // Rule 2: first with any non-done task.
+  const rule2 = ordered.findIndex((s) => {
     const p = progress.get(s.id);
-    if (p && p.total > 0 && p.done < p.total) return s.orderIndex;
-  }
+    return !!p && p.total > 0 && p.done < p.total;
+  });
+  if (rule2 !== -1) return rule2;
 
-  // Rule 3: fall back to last
-  return ordered[ordered.length - 1].orderIndex;
+  // Rule 3: fall back to the last sprint.
+  return ordered.length - 1;
 }

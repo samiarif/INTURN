@@ -61,4 +61,19 @@ describe('resolveActiveSprintIndex', () => {
     ]);
     expect(resolveActiveSprintIndex(sprints, today, progress)).toBe(1);
   });
+
+  it('non-contiguous orderIndex (after a mid-sprint deletion) returns the array POSITION, not the orderIndex value', () => {
+    // Sprints with orderIndex 0 and 2 remain after the orderIndex-1 sprint was
+    // deleted (deleteSprint does not re-compact). All tasks done → rule 3 → the
+    // LAST sprint, whose array POSITION is 1 (its orderIndex is 2).
+    const sprints: S[] = [
+      { id: 'a', orderIndex: 0, startDate: null, endDate: null },
+      { id: 'c', orderIndex: 2, startDate: null, endDate: null },
+    ];
+    const progress = new Map<string, SprintProgress>([
+      ['a', { total: 1, done: 1 }],
+      ['c', { total: 1, done: 1 }],
+    ]);
+    expect(resolveActiveSprintIndex(sprints, today, progress)).toBe(1);
+  });
 });
