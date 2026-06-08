@@ -2473,5 +2473,20 @@
     "aiSuggestions": "AI suggestions",
     "aiPlanCount": "AI plan ({count, plural, one {# sprint} other {# sprints}})",
     "taskDescSeparator": "— "
+  },
+  "sprintWorkspace": {
+    "sprintOf": "Sprint {current} of {total}",
+    "sprintLabel": "Sprint {n}",
+    "sprintBadge": "S{n}",
+    "statusActive": "Active now",
+    "statusPast": "Past",
+    "statusUpcoming": "Upcoming",
+    "allSprints": "All sprints",
+    "allSprintsTitle": "All sprints",
+    "unsorted": "Unsorted",
+    "unsortedTitle": "Unsorted tasks",
+    "applyCalloutBody": "Your supervisor has set up {count, plural, one {# sprint} other {# sprints}} for this project.",
+    "applyCta": "Apply sprint plan",
+    "applyingCta": "Applying…"
   }
 }

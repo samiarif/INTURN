@@ -2473,5 +2473,20 @@
     "aiSuggestions": "Suggestions IA",
     "aiPlanCount": "Plan IA ({count, plural, one {# sprint} other {# sprints}})",
     "taskDescSeparator": "— "
+  },
+  "sprintWorkspace": {
+    "sprintOf": "Sprint {current} sur {total}",
+    "sprintLabel": "Sprint {n}",
+    "sprintBadge": "S{n}",
+    "statusActive": "Actif",
+    "statusPast": "Terminé",
+    "statusUpcoming": "À venir",
+    "allSprints": "Tous les sprints",
+    "allSprintsTitle": "Tous les sprints",
+    "unsorted": "Non classées",
+    "unsortedTitle": "Tâches non classées",
+    "applyCalloutBody": "Votre encadrant a préparé {count, plural, one {# sprint} other {# sprints}} pour ce projet.",
+    "applyCta": "Appliquer le plan",
+    "applyingCta": "Application en cours…"
   }
 }
