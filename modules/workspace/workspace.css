@@ -813,6 +813,13 @@
   margin-left: 2px;
 }
 .ws .tb-chip.active .num { color: var(--brand-600); }
+/* §6.2.B — visible dot on the active-sprint tab (distinct from selected-tab highlight) */
+.ws .tb-chip[data-active-sprint='true']::before {
+  content: '•';
+  margin-right: 0.25rem;     /* ~4px, consistent with the chip's internal gap: 6px scale */
+  color: var(--brand-600);   /* dark brand purple — legible on --surface and --brand-50 alike */
+  font-weight: 700;
+}
 .ws .tb-spacer { flex: 1; }
 
 /* Supervisor-only review banner across the top */
