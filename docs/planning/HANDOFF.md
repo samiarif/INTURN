@@ -1,8 +1,37 @@
-# inturn — Session Handoff (updated 2026-05-30 — Post-QA fix sprint + exhaustive-i18n plan · University product (Plan 1 + Plan 2) · Team mgmt · design system · smart-create · close-the-loop)
+# inturn — Session Handoff (updated 2026-06-08 — Sprint-aware intern workspaces (project-sprints Plan 2) · Post-QA fix sprint + exhaustive-i18n plan · University product · Team mgmt · design system)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
-## TL;DR — Where we are (2026-05-30, LATEST — Post-QA fix sprint + exhaustive-i18n plan)
+## TL;DR — Where we are (2026-06-08, LATEST — Sprint-aware intern workspaces · project-sprints Plan 2)
+
+**Plan 2 of the project-sprints arc is DONE on branch `feat/sprint-workspaces` (off `main`), executed subagent-driven (implement → spec-review → quality-review per task). NOT merged, NOT pushed — left for Sam's review.** Builds on Plan 1 (company-side sprint planning + the `project_sprints` table, migration `0021`).
+
+**What it does:** the intern Tasks board becomes **sprint-aware when the project has sprints, and is byte-identical to before when it has none** (the regression must-pass). Verified live in-browser both ways.
+
+- **Migration `0022`** — `tasks.sprint_id` (nullable FK → `project_sprints`, `ON DELETE SET NULL`; deleting a sprint drops its tasks to "Unsorted", never deletes them). Column + index also declared in `db/schema/tasks.ts`.
+- **`modules/sprints/active-sprint.ts`** — pure `resolveActiveSprintIndex` (date-first → first-incomplete → last). **Returns an array POSITION (ascending orderIndex), not the orderIndex value** — robust to non-contiguous order after a sprint delete. Caller passes a **UTC-midnight `today`** (`page-data.ts`).
+- **`modules/workspace/sprint-seed.ts`** — `seedWorkspaceFromSprints` (idempotent: bails if any task already has a `sprintId`). Called from `acceptApplication` (best-effort try/catch, non-fatal) and `applySprintPlanAction`.
+- **`modules/sprints/queries.ts`** — `getSprintsForWorkspace` + `getTaskCountsBySprint` (→ `Map<sprintId, SprintProgress>`; null-sprint tasks excluded).
+- **`modules/workspace/sprint-actions.ts`** — `applySprintPlanAction` + `setTaskSprintAction`, **IDOR-gated** (workspace intern OR org owner/admin) and **cross-project sprint rejected** (`invalid_sprint`).
+- **UI** — `SprintBanner` (banner + switcher, active dot, `done/total` counts, URL `?sprint=<id|all|unsorted>`); `workspace-tasks-page.tsx` branches on sprint count → filtered view (one sprint) or **All-sprints stacked sections**, with an `S#` chip on each card; `apply-sprint-plan-callout.tsx` for unseeded workspaces; **"Move to sprint" in the card `⋯` menu** (wires `setTaskSprintAction`).
+- **i18n** `sprintWorkspace.*` + `cardMenu.moveToSprint/unsorted` (FR/EN parity, 2004 keys aligned).
+- **Demo seed** (`scripts/seed.ts`) — the Dazz Studio "Brand audit" project gets **3 sprints** (Discovery / Audit & analysis / Recommendations); Sami Arif's 6 demo tasks are **assigned across them (2/3/1)** with Sprint 2 dated to be the active sprint. Idempotent (re-run keeps 3 sprints / 6 tasks; also self-heals stale sprint dates).
+
+**Commits:** 14 on the branch, HEAD **`4fd5c17`**, each with the `Co-Authored-By: Claude Opus 4.7` trailer. **602 tests pass** (+50) / 2 skipped; `typecheck` + `lint` + `check:i18n` + production `build` all clean at every commit. Migrations applied to **local pg** (`pnpm tsx --env-file=.env.local scripts/migrate.ts`); `pnpm db:seed` idempotent.
+
+**3 deliberate deviations from the plan (documented):** (1) resolver returns array position not orderIndex (review caught a non-contiguous-after-delete bug); (2) demo seed assigns existing tasks to sprints instead of calling `seedWorkspaceFromSprints` (avoids a 14-task duplicate board); (3) **added the task→sprint reassignment UI** — spec §6.4 + locked-decision §2.3 + the plan's own T12 checklist all require it, but no implementation task built it.
+
+**Follow-ups (none blocking):**
+- **Count-cap mismatch** — `data.tasks` is capped at 20 (pre-existing, `modules/workspace/queries.ts`) but `getTaskCountsBySprint` reads up to 2000, so on a **>20-task** workspace the sprint chip counts / `unsortedCount` can disagree with the rendered board. Needs a cap/pagination decision on the shared loader.
+- **Pre-existing hydration warning** — `task-card.tsx` computes "days overdue" with `Date.now()` at render → server/client mismatch on overdue cards (NOT from this branch; tracked separately).
+- **FR "Unsorted"** standardized to `"Non classés"`; may prefer `"Non classées"` (agrees with *tâches*) or `"Sans sprint"`.
+- `setTaskSprintAction` failures no-op silently (matches the existing card-menu convention; no toast).
+
+**See it:** `pnpm dev` → `/dev/login` → **Sami Arif (intern)** = seeded sprint board (Sprint 2 active); **Yasmine (intern)** = a 0-sprint workspace (the regression). Spec/plan: `docs/superpowers/{specs,plans}/2026-06-05-sprint-workspaces-*`.
+
+> This branch is LOCAL, nothing pushed. `git log main..feat/sprint-workspaces`.
+
+## TL;DR — Where we are (2026-05-30 — Post-QA fix sprint + exhaustive-i18n plan)
 
 A module-by-module **behavioral QA pass** (drove the real running app with real writes — not HTTP-200 smoke) found the platform solid with **one real bug** + a pile of i18n/UX polish. Two outcomes, BOTH on **local worktrees off `main`, NOT yet pushed/merged**:
 
