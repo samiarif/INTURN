@@ -113,7 +113,7 @@ export default async function Page() {
     : null;
 
   return (
-    <div className="max-w-5xl mx-auto p-8">
+    <div className="max-w-5xl mx-auto p-8 ui-rise-col">
       {/* Welcome band ---------------------------------------------------- */}
       <div
         className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-color)] bg-[var(--surface)] shadow-[var(--elev-card)] px-8 py-7 mb-6"

@@ -409,7 +409,7 @@ export default async function Page({
 
   return (
     <div className="bg-[var(--bg)] min-h-screen">
-      <div className="max-w-[1280px] mx-auto px-7 pt-6 pb-20">
+      <div className="max-w-[1280px] mx-auto px-7 pt-6 pb-20 ui-rise-col">
         {/* =============== Publish banner =============== */}
         {published === '1' && (
           <div className="mb-4 flex items-center gap-2 px-4 py-3 rounded-md bg-[var(--status-success-bg)] border border-[color-mix(in_srgb,var(--status-success-ink)_28%,transparent)] text-[var(--status-success-ink)] text-label font-medium">

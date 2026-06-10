@@ -446,7 +446,7 @@ export default async function Page() {
   return (
     <div className="db-shell">
       {/* ============ MAIN COLUMN ============ */}
-      <div className="db-col-main">
+      <div className="db-col-main ui-rise-col">
         {/* ---------- Welcome band ---------- */}
         <div className="db-welcome">
           <div className="db-welcome-eyebrow">{eyebrow}</div>
@@ -701,7 +701,7 @@ export default async function Page() {
       </div>
 
       {/* ============ RIGHT RAIL ============ */}
-      <div className="db-col-side">
+      <div className="db-col-side ui-rise-col">
         <CalendarWidget
           now={now}
           eventDays={eventDays}

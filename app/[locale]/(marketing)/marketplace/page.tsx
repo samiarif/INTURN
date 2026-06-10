@@ -196,7 +196,7 @@ export default async function Page({
         </div>
       </form>
 
-      <div className="ex-layout grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-6">
+      <div className="ex-layout grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-6 ui-rise-col">
         <div>
           <MarketplaceFiltersCollapse
             label={t('filters')}

@@ -173,7 +173,7 @@ export default async function Page({
   });
 
   return (
-    <div className="pi-shell">
+    <div className="pi-shell ui-rise-col">
       {/* =============== Title row =============== */}
       <header className="pi-head">
         <div className="pi-head-main">
