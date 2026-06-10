@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   acceptApplicationAction,
   transitionApplicationStatusAction,
@@ -64,6 +65,11 @@ export function StatusPipeline({
     setFeedbackFor(target);
   }
 
+  // Progress under the step pills — same brand→accent gradient idiom as the
+  // workspace `.ph-phase-strip` fill. -1 (rejected) clamps to 0.
+  const currentIndex = STEPS.findIndex((s) => s.value === currentStatus);
+  const progressPct = currentIndex > 0 ? (currentIndex / (STEPS.length - 1)) * 100 : 0;
+
   return (
     <div>
       <div className="flex items-center gap-1 mb-3 flex-wrap">
@@ -83,12 +89,12 @@ export function StatusPipeline({
               }
               className={
                 isCurrent
-                  ? 'px-3 py-1.5 rounded-full text-label bg-[var(--ink)] text-white'
+                  ? 'px-3 py-1.5 rounded-full text-eyebrow font-mono uppercase bg-[var(--ink)] text-[var(--surface)]'
                   : isPast
-                    ? 'px-3 py-1.5 rounded-full text-label bg-[var(--surface-muted)] text-[var(--ink-3)]'
+                    ? 'px-3 py-1.5 rounded-full text-eyebrow font-mono uppercase bg-[var(--surface-muted)] text-[var(--ink-3)]'
                     : canTransition
-                      ? 'px-3 py-1.5 rounded-full text-label bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
-                      : 'px-3 py-1.5 rounded-full text-label bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] opacity-50 cursor-not-allowed'
+                      ? 'px-3 py-1.5 rounded-full text-eyebrow font-mono uppercase bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)] hover:text-[var(--ink)] transition-colors'
+                      : 'px-3 py-1.5 rounded-full text-eyebrow font-mono uppercase bg-[var(--surface)] text-[var(--ink-4)] border border-[var(--border-color)] opacity-50 cursor-not-allowed'
               }
             >
               {labels.steps[step.value]}
@@ -97,20 +103,30 @@ export function StatusPipeline({
         })}
       </div>
 
+      <div
+        aria-hidden
+        className="mb-4 h-0.5 max-w-md overflow-hidden rounded-full bg-[var(--border-color)]"
+      >
+        <div
+          className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand-500),var(--accent-500))] transition-[width] duration-300"
+          style={{ width: `${progressPct}%` }}
+        />
+      </div>
+
       {currentStatus !== 'rejected' && currentStatus !== 'accepted' && (
         <button
           type="button"
           disabled={pending}
           onClick={() => openFeedback('rejected')}
-          className="text-label text-[var(--danger)] hover:underline"
+          className="px-3 py-1.5 rounded-md text-label font-medium border border-[var(--status-danger-border)] text-[var(--status-danger-ink)] hover:bg-[var(--status-danger-bg)] transition-colors disabled:opacity-50"
         >
           {labels.reject}
         </button>
       )}
 
       {feedbackFor && (
-        <div className="mt-3 border border-[var(--border-color)] rounded-md p-3 bg-[var(--surface)]">
-          <label htmlFor="decision-note" className="block text-caption text-[var(--ink-3)] mb-1">
+        <div className="mt-3 border border-[var(--border-color)] rounded-lg p-4 bg-[var(--surface)] shadow-[var(--elev-card)]">
+          <label htmlFor="decision-note" className="block text-label text-[var(--ink-2)] mb-1.5">
             {labels.feedbackHint}
           </label>
           <textarea
@@ -121,19 +137,29 @@ export function StatusPipeline({
             placeholder={labels.feedbackPlaceholder}
             className="w-full rounded-md border border-[var(--border-color)] bg-[var(--surface)] p-2 text-body text-[var(--ink)] focus:border-[var(--border-strong)] focus:outline-none"
           />
-          <div className="mt-2 flex items-center gap-2">
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => transitionTo(feedbackFor, note)}
-              className={
-                feedbackFor === 'rejected'
-                  ? 'px-3 py-1.5 rounded-md text-label bg-[var(--danger)] text-white disabled:opacity-50'
-                  : 'px-3 py-1.5 rounded-md text-label bg-[var(--brand-500)] text-white disabled:opacity-50'
-              }
-            >
-              {feedbackFor === 'rejected' ? labels.confirmReject : labels.confirmAccept}
-            </button>
+          <div className="mt-3 flex items-center gap-2">
+            {/* Accept = THE value moment → brand violet; reject stays a
+                destructive outline per the resolve-form idiom. */}
+            {feedbackFor === 'rejected' ? (
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => transitionTo(feedbackFor, note)}
+                className="px-3 py-1.5 rounded-md text-label font-medium border border-[var(--status-danger-border)] text-[var(--status-danger-ink)] hover:bg-[var(--status-danger-bg)] transition-colors disabled:opacity-50"
+              >
+                {labels.confirmReject}
+              </button>
+            ) : (
+              <Button
+                type="button"
+                variant="brand"
+                size="sm"
+                disabled={pending}
+                onClick={() => transitionTo(feedbackFor, note)}
+              >
+                {labels.confirmAccept}
+              </Button>
+            )}
             <button
               type="button"
               disabled={pending}
@@ -141,7 +167,7 @@ export function StatusPipeline({
                 setFeedbackFor(null);
                 setNote('');
               }}
-              className="px-3 py-1.5 rounded-md text-label text-[var(--ink-3)] hover:text-[var(--ink)]"
+              className="px-3 py-1.5 rounded-md text-label text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors"
             >
               {labels.cancel}
             </button>

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import type { Application, Internship, User, Profile } from '@/db/schema';
 import { formatDateShort, type FormatLocale } from '@/lib/format-time';
+import { Avatar } from '@/components/avatar';
+import { StatusPill, toneForApplicationStatus } from '@/components/status-pill';
 import {
   Table,
   TableHeader,
@@ -24,15 +26,6 @@ const STATUS_OPTIONS: Array<'all' | Application['status']> = [
   'accepted',
   'rejected',
 ];
-
-const STATUS_STYLE: Record<string, string> = {
-  new: 'bg-[var(--status-info-bg)] text-[var(--status-info-ink)]',
-  reviewed: 'bg-[var(--surface-muted)] text-[var(--ink-2)]',
-  shortlisted: 'bg-[var(--brand-50)] text-[var(--brand-600)]',
-  interview: 'bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)]',
-  accepted: 'bg-[var(--status-success-bg)] text-[var(--status-success-ink)]',
-  rejected: 'bg-[var(--status-danger-bg)] text-[var(--status-danger-ink)]',
-};
 
 type Row = {
   application: Application;
@@ -58,17 +51,18 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="inline-flex items-center gap-1 flex-wrap">
+      <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
+        <div className="inline-flex items-center gap-1 flex-wrap rounded-lg border border-[var(--border-color)] bg-[var(--surface-muted)] p-0.5">
           {STATUS_OPTIONS.map((value) => (
             <button
               key={value}
               type="button"
               onClick={() => setStatusFilter(value)}
+              aria-pressed={statusFilter === value}
               className={
                 statusFilter === value
-                  ? 'px-3 py-1.5 rounded-full text-label bg-[var(--ink)] text-white'
-                  : 'px-3 py-1.5 rounded-full text-label bg-[var(--surface)] text-[var(--ink-2)] border border-[var(--border-color)] hover:border-[var(--border-strong)]'
+                  ? 'rounded-md px-3 py-1 text-sm font-medium bg-brand-50 text-brand-700 transition-colors'
+                  : 'rounded-md px-3 py-1 text-sm font-medium text-[var(--ink-3)] hover:text-[var(--ink)] transition-colors'
               }
             >
               {value === 'all' ? t('inbox.filterAll') : t(`status.${value}`)}
@@ -78,7 +72,7 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
         {selected.size >= 2 && (
           <Link
             href={`/company/projects/${projectId}/applications/compare?ids=${Array.from(selected).join(',')}`}
-            className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+            className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-lg text-sm font-medium bg-brand-500 text-white hover:bg-brand-600 transition-colors"
           >
             {t('inbox.compare', { count: selected.size })}
             <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
@@ -91,7 +85,7 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
           {t('inbox.empty')}
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-md overflow-hidden">
+        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -119,14 +113,23 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
                     />
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium text-[var(--ink)]">
-                      {r.applicant.firstName} {r.applicant.lastName}
-                    </div>
-                    <div className="text-caption text-[var(--ink-3)]">
-                      {t('inboxMeta', {
-                        university: r.profile?.university ?? '',
-                        year: r.profile?.yearOfStudy ?? '',
-                      })}
+                    <div className="flex items-center gap-3">
+                      <Avatar
+                        name={`${r.applicant.firstName} ${r.applicant.lastName}`}
+                        email={r.applicant.email}
+                        size="sm"
+                      />
+                      <div className="min-w-0">
+                        <div className="font-medium text-[var(--ink)]">
+                          {r.applicant.firstName} {r.applicant.lastName}
+                        </div>
+                        <div className="text-caption text-[var(--ink-3)]">
+                          {t('inboxMeta', {
+                            university: r.profile?.university ?? '',
+                            year: r.profile?.yearOfStudy ?? '',
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>{r.internship.title}</TableCell>
@@ -134,14 +137,14 @@ export function InboxClient({ rows, projectId }: { rows: Row[]; projectId: strin
                     {formatDateShort(new Date(r.application.createdAt), locale)}
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_STYLE[r.application.status ?? 'new']}`}>
+                    <StatusPill tone={toneForApplicationStatus(r.application.status)}>
                       {t(`status.${r.application.status ?? 'new'}`)}
-                    </span>
+                    </StatusPill>
                   </TableCell>
                   <TableCell className="text-right">
                     <Link
                       href={`/company/projects/${projectId}/applications/${r.application.id}`}
-                      className="inline-flex items-center gap-1 text-[var(--brand-600)] hover:text-[var(--brand-700)]"
+                      className="inline-flex items-center gap-1 text-label text-[var(--brand-600)] hover:text-[var(--brand-700)] transition-colors"
                     >
                       {t('inbox.open')}
                       <ArrowRight size={14} strokeWidth={2.25} aria-hidden />

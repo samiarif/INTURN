@@ -5,6 +5,7 @@ import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { canViewProject } from '@/modules/team/authz';
 import { getApplicationsByIds } from '@/modules/applications/queries';
+import { Avatar } from '@/components/avatar';
 import { StatusPill, toneForApplicationStatus } from '@/components/status-pill';
 
 export default async function Page({
@@ -64,20 +65,29 @@ export default async function Page({
         {apps.map(({ application, internship, applicant, profile }) => (
           <div
             key={application.id}
-            className="border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)]"
+            className="border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)] shadow-[var(--elev-card)]"
           >
-            <div className="text-eyebrow font-mono text-[var(--ink-3)] uppercase mb-1">
+            <div className="text-eyebrow font-mono text-[var(--brand-700)] uppercase mb-3">
               {internship.title}
             </div>
-            <h2 className="text-heading mb-1">
-              {applicant.firstName} {applicant.lastName}
-            </h2>
-            <div className="text-caption text-[var(--ink-3)] mb-3">
-              {t('meta', {
-                university: profile?.university ?? '—',
-                year: profile?.yearOfStudy ?? '—',
-                field: profile?.fieldOfStudy ?? '—',
-              })}
+            <div className="flex items-center gap-3 mb-3">
+              <Avatar
+                name={`${applicant.firstName} ${applicant.lastName}`}
+                email={applicant.email}
+                size="md"
+              />
+              <div className="min-w-0">
+                <h2 className="text-heading">
+                  {applicant.firstName} {applicant.lastName}
+                </h2>
+                <div className="text-caption text-[var(--ink-3)]">
+                  {t('meta', {
+                    university: profile?.university ?? '—',
+                    year: profile?.yearOfStudy ?? '—',
+                    field: profile?.fieldOfStudy ?? '—',
+                  })}
+                </div>
+              </div>
             </div>
             <div className="mb-4">
               <StatusPill tone={toneForApplicationStatus(application.status)}>
@@ -96,7 +106,7 @@ export default async function Page({
                       key={s}
                       className={
                         matched
-                          ? 'inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--brand-50)] text-[var(--brand-600)] text-[11.5px] font-medium'
+                          ? 'inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--brand-50)] text-[var(--brand-700)] text-[11.5px] font-medium'
                           : 'inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--surface-muted)] text-[var(--ink-3)] text-[11.5px]'
                       }
                     >
@@ -115,7 +125,7 @@ export default async function Page({
                   {(profile?.roles ?? []).map((r) => (
                     <span
                       key={r}
-                      className="inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--ink)] text-white text-[11.5px] font-medium"
+                      className="inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--ink)] text-[var(--surface)] text-[11.5px] font-medium"
                     >
                       {r}
                     </span>
@@ -135,7 +145,7 @@ export default async function Page({
             )}
             <Link
               href={`/company/projects/${projectId}/applications/${application.id}`}
-              className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium border border-[var(--border-color)] hover:border-[var(--border-strong)]"
+              className="inline-flex items-center justify-center h-9 px-4 rounded-lg text-sm font-medium border border-[var(--border-color)] text-[var(--ink)] hover:bg-[var(--surface-muted)] hover:border-[var(--border-strong)] transition-colors"
             >
               {t('openFull')}
             </Link>

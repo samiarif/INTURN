@@ -4,6 +4,7 @@ import { getSession } from '@/modules/auth/session';
 import { getProjectById } from '@/modules/projects/queries';
 import { canViewProject } from '@/modules/team/authz';
 import { getApplicationsByProject } from '@/modules/applications/queries';
+import { PageHeader } from '@/components/ui/page-header';
 import { InboxClient } from './_inbox-client';
 
 export default async function Page({
@@ -25,14 +26,13 @@ export default async function Page({
   const t = await getTranslations('applications');
 
   return (
-    <div className="max-w-5xl mx-auto p-8">
-      <div className="text-eyebrow font-mono text-[var(--ink-3)] uppercase mb-1">
-        {project.name}
-      </div>
-      <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('inboxHeading')}</h1>
-      <p className="text-body text-[var(--ink-3)] mb-8">
-        {t('inboxCount', { count: rows.length })}
-      </p>
+    <div className="max-w-5xl mx-auto px-6 py-8 md:p-8">
+      <PageHeader
+        eyebrow={project.name}
+        title={t('inboxHeading')}
+        description={t('inboxCount', { count: rows.length })}
+        className="mb-8"
+      />
       <InboxClient rows={rows} projectId={projectId} />
     </div>
   );
