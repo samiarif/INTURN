@@ -23,8 +23,6 @@ export async function moveTaskAction(input: { taskId: string; to: TaskStatus }) 
 
   revalidatePath(`/intern/workspaces/${workspace.id}`);
   revalidatePath(`/company/workspaces/${workspace.id}`);
-  revalidatePath(`/intern/workspaces/${workspace.id}/tasks`);
-  revalidatePath(`/company/workspaces/${workspace.id}/tasks`);
 }
 
 export type CreateTaskActionInput = {
@@ -72,8 +70,6 @@ export async function createTaskAction(
 
   revalidatePath(`/intern/workspaces/${workspace.id}`);
   revalidatePath(`/company/workspaces/${workspace.id}`);
-  revalidatePath(`/intern/workspaces/${workspace.id}/tasks`);
-  revalidatePath(`/company/workspaces/${workspace.id}/tasks`);
 
   return { ok: true, task };
 }
@@ -109,8 +105,6 @@ export async function updateTaskAction(
 
   revalidatePath(`/intern/workspaces/${workspace.id}`);
   revalidatePath(`/company/workspaces/${workspace.id}`);
-  revalidatePath(`/intern/workspaces/${workspace.id}/tasks`);
-  revalidatePath(`/company/workspaces/${workspace.id}/tasks`);
 
   return { ok: true };
 }
@@ -135,8 +129,6 @@ export async function deleteTaskAction(taskId: string): Promise<DeleteTaskAction
 
   revalidatePath(`/intern/workspaces/${workspace.id}`);
   revalidatePath(`/company/workspaces/${workspace.id}`);
-  revalidatePath(`/intern/workspaces/${workspace.id}/tasks`);
-  revalidatePath(`/company/workspaces/${workspace.id}/tasks`);
 
   return { ok: true };
 }

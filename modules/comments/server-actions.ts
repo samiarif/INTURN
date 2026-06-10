@@ -7,12 +7,6 @@ import { addComment, deleteComment } from './service';
 function revalidateWorkspace(workspaceId: string) {
   revalidatePath(`/intern/workspaces/${workspaceId}`);
   revalidatePath(`/company/workspaces/${workspaceId}`);
-  revalidatePath(`/intern/workspaces/${workspaceId}/comments`);
-  revalidatePath(`/company/workspaces/${workspaceId}/comments`);
-  revalidatePath(`/intern/workspaces/${workspaceId}/tasks`);
-  revalidatePath(`/company/workspaces/${workspaceId}/tasks`);
-  revalidatePath(`/intern/workspaces/${workspaceId}/deliverables`);
-  revalidatePath(`/company/workspaces/${workspaceId}/deliverables`);
 }
 
 export async function addCommentAction(input: {
