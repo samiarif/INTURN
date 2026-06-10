@@ -2461,6 +2461,7 @@
     "generating": "Generating…",
     "acceptPlan": "Accept plan",
     "discardPlan": "Discard",
+    "actionError": "That didn't go through. Try again.",
     "aiError": "The AI couldn't respond. Try again.",
     "retry": "Retry",
     "brainstormTasks": "Brainstorm tasks",

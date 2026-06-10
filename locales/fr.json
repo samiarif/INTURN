@@ -2461,6 +2461,7 @@
     "generating": "Génération…",
     "acceptPlan": "Accepter le plan",
     "discardPlan": "Ignorer",
+    "actionError": "Action impossible pour le moment. Réessayez.",
     "aiError": "L'IA n'a pas pu répondre. Réessayez.",
     "retry": "Réessayer",
     "brainstormTasks": "Brainstormer les tâches",

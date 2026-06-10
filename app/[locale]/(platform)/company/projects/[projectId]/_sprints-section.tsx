@@ -454,6 +454,18 @@ export function SprintsSection({
   // Local sprint list (optimistic)
   const [sprints, setSprints] = useState<ProjectSprint[]>(initialSprints);
 
+  // Keep the local list in sync with the server: router.refresh() re-renders
+  // the RSC tree and passes a fresh `sprints` prop, but React preserves
+  // client-component state across refresh — adopt the new prop when it changes
+  // (the official "adjusting state when a prop changes" render-phase pattern).
+  const [prevInitial, setPrevInitial] = useState(initialSprints);
+  if (prevInitial !== initialSprints) {
+    setPrevInitial(initialSprints);
+    setSprints(initialSprints);
+  }
+
+  const [actionError, setActionError] = useState<string | null>(null);
+
   // Add sprint form
   const [showAdd, setShowAdd] = useState(false);
   const [addName, setAddName] = useState('');
@@ -470,9 +482,17 @@ export function SprintsSection({
   // ---------------------------------------------------------------------------
 
   function mutate(action: () => Promise<unknown>) {
+    setActionError(null);
     startTransition(async () => {
-      await action();
-      router.refresh();
+      try {
+        await action();
+      } catch {
+        setActionError(t('actionError'));
+      } finally {
+        // Always refresh: success pulls the fresh list; failure restores the
+        // authoritative order after an optimistic move.
+        router.refresh();
+      }
     });
   }
 
@@ -586,13 +606,6 @@ export function SprintsSection({
     setPlanError(null);
   }
 
-  // Sync local state with server state after transitions
-  // (router.refresh() triggers RSC re-render which passes new `sprints` prop)
-  // We only reset local list when not in the middle of an optimistic reorder.
-  // The simple approach: just keep local state in sync when prop changes and
-  // no optimistic move is pending. Since useTransition is atomic we always end
-  // up consistent on refresh.
-
   return (
     <section className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface)] p-5">
       {/* Header */}
@@ -624,6 +637,20 @@ export function SprintsSection({
           </span>
         )}
       </div>
+
+      {/* Action error (CRUD/reorder failures) */}
+      {actionError && (
+        <div className="flex items-center gap-2 text-caption text-[var(--danger)] mb-3 px-3 py-2 rounded border border-[color-mix(in_srgb,var(--danger)_30%,transparent)] bg-[color-mix(in_srgb,var(--danger)_6%,transparent)]">
+          {actionError}
+          <button
+            type="button"
+            onClick={() => setActionError(null)}
+            className="ml-auto text-[var(--ink-3)] hover:text-[var(--ink)]"
+          >
+            <X size={13} />
+          </button>
+        </div>
+      )}
 
       {/* AI plan error */}
       {planStatus === 'error' && planError && (
