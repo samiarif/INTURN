@@ -481,11 +481,21 @@ export function SprintsSection({
   // Mutation helpers — call action, then refresh()
   // ---------------------------------------------------------------------------
 
+  /** The sprint actions report failure by RESOLVING `{ ok: false }`, not by throwing. */
+  function isActionFailure(res: unknown): boolean {
+    return (
+      typeof res === 'object' && res !== null && 'ok' in res && (res as { ok: unknown }).ok === false
+    );
+  }
+
   function mutate(action: () => Promise<unknown>) {
     setActionError(null);
     startTransition(async () => {
       try {
-        await action();
+        const res = await action();
+        if (isActionFailure(res)) {
+          setActionError(t('actionError'));
+        }
       } catch {
         setActionError(t('actionError'));
       } finally {
@@ -505,10 +515,13 @@ export function SprintsSection({
     const name = addName.trim();
     const goal = addGoal.trim() || undefined;
     mutate(() =>
-      createSprintAction({ projectId, name, goal }).then(() => {
-        setAddName('');
-        setAddGoal('');
-        setShowAdd(false);
+      createSprintAction({ projectId, name, goal }).then((res) => {
+        if (res.ok) {
+          setAddName('');
+          setAddGoal('');
+          setShowAdd(false);
+        }
+        return res;
       })
     );
   }
@@ -593,9 +606,12 @@ export function SprintsSection({
       .map((s) => ({ name: s.name.trim(), goal: s.goal?.trim() || undefined }));
     if (payload.length === 0) return;
     mutate(() =>
-      applySprintPlanAction({ projectId, sprints: payload }).then(() => {
-        setPlanStatus('idle');
-        setPlanDraft([]);
+      applySprintPlanAction({ projectId, sprints: payload }).then((res) => {
+        if (res.ok) {
+          setPlanStatus('idle');
+          setPlanDraft([]);
+        }
+        return res;
       })
     );
   }
