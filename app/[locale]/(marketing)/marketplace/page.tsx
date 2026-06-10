@@ -163,7 +163,10 @@ export default async function Page({
       <h1 className="text-display font-[family-name:var(--font-display)] mb-2">{t('title')}</h1>
       <p className="text-body text-[var(--ink-3)] mb-6">{t('subtitle')}</p>
 
-      <form className="mb-6" action="/marketplace">
+      {/* No action: a GET form submits to the CURRENT url, so /en/marketplace
+          keeps its locale prefix (action="/marketplace" used to bounce EN
+          visitors to the FR route on every search). */}
+      <form className="mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <label htmlFor="marketplace-q" className="sr-only">
             {t('searchPlaceholder')}

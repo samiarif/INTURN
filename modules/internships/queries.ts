@@ -86,6 +86,7 @@ async function queryPublishedInternships(filters: ListFilters) {
         OR ${internships.title} ILIKE ${like}
         OR ${internships.sector} ILIKE ${like}
         OR ${internships.description} ILIKE ${like}
+        OR ${internships.location} ILIKE ${like}
       )`,
     );
   }
