@@ -2,28 +2,11 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import type { NextRequest } from 'next/server';
 import { routing } from '@/i18n/routing';
+import { PUBLIC_ROUTE_PATTERNS } from '@/lib/public-routes';
 
 const handleI18nRouting = createIntlMiddleware(routing);
 
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/(fr|en)',
-  '/(fr|en)?/sign-in(.*)',
-  '/(fr|en)?/sign-up(.*)',
-  '/(fr|en)?/dev/login(.*)',
-  '/(fr|en)?/marketplace(.*)',
-  // Internship detail is public; /apply sits under it and is gated separately
-  // by the page (requires complete intern profile).
-  '/(fr|en)?/internships/([^/]+)',
-  // Public read-only record + deliverable share links. The token IS the
-  // credential — the page itself looks up by token and 404s on miss. Scoped
-  // to a single path segment ([^/]+) so we don't accidentally open anything
-  // nested underneath.
-  '/(fr|en)?/records/([^/]+)',
-  '/(fr|en)?/deliverables/([^/]+)',
-  '/api/webhooks(.*)',
-  '/api/health',
-]);
+const isPublicRoute = createRouteMatcher(PUBLIC_ROUTE_PATTERNS);
 
 // Dev-only bypass: when DEV_AUTH_BYPASS=1 we DON'T mount clerkMiddleware
 // at all. clerkMiddleware does a handshake/JWKS fetch to api.clerk.com the
