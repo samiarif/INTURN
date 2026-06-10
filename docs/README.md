@@ -43,6 +43,7 @@ companies, universities). The docs split into **authoritative references** (kept
 | [`archive/SPRINT_PLAN_COMPLETENESS.md`](./archive/SPRINT_PLAN_COMPLETENESS.md) | Original completeness-sprint plan (S1–S4) | reference | 🗄️ superseded — shipped; see HANDOFF |
 | [`superpowers/`](./superpowers/) | Dated brainstorm **plans** (18) + design **specs** (9) per milestone | deep design detail | 🗄️ append-only history |
 | [`design-bundle/`](./design-bundle/) | Claude-Design handoff: chat transcripts + HTML/CSS prototypes + brand foundations | implementing UI | 📥 raw input (has its own README) |
+| `../../inturn-web/` | The **marketing website** — separate Next.js app + git repo OUTSIDE this repo (port 3010; see `/Users/mac/code/inturn-hub/README.md`) | marketing | 📥 imported 2026-06-10 |
 
 **Legend:** ✅ authoritative & current · 🟡 current with a caveat · 🗄️ historical/superseded · 📥 raw input.
 

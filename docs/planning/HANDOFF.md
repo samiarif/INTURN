@@ -1,8 +1,32 @@
-# inturn — Session Handoff (updated 2026-06-08 — Sprint-aware intern workspaces (project-sprints Plan 2) · Post-QA fix sprint + exhaustive-i18n plan · University product · Team mgmt · design system)
+# inturn — Session Handoff (updated 2026-06-10 — Full-repo audit + quick-wins fix sprint · marketing-site import · Sprint-aware workspaces · University product)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
 
-## TL;DR — Where we are (2026-06-08, LATEST — Sprint-aware intern workspaces · project-sprints Plan 2)
+## TL;DR — Where we are (2026-06-10, LATEST — Audit + quick-wins fix sprint · marketing site)
+
+**A full-repo audit (11-agent parallel deep-read + live screenshots, review delivered in-session) ran on 2026-06-10, followed by a fix sprint on branch `fix/audit-quick-wins` (off `main@ea20dc6`) — 12 commits, subagent-driven (implement → spec-review → quality-review per task), awaiting Sam's review. NOT merged, NOT pushed.** Plan: `docs/superpowers/plans/2026-06-10-audit-quick-wins.md`.
+
+**The fixes (one line each):**
+- **Clerk webhook** verifies the raw payload bytes via `req.text()` (was a JSON.parse→stringify round-trip that can fail signature verification on floats/non-ASCII/key order — latent identity-sync breaker). Real route-level test replaces the old self-asserting `modules/auth/__tests__/webhook.test.ts` (deleted).
+- **Legal pages public**: `/privacy|terms|cookies` added to the proxy allowlist, now extracted to `lib/public-routes.ts` + unit-tested (they were auth-gated while sitemap advertised them).
+- **SprintsSection** (`_sprints-section.tsx`) adopts the refreshed server prop (sprint CRUD/AI-accept looked like it did nothing until hard nav) + error banner on failed actions (`sprints.actionError` FR/EN). Component test added. Verified live: create + delete update instantly.
+- **Kanban drag** uses `useOptimistic` (the old manual map pinned a dragged card's column for the whole session, masking server changes).
+- **Check-in default slot** is now local 14:00 (was UTC-shifted to 13:00 for Tunisia) and client-computed (hydration hazard removed). Helpers `toDatetimeLocalValue`/`nextWeekdayAt` in `lib/format-time.ts`, TZ-independent tests.
+- **Notifications/analytics dispatch** runs via `next/server` `after()` through new `lib/after-response.ts` (bare floating promises can be frozen by Vercel the moment the response streams — emails/notifications could silently drop). Falls back to direct fire outside request scope (tests/scripts).
+- **workspace.css de-forked**: the `.ws` scope no longer shadows global tokens — **workspace dark mode works now** (verified live both themes), the 2026-05-28 ink-contrast fix finally reaches the workspace, and the 41 `'Geist Mono'` font literals (a name next/font never registers → OS fallback) are `var(--font-mono)`. Radius fork deliberately kept (Atelier-scope). Known cosmetic artifact: `.tb-col` wells stay light in dark mode (hardcoded rgba — part of the documented Atelier hex cleanup).
+- **Branded localized 404**: `app/[locale]/not-found.tsx` + `[...rest]` catch-all (was the raw Next default). Token routes (`records/[token]` etc.) verified not shadowed; bad tokens render the branded page.
+- **Stale `revalidatePath`** calls to removed `…/tasks|comments|deliverables` tab subroutes deleted (tabs are `?tab=` query params).
+- **Dead weight removed**: `components/ui/form.tsx` + `ui/separator.tsx` (zero importers), `react-hook-form` + `@hookform/resolvers` deps (only consumer was the dead form.tsx — decision: forms stay hand-rolled until the Atelier form-layer pass), empty `modules/marketplace/`.
+
+**Gate at HEAD:** 628 tests pass / 2 skipped · typecheck + lint + `check:i18n` (2009 keys) + production build all clean.
+
+**Marketing website imported (2026-06-10):** Sam's `inturnweb.tar.gz` lives at **`../inturn-web`** (sibling of this repo, own git repo, port 3010) — 14 static pages, deliberately separate from the platform. See `/Users/mac/code/inturn-hub/README.md` for the workspace layout. **Deploys (platform AND website) are deliberately deferred until the platform enhancement work lands — Sam's call, 2026-06-10.**
+
+**Design direction approved (2026-06-10): "Atelier"** — ink-filled primary buttons with violet reserved for value moments (match/accept/record/AI), Bricolage Grotesque kept as display face, Geist Mono as the ledger voice, one radius scale (4/6/8/12), `--elev-*` as the only shadow system, `.ui-rise` wired as the entrance. The audit found the shadcn semantic tokens (`--primary`/`--ring`/`--input`) were never rebound to the brand — the single biggest reason forms/admin/team read generic. **Next session: write + execute the Atelier token-foundation plan** (rebind tokens → Button brand variant → kill the 8 hand-rolled CSS buttons → bridge @theme utilities → codemod the ~1,954 `text-[var(--…)]` wrappers → px font-sizes onto `--text-*` → stray hex onto tokens → dissolve per-screen CSS families into primitives, screen by screen). The full audit findings (incl. deferred items: in-memory rate limiter, public blobs for CVs, admin layout-only read-authz, migration numbering collisions, locale-blind revalidation, hub-page decomposition) were delivered in the 2026-06-10 session review.
+
+> The TL;DR below is the PRIOR 2026-06-08 snapshot. **Correction to it:** `feat/sprint-workspaces` HAS since been FF-merged into local `main` (branch deleted, HEAD `ea20dc6`) — `main` is 28 commits ahead of origin, unpushed; production still runs `205ca4e` (pre-university, P0 record-PDF fix not live).
+
+## TL;DR — Where we are (2026-06-08 — Sprint-aware intern workspaces · project-sprints Plan 2)
 
 **Plan 2 of the project-sprints arc is DONE on branch `feat/sprint-workspaces` (off `main`), executed subagent-driven (implement → spec-review → quality-review per task). NOT merged, NOT pushed — left for Sam's review.** Builds on Plan 1 (company-side sprint planning + the `project_sprints` table, migration `0021`).
 
