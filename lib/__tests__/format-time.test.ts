@@ -5,6 +5,8 @@ import {
   formatDateShort,
   formatDateLong,
   hoursSince,
+  toDatetimeLocalValue,
+  nextWeekdayAt,
 } from '../format-time';
 
 describe('formatTimeAgo', () => {
@@ -120,5 +122,23 @@ describe('hoursSince', () => {
   });
   it('returns 0 for invalid input', () => {
     expect(hoursSince('invalid')).toBe(0);
+  });
+});
+
+describe('toDatetimeLocalValue', () => {
+  it('formats local wall-clock time without UTC shift', () => {
+    const d = new Date(2026, 5, 12, 14, 0); // 12 June 2026, 14:00 LOCAL
+    expect(toDatetimeLocalValue(d)).toBe('2026-06-12T14:00');
+  });
+});
+
+describe('nextWeekdayAt', () => {
+  it('returns next Friday 14:00 from a Wednesday', () => {
+    const wed = new Date(2026, 5, 10, 9, 0); // Wed 10 June 2026
+    expect(toDatetimeLocalValue(nextWeekdayAt(wed, 5, 14))).toBe('2026-06-12T14:00');
+  });
+  it('rolls a full week when already on that weekday', () => {
+    const fri = new Date(2026, 5, 12, 16, 0);
+    expect(toDatetimeLocalValue(nextWeekdayAt(fri, 5, 14))).toBe('2026-06-19T14:00');
   });
 });

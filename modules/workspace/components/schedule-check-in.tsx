@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowRight, Check, ExternalLink } from 'lucide-react';
@@ -15,16 +15,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { scheduleCheckInAction } from '../server-actions';
+import { nextWeekdayAt, toDatetimeLocalValue } from '@/lib/format-time';
 
-function defaultDate(): string {
-  // Default to next Friday at 14:00 local time.
-  const d = new Date();
-  const day = d.getDay();
-  const daysUntilFriday = (5 - day + 7) % 7 || 7;
-  d.setDate(d.getDate() + daysUntilFriday);
-  d.setHours(14, 0, 0, 0);
-  return d.toISOString().slice(0, 16);
-}
 
 export function ScheduleCheckInButton({
   workspaceId,
@@ -38,13 +30,21 @@ export function ScheduleCheckInButton({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
-  const [scheduledAt, setScheduledAt] = useState(defaultDate());
+  const [scheduledAt, setScheduledAt] = useState('');
+  // Compute the default on the CLIENT after mount: the old inline initializer
+  // ran during SSR with the server's clock/timezone (hydration hazard) and
+  // shifted the wall-clock through toISOString (UTC+1 → 13:00 not 14:00).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setScheduledAt((v) => v || toDatetimeLocalValue(nextWeekdayAt(new Date(), 5, 14)));
+  }, []);
   const [duration, setDuration] = useState('30');
   const [note, setNote] = useState('');
   const [success, setSuccess] = useState<{ url: string; when: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   function submit() {
+    if (!scheduledAt) return;
     setError(null);
     startTransition(async () => {
       try {

@@ -128,3 +128,22 @@ export function daysSince(date: Date | string): number {
   if (Number.isNaN(d.getTime())) return 0;
   return Math.floor((Date.now() - d.getTime()) / MS_PER_DAY);
 }
+
+/**
+ * Format a Date as a `datetime-local` input value (YYYY-MM-DDTHH:mm) in the
+ * user's LOCAL timezone. `toISOString().slice(0,16)` is wrong for this — it
+ * converts to UTC, shifting the wall-clock (Tunisia is UTC+1: 14:00 → 13:00).
+ */
+export function toDatetimeLocalValue(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** Next occurrence of `weekday` (0=Sun…6=Sat) at `hour`:00 local, strictly in the future. */
+export function nextWeekdayAt(now: Date, weekday: number, hour: number): Date {
+  const d = new Date(now);
+  const days = (weekday - d.getDay() + 7) % 7 || 7;
+  d.setDate(d.getDate() + days);
+  d.setHours(hour, 0, 0, 0);
+  return d;
+}
