@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useMemo, useOptimistic, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
@@ -77,7 +77,13 @@ export function TasksBoardView({
   const [pending, startTransition] = useTransition();
   const [activeColumn, setActiveColumn] = useState<TaskStatus | null>(null);
   const [overColumn, setOverColumn] = useState<TaskStatus | null>(null);
-  const [optimistic, setOptimistic] = useState<Record<string, TaskStatus>>({});
+  // Optimistic column overrides during a drag transition. useOptimistic
+  // auto-reverts to the server truth when the transition (which includes
+  // router.refresh()) settles — no manual cleanup, no permanent override.
+  const [optimistic, addOptimistic] = useOptimistic<
+    Record<string, TaskStatus>,
+    { taskId: string; to: TaskStatus }
+  >({}, (state, { taskId, to }) => ({ ...state, [taskId]: to }));
   const [addingForColumn, setAddingForColumn] = useState<TaskStatus | null>(null);
 
   const filter = parseFilterParam(params.get('filter'));
@@ -136,13 +142,13 @@ export function TasksBoardView({
     const toStatus: TaskStatus | null = overData?.columnId ?? fromIdPrefix;
     if (!toStatus) return;
     if (statusOf(task) === toStatus) return;
-    setOptimistic((m) => ({ ...m, [taskId]: toStatus }));
     startTransition(async () => {
+      addOptimistic({ taskId, to: toStatus });
       try {
         await moveTaskAction({ taskId, to: toStatus });
         router.refresh();
       } catch {
-        setOptimistic((m) => { const next = { ...m }; delete next[taskId]; return next; });
+        // useOptimistic reverts to the server status when the transition settles.
       }
     });
   }
