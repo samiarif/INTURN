@@ -2491,5 +2491,11 @@
     "applyCalloutBody": "Votre encadrant a préparé {count, plural, one {# sprint} other {# sprints}} pour ce projet.",
     "applyCta": "Appliquer le plan",
     "applyingCta": "Application en cours…"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "Page introuvable",
+    "description": "Cette page n'existe pas ou a été déplacée.",
+    "home": "Retour à l'accueil"
   }
 }

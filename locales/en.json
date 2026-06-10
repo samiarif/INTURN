@@ -2491,5 +2491,11 @@
     "applyCalloutBody": "Your supervisor has set up {count, plural, one {# sprint} other {# sprints}} for this project.",
     "applyCta": "Apply sprint plan",
     "applyingCta": "Applying…"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "Page not found",
+    "description": "This page doesn't exist or has moved.",
+    "home": "Back to home"
   }
 }
