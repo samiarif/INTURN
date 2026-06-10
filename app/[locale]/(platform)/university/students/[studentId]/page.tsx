@@ -70,11 +70,18 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-8 md:p-8">
-      <PageHeader title={studentName} description={student.email} className="mb-6" />
+      <PageHeader
+        eyebrow={current.org.name}
+        title={studentName}
+        description={student.email}
+        className="mb-6"
+      />
 
       {/* Firewalled internship snapshot (no workspace internals). */}
-      <section className="mb-6 rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4">
-        <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{tUni('snapshotTitle')}</h2>
+      <section className="mb-6 rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4 shadow-[var(--elev-card)]">
+        <h2 className="mb-3 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
+          {tUni('snapshotTitle')}
+        </h2>
         {snapshot ? (
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[var(--ink-2)]">
             <span><b>{snapshot.companyName}</b> {'·'} {snapshot.internshipTitle}</span>
@@ -102,14 +109,16 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
           {reports.map((report, i) => (
             <div
               key={report.id}
-              className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4"
+              className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4 shadow-[var(--elev-card)]"
             >
-              {/* Deliverable heading */}
+              {/* Deliverable heading — kind eyebrow above the title. */}
               <div className="mb-4">
-                <h2 className="text-sm font-semibold text-[var(--ink)]">
+                <div className="mb-1 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--ink-4)]">
+                  {t(`kind.${report.kind}`)}
+                </div>
+                <h2 className="text-heading text-[var(--ink)]">
                   {report.title || t(`kind.${report.kind}`)}
                 </h2>
-                <span className="text-caption text-[var(--ink-4)]">{t(`kind.${report.kind}`)}</span>
               </div>
 
               <div className="flex flex-col gap-6">
@@ -137,7 +146,12 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
                 )}
 
                 <section>
-                  <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{t('home.versionsTitle')}</h2>
+                  <h2 className="mb-3 flex items-baseline gap-2 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
+                    {t('home.versionsTitle')}
+                    <span className="font-mono text-caption font-normal normal-case tracking-normal text-[var(--ink-4)]">
+                      {report.revisionHistory.length + 1}
+                    </span>
+                  </h2>
                   <ReportVersionStack
                     report={report}
                     authorName={studentName}
@@ -149,7 +163,12 @@ export default async function Page({ params }: { params: Promise<{ studentId: st
                 </section>
 
                 <section>
-                  <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{t('home.commentsTitle')}</h2>
+                  <h2 className="mb-3 flex items-baseline gap-2 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
+                    {t('home.commentsTitle')}
+                    <span className="font-mono text-caption font-normal normal-case tracking-normal text-[var(--ink-4)]">
+                      {commentsByReport[i].length}
+                    </span>
+                  </h2>
                   <ReportCommentsThread
                     reportId={report.id}
                     comments={commentsByReport[i]}

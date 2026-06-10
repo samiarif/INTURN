@@ -60,7 +60,7 @@ export function ReportReviewBar({
   }
 
   return (
-    <div className="rounded-lg border border-[var(--brand-200)] bg-[var(--brand-50)] p-4">
+    <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface-brand-tint)] p-4">
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm text-[var(--ink-2)]">
           {labels.submittedBy} {'·'} {whenLabel}
@@ -69,7 +69,8 @@ export function ReportReviewBar({
           <Button variant="outline" size="sm" disabled={pending} onClick={() => setShowRequest((v) => !v)}>
             {showRequest ? labels.cancel : labels.requestChanges}
           </Button>
-          <Button size="sm" disabled={pending} onClick={approve}>
+          {/* Approve = value moment → brand violet. */}
+          <Button variant="brand" size="sm" disabled={pending} onClick={approve}>
             <Check size={14} aria-hidden /> {labels.approve}
           </Button>
         </div>
@@ -86,12 +87,8 @@ export function ReportReviewBar({
             className="w-full resize-y rounded border border-[var(--border-color)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)]"
           />
           <div className="mt-2 flex justify-end">
-            <Button
-              size="sm"
-              disabled={pending || !feedback.trim()}
-              onClick={sendRevision}
-              style={{ background: 'var(--warning)', borderColor: 'var(--warning)' }}
-            >
+            {/* Request-revision = chrome → default ink (no warning tint). */}
+            <Button size="sm" disabled={pending || !feedback.trim()} onClick={sendRevision}>
               {pending ? labels.sending : labels.submitChanges}
             </Button>
           </div>

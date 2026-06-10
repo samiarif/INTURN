@@ -60,14 +60,15 @@ export function ReportUploadZone({
 
   if (!open) {
     return (
-      <Button onClick={() => setOpen(true)}>
+      /* Submitting academic work = value moment → brand violet. */
+      <Button variant="brand" onClick={() => setOpen(true)}>
         <Upload size={16} aria-hidden /> {labels.title}
       </Button>
     );
   }
 
   return (
-    <div className="rounded-md border border-[var(--brand-100)] bg-[var(--brand-50)] p-4">
+    <div className="rounded-md border border-[var(--border-color)] bg-[var(--surface-brand-tint)] p-4">
       <FileDrop
         kind="report"
         accept=".pdf"
@@ -94,7 +95,7 @@ export function ReportUploadZone({
         <Button variant="outline" size="sm" disabled={pending} onClick={() => { setOpen(false); setStaged(null); setNote(''); }}>
           {labels.cancel}
         </Button>
-        <Button size="sm" disabled={pending || !staged} onClick={submit}>
+        <Button variant="brand" size="sm" disabled={pending || !staged} onClick={submit}>
           {pending ? labels.sending : labels.send}
         </Button>
       </div>

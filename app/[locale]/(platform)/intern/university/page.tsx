@@ -53,9 +53,11 @@ export default async function Page() {
     <div className="mx-auto max-w-3xl px-6 py-8 md:p-8">
       <PageHeader title={t('home.title')} description={t('home.subtitle')} className="mb-6" />
 
-      <div className="mb-6 rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4">
-        <div className="text-caption font-mono uppercase text-[var(--ink-4)]">{t('home.supervisedBy')}</div>
-        <div className="mt-1 font-semibold text-[var(--ink)]">{studentMembership.org.name}</div>
+      <div className="mb-6 rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4 shadow-[var(--elev-card)]">
+        <div className="font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
+          {t('home.supervisedBy')}
+        </div>
+        <div className="mt-1.5 text-heading text-[var(--ink)]">{studentMembership.org.name}</div>
       </div>
 
       <div className="mb-6 flex justify-end">
@@ -81,14 +83,16 @@ export default async function Page() {
           {reports.map((report, i) => (
             <div
               key={report.id}
-              className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4"
+              className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-4 shadow-[var(--elev-card)]"
             >
               <div className="mb-4 flex items-start justify-between gap-2">
                 <div>
-                  <h2 className="text-sm font-semibold text-[var(--ink)]">
+                  <div className="mb-1 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--ink-4)]">
+                    {t(`kind.${report.kind}`)}
+                  </div>
+                  <h2 className="text-heading text-[var(--ink)]">
                     {report.title || t(`kind.${report.kind}`)}
                   </h2>
-                  <span className="text-caption text-[var(--ink-4)]">{t(`kind.${report.kind}`)}</span>
                 </div>
               </div>
 
@@ -115,7 +119,12 @@ export default async function Page() {
               </div>
 
               <section className="mb-4">
-                <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{t('home.versionsTitle')}</h2>
+                <h2 className="mb-3 flex items-baseline gap-2 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
+                  {t('home.versionsTitle')}
+                  <span className="font-mono text-caption font-normal normal-case tracking-normal text-[var(--ink-4)]">
+                    {report.revisionHistory.length + 1}
+                  </span>
+                </h2>
                 <ReportVersionStack
                   report={report}
                   authorName={studentName}
@@ -127,7 +136,12 @@ export default async function Page() {
               </section>
 
               <section>
-                <h2 className="mb-3 text-sm font-semibold text-[var(--ink-2)]">{t('home.commentsTitle')}</h2>
+                <h2 className="mb-3 flex items-baseline gap-2 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
+                  {t('home.commentsTitle')}
+                  <span className="font-mono text-caption font-normal normal-case tracking-normal text-[var(--ink-4)]">
+                    {commentsByReport[i].length}
+                  </span>
+                </h2>
                 <ReportCommentsThread
                   reportId={report.id}
                   comments={commentsByReport[i]}

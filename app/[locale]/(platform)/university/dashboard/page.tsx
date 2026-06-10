@@ -21,6 +21,8 @@ import {
 } from '@/modules/university/queries';
 import { countReportsAwaitingReview, getAwaitingReviewCountByStudent } from '@/modules/academic-reports/queries';
 import Link from 'next/link';
+import { Crown } from 'lucide-react';
+import { Avatar } from '@/components/avatar';
 import { InviteStudentButton } from '../_invite-student-button';
 import { InviteCoordinatorButton } from '../_invite-coordinator-button';
 import { AssignCoordinatorSelect } from '../_assign-coordinator-select';
@@ -78,9 +80,17 @@ export default async function Page() {
 
   const coordinatorOptions = coordinators.map((c) => ({ userId: c.userId, name: c.name }));
 
+  // KPI tile labels — the `*Count` messages are plain "{count} <noun>"
+  // interpolations in both locales, so rendering them with an empty count
+  // yields the bare noun for the tile eyebrow. Reuses the existing keys
+  // (no new literal strings); revisit if these ever become ICU plurals.
+  const statLabel = (key: 'managedCount' | 'placedCount' | 'awaitingReviewCount') =>
+    t(key, { count: '' }).trim();
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-8 md:p-8">
       <PageHeader
+        eyebrow={current.org.name}
         title={t('title')}
         description={t('subtitle')}
         actions={<InviteStudentButton />}
@@ -91,15 +101,32 @@ export default async function Page() {
         <BulkInviteButton coordinators={coordinatorOptions} />
       </div>
 
-      <div className="flex gap-6 mb-6 text-sm">
-        <span className="text-[var(--ink-3)]">{t('managedCount', { count: students.length })}</span>
-        <span className="text-[var(--ink-3)]">
-          {t('placedCount', { count: snapshots.filter(Boolean).length })}
-        </span>
-        {awaitingReview > 0 && (
-          <span className="font-medium text-[var(--brand-700)]">
-            {t('awaitingReviewCount', { count: awaitingReview })}
-          </span>
+      {/* Stat tiles — same idiom as the intern dashboard: mono uppercase
+          label + big number + faint tinted square. */}
+      <div
+        className={`grid grid-cols-1 gap-3 mb-6 ${isHead ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-3'}`}
+      >
+        <StatTile
+          label={statLabel('managedCount')}
+          value={students.length}
+          accentClass="bg-[var(--surface-brand-tint)]"
+        />
+        <StatTile
+          label={statLabel('placedCount')}
+          value={snapshots.filter(Boolean).length}
+          accentClass="bg-[var(--surface-accent-tint)]"
+        />
+        <StatTile
+          label={statLabel('awaitingReviewCount')}
+          value={awaitingReview}
+          accentClass="bg-[var(--surface-brand-tint)]"
+        />
+        {isHead && (
+          <StatTile
+            label={t('coordinatorsTitle')}
+            value={coordinators.length}
+            accentClass="bg-[var(--surface-accent-tint)]"
+          />
         )}
       </div>
 
@@ -108,7 +135,7 @@ export default async function Page() {
           {t('emptyRoster')}
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden mb-8">
+        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] overflow-hidden mb-8">
           <Table className="min-w-[900px]">
             <TableHeader>
               <TableRow>
@@ -182,21 +209,35 @@ export default async function Page() {
       {isHead && (
         <section className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-[var(--ink-2)]">{t('coordinatorsTitle')}</h2>
+            <h2 className="flex items-baseline gap-2 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
+              {t('coordinatorsTitle')}
+              <span className="font-mono text-caption font-normal normal-case tracking-normal text-[var(--ink-4)]">
+                {coordinators.length}
+              </span>
+            </h2>
             <InviteCoordinatorButton />
           </div>
-          <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] divide-y divide-[var(--border-color)]">
+          <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] divide-y divide-[var(--border-color)]">
             {coordinators.map((c) => {
               const count = students.filter((s) => s.assignedCoordinatorId === c.userId).length;
               return (
-                <div key={c.userId} className="flex items-center justify-between px-4 py-2 text-sm">
-                  <span className="text-[var(--ink)]">
-                    {c.name}
+                <div
+                  key={c.userId}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--surface-muted)]"
+                >
+                  <Avatar name={c.name} email={c.email} size="sm" />
+                  <span className="flex min-w-0 flex-1 items-center gap-2">
+                    <span className="truncate font-medium text-[var(--ink)]">{c.name}</span>
                     {c.role === 'owner' && (
-                      <span className="ml-2 text-caption text-[var(--ink-4)]">{t('headBadge')}</span>
+                      <span className="inline-flex items-center gap-1 rounded bg-brand-50 px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider text-brand-700">
+                        <Crown size={12} strokeWidth={1.75} aria-hidden />
+                        {t('headBadge')}
+                      </span>
                     )}
                   </span>
-                  <span className="text-caption text-[var(--ink-3)]">{t('studentCount', { count })}</span>
+                  <span className="font-mono text-caption text-[var(--ink-4)]">
+                    {t('studentCount', { count })}
+                  </span>
                 </div>
               );
             })}
@@ -211,6 +252,25 @@ export default async function Page() {
           encadrantName: p.encadrantName,
         }))}
       />
+    </div>
+  );
+}
+
+/** Stat tile — mirrors the intern dashboard's StatTile (static variant). */
+function StatTile({
+  label,
+  value,
+  accentClass,
+}: {
+  label: string;
+  value: number;
+  accentClass: string;
+}) {
+  return (
+    <div className="relative border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-4 overflow-hidden">
+      <span aria-hidden className={`absolute top-3 right-3 w-7 h-7 rounded-md ${accentClass}`} />
+      <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-1">{label}</div>
+      <div className="text-title text-[var(--ink)]">{value}</div>
     </div>
   );
 }

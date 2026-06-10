@@ -16,10 +16,18 @@ export function PendingInvites({ invites }: { invites: Pending[] }) {
 
   return (
     <section>
-      <h2 className="mb-2 text-sm font-semibold text-[var(--ink-2)]">{t('pendingTitle')}</h2>
-      <div className="divide-y divide-[var(--border-color)] rounded-lg border border-[var(--border-color)] bg-[var(--surface)]">
+      <h2 className="mb-2 flex items-baseline gap-2 font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
+        {t('pendingTitle')}
+        <span className="font-mono text-caption font-normal normal-case tracking-normal text-[var(--ink-4)]">
+          {invites.length}
+        </span>
+      </h2>
+      <div className="divide-y divide-[var(--border-color)] rounded-lg border border-[var(--border-color)] bg-[var(--surface)] shadow-[var(--elev-card)]">
         {invites.map((inv) => (
-          <div key={inv.memberId} className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
+          <div
+            key={inv.memberId}
+            className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--surface-muted)]"
+          >
             <span className="text-[var(--ink-2)]">
               {inv.email}
               {inv.encadrantName && (
@@ -47,7 +55,7 @@ export function PendingInvites({ invites }: { invites: Pending[] }) {
                     router.refresh();
                   })
                 }
-                className="text-caption text-destructive hover:underline disabled:opacity-60"
+                className="text-caption text-[var(--danger)] hover:underline disabled:opacity-60"
               >
                 {t('revoke')}
               </button>

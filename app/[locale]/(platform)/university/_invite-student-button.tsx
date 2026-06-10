@@ -54,7 +54,7 @@ export function InviteStudentButton() {
       {msg && (
         <span
           className={
-            msg.ok ? 'text-caption text-[var(--ink-3)]' : 'text-caption text-destructive'
+            msg.ok ? 'text-caption text-[var(--ink-3)]' : 'text-caption text-[var(--danger)]'
           }
         >
           {msg.text}
