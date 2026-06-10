@@ -1,6 +1,7 @@
 'use server';
 
 import { auth } from '@/lib/server-auth';
+import { afterResponse } from '@/lib/after-response';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getProfileByUserId, getUserByClerkId } from '@/modules/profiles/queries';
@@ -79,8 +80,8 @@ export async function applyToInternshipAction(internshipId: string, formData: Fo
     actorId: user.id,
   });
 
-  // Fire-and-forget analytics — no awaiting on the Posthog HTTP call.
-  void (async () => {
+  // Fire-and-forget analytics — deferred past the response, not awaited.
+  afterResponse(async () => {
     const { trackServer } = await import('@/lib/analytics');
     await trackServer(user.id, {
       name: 'application_submitted',
@@ -89,7 +90,7 @@ export async function applyToInternshipAction(internshipId: string, formData: Fo
         hasCustomAnswers: (parsed.customAnswers?.length ?? 0) > 0,
       },
     });
-  })();
+  });
 
   // Dashboard + applications list show this new row. Without these, the
   // RSC cache holds the pre-apply snapshot and shows "No applications yet".

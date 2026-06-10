@@ -3,6 +3,7 @@ import { events } from '@/db/schema';
 import type { RecordEventInput } from './types';
 import type { Event } from '@/db/schema';
 import { dispatchNotificationsFor } from '@/modules/notifications/dispatcher';
+import { afterResponse } from '@/lib/after-response';
 
 export async function recordEvent(input: RecordEventInput): Promise<Event> {
   const [event] = await db
@@ -16,15 +17,18 @@ export async function recordEvent(input: RecordEventInput): Promise<Event> {
     })
     .returning();
 
-  // Fire-and-forget notifications. Failures are logged inside the dispatcher;
-  // we never let a notification problem fail the originating action.
-  void dispatchNotificationsFor({
-    type: event.type,
-    actorId: event.actorId,
-    targetType: event.targetType,
-    targetId: event.targetId,
-    metadata: (event.metadata as Record<string, unknown> | null) ?? null,
-  });
+  // Notifications must not block or fail the originating action, but they
+  // must also survive the response being sent (serverless freeze) — so they
+  // run via after() instead of a bare floating promise.
+  afterResponse(() =>
+    dispatchNotificationsFor({
+      type: event.type,
+      actorId: event.actorId,
+      targetType: event.targetType,
+      targetId: event.targetId,
+      metadata: (event.metadata as Record<string, unknown> | null) ?? null,
+    }),
+  );
 
   return event;
 }
