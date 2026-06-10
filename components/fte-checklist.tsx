@@ -64,9 +64,11 @@ export function FteChecklist({
     buildSnapshotReader(storageKey),
     getServerSnapshot,
   );
-  const confettiFiredRef = useRef(false);
-
   const allDone = items.every((it) => it.done);
+  // Seeded with the MOUNT-time value: arriving with an already-complete
+  // checklist must not fire confetti on every visit — only the live
+  // transition to all-done celebrates (matching the comment below).
+  const confettiFiredRef = useRef(allDone);
 
   // Fire confetti once when transition to all-done happens (not on
   // initial render with already-complete state). Use a ref so we
