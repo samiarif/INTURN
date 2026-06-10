@@ -72,7 +72,7 @@ export default async function Page({ params }: { params: Promise<{ reportId: str
         {new Date(row.report.createdAt).toLocaleString(locale === 'fr' ? 'fr-FR' : 'en-US')}
       </p>
 
-      <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5 mb-4">
+      <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] p-5 mb-4">
         <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-2">
           {t('subject')}
         </h2>
@@ -103,7 +103,7 @@ export default async function Page({ params }: { params: Promise<{ reportId: str
         )}
       </section>
 
-      <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5 mb-4">
+      <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] p-5 mb-4">
         <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-2">
           {t('reportBody')}
         </h2>

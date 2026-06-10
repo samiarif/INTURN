@@ -79,7 +79,7 @@ export default async function Page({
         />
         <button
           type="submit"
-          className="h-9 px-3 rounded-md text-label font-medium bg-[var(--ink)] text-[var(--surface)]"
+          className="h-9 px-3 rounded-md text-label font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90 transition-opacity"
         >
           {t('searchSubmit')}
         </button>
@@ -112,7 +112,7 @@ export default async function Page({
           {t('empty')}
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden">
+        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] overflow-hidden">
           <Table className="min-w-[820px]">
             <TableHeader>
               <TableRow>
@@ -138,12 +138,14 @@ export default async function Page({
                     <div className="text-caption text-[var(--ink-3)] break-all">{u.email}</div>
                   </TableCell>
                   <TableCell>
-                    {u.role ? (
-                      <StatusPill
-                        tone={
-                          u.role === 'admin' ? 'info' : u.role === 'company' ? 'warn' : 'neutral'
-                        }
-                      >
+                    {u.role === 'admin' ? (
+                      /* Role-pill token pattern: privileged roles read as
+                         brand, the rest stay neutral chrome. */
+                      <span className="inline-flex items-center rounded bg-brand-50 px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider text-brand-700">
+                        {t('roleAdmin')}
+                      </span>
+                    ) : u.role ? (
+                      <StatusPill tone="neutral">
                         {t(`role${u.role.charAt(0).toUpperCase() + u.role.slice(1)}` as
                           | 'roleIntern' | 'roleCompany' | 'roleAdmin')}
                       </StatusPill>

@@ -1157,7 +1157,8 @@
       "detailColInternship": "Internship",
       "detailColStatus": "Status",
       "detailColDate": "Date",
-      "errorGeneric": "Something went wrong. Please try again."
+      "errorGeneric": "Something went wrong. Please try again.",
+      "roleUniversity": "University"
     },
     "status": {
       "draft": "Draft",

@@ -82,7 +82,7 @@ export default async function Page({
           <a
             href={exportHref}
             download
-            className="shrink-0 h-9 px-3 inline-flex items-center rounded-md text-label font-medium border border-[var(--border-color)] bg-[var(--surface)] hover:bg-[var(--surface-muted)]"
+            className="shrink-0 h-9 px-3 inline-flex items-center rounded-md text-label font-medium border border-[var(--border-color)] bg-[var(--surface)] hover:bg-[var(--surface-muted)] transition-colors"
           >
             {t('exportCsv')}
           </a>
@@ -104,7 +104,7 @@ export default async function Page({
           {t('empty')}
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden">
+        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] overflow-hidden">
           <Table className="min-w-[640px]">
             <TableHeader>
               <TableRow>

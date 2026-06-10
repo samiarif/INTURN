@@ -77,7 +77,7 @@ export function ResolveReportForm({
   }
 
   return (
-    <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] p-5">
+    <section className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] p-5">
       <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
         {t('triage')}
       </h2>

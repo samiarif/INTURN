@@ -27,82 +27,60 @@ export default async function Page() {
     <div className="max-w-5xl mx-auto px-6 py-8 md:p-8">
       <PageHeader title={t('title')} description={t('subtitle')} className="mb-8" />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        <Link
+      {/* KPI tiles — intern-dashboard idiom: mono uppercase label + big
+          number + faint tinted corner square. Alert tiles trade the tint for
+          the danger tokens instead of flooding the whole box. */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+        <StatTile
           href="/admin/verifications"
-          className={`block border rounded-lg p-5 hover:border-[var(--border-strong)] ${
-            stats.oldestPendingHours !== null && stats.oldestPendingHours >= 24
-              ? 'border-[var(--status-danger-border)] bg-[var(--status-danger-bg)]'
-              : 'border-[var(--border-color)] bg-[var(--surface)]'
-          }`}
-        >
-          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
-            {t('verificationsPending')}
-          </div>
-          <div
-            className={`text-3xl font-semibold tracking-tight ${
-              stats.oldestPendingHours !== null && stats.oldestPendingHours >= 24
-                ? 'text-[var(--status-danger-ink)]'
-                : ''
-            }`}
-          >
-            {stats.verificationsPending}
-          </div>
-          <div className="text-caption text-[var(--ink-3)] mt-1">
-            {stats.oldestPendingHours !== null
+          label={t('verificationsPending')}
+          value={stats.verificationsPending}
+          caption={
+            stats.oldestPendingHours !== null
               ? t('oldestPending', { hours: stats.oldestPendingHours })
-              : t('verificationsPendingHelp')}
-          </div>
-        </Link>
-        <Link
+              : t('verificationsPendingHelp')
+          }
+          alert={stats.oldestPendingHours !== null && stats.oldestPendingHours >= 24}
+          accentClass="bg-[var(--surface-brand-tint)]"
+        />
+        <StatTile
           href="/admin/verifications?status=verified"
-          className="block border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)] hover:border-[var(--border-strong)]"
-        >
-          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
-            {t('companiesVerified')}
-          </div>
-          <div className="text-3xl font-semibold tracking-tight">{stats.companiesVerified}</div>
-          <div className="text-caption text-[var(--success)] mt-1">
-            {t('recentLast30d', { n: stats.companiesVerifiedRecent })}
-          </div>
-        </Link>
-        <div className="border border-[var(--border-color)] rounded-lg p-5 bg-[var(--surface)]">
-          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
-            {t('activeWorkspaces')}
-          </div>
-          <div className="text-3xl font-semibold tracking-tight">{stats.activeWorkspaces}</div>
-          <div className="text-caption text-[var(--success)] mt-1">
-            {t('recentLast30d', { n: stats.activeWorkspacesRecent })}
-          </div>
-        </div>
-        <Link
+          label={t('companiesVerified')}
+          value={stats.companiesVerified}
+          caption={t('recentLast30d', { n: stats.companiesVerifiedRecent })}
+          captionClass="text-[var(--success)]"
+          accentClass="bg-[var(--surface-accent-tint)]"
+        />
+        <StatTile
+          label={t('activeWorkspaces')}
+          value={stats.activeWorkspaces}
+          caption={t('recentLast30d', { n: stats.activeWorkspacesRecent })}
+          captionClass="text-[var(--success)]"
+          accentClass="bg-[var(--surface-brand-tint)]"
+        />
+        <StatTile
           href="/admin/reports?status=open"
-          className={`block border rounded-lg p-5 hover:border-[var(--border-strong)] ${
-            openReports > 0
-              ? 'border-[var(--status-danger-border)] bg-[var(--status-danger-bg)]'
-              : 'border-[var(--border-color)] bg-[var(--surface)]'
-          }`}
-        >
-          <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-2">
-            {t('openReports')}
-          </div>
-          <div className={`text-3xl font-semibold tracking-tight ${openReports > 0 ? 'text-[var(--status-danger-ink)]' : ''}`}>
-            {openReports}
-          </div>
-          <div className="text-caption text-[var(--ink-3)] mt-1">
-            {openReports > 0 ? t('openReportsNeedsTriage') : t('openReportsAllClear')}
-          </div>
-        </Link>
+          label={t('openReports')}
+          value={openReports}
+          caption={openReports > 0 ? t('openReportsNeedsTriage') : t('openReportsAllClear')}
+          alert={openReports > 0}
+          accentClass="bg-[var(--surface-accent-tint)]"
+        />
       </div>
 
       <section>
-        <h2 className="text-heading mb-4">{t('recentOrgs')}</h2>
+        <h2 className="flex items-baseline gap-2 text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
+          {t('recentOrgs')}
+          <span className="text-caption font-mono font-normal normal-case tracking-normal text-[var(--ink-4)]">
+            {recent.length}
+          </span>
+        </h2>
         {recent.length === 0 ? (
           <div className="border border-dashed border-[var(--border-color)] rounded-md p-8 text-center text-caption text-[var(--ink-3)]">
             {t('noOrgs')}
           </div>
         ) : (
-          <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden">
+          <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] overflow-hidden">
             <Table className="min-w-[600px]">
               <TableHeader>
                 <TableRow>
@@ -145,4 +123,65 @@ export default async function Page() {
       </section>
     </div>
   );
+}
+
+/**
+ * KPI tile — mirrors the intern/university dashboard StatTile idiom (mono
+ * uppercase eyebrow, big number, faint tinted corner square). `alert` swaps
+ * the accents for the danger tokens; linked tiles get the hover affordance.
+ */
+function StatTile({
+  label,
+  value,
+  caption,
+  captionClass,
+  accentClass,
+  alert = false,
+  href,
+}: {
+  label: string;
+  value: number;
+  caption: string;
+  captionClass?: string;
+  accentClass: string;
+  alert?: boolean;
+  href?: string;
+}) {
+  const inner = (
+    <>
+      <span
+        aria-hidden
+        className={`absolute top-3 right-3 w-7 h-7 rounded-md ${
+          alert ? 'bg-[var(--status-danger-bg)]' : accentClass
+        }`}
+      />
+      <div className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-1 pr-9">
+        {label}
+      </div>
+      <div className={`text-title ${alert ? 'text-[var(--status-danger-ink)]' : 'text-[var(--ink)]'}`}>
+        {value}
+      </div>
+      <div className={`text-caption mt-1 ${alert ? 'text-[var(--status-danger-ink)]' : (captionClass ?? 'text-[var(--ink-3)]')}`}>
+        {caption}
+      </div>
+    </>
+  );
+
+  const frame = `relative overflow-hidden rounded-lg border bg-[var(--surface)] p-4 ${
+    alert ? 'border-[var(--status-danger-border)]' : 'border-[var(--border-color)]'
+  }`;
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={`${frame} block transition-colors hover:bg-[var(--surface-muted)] ${
+          alert ? '' : 'hover:border-[var(--border-strong)]'
+        }`}
+      >
+        {inner}
+      </Link>
+    );
+  }
+  return <div className={frame}>{inner}</div>;
 }

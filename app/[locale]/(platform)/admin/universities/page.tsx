@@ -30,7 +30,7 @@ export default async function Page() {
           {t('empty')}
         </div>
       ) : (
-        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] overflow-hidden">
+        <div className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] overflow-hidden">
           <Table className="min-w-[720px]">
             <TableHeader>
               <TableRow>

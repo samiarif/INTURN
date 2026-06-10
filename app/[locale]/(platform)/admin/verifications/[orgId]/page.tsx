@@ -47,10 +47,10 @@ export default async function Page({
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <section>
-          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
             {t('organization')}
           </h2>
-          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] space-y-2 text-body">
+          <div className="border border-[var(--border-color)] rounded-lg p-4 bg-[var(--surface)] shadow-[var(--elev-card)] space-y-2 text-body">
             <div className="flex justify-between gap-3"><span className="text-[var(--ink-3)]">{t('slug')}</span><span className="font-mono break-all">{organization.slug}</span></div>
             <div className="flex justify-between gap-3"><span className="text-[var(--ink-3)]">{t('industry')}</span><span>{organization.industry ?? '—'}</span></div>
             <div className="flex justify-between gap-3"><span className="text-[var(--ink-3)]">{t('size')}</span><span>{organization.size ?? '—'}</span></div>
@@ -72,10 +72,10 @@ export default async function Page({
           </div>
         </section>
         <section>
-          <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
+          <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
             {t('owner')}
           </h2>
-          <div className="border border-[var(--border-color)] rounded-md p-4 bg-[var(--surface)] space-y-2 text-body">
+          <div className="border border-[var(--border-color)] rounded-lg p-4 bg-[var(--surface)] shadow-[var(--elev-card)] space-y-2 text-body">
             <div className="font-medium">{owner.firstName} {owner.lastName}</div>
             <div className="text-[var(--ink-3)] break-all">{owner.email}</div>
             <div className="text-caption text-[var(--ink-3)] font-mono break-all">{owner.clerkId}</div>
@@ -84,7 +84,7 @@ export default async function Page({
       </div>
 
       <section className="mb-8">
-        <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
           {t('rne')}
         </h2>
         {organization.rneUrl ? (
@@ -120,7 +120,7 @@ export default async function Page({
       </section>
 
       <section className="border-t border-[var(--border-color)] pt-6">
-        <h2 className="text-eyebrow font-mono uppercase text-[var(--ink-3)] mb-3">
+        <h2 className="text-eyebrow font-mono uppercase text-[var(--brand-700)] mb-3">
           {t('actions')}
         </h2>
         <VerificationActions orgId={orgId} currentStatus={status} />

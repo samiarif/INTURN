@@ -51,7 +51,7 @@ export default async function Page({
           {rows.map(({ report, reporter }) => (
             <li
               key={report.id}
-              className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] hover:border-[var(--border-strong)] transition-colors"
+              className="border border-[var(--border-color)] rounded-lg bg-[var(--surface)] shadow-[var(--elev-card)] transition-all hover:border-[var(--border-strong)] hover:shadow-[var(--elev-card-hover)]"
             >
               <Link href={`/admin/reports/${report.id}`} className="block p-4">
                 <div className="flex items-start justify-between gap-4">

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { setVerificationStatusAction } from '@/modules/admin/server-actions';
 import {
   isValidVerificationTransition,
@@ -30,23 +31,27 @@ export function VerificationActions({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {/* Approving a verification is the one admin value moment (an org
+          becomes verified) → brand. The cautionary transitions stay quiet
+          status-token outlines, same idiom as the report triage buttons. */}
       {isValidVerificationTransition(currentStatus, 'verified') && (
-        <button
-          type="button"
+        <Button
+          variant="brand"
+          size="lg"
+          className="px-4"
           disabled={pending}
           onClick={() => setTo('verified')}
-          className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[#15803D] text-white hover:bg-[#166534] disabled:opacity-50"
         >
           <Check size={15} strokeWidth={2.5} aria-hidden />
           {t('markVerified')}
-        </button>
+        </Button>
       )}
       {isValidVerificationTransition(currentStatus, 'pending') && (
         <button
           type="button"
           disabled={pending}
           onClick={() => setTo('pending')}
-          className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A] hover:bg-[#FEF3C7] disabled:opacity-50"
+          className="inline-flex items-center justify-center h-9 px-4 rounded-lg text-sm font-medium border border-[color-mix(in_srgb,var(--status-warn-ink)_30%,transparent)] bg-[var(--surface)] text-[var(--status-warn-ink)] hover:bg-[var(--status-warn-bg)] transition-colors disabled:opacity-50"
         >
           {t('requestChanges')}
         </button>
@@ -60,7 +65,7 @@ export function VerificationActions({
               setTo('suspended');
             }
           }}
-          className="inline-flex items-center justify-center h-9 px-4 rounded-md text-sm font-medium bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] hover:bg-[#FEE2E2] disabled:opacity-50"
+          className="inline-flex items-center justify-center h-9 px-4 rounded-lg text-sm font-medium border border-[var(--status-danger-border)] bg-[var(--surface)] text-[var(--status-danger-ink)] hover:bg-[var(--status-danger-bg)] transition-colors disabled:opacity-50"
         >
           {t('suspend')}
         </button>

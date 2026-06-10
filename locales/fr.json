@@ -1157,7 +1157,8 @@
       "detailColInternship": "Stage",
       "detailColStatus": "Statut",
       "detailColDate": "Date",
-      "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
+      "errorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+      "roleUniversity": "Université"
     },
     "status": {
       "draft": "Brouillon",
