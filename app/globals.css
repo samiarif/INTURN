@@ -256,13 +256,24 @@
 
   /* Atelier: add .ui-rise-col to any column container and its direct children
      rise in with a capped stagger — the same orchestration the workspace shell
-     gets from .ws-col-main, generalized for the platform screens. */
-  .ui-rise-col > * { animation: ui-rise var(--dur-base) var(--ease-out) both; }
-  .ui-rise-col > *:nth-child(1) { animation-delay: 40ms; }
-  .ui-rise-col > *:nth-child(2) { animation-delay: 90ms; }
-  .ui-rise-col > *:nth-child(3) { animation-delay: 140ms; }
-  .ui-rise-col > *:nth-child(4) { animation-delay: 190ms; }
-  .ui-rise-col > *:nth-child(n + 5) { animation-delay: 230ms; }
+     gets from .ws-col-main, generalized for the platform screens.
+     Built on @starting-style + transition (NOT keyframes with fill:both):
+     transitions fail OPEN — if the entrance never runs (background tab,
+     throttled renderer), the children sit in their default, fully-visible
+     state instead of being stuck at opacity 0. */
+  .ui-rise-col > * {
+    transition:
+      opacity var(--dur-base) var(--ease-out),
+      transform var(--dur-base) var(--ease-out);
+  }
+  @starting-style {
+    .ui-rise-col > * { opacity: 0; transform: translateY(8px); }
+  }
+  .ui-rise-col > *:nth-child(1) { transition-delay: 40ms; }
+  .ui-rise-col > *:nth-child(2) { transition-delay: 90ms; }
+  .ui-rise-col > *:nth-child(3) { transition-delay: 140ms; }
+  .ui-rise-col > *:nth-child(4) { transition-delay: 190ms; }
+  .ui-rise-col > *:nth-child(n + 5) { transition-delay: 230ms; }
 }
 
 .dark {
