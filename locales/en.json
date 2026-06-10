@@ -2784,5 +2784,527 @@
     "effects": {
       "backToTop": "Back to top"
     }
+  },
+  "site": {
+    "how": {
+      "meta": {
+        "title": "How it works — Inturn",
+        "description": "The full Inturn flow, from posting a project to issuing the certificate. Seven steps. Eight weeks. Real work."
+      },
+      "hero": {
+        "eyebrow": "Seven steps · zero ambiguity",
+        "titleLead": "The full loop — from blank page to",
+        "titleGrad": "a thing that shipped.",
+        "deck": "No screenshots in a deck. No \"schedule a demo\" wall. Here's literally every step. From the supervisor's side, the intern's side, and what the system does in between.",
+        "ctaPrimary": "Start now",
+        "ctaSecondary": "Walk me through it"
+      },
+      "timeline": {
+        "label": "Timeline · typical 12-week internship",
+        "step1Label": "Step 01",
+        "step1Name": "Scope",
+        "step1Duration": "15 MIN",
+        "step2Label": "Step 02",
+        "step2Name": "Publish",
+        "step2Duration": "10 MIN",
+        "step3Label": "Step 03",
+        "step3Name": "Match",
+        "step3Duration": "3-7 DAYS",
+        "step4Label": "Step 04",
+        "step4Name": "Accept",
+        "step4Duration": "1 CLICK",
+        "step5Label": "Step 05",
+        "step5Name": "Onboard",
+        "step5Duration": "1 DAY",
+        "step6Label": "Step 06",
+        "step6Name": "Run the loop",
+        "step6Duration": "8-12 WEEKS",
+        "step7Label": "Step 07",
+        "step7Name": "Certify",
+        "step7Duration": "AUTO"
+      },
+      "steps": {
+        "step1Role": "The supervisor",
+        "step1Title": "Describe the project. AI does the rest.",
+        "step1Body": "Paste a paragraph: \"We want to refresh our brand over 12 weeks with two interns — one for visual, one for research.\" Inturn drafts your goals (max 3), phases, deliverables (3–10), and skill list. You edit anything you don't agree with. There's a manual form if you'd rather skip the AI — same data model, different door.",
+        "step1OutputsLabel": "Outputs",
+        "step1OutputsValue": "Goals · Phases · Deliverables · Skills · Pay range",
+        "step1TimeLabel": "Time",
+        "step1TimeValue": "15 minutes",
+        "step2Role": "The supervisor",
+        "step2Title": "Publish — and the project flips from Draft to Active.",
+        "step2Body": "You add the role title, scope, slots, supervisor, pay. Two application questions max — anything more and applicants drop off. Pick \"public marketplace\" or \"private link only\" if you're hiring someone you already know. Publishing creates the marketplace listing and activates the project.",
+        "step2SeeLabel": "You see",
+        "step2SeeValue": "live preview of the marketplace card on the right of the form",
+        "step2TimeLabel": "Time",
+        "step2TimeValue": "10 minutes",
+        "step3Role": "The intern",
+        "step3Title": "The marketplace surfaces the role.",
+        "step3Body": "Students browsing Inturn see your role ranked by match score against their profile — skills, location, goals. The match band at the top reads \"Here are 7 internships matched to you.\" Your listing shows up with the actual pay number, the actual deliverables, and the actual supervisor — no surprises.",
+        "step3MedianLabel": "Median time-to-first-application",
+        "step3MedianValue": "18 hours",
+        "step3AvgLabel": "Avg applications per role",
+        "step3AvgValue": "7",
+        "step4Role": "Both sides",
+        "step4Title": "Review applications in one place. Accept in one click.",
+        "step4Body": "Each application is the student's profile + their answers to your two questions + a portfolio link. You review, you shortlist, you accept. Inturn doesn't run interviews for you — it makes them shorter. When you accept, the intern's workspace spins up automatically with the brief already loaded.",
+        "step4HappensLabel": "What happens",
+        "step4HappensValue": "Workspace created · brief copied · Jitsi link generated · first weekly check-in scheduled",
+        "step5Role": "Both sides",
+        "step5Title": "Day one is already set up.",
+        "step5Body": "The intern lands in their workspace. Brief at the top. Tasks pre-populated from the deliverables. Calendar showing the weekly check-ins. Activity feed empty (for now). They don't need to ask \"what do I do today\" — the system answered before they showed up.",
+        "step6Role": "Both sides",
+        "step6Title": "The loop runs itself. You tip in where it matters.",
+        "step6Body": "Intern moves tasks across the board. Submits deliverables as v1, then v2 with notes. Supervisor reviews — either approves or requests changes. Comments thread on every artifact. Every Friday at 14:00, the weekly check-in happens with a pre-built agenda. Nothing falls through.",
+        "step6SupervisorLabel": "Supervisor time",
+        "step6SupervisorValue": "~5 min/day average",
+        "step6InternLabel": "Intern time",
+        "step6InternValue": "Full project time, focused",
+        "step6FrictionLabel": "Friction",
+        "step6FrictionValue": "\"Needs review\" can't be ignored — flagged after 48h",
+        "step7Role": "The intern",
+        "step7Title": "The certificate is generated the moment the last deliverable is approved.",
+        "step7BodyLead": "Project complete. The supervisor's final rating is in. Inturn generates the certificate automatically — signed by the supervisor, signed by the platform, signed by the intern. The verification link goes live at",
+        "step7BodyCode": "inturn.app/v/'{cert-id}'",
+        "step7BodyTail": "— anyone can hit it, see what shipped, see the supervisor's name, verify the dates. The intern shares it. The next employer trusts it.",
+        "step7ShipsLabel": "What ships",
+        "step7ShipsValue": "PDF · public link · LinkedIn share · QR code"
+      },
+      "limits": {
+        "eyebrow": "Honest limits",
+        "titleLead": "Things Inturn",
+        "titleStrike": "does",
+        "titleTail": "explicitly doesn't do.",
+        "deck": "We're a workspace, not a recruiter. Knowing what we're not is what lets us be good at what we are.",
+        "card1Title": "We don't run interviews",
+        "card1Body": "No 6-step interview flow, no take-home assignments, no algorithmic ranking pretending to be smart. You review the application, you talk to the candidate however you want, you accept inside Inturn.",
+        "card2Title": "We don't pay your interns",
+        "card2Body": "Companies handle payroll their normal way. Inturn shows the pay number, the intern verifies it before accepting, and we send reminders if the payment date slips. The money flow stays where it is.",
+        "card3Title": "We don't replace your supervisor",
+        "card3Body": "If you don't have someone willing to commit 30 minutes a day to a junior person, Inturn can't fix that. The product is built for teams who want to mentor well but need help structuring it.",
+        "card4Title": "We don't talk to your university",
+        "card4Body": "Yet. Right now, students sign up directly and add Inturn internships to their CV themselves. University-side dashboards are on the roadmap for Phase 2 — not Phase 1."
+      },
+      "cta": {
+        "eyebrow": "15 minutes",
+        "title": "That's all you need for step 01.",
+        "deck": "The first project is the slow one. By the second, you've got templates. By the third, the system runs itself and you wonder how you ever did it via email.",
+        "primary": "Start a project",
+        "secondary": "I'm a student"
+      }
+    },
+    "forCompanies": {
+      "meta": {
+        "title": "For companies — Inturn",
+        "description": "Post scoped projects, run real internships, get verifiable records of what shipped. Built for studios and startups in Tunisia."
+      },
+      "hero": {
+        "eyebrow": "For studios, startups & teams",
+        "titleLead": "Get an intern who",
+        "titleGrad": "actually ships something.",
+        "deck": "You don't need more \"looking for an intern\" posts. You need a project, a scope, a workspace, and a system that holds you accountable to mentoring them well. Inturn is that — designed for teams who'd rather skip the intern than waste one.",
+        "ctaPrimary": "Start a project",
+        "ctaSecondary": "See the supervisor view",
+        "trustStat1": "14 companies",
+        "trustMid": "running internships right now · avg time-to-first-hire",
+        "trustStat2": "5 days"
+      },
+      "whatYouGet": {
+        "eyebrow": "What you get",
+        "titleLead": "A system for hiring interns the way you hire",
+        "titleGrad": "contractors.",
+        "deck": "Scope-first. Output-tracked. Accountable on both sides. The difference from a contractor: a 12-week ceiling, mentorship as part of the deal, and pay rates that actually work for students.",
+        "card1Title": "Project-level scope, not job-level vagueness",
+        "card1Body": "Define 3–10 deliverables before publishing. Inturn won't let you skip this. The deliverables become the workspace tabs the intern sees every day — the brief is the contract.",
+        "card2Title": "A workspace per intern, not per company",
+        "card2Body": "Each intern works in their own workspace under the project. Multi-intern projects (design + research, frontend + backend) coordinate via shared activity feed but ship independently.",
+        "card3Title": "Weekly check-ins on rails",
+        "card3Body": "Pre-scheduled. Same Jitsi link every week. Auto-generated agenda from what shipped, what's blocked, what's overdue. You show up; the system does the prep.",
+        "card4Title": "Reviewable in five minutes a day",
+        "card4Body": "The dashboard pulls every \"needs review\" item across all your interns into one place. Five minutes a day keeps the loop alive — and the data shows companies who do this finish projects on time at 4× the rate.",
+        "card5Title": "Templates that compound",
+        "card5Body": "Save any finished project as a template. Next year's intern run starts from your own playbook, not a blank page. Most teams hit \"5× faster than the first one\" by year two.",
+        "card6Title": "A pipeline you actually trust",
+        "card6Body": "The interns who finish strong on Inturn are the ones you hire full-time later. Every certificate links to a portfolio of real work — when you re-recruit, you know what you're getting."
+      },
+      "supervisor": {
+        "eyebrow": "A closer look",
+        "titleLead": "The supervisor view",
+        "titleGrad": "does the worrying",
+        "titleTail": "so you don't have to.",
+        "point1Title": "Review banner",
+        "point1Body": "Purple bar at top names what needs your attention, who submitted it, when. One click jumps to the card.",
+        "point2Title": "Needs review ring",
+        "point2Body": "Submissions get a purple outline on the board. Impossible to scroll past — and the count badge on the tab reminds you on every workspace.",
+        "point3Title": "Urgency without anxiety",
+        "point3Body": "Orange left-border for things due this week. Red for overdue. Neutral for the rest. The product doesn't yell — it just doesn't let you forget."
+      },
+      "quote": {
+        "text": "Before Inturn, I was the bottleneck. I felt guilty all the time. After Inturn, I review on the bus and the work moves while I sleep. I went from one intern a year to three.",
+        "name": "Salim Rezgui",
+        "role": "Co-founder · Numentech, Sfax"
+      },
+      "useCases": {
+        "eyebrow": "Who runs internships on Inturn",
+        "titleLead": "Small teams who'd rather",
+        "titleGrad": "hire well",
+        "titleTail": "than hire a lot.",
+        "card1Title": "Design studios",
+        "card1Body": "Brand audits, system rollouts, illustration commissions. Visual designers + UX researchers running in parallel under one project. Usually 8–12 weeks.",
+        "card2Title": "Dev shops & startups",
+        "card2Body": "Feature builds, prototype sprints, test coverage drives. Junior engineers shipping under a tech lead. Pairs naturally with code-review tooling.",
+        "card3Title": "Marketing & content teams",
+        "card3Body": "Copy refreshes, social campaigns, blog series, video. Brief-driven, deliverable-heavy — exactly the kind of work that benefits from the versioned-deliverable loop."
+      },
+      "cta": {
+        "eyebrow": "Try it free",
+        "title": "Your next intern starts shipping in week one.",
+        "deck": "Drafts are free. The whole workspace is free. Set one up in 15 minutes and see if the system works for your team — if not, no harm done.",
+        "primary": "See how it works",
+        "secondary": "I'm a student"
+      }
+    },
+    "forInterns": {
+      "meta": {
+        "title": "For interns — Inturn",
+        "description": "Internships that ship real work. Apply to scoped projects, get a workspace and a verifiable record of what you built."
+      },
+      "hero": {
+        "eyebrow": "For students · all disciplines",
+        "titleLead": "Spend your internship",
+        "titleGrad": "building things",
+        "titleTail": "worth talking about.",
+        "deck": "You don't need another internship that puts you on a desk in the corner. You need a project, a brief, a supervisor who reviews your work, and a record of what you built. That's what every Inturn internship is — verified before it's even posted.",
+        "ctaPrimary": "Create your profile",
+        "ctaSecondary": "Browse open internships",
+        "trustStat": "22 open internships",
+        "trustRest": "this week · matched to your profile in seconds"
+      },
+      "whatYouGet": {
+        "eyebrow": "What you get",
+        "titleLead": "An internship that",
+        "titleGrad": "graduates you",
+        "titleTail": "with a portfolio, not a panic.",
+        "card1Title": "Pay, stated honestly",
+        "card1Body": "Every listing says upfront whether it's unpaid or offers an indemnité — and exactly how much. Most internships in Tunisia are unpaid or carry a small monthly indemnité; here you always know before you apply. No \"we'll discuss it later.\"",
+        "card2Title": "A brief, not a vibe",
+        "card2Body": "Every internship has deliverables defined upfront. You know what's expected from day one. No more arriving Monday and finding out there's \"nothing for you to do today.\"",
+        "card3Title": "A workspace, not a folder",
+        "card3Body": "Tasks, weekly check-ins, comments, deliverables versioning — all in one place. The supervisor sees everything you ship. You see everything you've done.",
+        "card4Title": "Match score that's not lying",
+        "card4Body": "The AI matches you to roles based on skills, location, goals — and is honest when the fit isn't great. A 92% match means apply; a 54% match means you can, but stretch.",
+        "card5Title": "A supervisor who can't ghost",
+        "card5Body": "Inturn flags reviews older than 48 hours on the supervisor's dashboard. You won't be left waiting two weeks for feedback. If you are, you can escalate inside the app.",
+        "card6Title": "A certificate that proves things",
+        "card6Body": "At the end, your certificate is verifiable at inturn.app/v/'{your-id}' — employers can check it, see what you shipped, see your supervisor's rating. Worth more than a PDF."
+      },
+      "quote": {
+        "text": "I'd done two internships before Inturn. I literally could not tell you what I did during them. The third one is on my CV with a link. Five interviews picked up that link before the call. That has never happened before.",
+        "name": "Yasmine Ben Salah",
+        "role": "L3 · ENIT · Designed at Acme Studio"
+      },
+      "cta": {
+        "eyebrow": "Free for students. Always.",
+        "title": "Your profile takes 10 minutes.",
+        "deck": "Upload portfolio, list skills, write your goals. The match score gets sharper with every internship you finish. No fees, no premium tier, no gotchas.",
+        "primary": "Create your profile",
+        "secondary": "How it works"
+      }
+    },
+    "forUniversities": {
+      "meta": {
+        "title": "For universities — Inturn",
+        "description": "Most of the PFE file, generated by the work itself. Weekly tracking sheets, the tri-party convention, supervisor evaluations, attendance and the final dossier come out of Inturn's workspace as a byproduct — free for your students and your department."
+      },
+      "hero": {
+        "eyebrow": "FOR PFE COORDINATORS & DEPARTMENTS",
+        "titleLead": "The PFE paperwork that",
+        "titleGrad": "fills itself out.",
+        "deck": "Tri-party conventions, weekly tracking sheets, supervisor evaluations, attendance, the final dossier — a final-year internship buries everyone in forms. Inturn's workspace produces most of it as a byproduct of the work actually happening. Free for your students, free for your department.",
+        "ctaPrimary": "Talk to us about your cohort",
+        "ctaSecondary": "See how the workspace works"
+      },
+      "problem": {
+        "eyebrow": "THE PFE PROBLEM",
+        "title": "A semester of work, documented by hand.",
+        "deck": "Coordinators chase signatures across two supervisors for twelve to sixteen weeks. Tracking sheets get backfilled the night before they're due. The final dossier is assembled from memory, weeks after the work happened. And none of it reflects what the student actually built."
+      },
+      "generates": {
+        "eyebrow": "WHAT INTURN GENERATES AUTOMATICALLY",
+        "title": "Most of the PFE file, as a byproduct.",
+        "deck": "The student does the work in one workspace. The paperwork falls out of it — timestamped, attributable, exportable.",
+        "item1Title": "Weekly tracking sheets",
+        "item1Body": "Generated from the weekly check-in — shipped, blocked, next — timestamped and signed by both supervisors.",
+        "item2Title": "Tri-party convention",
+        "item2Body": "Pre-filled from the project, the student, and the company already in the system. Nothing retyped.",
+        "item3Title": "Evaluations",
+        "item3Body": "The supervisor's structured review at each deliverable, plus a final rating — captured as the work is reviewed, not reconstructed at the end.",
+        "item4Title": "Attendance / activity",
+        "item4Body": "The workspace activity trail stands in for a paper register: what was done, when, by whom.",
+        "item5Title": "Final dossier",
+        "item5Body": "Every versioned deliverable in one place, exportable as the finished record of the internship.",
+        "note": "Together, that's most of the PFE file produced for you — assembled from real work rather than typed up after the fact."
+      },
+      "fit": {
+        "eyebrow": "HOW IT FITS YOUR PROCESS",
+        "title": "Additive. Bottom-up. No IT project.",
+        "deck": "Nothing to install, nothing to procure, nothing to migrate. It sits alongside your current process and starts producing the paperwork your students already owe you.",
+        "step1Small": "Students sign up",
+        "step1Title": "Students sign up directly.",
+        "step1Body": "No rollout, no accounts to provision from your side. A student starts an Inturn internship the way they'd start any other — and the PFE artifacts begin generating from day one.",
+        "step2Small": "Coordinators get visibility",
+        "step2Title": "Coordinators get visibility today.",
+        "step2Body": "Ask a student to share their workspace and you can see the check-ins, the deliverables, and the supervisor's reviews — the live state of the internship, not a sheet filled in the night before.",
+        "step3Small": "Phase 2",
+        "step3Title": "Full dashboards coming in Phase 2.",
+        "step3Body": "Visibility today, full department-side dashboards next. We'd rather be honest about the roadmap: cohort-wide dashboards for coordinators are Phase 2, not Phase 1."
+      },
+      "schools": {
+        "eyebrow": "FOR THE SCHOOLS YOU KNOW",
+        "title": "Built for the way your students already work.",
+        "deck": "The structure maps cleanly onto a final-year project at the engineering and business schools producing the most PFE students.",
+        "disclaimer": "Examples of where Inturn fits — not partnerships."
+      },
+      "cta": {
+        "eyebrow": "Free for your students · free for your department",
+        "title": "Bring it to your next PFE cohort.",
+        "deck": "One conversation is enough to see whether it fits your process. No procurement, no install, no pricing to negotiate — it's free on both sides.",
+        "button": "Talk to us about your cohort"
+      }
+    },
+    "virtual": {
+      "meta": {
+        "title": "Virtual internships — Inturn",
+        "description": "Structured async internships that actually work remotely. Intern for a team beyond your city — even beyond Tunisia — inside one workspace with task templates, weekly check-ins and verifiable deliverables."
+      },
+      "hero": {
+        "eyebrow": "New in Tunisia · Pillar 02",
+        "titleLead": "Work with a team beyond your city.",
+        "titleGrad": "Even beyond Tunisia.",
+        "deck": "A virtual internship on Inturn isn't a Zoom link and good luck. It's the same structured workspace — async task templates, weekly check-ins, versioned deliverables — built so remote actually works. And Tunis runs on Central European time, so a day with a Paris or Berlin team lines up by default.",
+        "ctaPrimary": "Browse virtual roles",
+        "ctaSecondary": "See how it runs",
+        "trustStat": "Hybrid by default · virtual opt-in",
+        "trustRest": "timezone-aware scheduling"
+      },
+      "whyFails": {
+        "eyebrow": "Why remote internships fail",
+        "titleLead": "Remote doesn't break on distance. It breaks on",
+        "titleGrad": "no structure.",
+        "deck": "The reason \"virtual intern\" sounds risky is that most remote internships are an email and a vague hope. Inturn removes the three things that actually kill them.",
+        "card1Title": "Silence, not distance",
+        "card1Body": "With no shared desk, feedback goes quiet. So check-ins are weekly and mandatory, and any review older than 48h gets flagged on the supervisor's dashboard. The loop can't drift.",
+        "card2Title": "Vague work, magnified",
+        "card2Body": "Remote turns a fuzzy task into a week lost. Every task ships as an async template — scope, output, deadline — so there's nothing to \"hop on a call to explain.\"",
+        "card3Title": "Invisible effort",
+        "card3Body": "Work done remotely tends to vanish. Here every submission is versioned in Deliverables, and the internship ends with a verifiable certificate that links to exactly what shipped."
+      },
+      "howItRuns": {
+        "eyebrow": "How a virtual internship runs",
+        "titleLead": "Async-first.",
+        "titleGrad": "Calls when they earn it.",
+        "deck": "The same workspace your on-site interns use — tuned so the default is writing things down, not booking meetings.",
+        "step1Small": "Task templates",
+        "step1Title": "Every task carries its own brief",
+        "step1Body": "When a supervisor adds work, they fill scope, expected output, and a deadline — in the company's timezone, shown in yours. The intern never has to guess what \"done\" means, and never waits for a call to start.",
+        "step1Meta1": "Scope",
+        "step1Meta2": "Output",
+        "step1Meta3": "Deadline",
+        "step2Small": "Weekly check-in",
+        "step2Title": "A five-minute rhythm that can't be skipped",
+        "step2Body": "Each week the intern files a short check-in — shipped, blocked, next — and the supervisor is notified the moment it lands. It's the heartbeat that keeps a remote internship from going dark between deadlines.",
+        "step2Meta1": "Shipped",
+        "step2Meta2": "Blocked",
+        "step2Meta3": "Next",
+        "step3Small": "Schedule a call",
+        "step3Title": "One click to a call, in both timezones",
+        "step3Body": "When something does need a conversation, \"Schedule a check-in\" generates a Meet or Jitsi link and lands it on both calendars with the times already converted. We don't build video — we build the structure around it.",
+        "step3Meta1": "Tunis 14:00",
+        "step3Meta2": "Berlin 15:00",
+        "step3Meta3": "Timezone-aware",
+        "step4Small": "Deliverables",
+        "step4Title": "It ends with proof, not a \"thanks for your time\"",
+        "step4Body": "Every submission is versioned and reviewed in the open. At the finish line the certificate links to the deliverables, the tasks closed, and the supervisor's rating — verifiable at inturn.app/v/'{id}', wherever the work happened.",
+        "step4Meta1": "Versioned",
+        "step4Meta2": "Reviewed",
+        "step4Meta3": "Verifiable"
+      },
+      "opportunity": {
+        "eyebrow": "The opportunity",
+        "titleLead": "Tunis is on European time.",
+        "titleGrad": "Use it.",
+        "deck": "Virtual doesn't just mean \"from home in Tunis.\" It means a student in Sfax can intern with a studio in the capital — or a startup in Paris — without moving. Tunisia sits an hour, at most, from European business hours, which makes it one of the easiest places in the world to do real async work for a European team.",
+        "stat1Value": "GMT+1",
+        "stat1Label": "Central European time — at most an hour from Paris, Berlin or Madrid.",
+        "stat2Value": "0 km",
+        "stat2Label": "commute. Your city stops being the limit on which teams you can join.",
+        "stat3Value": "30%+",
+        "stat3Label": "of completed internships virtual — the target we're building Inturn to hit.",
+        "tz1City": "Tunis",
+        "tz1Offset": "GMT+1",
+        "tz2City": "Paris",
+        "tz2Offset": "GMT+1 · same hour",
+        "tz3City": "Berlin",
+        "tz3Offset": "GMT+2 · +1 hour"
+      },
+      "split": {
+        "internsLabel": "For interns",
+        "internsTitle": "Your city stops deciding your career.",
+        "internsBody": "The best role for you might be at a studio two governorates away, or a remote-first team abroad. Virtual internships put those on your list. Same profile, same one-click apply — and the same certificate at the end, which doesn't care where you sat while you earned it.",
+        "internsCta": "Browse virtual roles",
+        "companiesLabel": "For companies",
+        "companiesTitle": "Hire the right intern, not the nearest one.",
+        "companiesBody": "Open a role to talent in Sfax, Sousse or anywhere with a connection, and the structure means you manage it in minutes a day: tasks carry their own briefs, check-ins come to you, reviews are flagged before they're late. Start hybrid, switch a role to virtual when you're ready — it's an opt-in, not a leap.",
+        "companiesCta": "See how it works"
+      },
+      "quote": {
+        "text": "I'm in Sfax. My internship was with a team in Tunis I never set foot in. I didn't feel remote — I felt like I had a job, with a check-in every Friday and work that actually got reviewed. The certificate links to all of it.",
+        "name": "Lina Khelifi",
+        "role": "M1 · ISIMS Sfax · Growth intern, remote · Tunis"
+      },
+      "cta": {
+        "eyebrow": "New in Tunisia · low-risk to try",
+        "title": "A real internship, wherever you are.",
+        "deck": "Hybrid is still the default. Virtual is the opt-in that opens the door wider — same workspace, same structure, same verifiable record. Try one and see.",
+        "primary": "Browse virtual roles",
+        "secondary": "Post a virtual role"
+      }
+    },
+    "verify": {
+      "meta": {
+        "title": "Verify a certificate — Inturn",
+        "description": "Check any Inturn certificate by ID. Confirm it's genuine and see exactly what was shipped — the internship, the dates, the supervisor rating and the linked deliverables."
+      },
+      "hero": {
+        "eyebrow": "Certificate verification",
+        "title": "Verify a certificate.",
+        "deck": "Every Inturn internship ends with a certificate that links to the real work behind it. Paste a certificate ID below to confirm it's genuine and see exactly what was shipped — the internship, the dates, the supervisor's rating, and the deliverables."
+      },
+      "widget": {
+        "idLabel": "Certificate ID",
+        "placeholder": "YBS-2607-BA-VD",
+        "submit": "Verify",
+        "demoNote": "Paste the full share link of an Inturn record, or just its ID."
+      }
+    },
+    "diagrams": {
+      "loop": {
+        "eyebrow": "How it works",
+        "title": "One loop, start to certificate.",
+        "sub": "A company posts a scoped project — not a vague role. The platform structures everything that happens next, and closes the loop with proof of what shipped.",
+        "step1Title": "Scope",
+        "step1Body": "Describe the project in a paragraph. Goals, phases and deliverables get defined before anyone is hired.",
+        "step2Title": "Post",
+        "step2Body": "Publish to the marketplace. Matched students with verified portfolios apply.",
+        "step3Title": "Accept",
+        "step3Body": "Review applicants in one place. One click, and a workspace spins up — brief, tasks, calendar.",
+        "step4Title": "Run the loop",
+        "step4Body": "Tasks, reviews, weekly check-ins. The dashboard keeps mentorship on the path of least resistance.",
+        "step5Title": "Certify",
+        "step5Body": "A verifiable record links to everything that actually shipped.",
+        "returnBold": "Save it as a template.",
+        "returnRest": "The next hire starts here — every cycle is faster than the last."
+      },
+      "flywheel": {
+        "eyebrow": "Why it compounds",
+        "title": "Every internship makes the next one easier.",
+        "centerTitle": "Each cycle",
+        "centerLine1": "less setup,",
+        "centerLine2": "more output",
+        "node1Title": "Scope a project",
+        "node1Body": "Defined once, in plain language.",
+        "node2Title": "An intern ships real work",
+        "node2Body": "Inside a structured workspace.",
+        "node3Title": "It becomes a template",
+        "node3Body": "Plus a verified, re-hireable candidate.",
+        "node4Title": "The next project is faster",
+        "node4Body": "Reuse the scope, re-invite the talent.",
+        "gain1": "Setup effort",
+        "gain2": "Work shipped",
+        "gain3": "Confidence to do it again"
+      },
+      "recordAnatomy": {
+        "eyebrow": "The proof",
+        "title": "A record that says what shipped — not that they showed up.",
+        "sub": "The certificate is where most internships quietly fail. Inturn’s links to the actual work, so the next employer — maybe you again — can trust it.",
+        "oldTag": "The usual certificate",
+        "oldPaperTitle": "Certificate of Completion",
+        "oldPaperSignature": "— an authorised signature",
+        "oldVerdict": "Says they were there. Can’t be checked.",
+        "newTag": "An Inturn record",
+        "verified": "✓ Verified",
+        "rowDeliverablesLabel": "Deliverables",
+        "rowDeliverablesValue": "shipped & approved",
+        "rowTasksLabel": "Tasks",
+        "rowTasksValue": "Every task completed, on the board",
+        "rowSupervisorLabel": "Supervisor",
+        "rowSupervisorValue": "“Shipped beyond brief.”",
+        "rowVerifyLabel": "Verify at",
+        "newVerdict": "Shows what shipped. Checkable by anyone."
+      },
+      "roleToProject": {
+        "eyebrow": "The reframe",
+        "title": "You don’t post a role. You post a project.",
+        "sub": "A vague title is how internships go nowhere. Inturn won’t let you publish until the work is scoped — and that one rule is what makes everything after it work.",
+        "oldTag": "Everywhere else",
+        "oldRole": "“Design intern”",
+        "question1": "What do they actually do?",
+        "question2": "Who has time to mentor?",
+        "question3": "What does ‘done’ mean?",
+        "question4": "What’s left to show?",
+        "newTag": "On Inturn",
+        "newRole": "Brand audit & refresh",
+        "meta1": "8–week project",
+        "meta2": "4 deliverables",
+        "meta3": "2 phases",
+        "deliverable1": "Stakeholder audit + findings deck",
+        "deliverable2": "Visual exploration & moodboards",
+        "deliverable3": "Logo refresh — 3 routes",
+        "deliverable4": "Component & token library",
+        "gate": "◆ Can’t publish without these. If you can’t list five, you need a hire — not an intern."
+      },
+      "theMatch": {
+        "eyebrow": "The marketplace",
+        "title": "Scoped once. Matched to people who can do it.",
+        "sub": "Because the project is structured, the match is too — applicants arrive with verified portfolios, you compare them in one place, and accepting is a single click.",
+        "stage1Head": "01 · You post",
+        "projectTitle": "Brand audit & refresh",
+        "projectMeta": "8 weeks · 4 deliverables",
+        "scopedChip": "◆ SCOPED",
+        "stage2Head": "02 · They apply — verified",
+        "verified": "✓ Verified",
+        "stage3Head": "03 · One accept",
+        "acceptTitle": "Yasmine accepted",
+        "acceptSub": "Workspace spins up →"
+      },
+      "whatChanges": {
+        "eyebrow": "The impact",
+        "title": "What actually changes for a company.",
+        "sub": "Same intern, same hours. What moves is everything around them — and that’s what you feel.",
+        "colBefore": "Before",
+        "colAfter": "With Inturn",
+        "row1Label": "Scoped work",
+        "row1Tag": "The work",
+        "row1Before": "Figured out on arrival",
+        "row1After": "Defined before they start",
+        "row2Label": "Mentorship",
+        "row2Tag": "The mentor",
+        "row2Before": "Drifts to “never”",
+        "row2After": "Surfaced every login, with an SLA",
+        "row3Label": "Deliverables",
+        "row3Tag": "The output",
+        "row3Before": "Email attachments, lost",
+        "row3After": "Versioned and kept forever",
+        "row4Label": "Proof of work",
+        "row4Tag": "The proof",
+        "row4Before": "A signed PDF, unverifiable",
+        "row4After": "A public, checkable link",
+        "row5Label": "The next hire",
+        "row5Tag": "Next time",
+        "row5Before": "Start from scratch",
+        "row5After": "Reuse the template",
+        "foot": "Directional — relative change, not measured figures"
+      }
+    }
   }
 }

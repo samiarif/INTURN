@@ -12,6 +12,14 @@ describe('public route allowlist', () => {
     (p) => expect(matcher(req(p))).toBe(true),
   );
   it.each([
+    '/how-it-works',
+    '/for-companies',
+    '/fr/for-interns',
+    '/en/for-universities',
+    '/virtual-internships',
+    '/fr/verify',
+  ])('marketing site page %s is public', (p) => expect(matcher(req(p))).toBe(true));
+  it.each([
     '/',
     '/fr',
     '/marketplace',

@@ -24,7 +24,7 @@ const LEGAL_ITEMS = [
   { key: 'legalItem1', href: '/terms' },
   { key: 'legalItem2', href: '/privacy' },
   { key: 'legalItem4', href: '/cookies' },
-  { key: 'legalItem3', href: null }, // Certificate verification — no index page yet
+  { key: 'legalItem3', href: '/verify' }, // Certificate verification
 ] as const;
 
 export function LandingFooter() {
@@ -91,11 +91,7 @@ export function LandingFooter() {
             <ul>
               {LEGAL_ITEMS.map((item) => (
                 <li key={item.key}>
-                  {item.href ? (
-                    <Link href={item.href}>{t(item.key)}</Link>
-                  ) : (
-                    <span title={t('comingSoon')}>{t(item.key)}</span>
-                  )}
+                  <Link href={item.href}>{t(item.key)}</Link>
                 </li>
               ))}
             </ul>

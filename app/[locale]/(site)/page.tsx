@@ -1,10 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import '@/app/landing.css';
-import { LandingNav } from '@/components/landing/nav';
 import { HomeHero } from '@/components/landing/home-hero';
-import { LandingFooter } from '@/components/landing/footer';
-import { MarketingEffects } from '@/components/landing/marketing-effects';
 import {
   TrustSection,
   RotatorSection,
@@ -43,27 +39,23 @@ export async function generateMetadata({
   };
 }
 
+// Chrome (.mk-root wrapper, nav, footer, effects) lives in (site)/layout.tsx.
 export default function LandingPage() {
   return (
-    <div className="mk-root">
-      <LandingNav />
-      <main>
-        <HomeHero />
-        <TrustSection />
-        <RotatorSection />
-        <ProblemSection />
-        <SolutionSection />
-        <PillarsSection />
-        <VirtualSection />
-        <MissionSection />
-        <CommunitySection />
-        <QuoteSection />
-        <HowSection />
-        <CompareSection />
-        <CtaSection />
-      </main>
-      <LandingFooter />
-      <MarketingEffects />
-    </div>
+    <main>
+      <HomeHero />
+      <TrustSection />
+      <RotatorSection />
+      <ProblemSection />
+      <SolutionSection />
+      <PillarsSection />
+      <VirtualSection />
+      <MissionSection />
+      <CommunitySection />
+      <QuoteSection />
+      <HowSection />
+      <CompareSection />
+      <CtaSection />
+    </main>
   );
 }

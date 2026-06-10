@@ -2784,5 +2784,527 @@
     "effects": {
       "backToTop": "Retour en haut"
     }
+  },
+  "site": {
+    "how": {
+      "meta": {
+        "title": "Comment ça marche — Inturn",
+        "description": "Le parcours Inturn complet, de la publication d'un projet à l'émission du certificat. Sept étapes. Huit semaines. Du vrai travail."
+      },
+      "hero": {
+        "eyebrow": "Sept étapes · zéro ambiguïté",
+        "titleLead": "La boucle complète — de la page blanche à",
+        "titleGrad": "quelque chose de livré.",
+        "deck": "Pas de captures d'écran dans un deck. Pas de mur « réservez une démo ». Voici littéralement chaque étape. Côté encadrant, côté stagiaire, et ce que le système fait entre les deux.",
+        "ctaPrimary": "Commencez maintenant",
+        "ctaSecondary": "Guidez-moi pas à pas"
+      },
+      "timeline": {
+        "label": "Chronologie · stage type de 12 semaines",
+        "step1Label": "Étape 01",
+        "step1Name": "Cadrage",
+        "step1Duration": "15 MIN",
+        "step2Label": "Étape 02",
+        "step2Name": "Publication",
+        "step2Duration": "10 MIN",
+        "step3Label": "Étape 03",
+        "step3Name": "Matching",
+        "step3Duration": "3-7 JOURS",
+        "step4Label": "Étape 04",
+        "step4Name": "Acceptation",
+        "step4Duration": "1 CLIC",
+        "step5Label": "Étape 05",
+        "step5Name": "Intégration",
+        "step5Duration": "1 JOUR",
+        "step6Label": "Étape 06",
+        "step6Name": "La boucle",
+        "step6Duration": "8-12 SEMAINES",
+        "step7Label": "Étape 07",
+        "step7Name": "Certification",
+        "step7Duration": "AUTO"
+      },
+      "steps": {
+        "step1Role": "L'encadrant",
+        "step1Title": "Décrivez le projet. L'IA fait le reste.",
+        "step1Body": "Collez un paragraphe : « Nous voulons rafraîchir notre marque sur 12 semaines avec deux stagiaires — un pour le visuel, un pour la recherche. » Inturn rédige vos objectifs (3 max), les phases, les livrables (3–10) et la liste de compétences. Vous modifiez tout ce qui ne vous convient pas. Un formulaire manuel existe si vous préférez vous passer de l'IA — même modèle de données, porte différente.",
+        "step1OutputsLabel": "Résultats",
+        "step1OutputsValue": "Objectifs · Phases · Livrables · Compétences · Fourchette de rémunération",
+        "step1TimeLabel": "Durée",
+        "step1TimeValue": "15 minutes",
+        "step2Role": "L'encadrant",
+        "step2Title": "Publiez — et le projet passe de Brouillon à Actif.",
+        "step2Body": "Vous ajoutez l'intitulé du poste, le cadre, les places, l'encadrant, la rémunération. Deux questions de candidature maximum — au-delà, les candidats abandonnent. Choisissez « marketplace publique » ou « lien privé uniquement » si vous recrutez quelqu'un que vous connaissez déjà. La publication crée l'annonce sur la marketplace et active le projet.",
+        "step2SeeLabel": "Vous voyez",
+        "step2SeeValue": "l'aperçu en direct de la carte marketplace à droite du formulaire",
+        "step2TimeLabel": "Durée",
+        "step2TimeValue": "10 minutes",
+        "step3Role": "Le stagiaire",
+        "step3Title": "La marketplace met le poste en avant.",
+        "step3Body": "Les étudiants qui parcourent Inturn voient votre poste classé selon leur score de compatibilité — compétences, localisation, objectifs. Le bandeau de matching affiche « Voici 7 stages qui vous correspondent ». Votre annonce montre la vraie rémunération, les vrais livrables et le vrai encadrant — aucune surprise.",
+        "step3MedianLabel": "Délai médian avant la première candidature",
+        "step3MedianValue": "18 heures",
+        "step3AvgLabel": "Candidatures par poste en moyenne",
+        "step3AvgValue": "7",
+        "step4Role": "Les deux côtés",
+        "step4Title": "Examinez les candidatures au même endroit. Acceptez en un clic.",
+        "step4Body": "Chaque candidature, c'est le profil de l'étudiant + ses réponses à vos deux questions + un lien portfolio. Vous examinez, vous présélectionnez, vous acceptez. Inturn ne mène pas les entretiens à votre place — il les rend plus courts. Quand vous acceptez, l'espace de travail du stagiaire se crée automatiquement, brief déjà chargé.",
+        "step4HappensLabel": "Ce qui se passe",
+        "step4HappensValue": "Espace de travail créé · brief copié · lien Jitsi généré · premier point hebdomadaire planifié",
+        "step5Role": "Les deux côtés",
+        "step5Title": "Le premier jour est déjà prêt.",
+        "step5Body": "Le stagiaire arrive dans son espace de travail. Le brief en haut. Les tâches pré-remplies à partir des livrables. Le calendrier qui affiche les points hebdomadaires. Le fil d'activité vide (pour l'instant). Pas besoin de demander « qu'est-ce que je fais aujourd'hui » — le système a répondu avant même son arrivée.",
+        "step6Role": "Les deux côtés",
+        "step6Title": "La boucle tourne toute seule. Vous intervenez là où ça compte.",
+        "step6Body": "Le stagiaire fait avancer les tâches sur le tableau. Il soumet les livrables en v1, puis en v2 avec des notes. L'encadrant passe en revue — il approuve ou demande des modifications. Les commentaires se déroulent en fil sur chaque artefact. Chaque vendredi à 14h00, le point hebdomadaire a lieu avec un ordre du jour pré-construit. Rien ne passe à la trappe.",
+        "step6SupervisorLabel": "Temps encadrant",
+        "step6SupervisorValue": "~5 min/jour en moyenne",
+        "step6InternLabel": "Temps stagiaire",
+        "step6InternValue": "Tout le temps du projet, concentré",
+        "step6FrictionLabel": "Friction",
+        "step6FrictionValue": "« À revoir » ne peut pas être ignoré — signalé après 48 h",
+        "step7Role": "Le stagiaire",
+        "step7Title": "Le certificat est généré dès que le dernier livrable est approuvé.",
+        "step7BodyLead": "Projet terminé. L'évaluation finale de l'encadrant est saisie. Inturn génère le certificat automatiquement — signé par l'encadrant, signé par la plateforme, signé par le stagiaire. Le lien de vérification est mis en ligne sur",
+        "step7BodyCode": "inturn.app/v/'{cert-id}'",
+        "step7BodyTail": "— n'importe qui peut l'ouvrir, voir ce qui a été livré, voir le nom de l'encadrant, vérifier les dates. Le stagiaire le partage. L'employeur suivant lui fait confiance.",
+        "step7ShipsLabel": "Ce qui est fourni",
+        "step7ShipsValue": "PDF · lien public · partage LinkedIn · QR code"
+      },
+      "limits": {
+        "eyebrow": "Des limites assumées",
+        "titleLead": "Ce qu'Inturn",
+        "titleStrike": "fait",
+        "titleTail": "ne fait explicitement pas.",
+        "deck": "Nous sommes un espace de travail, pas un recruteur. Savoir ce que nous ne sommes pas, c'est ce qui nous permet d'être bons dans ce que nous sommes.",
+        "card1Title": "Nous ne menons pas les entretiens",
+        "card1Body": "Pas de processus d'entretien en 6 étapes, pas de devoirs à rendre, pas de classement algorithmique qui joue les malins. Vous examinez la candidature, vous parlez au candidat comme vous l'entendez, vous acceptez dans Inturn.",
+        "card2Title": "Nous ne payons pas vos stagiaires",
+        "card2Body": "Les entreprises gèrent la paie comme d'habitude. Inturn affiche le montant, le stagiaire le vérifie avant d'accepter, et nous envoyons des rappels si la date de paiement glisse. Le flux d'argent reste là où il est.",
+        "card3Title": "Nous ne remplaçons pas votre encadrant",
+        "card3Body": "Si personne chez vous n'est prêt à consacrer 30 minutes par jour à un profil junior, Inturn ne peut pas y remédier. Le produit est conçu pour les équipes qui veulent bien encadrer mais ont besoin d'aide pour structurer.",
+        "card4Title": "Nous ne parlons pas à votre université",
+        "card4Body": "Pas encore. Pour l'instant, les étudiants s'inscrivent directement et ajoutent eux-mêmes leurs stages Inturn à leur CV. Les tableaux de bord côté université sont sur la feuille de route pour la Phase 2 — pas la Phase 1."
+      },
+      "cta": {
+        "eyebrow": "15 minutes",
+        "title": "C'est tout ce qu'il faut pour l'étape 01.",
+        "deck": "Le premier projet est le plus lent. Au deuxième, vous avez des modèles. Au troisième, le système tourne tout seul et vous vous demandez comment vous faisiez par e-mail.",
+        "primary": "Lancez un projet",
+        "secondary": "Je suis étudiant·e"
+      }
+    },
+    "forCompanies": {
+      "meta": {
+        "title": "Pour les entreprises — Inturn",
+        "description": "Publiez des projets cadrés, menez de vrais stages, obtenez des traces vérifiables de ce qui a été livré. Conçu pour les studios et startups en Tunisie."
+      },
+      "hero": {
+        "eyebrow": "Pour les studios, startups & équipes",
+        "titleLead": "Trouvez un stagiaire qui",
+        "titleGrad": "livre vraiment quelque chose.",
+        "deck": "Vous n'avez pas besoin d'un énième post « cherche stagiaire ». Vous avez besoin d'un projet, d'un cadre, d'un espace de travail, et d'un système qui vous tient responsable de bien l'encadrer. Inturn, c'est ça — conçu pour les équipes qui préfèrent renoncer à un stagiaire plutôt que d'en gâcher un.",
+        "ctaPrimary": "Lancez un projet",
+        "ctaSecondary": "Voir la vue encadrant",
+        "trustStat1": "14 entreprises",
+        "trustMid": "mènent des stages en ce moment · délai moyen avant le premier recrutement",
+        "trustStat2": "5 jours"
+      },
+      "whatYouGet": {
+        "eyebrow": "Ce que vous obtenez",
+        "titleLead": "Un système pour recruter des stagiaires comme vous recrutez des",
+        "titleGrad": "prestataires.",
+        "deck": "Le cadre d'abord. Les résultats suivis. Des comptes à rendre des deux côtés. La différence avec un prestataire : un plafond de 12 semaines, le mentorat inclus dans le contrat, et des rémunérations réellement adaptées aux étudiants.",
+        "card1Title": "Un cadrage au niveau projet, pas un poste vague",
+        "card1Body": "Définissez 3 à 10 livrables avant de publier. Inturn ne vous laissera pas sauter cette étape. Les livrables deviennent les onglets de l'espace de travail que le stagiaire voit chaque jour — le brief, c'est le contrat.",
+        "card2Title": "Un espace de travail par stagiaire, pas par entreprise",
+        "card2Body": "Chaque stagiaire travaille dans son propre espace au sein du projet. Les projets multi-stagiaires (design + recherche, frontend + backend) se coordonnent via un fil d'activité partagé mais livrent indépendamment.",
+        "card3Title": "Des points hebdomadaires sur des rails",
+        "card3Body": "Planifiés d'avance. Le même lien Jitsi chaque semaine. Un ordre du jour auto-généré à partir de ce qui a été livré, ce qui bloque, ce qui est en retard. Vous venez ; le système prépare.",
+        "card4Title": "Une revue en cinq minutes par jour",
+        "card4Body": "Le tableau de bord rassemble chaque élément « à revoir » de tous vos stagiaires en un seul endroit. Cinq minutes par jour suffisent à garder la boucle vivante — et les données montrent que les entreprises qui le font terminent leurs projets à temps 4× plus souvent.",
+        "card5Title": "Des modèles qui se cumulent",
+        "card5Body": "Enregistrez n'importe quel projet terminé comme modèle. Le stage de l'an prochain démarre de votre propre playbook, pas d'une page blanche. La plupart des équipes atteignent « 5× plus rapide que le premier » dès la deuxième année.",
+        "card6Title": "Un vivier auquel vous faites vraiment confiance",
+        "card6Body": "Les stagiaires qui finissent fort sur Inturn sont ceux que vous embauchez ensuite. Chaque certificat renvoie à un portfolio de travail réel — quand vous re-recrutez, vous savez ce que vous obtenez."
+      },
+      "supervisor": {
+        "eyebrow": "De plus près",
+        "titleLead": "La vue encadrant",
+        "titleGrad": "s'inquiète à votre place",
+        "titleTail": "pour que vous n'ayez pas à le faire.",
+        "point1Title": "Bandeau de revue",
+        "point1Body": "Le bandeau violet en haut nomme ce qui demande votre attention, qui l'a soumis, quand. Un clic mène à la carte.",
+        "point2Title": "Anneau « à revoir »",
+        "point2Body": "Les soumissions reçoivent un contour violet sur le tableau. Impossible de passer devant sans les voir — et le badge compteur sur l'onglet vous le rappelle dans chaque espace de travail.",
+        "point3Title": "L'urgence sans l'anxiété",
+        "point3Body": "Bordure gauche orange pour ce qui est dû cette semaine. Rouge pour le retard. Neutre pour le reste. Le produit ne crie pas — il ne vous laisse simplement pas oublier."
+      },
+      "quote": {
+        "text": "Avant Inturn, le goulot d'étranglement, c'était moi. Je culpabilisais en permanence. Depuis Inturn, je fais mes revues dans le bus et le travail avance pendant que je dors. Je suis passé d'un stagiaire par an à trois.",
+        "name": "Salim Rezgui",
+        "role": "Co-fondateur · Numentech, Sfax"
+      },
+      "useCases": {
+        "eyebrow": "Qui mène ses stages sur Inturn",
+        "titleLead": "Des petites équipes qui préfèrent",
+        "titleGrad": "bien recruter",
+        "titleTail": "plutôt que recruter beaucoup.",
+        "card1Title": "Studios de design",
+        "card1Body": "Audits de marque, déploiements de systèmes, commandes d'illustration. Designers visuels + chercheurs UX en parallèle sur un même projet. Généralement 8 à 12 semaines.",
+        "card2Title": "Agences dev & startups",
+        "card2Body": "Développement de fonctionnalités, sprints de prototypage, campagnes de couverture de tests. Des ingénieurs juniors qui livrent sous la direction d'un tech lead. Se marie naturellement avec les outils de revue de code.",
+        "card3Title": "Équipes marketing & contenu",
+        "card3Body": "Refontes de copy, campagnes social media, séries d'articles, vidéo. Piloté par brief, riche en livrables — exactement le type de travail qui profite de la boucle de livrables versionnés."
+      },
+      "cta": {
+        "eyebrow": "Essayez gratuitement",
+        "title": "Votre prochain stagiaire livre dès la première semaine.",
+        "deck": "Les brouillons sont gratuits. Tout l'espace de travail est gratuit. Montez-en un en 15 minutes et voyez si le système fonctionne pour votre équipe — sinon, rien de perdu.",
+        "primary": "Voir comment ça marche",
+        "secondary": "Je suis étudiant·e"
+      }
+    },
+    "forInterns": {
+      "meta": {
+        "title": "Pour les stagiaires — Inturn",
+        "description": "Des stages qui livrent un vrai travail. Candidatez à des projets cadrés, obtenez un espace de travail et une trace vérifiable de ce que vous avez construit."
+      },
+      "hero": {
+        "eyebrow": "Pour les étudiants · toutes disciplines",
+        "titleLead": "Passez votre stage à",
+        "titleGrad": "construire des choses",
+        "titleTail": "qui valent la peine d'être racontées.",
+        "deck": "Vous n'avez pas besoin d'un énième stage qui vous installe à un bureau dans un coin. Vous avez besoin d'un projet, d'un brief, d'un encadrant qui passe votre travail en revue, et d'une trace de ce que vous avez construit. C'est ça, chaque stage Inturn — vérifié avant même d'être publié.",
+        "ctaPrimary": "Créez votre profil",
+        "ctaSecondary": "Parcourir les stages ouverts",
+        "trustStat": "22 stages ouverts",
+        "trustRest": "cette semaine · associés à votre profil en quelques secondes"
+      },
+      "whatYouGet": {
+        "eyebrow": "Ce que vous obtenez",
+        "titleLead": "Un stage qui vous fait",
+        "titleGrad": "décrocher le diplôme",
+        "titleTail": "avec un portfolio, pas une crise de panique.",
+        "card1Title": "La rémunération, annoncée honnêtement",
+        "card1Body": "Chaque annonce dit d'emblée si le stage est non rémunéré ou s'il offre une indemnité — et exactement combien. La plupart des stages en Tunisie sont non rémunérés ou assortis d'une petite indemnité mensuelle ; ici vous savez toujours avant de candidater. Pas de « on en discutera plus tard ».",
+        "card2Title": "Un brief, pas une vibe",
+        "card2Body": "Chaque stage a des livrables définis dès le départ. Vous savez ce qu'on attend de vous dès le premier jour. Fini d'arriver le lundi pour découvrir qu'il n'y a « rien pour vous aujourd'hui ».",
+        "card3Title": "Un espace de travail, pas un dossier",
+        "card3Body": "Tâches, points hebdomadaires, commentaires, versionnage des livrables — tout au même endroit. L'encadrant voit tout ce que vous livrez. Vous voyez tout ce que vous avez accompli.",
+        "card4Title": "Un score de compatibilité qui ne ment pas",
+        "card4Body": "L'IA vous associe aux postes selon vos compétences, votre localisation, vos objectifs — et reste honnête quand l'adéquation n'est pas idéale. Un match à 92 % veut dire candidatez ; un match à 54 % veut dire vous pouvez, mais ce sera un défi.",
+        "card5Title": "Un encadrant qui ne peut pas disparaître",
+        "card5Body": "Inturn signale les revues de plus de 48 heures sur le tableau de bord de l'encadrant. Vous n'attendrez pas deux semaines pour un retour. Si ça arrive, vous pouvez escalader dans l'application.",
+        "card6Title": "Un certificat qui prouve des choses",
+        "card6Body": "À la fin, votre certificat est vérifiable sur inturn.app/v/'{your-id}' — les employeurs peuvent le consulter, voir ce que vous avez livré, voir l'évaluation de votre encadrant. Ça vaut plus qu'un PDF."
+      },
+      "quote": {
+        "text": "J'avais fait deux stages avant Inturn. Je serais littéralement incapable de vous dire ce que j'y ai fait. Le troisième est sur mon CV avec un lien. Lors de cinq entretiens, le lien avait été consulté avant même l'appel. Ça ne m'était jamais arrivé.",
+        "name": "Yasmine Ben Salah",
+        "role": "L3 · ENIT · Design chez Acme Studio"
+      },
+      "cta": {
+        "eyebrow": "Gratuit pour les étudiants. Toujours.",
+        "title": "Votre profil prend 10 minutes.",
+        "deck": "Téléversez votre portfolio, listez vos compétences, écrivez vos objectifs. Le score de compatibilité s'affine à chaque stage terminé. Pas de frais, pas d'offre premium, pas de pièges.",
+        "primary": "Créez votre profil",
+        "secondary": "Comment ça marche"
+      }
+    },
+    "forUniversities": {
+      "meta": {
+        "title": "Pour les universités — Inturn",
+        "description": "L'essentiel du dossier PFE, généré par le travail lui-même. Fiches de suivi hebdomadaires, convention tripartite, évaluations des encadrants, assiduité et dossier final sortent de l'espace de travail Inturn comme un sous-produit — gratuit pour vos étudiants et votre département."
+      },
+      "hero": {
+        "eyebrow": "POUR LES COORDINATEURS PFE & LES DÉPARTEMENTS",
+        "titleLead": "La paperasse PFE qui",
+        "titleGrad": "se remplit toute seule.",
+        "deck": "Conventions tripartites, fiches de suivi hebdomadaires, évaluations des encadrants, assiduité, le dossier final — un stage de fin d'études ensevelit tout le monde sous les formulaires. L'espace de travail Inturn en produit l'essentiel comme un sous-produit du travail réellement accompli. Gratuit pour vos étudiants, gratuit pour votre département.",
+        "ctaPrimary": "Parlez-nous de votre promotion",
+        "ctaSecondary": "Voir comment fonctionne l'espace de travail"
+      },
+      "problem": {
+        "eyebrow": "LE PROBLÈME PFE",
+        "title": "Un semestre de travail, documenté à la main.",
+        "deck": "Les coordinateurs courent après les signatures de deux encadrants pendant douze à seize semaines. Les fiches de suivi sont remplies après coup, la veille de l'échéance. Le dossier final est assemblé de mémoire, des semaines après le travail. Et rien de tout cela ne reflète ce que l'étudiant a réellement construit."
+      },
+      "generates": {
+        "eyebrow": "CE QU'INTURN GÉNÈRE AUTOMATIQUEMENT",
+        "title": "L'essentiel du dossier PFE, en sous-produit.",
+        "deck": "L'étudiant fait le travail dans un seul espace. La paperasse en découle — horodatée, attribuable, exportable.",
+        "item1Title": "Fiches de suivi hebdomadaires",
+        "item1Body": "Générées à partir du point hebdomadaire — livré, bloqué, à venir — horodatées et signées par les deux encadrants.",
+        "item2Title": "Convention tripartite",
+        "item2Body": "Pré-remplie à partir du projet, de l'étudiant et de l'entreprise déjà dans le système. Rien à ressaisir.",
+        "item3Title": "Évaluations",
+        "item3Body": "La revue structurée de l'encadrant à chaque livrable, plus une note finale — saisies au fil des revues, pas reconstituées à la fin.",
+        "item4Title": "Assiduité / activité",
+        "item4Body": "Le fil d'activité de l'espace de travail remplace le registre papier : ce qui a été fait, quand, par qui.",
+        "item5Title": "Dossier final",
+        "item5Body": "Chaque livrable versionné au même endroit, exportable comme la trace aboutie du stage.",
+        "note": "Mis bout à bout, c'est l'essentiel du dossier PFE produit pour vous — assemblé à partir du travail réel plutôt que tapé après coup."
+      },
+      "fit": {
+        "eyebrow": "COMMENT ÇA S'INSÈRE DANS VOTRE PROCESSUS",
+        "title": "Additif. Par le terrain. Aucun projet informatique.",
+        "deck": "Rien à installer, rien à acheter, rien à migrer. Ça se place à côté de votre processus actuel et commence à produire la paperasse que vos étudiants vous doivent déjà.",
+        "step1Small": "Les étudiants s'inscrivent",
+        "step1Title": "Les étudiants s'inscrivent directement.",
+        "step1Body": "Aucun déploiement, aucun compte à provisionner de votre côté. Un étudiant démarre un stage Inturn comme il en démarrerait n'importe quel autre — et les artefacts PFE commencent à se générer dès le premier jour.",
+        "step2Small": "Les coordinateurs voient",
+        "step2Title": "Les coordinateurs ont la visibilité dès aujourd'hui.",
+        "step2Body": "Demandez à un étudiant de partager son espace de travail et vous voyez les points hebdomadaires, les livrables et les revues de l'encadrant — l'état réel du stage, pas une fiche remplie la veille.",
+        "step3Small": "Phase 2",
+        "step3Title": "Les tableaux de bord complets arrivent en Phase 2.",
+        "step3Body": "La visibilité aujourd'hui, les tableaux de bord côté département ensuite. Nous préférons être honnêtes sur la feuille de route : les tableaux de bord de promotion pour les coordinateurs, c'est la Phase 2, pas la Phase 1."
+      },
+      "schools": {
+        "eyebrow": "POUR LES ÉCOLES QUE VOUS CONNAISSEZ",
+        "title": "Conçu pour la façon dont vos étudiants travaillent déjà.",
+        "deck": "La structure se calque proprement sur un projet de fin d'études dans les écoles d'ingénieurs et de commerce qui forment le plus d'étudiants PFE.",
+        "disclaimer": "Des exemples où Inturn s'insère — pas des partenariats."
+      },
+      "cta": {
+        "eyebrow": "Gratuit pour vos étudiants · gratuit pour votre département",
+        "title": "Proposez-le à votre prochaine promotion PFE.",
+        "deck": "Une conversation suffit pour voir si ça s'insère dans votre processus. Pas d'achat, pas d'installation, pas de tarif à négocier — c'est gratuit des deux côtés.",
+        "button": "Parlez-nous de votre promotion"
+      }
+    },
+    "virtual": {
+      "meta": {
+        "title": "Stages virtuels — Inturn",
+        "description": "Des stages asynchrones structurés qui fonctionnent vraiment à distance. Faites un stage pour une équipe au-delà de votre ville — même au-delà de la Tunisie — dans un seul espace de travail avec modèles de tâches, points hebdomadaires et livrables vérifiables."
+      },
+      "hero": {
+        "eyebrow": "Nouveau en Tunisie · Pilier 02",
+        "titleLead": "Travaillez avec une équipe au-delà de votre ville.",
+        "titleGrad": "Même au-delà de la Tunisie.",
+        "deck": "Un stage virtuel sur Inturn, ce n'est pas un lien Zoom et bonne chance. C'est le même espace de travail structuré — modèles de tâches asynchrones, points hebdomadaires, livrables versionnés — conçu pour que le distanciel fonctionne vraiment. Et Tunis vit à l'heure d'Europe centrale : une journée avec une équipe à Paris ou Berlin s'aligne naturellement.",
+        "ctaPrimary": "Parcourir les postes virtuels",
+        "ctaSecondary": "Voir comment ça se déroule",
+        "trustStat": "Hybride par défaut · virtuel sur option",
+        "trustRest": "planification adaptée aux fuseaux horaires"
+      },
+      "whyFails": {
+        "eyebrow": "Pourquoi les stages à distance échouent",
+        "titleLead": "Le distanciel ne casse pas sur la distance. Il casse sur",
+        "titleGrad": "l'absence de structure.",
+        "deck": "Si « stagiaire virtuel » sonne risqué, c'est que la plupart des stages à distance se résument à un e-mail et un vague espoir. Inturn supprime les trois choses qui les tuent vraiment.",
+        "card1Title": "Le silence, pas la distance",
+        "card1Body": "Sans bureau partagé, le feedback s'éteint. Alors les points sont hebdomadaires et obligatoires, et toute revue de plus de 48 h est signalée sur le tableau de bord de l'encadrant. La boucle ne peut pas dériver.",
+        "card2Title": "Le travail flou, amplifié",
+        "card2Body": "À distance, une tâche floue devient une semaine perdue. Chaque tâche arrive sous forme de modèle asynchrone — cadre, livrable, échéance — pour qu'il n'y ait rien à « expliquer sur un call ».",
+        "card3Title": "L'effort invisible",
+        "card3Body": "Le travail fait à distance a tendance à disparaître. Ici, chaque soumission est versionnée dans Livrables, et le stage se termine par un certificat vérifiable qui renvoie exactement à ce qui a été livré."
+      },
+      "howItRuns": {
+        "eyebrow": "Comment se déroule un stage virtuel",
+        "titleLead": "Asynchrone d'abord.",
+        "titleGrad": "Des calls quand ils le méritent.",
+        "deck": "Le même espace de travail que vos stagiaires sur site — réglé pour que le réflexe soit d'écrire les choses, pas de réserver des réunions.",
+        "step1Small": "Modèles de tâches",
+        "step1Title": "Chaque tâche porte son propre brief",
+        "step1Body": "Quand un encadrant ajoute du travail, il renseigne le cadre, le résultat attendu et une échéance — dans le fuseau de l'entreprise, affichée dans le vôtre. Le stagiaire n'a jamais à deviner ce que « terminé » veut dire, et n'attend jamais un call pour démarrer.",
+        "step1Meta1": "Cadre",
+        "step1Meta2": "Livrable",
+        "step1Meta3": "Échéance",
+        "step2Small": "Point hebdomadaire",
+        "step2Title": "Un rituel de cinq minutes impossible à sauter",
+        "step2Body": "Chaque semaine, le stagiaire dépose un court point — livré, bloqué, à venir — et l'encadrant est notifié dès qu'il arrive. C'est le battement de cœur qui empêche un stage à distance de s'éteindre entre deux échéances.",
+        "step2Meta1": "Livré",
+        "step2Meta2": "Bloqué",
+        "step2Meta3": "À venir",
+        "step3Small": "Planifier un call",
+        "step3Title": "Un clic vers un call, dans les deux fuseaux",
+        "step3Body": "Quand quelque chose mérite vraiment une conversation, « Planifier un point » génère un lien Meet ou Jitsi et le pose sur les deux calendriers avec les horaires déjà convertis. Nous ne construisons pas la visio — nous construisons la structure autour.",
+        "step3Meta1": "Tunis 14:00",
+        "step3Meta2": "Berlin 15:00",
+        "step3Meta3": "Fuseaux pris en compte",
+        "step4Small": "Livrables",
+        "step4Title": "Ça se termine par une preuve, pas un « merci pour votre temps »",
+        "step4Body": "Chaque soumission est versionnée et passée en revue au grand jour. Sur la ligne d'arrivée, le certificat renvoie aux livrables, aux tâches clôturées et à l'évaluation de l'encadrant — vérifiable sur inturn.app/v/'{id}', où que le travail ait eu lieu.",
+        "step4Meta1": "Versionné",
+        "step4Meta2": "Passé en revue",
+        "step4Meta3": "Vérifiable"
+      },
+      "opportunity": {
+        "eyebrow": "L'opportunité",
+        "titleLead": "Tunis est à l'heure européenne.",
+        "titleGrad": "Profitez-en.",
+        "deck": "Virtuel ne veut pas seulement dire « depuis chez soi à Tunis ». Ça veut dire qu'un étudiant à Sfax peut faire son stage avec un studio de la capitale — ou une startup à Paris — sans déménager. La Tunisie est à une heure, au plus, des horaires de bureau européens, ce qui en fait l'un des endroits les plus faciles au monde pour faire un vrai travail asynchrone pour une équipe européenne.",
+        "stat1Value": "GMT+1",
+        "stat1Label": "Heure d'Europe centrale — à une heure au plus de Paris, Berlin ou Madrid.",
+        "stat2Value": "0 km",
+        "stat2Label": "de trajet. Votre ville cesse d'être la limite des équipes que vous pouvez rejoindre.",
+        "stat3Value": "30 %+",
+        "stat3Label": "de stages terminés en virtuel — l'objectif pour lequel nous construisons Inturn.",
+        "tz1City": "Tunis",
+        "tz1Offset": "GMT+1",
+        "tz2City": "Paris",
+        "tz2Offset": "GMT+1 · même heure",
+        "tz3City": "Berlin",
+        "tz3Offset": "GMT+2 · +1 heure"
+      },
+      "split": {
+        "internsLabel": "Pour les stagiaires",
+        "internsTitle": "Votre ville cesse de décider de votre carrière.",
+        "internsBody": "Le meilleur poste pour vous est peut-être dans un studio à deux gouvernorats d'ici, ou dans une équipe 100 % à distance à l'étranger. Les stages virtuels les mettent sur votre liste. Même profil, même candidature en un clic — et le même certificat à la fin, qui se moque de savoir où vous étiez assis·e pendant que vous le décrochiez.",
+        "internsCta": "Parcourir les postes virtuels",
+        "companiesLabel": "Pour les entreprises",
+        "companiesTitle": "Recrutez le bon stagiaire, pas le plus proche.",
+        "companiesBody": "Ouvrez un poste aux talents de Sfax, de Sousse ou de n'importe où avec une connexion : grâce à la structure, vous le gérez en quelques minutes par jour — les tâches portent leur propre brief, les points viennent à vous, les revues sont signalées avant d'être en retard. Commencez en hybride, passez un poste en virtuel quand vous êtes prêts — c'est une option, pas un saut dans le vide.",
+        "companiesCta": "Voir comment ça marche"
+      },
+      "quote": {
+        "text": "Je suis à Sfax. Mon stage était avec une équipe à Tunis où je n'ai jamais mis les pieds. Je ne me suis pas sentie à distance — j'avais l'impression d'avoir un travail, avec un point chaque vendredi et un travail réellement passé en revue. Le certificat renvoie à tout ça.",
+        "name": "Lina Khelifi",
+        "role": "M1 · ISIMS Sfax · Stagiaire growth, à distance · Tunis"
+      },
+      "cta": {
+        "eyebrow": "Nouveau en Tunisie · à essayer sans risque",
+        "title": "Un vrai stage, où que vous soyez.",
+        "deck": "L'hybride reste la valeur par défaut. Le virtuel est l'option qui ouvre la porte plus grand — même espace de travail, même structure, même trace vérifiable. Essayez-en un et voyez.",
+        "primary": "Parcourir les postes virtuels",
+        "secondary": "Publier un poste virtuel"
+      }
+    },
+    "verify": {
+      "meta": {
+        "title": "Vérifier un certificat — Inturn",
+        "description": "Vérifiez n'importe quel certificat Inturn par son identifiant. Confirmez qu'il est authentique et voyez exactement ce qui a été livré — le stage, les dates, l'évaluation de l'encadrant et les livrables associés."
+      },
+      "hero": {
+        "eyebrow": "Vérification des certificats",
+        "title": "Vérifiez un certificat.",
+        "deck": "Chaque stage Inturn se termine par un certificat relié au travail réel qui le fonde. Collez un identifiant de certificat ci-dessous pour confirmer qu'il est authentique et voir exactement ce qui a été livré — le stage, les dates, l'évaluation de l'encadrant et les livrables."
+      },
+      "widget": {
+        "idLabel": "Identifiant du certificat",
+        "placeholder": "YBS-2607-BA-VD",
+        "submit": "Vérifier",
+        "demoNote": "Collez le lien de partage complet d'une attestation Inturn, ou son identifiant."
+      }
+    },
+    "diagrams": {
+      "loop": {
+        "eyebrow": "Comment ça marche",
+        "title": "Une seule boucle, du départ au certificat.",
+        "sub": "Une entreprise publie un projet cadré — pas un poste vague. La plateforme structure tout ce qui suit, et referme la boucle avec la preuve de ce qui a été livré.",
+        "step1Title": "Cadrage",
+        "step1Body": "Décrivez le projet en un paragraphe. Objectifs, phases et livrables sont définis avant tout recrutement.",
+        "step2Title": "Publication",
+        "step2Body": "Publiez sur la marketplace. Des étudiants au profil correspondant, portfolios vérifiés, candidatent.",
+        "step3Title": "Acceptation",
+        "step3Body": "Examinez les candidats au même endroit. Un clic, et un espace de travail se crée — brief, tâches, calendrier.",
+        "step4Title": "La boucle",
+        "step4Body": "Tâches, revues, points hebdomadaires. Le tableau de bord garde le mentorat sur le chemin de moindre résistance.",
+        "step5Title": "Certification",
+        "step5Body": "Une trace vérifiable renvoie à tout ce qui a réellement été livré.",
+        "returnBold": "Enregistrez-le comme modèle.",
+        "returnRest": "Le prochain recrutement démarre ici — chaque cycle est plus rapide que le précédent."
+      },
+      "flywheel": {
+        "eyebrow": "Pourquoi ça se cumule",
+        "title": "Chaque stage rend le suivant plus facile.",
+        "centerTitle": "À chaque cycle",
+        "centerLine1": "moins de mise en place,",
+        "centerLine2": "plus de résultats",
+        "node1Title": "Cadrez un projet",
+        "node1Body": "Défini une fois, en langage clair.",
+        "node2Title": "Un stagiaire livre un vrai travail",
+        "node2Body": "Dans un espace de travail structuré.",
+        "node3Title": "Il devient un modèle",
+        "node3Body": "Plus un candidat vérifié, réembauchable.",
+        "node4Title": "Le projet suivant est plus rapide",
+        "node4Body": "Réutilisez le cadre, réinvitez le talent.",
+        "gain1": "Effort de mise en place",
+        "gain2": "Travail livré",
+        "gain3": "Confiance pour recommencer"
+      },
+      "recordAnatomy": {
+        "eyebrow": "La preuve",
+        "title": "Une trace qui dit ce qui a été livré — pas juste qu'ils étaient présents.",
+        "sub": "Le certificat, c'est là où la plupart des stages échouent en silence. Celui d'Inturn renvoie au travail réel, pour que l'employeur suivant — peut-être encore vous — puisse s'y fier.",
+        "oldTag": "Le certificat habituel",
+        "oldPaperTitle": "Attestation de fin de stage",
+        "oldPaperSignature": "— une signature autorisée",
+        "oldVerdict": "Dit qu'ils étaient là. Invérifiable.",
+        "newTag": "Une trace Inturn",
+        "verified": "✓ Vérifié",
+        "rowDeliverablesLabel": "Livrables",
+        "rowDeliverablesValue": "livrés & approuvés",
+        "rowTasksLabel": "Tâches",
+        "rowTasksValue": "Chaque tâche terminée, sur le tableau",
+        "rowSupervisorLabel": "Encadrant",
+        "rowSupervisorValue": "« Livré au-delà du brief. »",
+        "rowVerifyLabel": "Vérifiable sur",
+        "newVerdict": "Montre ce qui a été livré. Vérifiable par n'importe qui."
+      },
+      "roleToProject": {
+        "eyebrow": "Le recadrage",
+        "title": "Vous ne publiez pas un poste. Vous publiez un projet.",
+        "sub": "Un intitulé vague, c'est comme ça qu'un stage ne mène nulle part. Inturn ne vous laisse pas publier tant que le travail n'est pas cadré — et cette seule règle est ce qui fait fonctionner tout le reste.",
+        "oldTag": "Partout ailleurs",
+        "oldRole": "« Stagiaire design »",
+        "question1": "Que font-ils concrètement ?",
+        "question2": "Qui a le temps d'encadrer ?",
+        "question3": "Que veut dire « terminé » ?",
+        "question4": "Que reste-t-il à montrer ?",
+        "newTag": "Sur Inturn",
+        "newRole": "Audit & refonte de marque",
+        "meta1": "Projet de 8 semaines",
+        "meta2": "4 livrables",
+        "meta3": "2 phases",
+        "deliverable1": "Audit des parties prenantes + deck de synthèse",
+        "deliverable2": "Exploration visuelle & moodboards",
+        "deliverable3": "Refonte du logo — 3 pistes",
+        "deliverable4": "Bibliothèque de composants & tokens",
+        "gate": "◆ Impossible de publier sans. Si vous ne pouvez pas en lister cinq, il vous faut un recrutement — pas un stagiaire."
+      },
+      "theMatch": {
+        "eyebrow": "La marketplace",
+        "title": "Cadré une fois. Proposé à ceux qui savent le faire.",
+        "sub": "Parce que le projet est structuré, le matching l'est aussi — les candidats arrivent avec des portfolios vérifiés, vous les comparez au même endroit, et accepter tient en un clic.",
+        "stage1Head": "01 · Vous publiez",
+        "projectTitle": "Audit & refonte de marque",
+        "projectMeta": "8 semaines · 4 livrables",
+        "scopedChip": "◆ CADRÉ",
+        "stage2Head": "02 · Ils candidatent — vérifiés",
+        "verified": "✓ Vérifié",
+        "stage3Head": "03 · Une acceptation",
+        "acceptTitle": "Yasmine a accepté",
+        "acceptSub": "L'espace de travail se crée →"
+      },
+      "whatChanges": {
+        "eyebrow": "L'impact",
+        "title": "Ce qui change concrètement pour une entreprise.",
+        "sub": "Même stagiaire, mêmes heures. Ce qui bouge, c'est tout ce qui les entoure — et c'est ça que vous ressentez.",
+        "colBefore": "Avant",
+        "colAfter": "Avec Inturn",
+        "row1Label": "Travail cadré",
+        "row1Tag": "Le travail",
+        "row1Before": "Improvisé à l'arrivée",
+        "row1After": "Défini avant leur premier jour",
+        "row2Label": "Mentorat",
+        "row2Tag": "Le mentor",
+        "row2Before": "Dérive vers « jamais »",
+        "row2After": "Affiché à chaque connexion, avec un SLA",
+        "row3Label": "Livrables",
+        "row3Tag": "Le résultat",
+        "row3Before": "Pièces jointes d'e-mail, perdues",
+        "row3After": "Versionnés et conservés pour toujours",
+        "row4Label": "Preuve du travail",
+        "row4Tag": "La preuve",
+        "row4Before": "Un PDF signé, invérifiable",
+        "row4After": "Un lien public et vérifiable",
+        "row5Label": "Le prochain recrutement",
+        "row5Tag": "La fois d'après",
+        "row5Before": "Repartir de zéro",
+        "row5After": "Réutiliser le modèle",
+        "foot": "Directionnel — évolution relative, pas des chiffres mesurés"
+      }
+    }
   }
 }

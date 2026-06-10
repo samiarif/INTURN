@@ -3,22 +3,24 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { LanguageSwitch } from '@/components/language-switch';
 
-// Primary navigation. Anchor entries scroll within the landing page; route
-// entries navigate to real platform pages (locale-aware). Partners + Resources
-// from the marketing site are dropped — those pages don't exist here yet.
+// Primary navigation — real marketing pages under the (site) route group,
+// locale-aware via the i18n Link. Partners + Resources from the marketing
+// site are dropped — those pages don't exist here yet.
 const LINKS = [
-  { key: 'forCompanies', href: '#solution', anchor: true },
-  { key: 'forInterns', href: '/marketplace', anchor: false },
-  { key: 'virtualInternships', href: '#virtual', anchor: true },
-  { key: 'forUniversities', href: '#mission', anchor: true },
-  { key: 'howItWorks', href: '#how', anchor: true },
+  { key: 'forCompanies', href: '/for-companies' },
+  { key: 'forInterns', href: '/for-interns' },
+  { key: 'virtualInternships', href: '/virtual-internships' },
+  { key: 'forUniversities', href: '/for-universities' },
+  { key: 'howItWorks', href: '/how-it-works' },
 ] as const;
 
 export function LandingNav() {
   const t = useTranslations('home.nav');
+  // Locale-stripped pathname ('/en/verify' → '/verify') — drives active state.
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   // Lock body scroll while the mobile drawer is open.
@@ -40,16 +42,16 @@ export function LandingNav() {
 
   const close = () => setOpen(false);
 
-  const renderLink = (l: (typeof LINKS)[number], onClick?: () => void) =>
-    l.anchor ? (
-      <a key={l.key} href={l.href} onClick={onClick}>
-        {t(l.key)}
-      </a>
-    ) : (
-      <Link key={l.key} href={l.href} onClick={onClick}>
-        {t(l.key)}
-      </Link>
-    );
+  const renderLink = (l: (typeof LINKS)[number], onClick?: () => void) => (
+    <Link
+      key={l.key}
+      href={l.href}
+      className={pathname === l.href ? 'active' : undefined}
+      onClick={onClick}
+    >
+      {t(l.key)}
+    </Link>
+  );
 
   return (
     <nav className="mk-nav" id="mkNav">

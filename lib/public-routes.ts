@@ -25,6 +25,14 @@ export const PUBLIC_ROUTE_PATTERNS = [
   '/(fr|en)?/privacy',
   '/(fr|en)?/terms',
   '/(fr|en)?/cookies',
+  // Marketing site pages ((site) route group) — nav/footer destinations,
+  // public by definition: signed-out visitors and crawlers must reach them.
+  '/(fr|en)?/how-it-works',
+  '/(fr|en)?/for-companies',
+  '/(fr|en)?/for-interns',
+  '/(fr|en)?/for-universities',
+  '/(fr|en)?/virtual-internships',
+  '/(fr|en)?/verify',
   '/api/webhooks(.*)',
   '/api/health',
 ];
