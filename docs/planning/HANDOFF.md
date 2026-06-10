@@ -4,12 +4,12 @@
 
 ## TL;DR — Where we are (2026-06-10, LATEST — Audit + quick-wins fix sprint · marketing site)
 
-**A full-repo audit (11-agent parallel deep-read + live screenshots, review delivered in-session) ran on 2026-06-10, followed by a fix sprint on branch `fix/audit-quick-wins` (off `main@ea20dc6`) — 12 commits, subagent-driven (implement → spec-review → quality-review per task), awaiting Sam's review. NOT merged, NOT pushed.** Plan: `docs/superpowers/plans/2026-06-10-audit-quick-wins.md`.
+**A full-repo audit (11-agent parallel deep-read + live screenshots, review delivered in-session) ran on 2026-06-10, followed by a fix sprint on branch `fix/audit-quick-wins` (off `main@ea20dc6`) — 13 commits, subagent-driven (implement → spec-review → quality-review per task) + a final whole-branch integration review, awaiting Sam's review. NOT merged, NOT pushed.** Plan: `docs/superpowers/plans/2026-06-10-audit-quick-wins.md`.
 
 **The fixes (one line each):**
 - **Clerk webhook** verifies the raw payload bytes via `req.text()` (was a JSON.parse→stringify round-trip that can fail signature verification on floats/non-ASCII/key order — latent identity-sync breaker). Real route-level test replaces the old self-asserting `modules/auth/__tests__/webhook.test.ts` (deleted).
 - **Legal pages public**: `/privacy|terms|cookies` added to the proxy allowlist, now extracted to `lib/public-routes.ts` + unit-tested (they were auth-gated while sitemap advertised them).
-- **SprintsSection** (`_sprints-section.tsx`) adopts the refreshed server prop (sprint CRUD/AI-accept looked like it did nothing until hard nav) + error banner on failed actions (`sprints.actionError` FR/EN). Component test added. Verified live: create + delete update instantly.
+- **SprintsSection** (`_sprints-section.tsx`) adopts the refreshed server prop (sprint CRUD/AI-accept looked like it did nothing until hard nav) + error banner on failed actions (`sprints.actionError` FR/EN) — covering BOTH failure modes: resolved `{ ok: false }` (the actions' real contract; form kept for retry) and thrown rejections. Component tests added. Verified live: create + delete update instantly.
 - **Kanban drag** uses `useOptimistic` (the old manual map pinned a dragged card's column for the whole session, masking server changes).
 - **Check-in default slot** is now local 14:00 (was UTC-shifted to 13:00 for Tunisia) and client-computed (hydration hazard removed). Helpers `toDatetimeLocalValue`/`nextWeekdayAt` in `lib/format-time.ts`, TZ-independent tests.
 - **Notifications/analytics dispatch** runs via `next/server` `after()` through new `lib/after-response.ts` (bare floating promises can be frozen by Vercel the moment the response streams — emails/notifications could silently drop). Falls back to direct fire outside request scope (tests/scripts).
@@ -18,7 +18,7 @@
 - **Stale `revalidatePath`** calls to removed `…/tasks|comments|deliverables` tab subroutes deleted (tabs are `?tab=` query params).
 - **Dead weight removed**: `components/ui/form.tsx` + `ui/separator.tsx` (zero importers), `react-hook-form` + `@hookform/resolvers` deps (only consumer was the dead form.tsx — decision: forms stay hand-rolled until the Atelier form-layer pass), empty `modules/marketplace/`.
 
-**Gate at HEAD:** 628 tests pass / 2 skipped · typecheck + lint + `check:i18n` (2009 keys) + production build all clean.
+**Gate at HEAD:** 629 tests pass / 2 skipped · typecheck + lint + `check:i18n` (2009 keys) + production build all clean.
 
 **Marketing website imported (2026-06-10):** Sam's `inturnweb.tar.gz` lives at **`../inturn-web`** (sibling of this repo, own git repo, port 3010) — 14 static pages, deliberately separate from the platform. See `/Users/mac/code/inturn-hub/README.md` for the workspace layout. **Deploys (platform AND website) are deliberately deferred until the platform enhancement work lands — Sam's call, 2026-06-10.**
 
