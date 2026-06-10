@@ -119,9 +119,14 @@ export function PlatformSidebar({
   const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email;
 
   return (
+    /* Atelier ink rail: the aside carries the `dark` class so every token
+     * inside (--ink, --surface, --bg, --border-color…) resolves to the dark
+     * palette — a permanently-dark chrome framing the light content, with the
+     * brand-50 active pill popping against it. No new colors, fully theme-safe
+     * (in app dark mode the rail simply matches). */
     <aside
       aria-label={tA11y('mainNavigation')}
-      className={`${forceVisible ? 'flex' : 'hidden md:flex'} flex-col w-[240px] h-screen sticky top-0 border-r border-[var(--border-color)] bg-[var(--surface)]`}
+      className={`${forceVisible ? 'flex' : 'hidden md:flex'} dark flex-col w-[240px] h-screen sticky top-0 border-r border-[var(--border-color)] bg-[var(--bg)] text-[var(--ink)]`}
     >
       <Link
         href={`/${role}/dashboard`}
@@ -134,6 +139,10 @@ export function PlatformSidebar({
       </Link>
 
       <nav aria-label={tA11y('primaryNav')} className="flex-1 overflow-y-auto py-3">
+        {/* Mono role eyebrow — the ledger voice naming whose space this is. */}
+        <p className="px-5 pb-2 font-mono text-[10.5px] uppercase tracking-[0.08em] text-[var(--ink-4)]">
+          {tNav(`space.${role}`)}
+        </p>
         <ul className="flex flex-col gap-0.5">
           {navItems.map((item) => {
             const active = isActive(item.href);

@@ -68,7 +68,13 @@
     "workspace": "Workspace",
     "team": "Team",
     "university": "University",
-    "universities": "Universities"
+    "universities": "Universities",
+    "space": {
+      "intern": "Intern space",
+      "company": "Company space",
+      "university": "University space",
+      "admin": "Administration"
+    }
   },
   "notifications": {
     "label": "Notifications",
@@ -244,25 +250,52 @@
       "title": "For students",
       "subtitle": "Real internships, real work, real proof.",
       "points": [
-        { "heading": "One profile, every application", "body": "Your CV, skills, and preferences live in one place. Apply in one tap." },
-        { "heading": "Work that counts", "body": "Each internship runs inside a workspace with clear scope and deliverables. Your record is verifiable, not a promise." },
-        { "heading": "Async-friendly", "body": "Remote-first internships are first-class. Hours that fit your schedule." }
+        {
+          "heading": "One profile, every application",
+          "body": "Your CV, skills, and preferences live in one place. Apply in one tap."
+        },
+        {
+          "heading": "Work that counts",
+          "body": "Each internship runs inside a workspace with clear scope and deliverables. Your record is verifiable, not a promise."
+        },
+        {
+          "heading": "Async-friendly",
+          "body": "Remote-first internships are first-class. Hours that fit your schedule."
+        }
       ]
     },
     "companies": {
       "title": "For companies",
       "subtitle": "Post once. Run the program inside inturn. No more WhatsApp threads.",
       "points": [
-        { "heading": "Set up in 15 minutes", "body": "Post a structured internship in minutes. Get pre-screened applications back inside the platform." },
-        { "heading": "Run the work inside the workspace", "body": "Tasks, deliverables, comments, check-ins. The whole program in one place." }
+        {
+          "heading": "Set up in 15 minutes",
+          "body": "Post a structured internship in minutes. Get pre-screened applications back inside the platform."
+        },
+        {
+          "heading": "Run the work inside the workspace",
+          "body": "Tasks, deliverables, comments, check-ins. The whole program in one place."
+        }
       ]
     },
     "how": {
       "title": "How it works",
       "steps": [
-        { "step": "1", "heading": "Post", "body": "Companies define scope, deliverables, and deadlines." },
-        { "step": "2", "heading": "Match", "body": "Students apply through their inturn profile. Companies shortlist and accept." },
-        { "step": "3", "heading": "Run", "body": "A workspace opens automatically. Real work happens. Performance is recorded." }
+        {
+          "step": "1",
+          "heading": "Post",
+          "body": "Companies define scope, deliverables, and deadlines."
+        },
+        {
+          "step": "2",
+          "heading": "Match",
+          "body": "Students apply through their inturn profile. Companies shortlist and accept."
+        },
+        {
+          "step": "3",
+          "heading": "Run",
+          "body": "A workspace opens automatically. Real work happens. Performance is recorded."
+        }
       ]
     },
     "footer": {
@@ -837,10 +870,22 @@
     "anyLocation": "Any location",
     "anyDuration": "Any duration",
     "anyLanguage": "Any language",
-    "duration": { "short": "< 8 weeks", "medium": "8–12 weeks", "long": "> 12 weeks" },
+    "duration": {
+      "short": "< 8 weeks",
+      "medium": "8–12 weeks",
+      "long": "> 12 weeks"
+    },
     "durationLabel": "Duration",
-    "paid": { "all": "All", "paid": "Paid", "unpaid": "Unpaid" },
-    "locationLabels": { "hybrid": "Hybrid", "virtual": "Remote", "onsite": "On-site" },
+    "paid": {
+      "all": "All",
+      "paid": "Paid",
+      "unpaid": "Unpaid"
+    },
+    "locationLabels": {
+      "hybrid": "Hybrid",
+      "virtual": "Remote",
+      "onsite": "On-site"
+    },
     "filters": "Filters",
     "clearAll": "Clear all",
     "discipline": "Discipline",
@@ -1562,9 +1607,18 @@
       "briefHint": "2–3 sentences. This becomes the brief at the top of every workspace under this project.",
       "modeLabel": "Mode",
       "mode": {
-        "hybrid": { "label": "Hybrid", "sub": "On-site + remote" },
-        "virtual": { "label": "Remote", "sub": "Fully distributed" },
-        "on-site": { "label": "On-site", "sub": "Office every day" }
+        "hybrid": {
+          "label": "Hybrid",
+          "sub": "On-site + remote"
+        },
+        "virtual": {
+          "label": "Remote",
+          "sub": "Fully distributed"
+        },
+        "on-site": {
+          "label": "On-site",
+          "sub": "Office every day"
+        }
       },
       "locationLabel": "Location",
       "locationPlaceholder": "Tunis · Lac 2",
@@ -1672,9 +1726,18 @@
       "durationHint": "Can't exceed project length.",
       "modeLabel": "Mode",
       "mode": {
-        "hybrid": { "label": "Hybrid", "sub": "On-site + remote" },
-        "virtual": { "label": "Remote", "sub": "Fully distributed" },
-        "on-site": { "label": "On-site", "sub": "Office every day" }
+        "hybrid": {
+          "label": "Hybrid",
+          "sub": "On-site + remote"
+        },
+        "virtual": {
+          "label": "Remote",
+          "sub": "Fully distributed"
+        },
+        "on-site": {
+          "label": "On-site",
+          "sub": "Office every day"
+        }
       },
       "locationLabel": "Location",
       "locationPlaceholder": "Tunis",
