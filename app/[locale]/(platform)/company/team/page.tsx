@@ -84,8 +84,13 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   }));
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6">
-      <PageHeader icon={<Users size={22} strokeWidth={1.75} />} title={t.title} description={t.subtitle} />
+    <div className="ui-rise-col mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6">
+      <PageHeader
+        eyebrow={org.name}
+        icon={<Users size={22} strokeWidth={1.75} />}
+        title={t.title}
+        description={t.subtitle}
+      />
       <TeamClient
         members={members}
         interns={interns}

@@ -6,8 +6,10 @@ import type { MemberRole } from '@/db/schema';
 import { cn } from '@/lib/utils';
 import { teamStrings } from './strings';
 
+// Mirrors the shared <StatusPill> look (components/status-pill.tsx): flat
+// rounded chip, mono uppercase 11px, token-driven tints that flip in dark mode.
 const PILL_BASE =
-  'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium';
+  'inline-flex items-center gap-1 rounded px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider';
 
 export function RolePill({
   role,
@@ -23,12 +25,11 @@ export function RolePill({
   const label =
     role === 'owner' ? t.roleOwner : role === 'admin' ? t.roleAdmin : t.roleSupervisor;
 
+  // Owner/admin read as brand (they run the org); supervisor is neutral chrome.
   const roleClasses =
-    role === 'owner'
-      ? 'bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-100'
-      : role === 'admin'
-        ? 'bg-muted text-foreground'
-        : 'bg-muted text-muted-foreground';
+    role === 'supervisor'
+      ? 'bg-[var(--status-neutral-bg)] text-[var(--status-neutral-ink)]'
+      : 'bg-brand-50 text-brand-700';
 
   return (
     <span className="inline-flex items-center gap-1.5">
@@ -37,7 +38,9 @@ export function RolePill({
         {label}
       </span>
       {pending ? (
-        <span className={cn(PILL_BASE, 'bg-warning/10 text-warning')}>{t.pendingInvite}</span>
+        <span className={cn(PILL_BASE, 'bg-[var(--status-warn-bg)] text-[var(--status-warn-ink)]')}>
+          {t.pendingInvite}
+        </span>
       ) : null}
     </span>
   );

@@ -21,7 +21,7 @@ export function ProjectMultiselect({
   const t = teamStrings(locale);
 
   if (projects.length === 0) {
-    return <p className="text-sm text-muted-foreground py-2">{t.noProjects}</p>;
+    return <p className="text-sm text-[var(--ink-3)] py-2">{t.noProjects}</p>;
   }
 
   function toggle(id: string, checked: boolean) {
@@ -33,21 +33,21 @@ export function ProjectMultiselect({
   }
 
   return (
-    <div className="max-h-52 overflow-y-auto rounded-lg border border-border bg-background p-1">
+    <div className="max-h-52 overflow-y-auto rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-1">
       {projects.map((p) => {
         const checked = selectedIds.includes(p.id);
         return (
           <label
             key={p.id}
-            className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+            className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-[var(--surface-muted)]"
           >
             <input
               type="checkbox"
               checked={checked}
               onChange={(e) => toggle(p.id, e.target.checked)}
-              className="size-4 shrink-0 rounded border-input text-primary accent-[var(--brand-500)] focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="size-4 shrink-0 rounded border-[var(--border-color)] accent-[var(--ink)] focus-visible:ring-3 focus-visible:ring-ring/50"
             />
-            <span className="min-w-0 truncate text-foreground">{p.name}</span>
+            <span className="min-w-0 truncate text-[var(--ink)]">{p.name}</span>
           </label>
         );
       })}

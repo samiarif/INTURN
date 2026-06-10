@@ -8,17 +8,10 @@
 // end/complete action to call from here yet).
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/avatar';
+import { StatusPill } from '@/components/status-pill';
 import type { OrgIntern } from '@/modules/team/queries';
 import { teamStrings } from './strings';
-
-function internInitials(intern: OrgIntern): string {
-  const first = intern.firstName?.trim()?.[0] ?? '';
-  const last = intern.lastName?.trim()?.[0] ?? '';
-  const fromName = (first + last).toUpperCase();
-  if (fromName) return fromName;
-  return intern.email.slice(0, 2).toUpperCase();
-}
 
 function internName(intern: OrgIntern): string {
   const full = [intern.firstName, intern.lastName].filter(Boolean).join(' ').trim();
@@ -44,25 +37,22 @@ export function InternRow({
 
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <Avatar size="sm">
-        {intern.imageUrl ? <AvatarImage src={intern.imageUrl} alt={name} /> : null}
-        <AvatarFallback>{internInitials(intern)}</AvatarFallback>
-      </Avatar>
+      <Avatar name={name} email={intern.email} imageUrl={intern.imageUrl} size="sm" />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm font-medium text-foreground">{name}</span>
-          <span className="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
+          <span className="truncate text-sm font-medium text-[var(--ink)]">{name}</span>
+          <StatusPill tone="success" size="xs">
             {t.statusActive}
-          </span>
+          </StatusPill>
         </div>
-        <p className="truncate text-xs text-muted-foreground">{meta}</p>
-        <p className="truncate text-xs text-muted-foreground">{supervisorLine}</p>
+        <p className="truncate text-caption text-[var(--ink-3)]">{meta}</p>
+        <p className="truncate text-caption text-[var(--ink-3)]">{supervisorLine}</p>
       </div>
 
       <Link
         href={`/company/workspaces/${intern.workspaceId}`}
-        className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-primary hover:bg-muted"
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-[var(--ink-2)] transition-colors hover:bg-[var(--surface-muted)] hover:text-[var(--ink)]"
       >
         <ExternalLink size={14} strokeWidth={1.75} aria-hidden />
         {t.openWorkspace}

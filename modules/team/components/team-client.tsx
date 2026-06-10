@@ -109,8 +109,8 @@ export function TeamClient({
             key={m.id}
             className={cn(
               view === 'grid'
-                ? 'rounded-xl border border-border bg-card'
-                : 'border-b border-border last:border-b-0',
+                ? 'rounded-lg border border-[var(--border-color)] bg-[var(--surface)] shadow-[var(--elev-card)] transition-shadow hover:shadow-[var(--elev-card-hover)]'
+                : 'border-b border-[var(--border-color)] transition-colors last:border-b-0 hover:bg-[var(--surface-muted)]',
             )}
           >
             <MemberRow
@@ -130,7 +130,10 @@ export function TeamClient({
     if (rows.length === 0) {
       return (
         <EmptyState message={t.noInterns}>
-          <Link href="/company/projects" className="text-sm font-medium text-primary hover:underline">
+          <Link
+            href="/company/projects"
+            className="text-sm font-medium text-[var(--brand-700)] hover:underline"
+          >
             {t.goToProjects}
           </Link>
         </EmptyState>
@@ -143,8 +146,8 @@ export function TeamClient({
             key={i.workspaceId}
             className={cn(
               view === 'grid'
-                ? 'rounded-xl border border-border bg-card'
-                : 'border-b border-border last:border-b-0',
+                ? 'rounded-lg border border-[var(--border-color)] bg-[var(--surface)] shadow-[var(--elev-card)] transition-shadow hover:shadow-[var(--elev-card-hover)]'
+                : 'border-b border-[var(--border-color)] transition-colors last:border-b-0 hover:bg-[var(--surface-muted)]',
             )}
           >
             <InternRow intern={i} supervisorNames={supervisorNamesFor(i)} locale={locale} />
@@ -158,7 +161,7 @@ export function TeamClient({
     <div className="flex flex-col gap-4">
       {/* Toolbar: filter pills · search · view toggle · add */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/40 p-0.5">
+        <div className="inline-flex items-center gap-1 rounded-lg border border-[var(--border-color)] bg-[var(--surface-muted)] p-0.5">
           {pills.map((p) => (
             <button
               key={p.key}
@@ -169,7 +172,7 @@ export function TeamClient({
                 'rounded-md px-3 py-1 text-sm font-medium transition-colors',
                 filter === p.key
                   ? 'bg-brand-50 text-brand-700'
-                  : 'text-muted-foreground hover:text-foreground',
+                  : 'text-[var(--ink-3)] hover:text-[var(--ink)]',
               )}
             >
               {p.label}
@@ -182,7 +185,7 @@ export function TeamClient({
             <Search
               size={15}
               strokeWidth={1.75}
-              className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
+              className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[var(--ink-3)]"
               aria-hidden
             />
             <Input
@@ -195,7 +198,7 @@ export function TeamClient({
             />
           </div>
 
-          <div className="inline-flex items-center rounded-lg border border-border p-0.5">
+          <div className="inline-flex items-center rounded-lg border border-[var(--border-color)] p-0.5">
             <button
               type="button"
               onClick={() => setView('list')}
@@ -203,7 +206,9 @@ export function TeamClient({
               aria-label={t.viewList}
               className={cn(
                 'inline-flex size-7 items-center justify-center rounded-md',
-                view === 'list' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground',
+                view === 'list'
+                  ? 'bg-[var(--surface-muted)] text-[var(--ink)]'
+                  : 'text-[var(--ink-3)] hover:text-[var(--ink)]',
               )}
             >
               <ListIcon size={15} strokeWidth={1.75} aria-hidden />
@@ -215,7 +220,9 @@ export function TeamClient({
               aria-label={t.viewGrid}
               className={cn(
                 'inline-flex size-7 items-center justify-center rounded-md',
-                view === 'grid' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground',
+                view === 'grid'
+                  ? 'bg-[var(--surface-muted)] text-[var(--ink)]'
+                  : 'text-[var(--ink-3)] hover:text-[var(--ink)]',
               )}
             >
               <LayoutGrid size={15} strokeWidth={1.75} aria-hidden />
@@ -272,13 +279,15 @@ function Section({
   const label = count === 1 ? countLabel.replace(/s$/, '') : countLabel;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="flex items-baseline gap-2 text-sm font-semibold text-foreground">
+      <h2 className="flex items-baseline gap-2 text-eyebrow font-mono uppercase text-[var(--brand-700)]">
         {title}
-        <span className="text-xs font-normal text-muted-foreground">
+        <span className="text-caption font-mono font-normal normal-case tracking-normal text-[var(--ink-4)]">
           {count} {label}
         </span>
       </h2>
-      <div className="overflow-hidden rounded-xl border border-border bg-card">{children}</div>
+      <div className="overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--surface)] shadow-[var(--elev-card)]">
+        {children}
+      </div>
     </section>
   );
 }
@@ -286,7 +295,7 @@ function Section({
 function EmptyState({ message, children }: { message: string; children?: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
-      <p className="max-w-sm text-sm text-muted-foreground">{message}</p>
+      <p className="max-w-sm text-sm text-[var(--ink-3)]">{message}</p>
       {children}
     </div>
   );

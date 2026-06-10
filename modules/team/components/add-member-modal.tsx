@@ -100,7 +100,9 @@ export function AddMemberModal({
         <DialogTitle>{t.modalTitle}</DialogTitle>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="invite-email">{t.modalEmailLabel}</Label>
+            <Label htmlFor="invite-email" className="text-label">
+              {t.modalEmailLabel}
+            </Label>
             <Input
               id="invite-email"
               type="email"
@@ -113,7 +115,7 @@ export function AddMemberModal({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label>{t.modalRoleLabel}</Label>
+            <Label className="text-label">{t.modalRoleLabel}</Label>
             <Select
               value={role}
               onValueChange={(v) => setRole((v as 'admin' | 'supervisor') ?? 'supervisor')}
@@ -130,7 +132,7 @@ export function AddMemberModal({
 
           {role === 'supervisor' ? (
             <div className="flex flex-col gap-1.5">
-              <Label>{t.modalProjectsLabel}</Label>
+              <Label className="text-label">{t.modalProjectsLabel}</Label>
               <ProjectMultiselect
                 projects={projects}
                 selectedIds={projectIds}
@@ -140,7 +142,7 @@ export function AddMemberModal({
             </div>
           ) : null}
 
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+          {error ? <p className="text-caption text-[var(--danger)]">{error}</p> : null}
 
           <DialogFooter>
             <DialogClose render={<Button type="button" variant="outline" />}>

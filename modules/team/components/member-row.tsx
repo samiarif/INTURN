@@ -13,7 +13,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { MoreHorizontal } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/avatar';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -35,21 +35,13 @@ import { ProjectMultiselect } from './project-multiselect';
 import type { TeamMember, ProjectLite } from './types';
 import { teamStrings } from './strings';
 
-function initials(member: TeamMember): string {
-  const first = member.firstName?.trim()?.[0] ?? '';
-  const last = member.lastName?.trim()?.[0] ?? '';
-  const fromName = (first + last).toUpperCase();
-  if (fromName) return fromName;
-  return member.email.slice(0, 2).toUpperCase();
-}
-
 function displayName(member: TeamMember): string {
   const full = [member.firstName, member.lastName].filter(Boolean).join(' ').trim();
   return full || member.email;
 }
 
 const MENU_ITEM =
-  'w-full rounded-md px-2 py-1.5 text-left text-sm text-foreground hover:bg-muted disabled:pointer-events-none disabled:opacity-50';
+  'w-full rounded-md px-2 py-1.5 text-left text-sm text-[var(--ink)] hover:bg-[var(--surface-muted)] disabled:pointer-events-none disabled:opacity-50';
 
 export function MemberRow({
   member,
@@ -109,22 +101,22 @@ export function MemberRow({
 
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <Avatar size="sm">
-        {member.imageUrl ? (
-          <AvatarImage src={member.imageUrl} alt={displayName(member)} />
-        ) : null}
-        <AvatarFallback>{initials(member)}</AvatarFallback>
-      </Avatar>
+      <Avatar
+        name={displayName(member)}
+        email={member.email}
+        imageUrl={member.imageUrl}
+        size="sm"
+      />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm font-medium text-foreground">
+          <span className="truncate text-sm font-medium text-[var(--ink)]">
             {displayName(member)}
           </span>
           <RolePill role={member.role} locale={locale} pending={member.status === 'invited'} />
         </div>
-        <p className="truncate text-xs text-muted-foreground">{member.email}</p>
-        {error ? <p className="mt-0.5 text-xs text-destructive">{error}</p> : null}
+        <p className="truncate text-caption text-[var(--ink-3)]">{member.email}</p>
+        {error ? <p className="mt-0.5 text-caption text-[var(--danger)]">{error}</p> : null}
       </div>
 
       {hasMenu ? (
@@ -186,7 +178,7 @@ export function MemberRow({
             {canRemove ? (
               <button
                 type="button"
-                className={MENU_ITEM + ' text-destructive hover:bg-destructive/10'}
+                className={MENU_ITEM + ' text-[var(--danger)] hover:bg-[var(--status-danger-bg)]'}
                 disabled={pending}
                 onClick={handleRemove}
               >
@@ -206,7 +198,7 @@ export function MemberRow({
                 </button>
                 <button
                   type="button"
-                  className={MENU_ITEM + ' text-destructive hover:bg-destructive/10'}
+                  className={MENU_ITEM + ' text-[var(--danger)] hover:bg-[var(--status-danger-bg)]'}
                   disabled={pending}
                   onClick={() => run(() => revokeInviteAction({ orgId, memberId: member.id }))}
                 >
@@ -284,7 +276,7 @@ function ManageProjectsDialog({
             onChange={setSelectedIds}
             locale={locale}
           />
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+          {error ? <p className="text-caption text-[var(--danger)]">{error}</p> : null}
         </div>
         <DialogFooter>
           <DialogClose render={<Button type="button" variant="outline" />}>
