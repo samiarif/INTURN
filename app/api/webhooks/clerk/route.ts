@@ -30,8 +30,10 @@ export async function POST(req: Request) {
     return new Response('Rate limited', { status: 429 });
   }
 
-  const payload = await req.json();
-  const body = JSON.stringify(payload);
+  // svix signs the exact raw bytes — verify the body verbatim, never a
+  // JSON.parse → stringify round-trip (re-serialization is not byte-stable:
+  // 1.0 → 1, \u-escapes, key order). Parse only AFTER verification.
+  const body = await req.text();
 
   const wh = new Webhook(WEBHOOK_SECRET);
   let evt: WebhookEvent;

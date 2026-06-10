@@ -9,6 +9,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['**/__tests__/**/*.test.ts', '**/utils/**/*.test.ts', '**/components/**/*.test.tsx'],
+    include: [
+      '**/__tests__/**/*.test.ts',
+      '**/utils/**/*.test.ts',
+      '**/components/**/*.test.tsx',
+      'app/**/*.test.{ts,tsx}',
+    ],
   },
 });
