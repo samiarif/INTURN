@@ -63,4 +63,18 @@
 - [ ] Before/after screenshots: landing, marketplace, intern dashboard, company dashboard, admin users, onboarding form focus state. Both themes for one platform screen.
 - [ ] HANDOFF.md addendum; commit `docs: handoff for Atelier phase 1`.
 
-**Out of scope (next phases):** the remaining ~50 violet-patch call sites (rule documented above), the 1,954 arbitrary-var wrapper codemod, px font-sizes → `--text-*`, stray hex → tokens, dissolving per-screen CSS families, the `.ws` radius fork, form-layer redesign, landing redesign.
+**Out of scope (next phases):** the remaining ~50 violet-patch call sites (rule documented above), the 1,954 arbitrary-var wrapper codemod, px font-sizes → `--text-*`, stray hex → tokens, dissolving per-screen CSS families, the `.ws` radius fork, form-layer redesign.
+
+---
+
+## Phase 2 (Sam, 2026-06-10): the website becomes the platform's front door
+
+**Decision:** the `../inturn-web` marketing site replaces the platform's placeholder landing — ONE app on :3000; the site's pages move INTO the platform and its CTAs link straight into the product. The standalone :3010 app is then retired (kept as source archive until parity).
+
+**Approach (in order — each step ships independently):**
+1. **Homepage first.** Port `inturn-web/app/page.tsx` + `HomeHero`/`Nav`/`Footer`/`MarketingEffects` + needed pieces of `tokens.css`/`illustrations.css` into the platform's `(marketing)` group as the new `app/[locale]/page.tsx`. CRITICAL: the site is English-only with hardcoded copy; the platform enforces `i18next/no-literal-string` + FR/EN parity — every string must land in `locales/{fr,en}.json` (FR copy to be written, Sam reviews tone). Wire CTAs: "Post your first internship" → `/sign-up` (company), "For interns" → `/marketplace`, nav → platform routes.
+2. **Reconcile the two token systems.** `inturn-web/app/tokens.css` vs the platform's globals — map the site's tokens onto the platform's (they share the ink+violet+mono DNA; the site's hero strike-through, role toggle, and ticker become shared marketing primitives).
+3. **Port the supporting pages** behind the same translation gate, in value order: how-it-works, for-companies / for-interns / for-universities, **verify** (wire it to the REAL record-share lookup — it's the trust story), virtual-internships, about/contact; the site's terms/privacy are NOT ported (the platform's localized legal pages already exist and are public).
+4. **Retire `inturn-web`** once parity is reached; `inturn-hub/README.md` updated.
+
+**Search follow-ups (Sam: "search not working correctly", 2026-06-10):** city/location search + EN-form locale loss fixed in `27244de`. Remaining gap is *language*: listings are written in English, so French queries (« stage », « développeur ») return nothing. Options to decide in this phase: bilingual listing fields, a FR→EN synonym map in the query layer, or a `french`-config tsvector alongside the `simple` one. Also consider searching `organizations.name` (users search by company).
