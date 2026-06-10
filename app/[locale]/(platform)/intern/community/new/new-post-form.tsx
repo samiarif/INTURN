@@ -67,7 +67,7 @@ export function NewPostForm() {
           type="button"
           onClick={submit}
           disabled={pending || title.trim().length < 6 || body.trim().length < 20}
-          className="inline-flex items-center h-10 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-60 disabled:cursor-not-allowed"
+          className="inline-flex items-center h-10 px-4 rounded-md text-sm font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {pending ? t('saving') : t('submit')}
         </button>

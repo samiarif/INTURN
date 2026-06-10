@@ -41,7 +41,7 @@ export function AddCommentForm({ postId }: { postId: string }) {
           type="button"
           onClick={submit}
           disabled={pending || body.trim().length < 1}
-          className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-60 disabled:cursor-not-allowed"
+          className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {pending ? t('replying') : t('reply')}
         </button>

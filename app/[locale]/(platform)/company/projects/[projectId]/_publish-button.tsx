@@ -12,7 +12,7 @@ export function PublishInternshipButton({ internshipId }: { internshipId: string
     <Button
       type="button"
       size="sm"
-      className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
+      variant="brand"
       disabled={pending}
       onClick={() => {
         startTransition(async () => {

@@ -283,7 +283,7 @@ function SprintRow({
                   type="button"
                   onClick={commitEdit}
                   disabled={!editName.trim() || isPending}
-                  className="text-caption px-2 py-0.5 rounded bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-50 transition-colors"
+                  className="text-caption px-2 py-0.5 rounded bg-[var(--ink)] text-[var(--surface)] hover:opacity-90 disabled:opacity-50 transition-colors"
                 >
                   {t('save')}
                 </button>
@@ -424,7 +424,7 @@ function SprintRow({
                 type="button"
                 onClick={saveTasks}
                 disabled={isPending}
-                className="text-caption px-3 py-1 rounded bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-50 transition-colors"
+                className="text-caption px-3 py-1 rounded bg-[var(--ink)] text-[var(--surface)] hover:opacity-90 disabled:opacity-50 transition-colors"
               >
                 {t('saveTasks')}
               </button>
@@ -838,7 +838,7 @@ export function SprintsSection({
               type="button"
               onClick={handleCreate}
               disabled={!addName.trim() || isPending}
-              className="text-caption px-3 py-1 rounded bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)] disabled:opacity-50 transition-colors"
+              className="text-caption px-3 py-1 rounded bg-[var(--ink)] text-[var(--surface)] hover:opacity-90 disabled:opacity-50 transition-colors"
             >
               {t('save')}
             </button>

@@ -130,7 +130,7 @@ export function ResolveReportForm({
               type="button"
               onClick={() => submit('resolved')}
               disabled={pending}
-              className="px-3 py-1.5 rounded-md text-label font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+              className="px-3 py-1.5 rounded-md text-label font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90"
             >
               {pending ? t('saving') : t('resolve')}
             </button>

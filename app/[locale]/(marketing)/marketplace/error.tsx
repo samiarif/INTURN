@@ -27,7 +27,7 @@ export default function Error({
       )}
       <button
         onClick={reset}
-        className="inline-flex items-center justify-center h-10 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+        className="inline-flex items-center justify-center h-10 px-4 rounded-md text-sm font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90"
       >
         {tRoot('tryAgain')}
       </button>

@@ -9,6 +9,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-primary text-primary-foreground [a]:hover:bg-primary/80',
+        /* Atelier: violet is reserved for value moments — apply/accept/publish/
+           issue-record/AI — never for chrome actions (those use `default` ink). */
+        brand: 'bg-brand-500 text-white hover:bg-brand-600 focus-visible:ring-brand-500/40',
         outline:
           'border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
         secondary:

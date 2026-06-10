@@ -54,7 +54,7 @@ export default async function SavedPage() {
           <p className="text-[var(--ink-3)] text-sm mb-4">{tBookmarks('emptySub')}</p>
           <Link
             href="/marketplace"
-            className="inline-flex items-center justify-center h-10 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+            className="inline-flex items-center justify-center h-10 px-4 rounded-md text-sm font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90"
           >
             {tBookmarks('openMarketplace')}
           </Link>

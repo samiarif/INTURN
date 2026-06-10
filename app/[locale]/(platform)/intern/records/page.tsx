@@ -34,7 +34,7 @@ export default async function InternRecordsPage() {
           </p>
           <Link
             href="/marketplace"
-            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-sm font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90"
           >
             {t('listBrowseCta')}
             <ArrowRight size={14} strokeWidth={2.25} aria-hidden />

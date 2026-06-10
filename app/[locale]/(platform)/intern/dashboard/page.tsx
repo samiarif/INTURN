@@ -203,7 +203,7 @@ export default async function Page() {
             <p className="text-[var(--ink-3)] text-sm mb-4">{tDash('workspacesEmpty')}</p>
             <Link
               href="/marketplace"
-              className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+              className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90"
             >
               {tDash('browseCta')}
             </Link>
@@ -261,7 +261,7 @@ export default async function Page() {
             <p className="text-[var(--ink-3)] text-sm mb-4">{tDash('applicationsEmpty')}</p>
             <Link
               href="/marketplace"
-              className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--brand-500)] text-white hover:bg-[var(--brand-600)]"
+              className="inline-flex items-center h-9 px-4 rounded-md text-sm font-medium bg-[var(--ink)] text-[var(--surface)] hover:opacity-90"
             >
               {tDash('browseCta')}
             </Link>

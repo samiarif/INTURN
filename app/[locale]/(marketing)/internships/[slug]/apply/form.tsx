@@ -57,7 +57,7 @@ export function ApplyForm({
       ))}
 
       <div className="flex justify-end pt-2 border-t border-[var(--border-color)]">
-        <Button type="submit" className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]">
+        <Button type="submit" variant="brand">
           {t('submit')}<ArrowRight aria-hidden />
         </Button>
       </div>
