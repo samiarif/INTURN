@@ -119,14 +119,11 @@ export function PlatformSidebar({
   const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email;
 
   return (
-    /* Atelier ink rail: the aside carries the `dark` class so every token
-     * inside (--ink, --surface, --bg, --border-color…) resolves to the dark
-     * palette — a permanently-dark chrome framing the light content, with the
-     * brand-50 active pill popping against it. No new colors, fully theme-safe
-     * (in app dark mode the rail simply matches). */
+    /* Light rail (Sam reverted the ink-rail experiment 2026-06-10): the rail
+     * follows the app theme; the mono role eyebrow stays. */
     <aside
       aria-label={tA11y('mainNavigation')}
-      className={`${forceVisible ? 'flex' : 'hidden md:flex'} dark flex-col w-[240px] h-screen sticky top-0 border-r border-[var(--border-color)] bg-[var(--bg)] text-[var(--ink)]`}
+      className={`${forceVisible ? 'flex' : 'hidden md:flex'} flex-col w-[240px] h-screen sticky top-0 border-r border-[var(--border-color)] bg-[var(--surface)]`}
     >
       <Link
         href={`/${role}/dashboard`}
