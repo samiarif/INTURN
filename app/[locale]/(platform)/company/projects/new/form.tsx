@@ -342,8 +342,9 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
           </p>
         </header>
 
+        <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-5 shadow-[var(--elev-card)] space-y-6">
         <div>
-          <Label htmlFor="name">
+          <Label htmlFor="name" className="text-label text-[var(--ink-2)]">
             {tf('nameLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
           </Label>
           <Input
@@ -364,7 +365,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         </div>
 
         <div>
-          <Label htmlFor="slug">
+          <Label htmlFor="slug" className="text-label text-[var(--ink-2)]">
             {tf('slugLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
           </Label>
           <Input
@@ -385,7 +386,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
 
         <div>
           <div className="sc-label-row">
-            <Label htmlFor="brief">
+            <Label htmlFor="brief" className="text-label text-[var(--ink-2)]">
               {tf('briefLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
             </Label>
             <span className="sc-spacer" />
@@ -433,7 +434,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         </div>
 
         <div>
-          <Label>
+          <Label className="text-label text-[var(--ink-2)]">
             {tf('modeLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
           </Label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1.5">
@@ -469,7 +470,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
         {mode !== 'virtual' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="location-input">{tf('locationLabel')}</Label>
+              <Label htmlFor="location-input" className="text-label text-[var(--ink-2)]">{tf('locationLabel')}</Label>
               <Input
                 id="location-input"
                 value={location}
@@ -481,7 +482,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
               </p>
             </div>
             <div>
-              <Label>{tf('onSiteDaysLabel')}</Label>
+              <Label className="text-label text-[var(--ink-2)]">{tf('onSiteDaysLabel')}</Label>
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {ON_SITE_DAY_OPTIONS.map((day) => {
                   const selected = onSiteDays.includes(day);
@@ -507,7 +508,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="startDate">
+            <Label htmlFor="startDate" className="text-label text-[var(--ink-2)]">
               {tf('startDateLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
             </Label>
             <Input
@@ -520,7 +521,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             />
           </div>
           <div>
-            <Label htmlFor="duration-input">
+            <Label htmlFor="duration-input" className="text-label text-[var(--ink-2)]">
               {tf('durationLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
             </Label>
             <Input
@@ -538,22 +539,24 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             <input type="hidden" name="endDate" value={endDate} />
           </div>
         </div>
+        </div>
       </section>
 
       {/* ---- Section: Goals + phases -------------------------------- */}
-      <section id="goals" className="space-y-6 scroll-mt-24 pt-2 border-t border-[var(--border-color)]">
-        <header className="pt-6">
-          <h2 className="text-title text-[var(--ink)]">
+      <section id="goals" className="space-y-4 scroll-mt-24">
+        <header>
+          <h2 className="font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
             {tf('goalsHeading')}
           </h2>
-          <p className="text-body text-[var(--ink-3)] mt-1">
+          <p className="text-caption text-[var(--ink-3)] mt-1.5">
             {tf('goalsIntro')}
           </p>
         </header>
 
+        <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-5 space-y-6">
         <div>
           <div className="sc-label-row">
-            <Label>
+            <Label className="text-label text-[var(--ink-2)]">
               {tf('goalsLabel')}{' '}
               <span className="text-[var(--ink-3)] font-normal">
                 {tf('goalsUsed', { filled: goalsFilled })}
@@ -614,7 +617,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             <div className="w-full border-t border-[var(--border-color)]" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-[var(--background)] px-2 text-eyebrow uppercase font-mono text-[var(--ink-3)]">
+            <span className="bg-[var(--surface)] px-2 text-eyebrow uppercase font-mono text-[var(--ink-3)]">
               {tf('thenOptional')}
             </span>
           </div>
@@ -700,15 +703,16 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
             </p>
           )}
         </div>
+        </div>
       </section>
 
       {/* ---- Section: Review ---------------------------------------- */}
-      <section id="review" className="space-y-4 scroll-mt-24 pt-2 border-t border-[var(--border-color)]">
-        <header className="pt-6">
-          <h2 className="text-title text-[var(--ink)]">
+      <section id="review" className="space-y-4 scroll-mt-24">
+        <header>
+          <h2 className="font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
             {t('reviewHeading')}
           </h2>
-          <p className="text-body text-[var(--ink-3)] mt-1">
+          <p className="text-caption text-[var(--ink-3)] mt-1.5">
             {isEdit ? t('reviewSubheading') : tn('reviewSubheading')}
           </p>
         </header>
@@ -727,10 +731,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
 
         {isEdit ? (
           <div className="flex flex-wrap items-center gap-3">
-            <Button
-              type="submit"
-              className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
-            >
+            <Button type="submit">
               {t('saveCta')}
             </Button>
             <span className="text-caption text-[var(--ink-3)]">{t('saveHint')}</span>
@@ -744,10 +745,7 @@ export function ProjectCreateForm({ initialProject }: { initialProject?: Project
               {tn.rich('ctaNextBody', { b: (chunks) => <b>{chunks}</b> })}
             </p>
             <div className="flex flex-wrap items-center gap-2">
-              <Button
-                type="submit"
-                className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
-              >
+              <Button type="submit">
                 {tn('ctaSave')}
                 <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
               </Button>

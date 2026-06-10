@@ -85,9 +85,10 @@ export function ProfileBasicsForm({
       <input type="hidden" name="yearOfStudy" value={yearOfStudy} />
       <input type="hidden" name="preferredLanguage" value={preferredLanguage} />
 
+      <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-5 shadow-[var(--elev-card)] space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="firstName">{t('firstName')} {tc('requiredMark')}</Label>
+          <Label htmlFor="firstName" className="text-label text-[var(--ink-2)]">{t('firstName')} {tc('requiredMark')}</Label>
           <Input
             id="firstName"
             name="firstName"
@@ -97,7 +98,7 @@ export function ProfileBasicsForm({
           />
         </div>
         <div>
-          <Label htmlFor="lastName">{t('lastName')} {tc('requiredMark')}</Label>
+          <Label htmlFor="lastName" className="text-label text-[var(--ink-2)]">{t('lastName')} {tc('requiredMark')}</Label>
           <Input
             id="lastName"
             name="lastName"
@@ -109,7 +110,7 @@ export function ProfileBasicsForm({
       </div>
 
       <div>
-        <Label>{t('university')} {tc('requiredMark')}</Label>
+        <Label className="text-label text-[var(--ink-2)]">{t('university')} {tc('requiredMark')}</Label>
         <Combobox
           options={UNIVERSITIES.map((u) => ({ value: u.id, label: u.name }))}
           value={university}
@@ -123,7 +124,7 @@ export function ProfileBasicsForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>{t('yearOfStudy')} {tc('requiredMark')}</Label>
+          <Label className="text-label text-[var(--ink-2)]">{t('yearOfStudy')} {tc('requiredMark')}</Label>
           <Select value={yearOfStudy} onValueChange={(v) => setYearOfStudy(v ?? '')}>
             <SelectTrigger>
               <SelectValue placeholder={tc('selectPlaceholder')} />
@@ -138,7 +139,7 @@ export function ProfileBasicsForm({
           </Select>
         </div>
         <div>
-          <Label htmlFor="fieldOfStudy">{t('fieldOfStudy')} {tc('requiredMark')}</Label>
+          <Label htmlFor="fieldOfStudy" className="text-label text-[var(--ink-2)]">{t('fieldOfStudy')} {tc('requiredMark')}</Label>
           <Input
             id="fieldOfStudy"
             name="fieldOfStudy"
@@ -150,7 +151,7 @@ export function ProfileBasicsForm({
       </div>
 
       <div>
-        <Label htmlFor="city">{t('city')}</Label>
+        <Label htmlFor="city" className="text-label text-[var(--ink-2)]">{t('city')}</Label>
         <Input
           id="city"
           name="city"
@@ -162,7 +163,7 @@ export function ProfileBasicsForm({
       </div>
 
       <div>
-        <Label>{t('preferredLanguage')} {tc('requiredMark')}</Label>
+        <Label className="text-label text-[var(--ink-2)]">{t('preferredLanguage')} {tc('requiredMark')}</Label>
         <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-[13px]">
           <button
             type="button"
@@ -189,6 +190,7 @@ export function ProfileBasicsForm({
         </div>
         <p className="text-caption text-[var(--ink-3)] mt-1">{t('preferredLanguageHelper')}</p>
       </div>
+      </div>
 
       <div className="flex justify-between pt-2">
         {mode === 'account' ? (
@@ -203,7 +205,7 @@ export function ProfileBasicsForm({
             {t('back')}
           </Button>
         )}
-        <Button type="submit" className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]">
+        <Button type="submit">
           {mode === 'account' ? t('save') : t('continue')}
         </Button>
       </div>

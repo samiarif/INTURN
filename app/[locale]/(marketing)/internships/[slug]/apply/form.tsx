@@ -28,8 +28,8 @@ export function ApplyForm({
     <form action={action} className="space-y-6">
       <input type="hidden" name="customAnswers" value={JSON.stringify(customAnswers)} />
 
-      <div>
-        <Label htmlFor="coverNote">{t('coverNoteLabel')}</Label>
+      <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-5 shadow-[var(--elev-card)]">
+        <Label htmlFor="coverNote" className="text-label text-[var(--ink-2)]">{t('coverNoteLabel')}</Label>
         <Textarea
           id="coverNote"
           name="coverNote"
@@ -39,22 +39,26 @@ export function ApplyForm({
         />
       </div>
 
-      {customQuestions.map((q, i) => (
-        <div key={i}>
-          <Label htmlFor={`apply-q-${i}`}>
-            {q.question}
-            {q.required && <span className="text-[var(--danger)] ml-1">{tc('requiredMark')}</span>}
-          </Label>
-          <Textarea
-            id={`apply-q-${i}`}
-            rows={4}
-            maxLength={2000}
-            required={q.required}
-            value={answers[i] ?? ''}
-            onChange={(e) => setAnswers({ ...answers, [i]: e.target.value })}
-          />
+      {customQuestions.length > 0 && (
+        <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-5 space-y-5">
+          {customQuestions.map((q, i) => (
+            <div key={i}>
+              <Label htmlFor={`apply-q-${i}`} className="text-label text-[var(--ink-2)]">
+                {q.question}
+                {q.required && <span className="text-[var(--danger)] ml-1">{tc('requiredMark')}</span>}
+              </Label>
+              <Textarea
+                id={`apply-q-${i}`}
+                rows={4}
+                maxLength={2000}
+                required={q.required}
+                value={answers[i] ?? ''}
+                onChange={(e) => setAnswers({ ...answers, [i]: e.target.value })}
+              />
+            </div>
+          ))}
         </div>
-      ))}
+      )}
 
       <div className="flex justify-end pt-2 border-t border-[var(--border-color)]">
         <Button type="submit" variant="brand">

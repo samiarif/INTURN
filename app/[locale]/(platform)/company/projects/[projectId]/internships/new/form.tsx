@@ -397,9 +397,10 @@ export function PostInternshipForm({
               </p>
             </header>
 
+            <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-5 shadow-[var(--elev-card)] space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4">
               <div>
-                <Label htmlFor="title">
+                <Label htmlFor="title" className="text-label text-[var(--ink-2)]">
                   {tf('titleLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
                 </Label>
                 <Input
@@ -415,7 +416,7 @@ export function PostInternshipForm({
                 </p>
               </div>
               <div>
-                <Label>{tf('disciplineLabel')}</Label>
+                <Label className="text-label text-[var(--ink-2)]">{tf('disciplineLabel')}</Label>
                 <Select value={sector} onValueChange={(v) => setSector(v ?? 'Design')}>
                   <SelectTrigger>
                     <SelectValue placeholder={tf('disciplineLabel')} />
@@ -432,7 +433,7 @@ export function PostInternshipForm({
             </div>
 
             <div>
-              <Label htmlFor="description">
+              <Label htmlFor="description" className="text-label text-[var(--ink-2)]">
                 {tf('scopeLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
               </Label>
               <Textarea
@@ -452,7 +453,7 @@ export function PostInternshipForm({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <Label>
+                <Label className="text-label text-[var(--ink-2)]">
                   {tf('slotsLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
                 </Label>
                 <div className="inline-flex items-center w-full rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-label mt-1.5">
@@ -465,8 +466,8 @@ export function PostInternshipForm({
                         onClick={() => setInternCount(n)}
                         className={
                           selected
-                            ? 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium bg-white shadow-sm text-[var(--ink)]'
-                            : 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
+                            ? 'flex-1 whitespace-nowrap text-center px-3 py-1 rounded-[4px] font-medium bg-[var(--surface)] shadow-sm text-[var(--ink)]'
+                            : 'flex-1 whitespace-nowrap text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
                         }
                       >
                         {n === 3 ? tf('slotsThreePlus') : n}
@@ -480,13 +481,13 @@ export function PostInternshipForm({
                 </p>
               </div>
               <div>
-                <Label>
+                <Label className="text-label text-[var(--ink-2)]">
                   {tf('supervisorLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
                 </Label>
                 <Input value={tf('supervisorYou', { name: supervisorName })} disabled />
               </div>
               <div>
-                <Label htmlFor="duration">
+                <Label htmlFor="duration" className="text-label text-[var(--ink-2)]">
                   {tf('durationLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
                 </Label>
                 <Input
@@ -508,7 +509,7 @@ export function PostInternshipForm({
             </div>
 
             <div>
-              <Label>
+              <Label className="text-label text-[var(--ink-2)]">
                 {tf('modeLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1.5">
@@ -543,7 +544,7 @@ export function PostInternshipForm({
 
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4">
               <div>
-                <Label htmlFor="location">
+                <Label htmlFor="location" className="text-label text-[var(--ink-2)]">
                   {tf('locationLabel')}{' '}
                   {locationType !== 'virtual' && <span className="text-[var(--danger)]">{tf('req')}</span>}
                 </Label>
@@ -558,7 +559,7 @@ export function PostInternshipForm({
                 />
               </div>
               <div>
-                <Label>{tf('listingLanguageLabel')}</Label>
+                <Label className="text-label text-[var(--ink-2)]">{tf('listingLanguageLabel')}</Label>
                 <Select
                   value={language}
                   onValueChange={(v) => setLanguage((v ?? 'fr') as typeof language)}
@@ -578,7 +579,7 @@ export function PostInternshipForm({
             <SectionDivider label={tf('dividerSkills')} />
 
             <div>
-              <Label>{tf('skillsLabel')}</Label>
+              <Label className="text-label text-[var(--ink-2)]">{tf('skillsLabel')}</Label>
               <ChipInput
                 value={skills}
                 onChange={setSkills}
@@ -592,18 +593,18 @@ export function PostInternshipForm({
             </div>
 
             <div>
-              <Label>
+              <Label className="text-label text-[var(--ink-2)]">
                 {tf('compensationLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
               </Label>
-              <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr_220px] gap-3 items-stretch mt-1.5">
+              <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_220px] gap-3 items-stretch mt-1.5">
                 <div className="inline-flex items-center rounded-md bg-[var(--surface-muted)] border border-[var(--border-color)] p-[2px] text-label">
                   <button
                     type="button"
                     onClick={() => setIsPaid(true)}
                     className={
                       isPaid
-                        ? 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium bg-white shadow-sm text-[var(--ink)]'
-                        : 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
+                        ? 'flex-1 whitespace-nowrap text-center px-3 py-1 rounded-[4px] font-medium bg-[var(--surface)] shadow-sm text-[var(--ink)]'
+                        : 'flex-1 whitespace-nowrap text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
                     }
                   >
                     {tf('paid')}
@@ -613,8 +614,8 @@ export function PostInternshipForm({
                     onClick={() => setIsPaid(false)}
                     className={
                       !isPaid
-                        ? 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium bg-white shadow-sm text-[var(--ink)]'
-                        : 'flex-1 text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
+                        ? 'flex-1 whitespace-nowrap text-center px-3 py-1 rounded-[4px] font-medium bg-[var(--surface)] shadow-sm text-[var(--ink)]'
+                        : 'flex-1 whitespace-nowrap text-center px-3 py-1 rounded-[4px] font-medium text-[var(--ink-3)]'
                     }
                   >
                     {tf('unpaid')}
@@ -651,7 +652,7 @@ export function PostInternshipForm({
             </div>
 
             <div>
-              <Label htmlFor="deadline">
+              <Label htmlFor="deadline" className="text-label text-[var(--ink-2)]">
                 {tf('deadlineLabel')} <span className="text-[var(--danger)]">{tf('req')}</span>
               </Label>
               <Input
@@ -663,25 +664,27 @@ export function PostInternshipForm({
                 required
               />
             </div>
+            </div>
           </section>
 
           {/* ---- Deliverables ----------------------------------------- */}
           <section
             id="deliverables"
-            className="space-y-5 scroll-mt-24 pt-6 border-t border-[var(--border-color)]"
+            className="space-y-4 scroll-mt-24"
           >
             <header>
-              <h2 className="text-title text-[var(--ink)]">
+              <h2 className="font-mono text-eyebrow uppercase tracking-[0.08em] text-[var(--brand-700)]">
                 {tf('deliverablesHeading')}
               </h2>
-              <p className="text-body text-[var(--ink-3)] mt-1">
+              <p className="text-caption text-[var(--ink-3)] mt-1.5">
                 {tf('deliverablesIntro')}
               </p>
             </header>
 
+            <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-5 space-y-5">
             <div>
               <div className="sc-label-row">
-                <Label>
+                <Label className="text-label text-[var(--ink-2)]">
                   {tf('deliverablesLabel')}{' '}
                   <span className="text-[var(--ink-3)] font-normal">
                     {tf('deliverablesUsed', { filled: filledDeliverables })}
@@ -808,7 +811,7 @@ export function PostInternshipForm({
 
             <div>
               <div className="sc-label-row">
-                <Label>{tf('questionsLabel')}</Label>
+                <Label className="text-label text-[var(--ink-2)]">{tf('questionsLabel')}</Label>
                 <span className="sc-spacer" />
                 {questionsAssisted && <AssistedTag />}
                 <AssistButton
@@ -906,7 +909,7 @@ export function PostInternshipForm({
             <SectionDivider label={tf('dividerVisibility')} />
 
             <div>
-              <Label>{tf('visibilityLabel')}</Label>
+              <Label className="text-label text-[var(--ink-2)]">{tf('visibilityLabel')}</Label>
               <div className="flex flex-col gap-2 mt-1.5">
                 <VisibilityChoice
                   selected={visibility === 'public'}
@@ -922,8 +925,9 @@ export function PostInternshipForm({
                 />
               </div>
             </div>
+            </div>
 
-            <div className="flex flex-wrap justify-between items-center gap-3 pt-4 border-t border-[var(--border-color)]">
+            <div className="flex flex-wrap justify-between items-center gap-3 pt-2">
               <Button
                 type="button"
                 variant="ghost"
@@ -933,10 +937,7 @@ export function PostInternshipForm({
                 {isEdit ? tEdit('back') : <><ArrowLeft size={15} strokeWidth={2.25} aria-hidden />{tn('back')}</>}
               </Button>
               {isEdit ? (
-                <Button
-                  type="submit"
-                  className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
-                >
+                <Button type="submit">
                   {tEdit('saveCta')}
                 </Button>
               ) : (
@@ -951,7 +952,7 @@ export function PostInternshipForm({
                     onClick={(e) => {
                       if (!window.confirm(tInt('publishConfirm'))) e.preventDefault();
                     }}
-                    className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white"
+                    variant="brand"
                   >
                     {tn('publishCta')}
                     <ArrowRight size={15} strokeWidth={2.25} aria-hidden />
@@ -1060,7 +1061,7 @@ function SectionDivider({ label }: { label: string }) {
         <div className="w-full border-t border-[var(--border-color)]" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-[var(--background)] px-2 text-eyebrow uppercase font-mono text-[var(--ink-3)]">
+        <span className="bg-[var(--surface)] px-2 text-eyebrow uppercase font-mono text-[var(--ink-3)]">
           {label}
         </span>
       </div>

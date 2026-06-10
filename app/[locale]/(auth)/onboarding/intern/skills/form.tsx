@@ -33,19 +33,20 @@ export function ProfileSkillsForm({ initial }: { initial?: SkillsInitial }) {
       <input type="hidden" name="cvUrl" value={cvUrl} />
       <input type="hidden" name="portfolioLinks" value={JSON.stringify(links)} />
 
+      <div className="rounded-lg border border-[var(--border-color)] bg-[var(--surface)] p-5 shadow-[var(--elev-card)] space-y-6">
       <div>
-        <Label>{t('skillsLabel')} {tc('requiredMark')}</Label>
+        <Label className="text-label text-[var(--ink-2)]">{t('skillsLabel')} {tc('requiredMark')}</Label>
         <ChipInput value={skills} onChange={setSkills} />
       </div>
 
       <div>
-        <Label>{t('rolesLabel')}</Label>
+        <Label className="text-label text-[var(--ink-2)]">{t('rolesLabel')}</Label>
         <p className="text-caption text-[var(--ink-3)] mb-2">{t('rolesHelper')}</p>
         <RoleChipGrid value={roles} onChange={setRoles} />
       </div>
 
       <div>
-        <Label>
+        <Label className="text-label text-[var(--ink-2)]">
           {t('cvLabel')}{' '}
           <span className="text-[var(--ink-4)] font-normal">{t('optional')}</span>
         </Label>
@@ -69,18 +70,16 @@ export function ProfileSkillsForm({ initial }: { initial?: SkillsInitial }) {
       </div>
 
       <div>
-        <Label>{t('linksLabel')}</Label>
+        <Label className="text-label text-[var(--ink-2)]">{t('linksLabel')}</Label>
         <LinkRepeater value={links} onChange={setLinks} />
+      </div>
       </div>
 
       <div className="flex justify-between pt-2">
         <Button type="button" variant="ghost" onClick={() => history.back()}>
           {t('back')}
         </Button>
-        <Button
-          type="submit"
-          className="bg-[var(--brand-500)] hover:bg-[var(--brand-600)]"
-        >
+        <Button type="submit">
           {t('finish')}
         </Button>
       </div>
