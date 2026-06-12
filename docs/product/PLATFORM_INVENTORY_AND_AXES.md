@@ -131,6 +131,11 @@ Ranked by leverage. Effort: S = days · M = 1–2 weeks · L = month+.
 | A9 | **Tunisia compliance rail** | Convention-de-stage *workflow* (upload/track/sign status — not PDF generation, which stays descoped), stipend/CNSS guidance content | Universities asked for it; cheap differentiation vs. job boards | **S–M** |
 | A10 | **Hardening sprint** | Upstash rate limiting, private blobs, query-level read guards, locale-aware revalidation, migration renumbering | Pre-scale insurance; do before any marketing push | **S–M** |
 
+> **A8 is now the locked flagship direction** (Sam, 2026-06-11) — reframed from "hire-your-intern
+> rail" into a full **concierge talent-pool** brief: inturn qualifies the best interns and pitches
+> curated, proof-backed shortlists to companies, with the free marketplace demoted to top-of-funnel.
+> Full design + build brief: [`../superpowers/specs/2026-06-11-curated-talent-pool-design.md`](../superpowers/specs/2026-06-11-curated-talent-pool-design.md).
+
 **Suggested sequence:** A1 → A2 → A10 (one hardening week) → A3 + A4 in parallel → A5 → A7/A8 →
 A6. Rationale: ship and close dead-ends first (days, not weeks), harden before traffic, then trust
 + retention build the road for the moat features.

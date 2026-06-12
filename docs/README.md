@@ -63,6 +63,7 @@ milestone. They are **historical snapshots** — accurate as of their date, not 
 - **Platform & UX** (2026-05-27 → 05-30) — `sidebar-shell-and-task-fixes-design`, `user-management-design`, `application-close-the-loop-design`
 - **University product** (2026-05-30 → 05-31) — `university-product-foundation-design`, `university-at-scale-design`, `academic-deliverables-design` (+ plans: foundation-provisioning, supervision-structure, academic-supervision, cohort-onboarding)
 - **AI co-supervisor (Pulse)** (2026-05-30) — `pulse-ai-cosupervisor`
+- **Curated talent pool** (2026-06-11) — `curated-talent-pool-design` — the **flagship** concierge-recruiter direction (Sam's new main business): qualify the best interns, pitch curated shortlists to companies. Design + build brief; pairs with build-axis A8 in the inventory doc.
 
 > Some superpowers docs reference doc paths as they were *before* the 2026-05-31 reorg (e.g.
 > `docs/HANDOFF.md`, now `docs/planning/HANDOFF.md`). Those mentions are left as-authored — they're
