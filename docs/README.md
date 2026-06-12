@@ -35,7 +35,8 @@ companies, universities). The docs split into **authoritative references** (kept
 | Path | What | For | State |
 |---|---|---|---|
 | [`inturn-project-brief.md`](./inturn-project-brief.md) | Founding product brief — the source of truth for what we're building | everyone | ✅ current (2026-05-23) |
-| [`product/PRODUCT_OVERVIEW.md`](./product/PRODUCT_OVERVIEW.md) | What the platform does, built-vs-deployed status, full backlog, known gaps | Sam / business | ✅ current (2026-05-31) |
+| [`product/PLATFORM_INVENTORY_AND_AXES.md`](./product/PLATFORM_INVENTORY_AND_AXES.md) | **The one-pager:** every module + feature as-built, what's missing, and the ranked build axes | Sam + developers | ✅ current (2026-06-11) |
+| [`product/PRODUCT_OVERVIEW.md`](./product/PRODUCT_OVERVIEW.md) | What the platform does, built-vs-deployed status, full backlog, known gaps | Sam / business | ✅ current (2026-05-31 + 2026-06-11 update block) |
 | [`product/PRODUCT_STRATEGY.md`](./product/PRODUCT_STRATEGY.md) | GTM strategy, gaps, 6-week plan, success metrics | Sam / business | ✅ current (2026-05-27) |
 | [`technical/TECHNICAL_OVERVIEW.md`](./technical/TECHNICAL_OVERVIEW.md) | Authoritative as-built architecture: stack, data model, auth, deploy | developers | ✅ current (2026-05-31 + 2026-06-11 update block covering the in-repo marketing site & Atelier design layer) |
 | [`technical/DIAGRAMS.md`](./technical/DIAGRAMS.md) | Visual maps: ER (22 tables), layered architecture, module anatomy, auth + university firewall, sequence flows | developers | ✅ current (2026-05-31) |

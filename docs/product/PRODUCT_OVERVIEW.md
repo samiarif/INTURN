@@ -6,7 +6,43 @@
 > nice-to-haves. For the engineering view, see
 > [`TECHNICAL_OVERVIEW.md`](../technical/TECHNICAL_OVERVIEW.md).
 >
-> **Updated:** 2026-05-31.
+> **Updated:** 2026-05-31, **plus the 2026-06-11 update block below** (read it first — the body
+> predates two weeks of work). For the by-module inventory + build axes, see
+> [`PLATFORM_INVENTORY_AND_AXES.md`](./PLATFORM_INVENTORY_AND_AXES.md).
+
+---
+
+## ⓪ 2026-06-11 update — what changed since this doc's snapshot
+
+Everything below landed on `main` (now pushed to GitHub) and is **built & verified, awaiting one
+deploy** unless marked otherwise. Health re-verified: **635 tests pass** · typecheck + lint +
+i18n-parity + production build clean.
+
+1. **Academic deliverables (livrables) are merged** — no longer "in review". Students submit typed
+   livrables (rapport/présentation/diagramme/autre); coordinators review each independently.
+2. **Project Sprints** *(new since this doc)* — companies plan sprints on a project (manually or
+   AI-generated), new workspaces auto-seed from the sprint blueprint, and the intern's tasks board
+   becomes sprint-aware (sprint switcher, per-sprint progress, move-task-between-sprints).
+3. **A full-repo audit + fix sprint** — 10 correctness/security fixes, the visible ones: sprint
+   management now updates instantly (it looked broken), legal pages are reachable logged-out,
+   workspace **dark mode works**, check-ins default to the right Tunisian hour, notifications can
+   no longer be silently dropped by the serverless platform, branded 404.
+4. **The "Atelier" design system** — the answer to "it looks generic": ink-colored chrome with
+   violet reserved for value moments (apply, publish, accept, approve), one radius + shadow system,
+   violet focus rings, mono section labels, entrance motion — applied platform-wide plus dedicated
+   passes on the previously-unstyled team, university, admin, hiring-flow, and form screens.
+5. **The marketing website now lives inside the platform** as its public front door: home,
+   how-it-works, for-companies, **for-universities** (E29 ✅), for-interns, virtual-internships,
+   and **verify** (wired to the real record lookup). Fully bilingual — the FR copy is AI-written and
+   needs Sam's native review. The standalone `inturn-web` app is superseded.
+6. **The P0 record-PDF bug fix is merged and pushed** — it stops being live the moment production
+   is redeployed (§7.1 below is otherwise stale).
+7. **Repo handed to a new developer** — real root README, complete `.env.example`, refreshed docs;
+   `origin/main` is in sync with local; production still runs the 2026-05-30 build (deploy = manual
+   decision).
+
+**Still true from the body:** the strategic read (§8 — supply, trust, distribution are the
+bottleneck), the Phase 3/5/6 backlog status, and the cold-start/verification gaps (§7.3–7.5).
 
 ---
 
@@ -34,11 +70,14 @@ The platform is **functionally launch-ready** and has been for weeks. The bottle
 ### ⚠️ The deploy gap — read this
 There's a **large gap between what's built and what real users see today.**
 
+*(2026-06-11: this table is superseded by the update block at the top — there are now only TWO
+states: **production** (the 2026-05-30 build) and **`main` on GitHub** (everything: University
+product + livrables + sprints + audit fixes + Atelier design + the marketing site).)*
+
 | Where | What's there | In front of users? |
 |---|---|---|
 | **Production** (`inturn.vercel.app`) | Full core platform + Phase-1 polish (Sentry, analytics, CV import, templates, first-time checklists) + team management. | ✅ **Yes — this is live.** |
-| **Local `main`** (not pushed/deployed) | All of the above **+ the entire University product + University-at-Scale**. | ❌ **No — built & verified, not deployed.** |
-| **`feat/academic-deliverables`** (in review) | The above **+ typed academic deliverables (livrables)**. | ❌ **No — awaiting your review before merge.** |
+| **`main`** (pushed, not deployed) | All of the above **+ University product + livrables + sprints + audit fixes + Atelier design + marketing site**. | ❌ **No — built & verified, one `vercel --prod` away.** |
 
 **Translation:** the University product — arguably the biggest strategic feature — is **fully built and tested but not yet live**. Shipping it is a deploy decision, not a build effort. (Deploys are manual: someone runs `vercel --prod`.)
 
@@ -178,7 +217,7 @@ E16 notification preferences ✅. Not started: E15 digest emails · E17 WhatsApp
 | E26 | CSV bulk student invite | 🟡 built |
 | E27 | Coordinator dashboard | 🟡 built — **reframed** to per-student supervision (not anonymized aggregates) |
 | E28 | Convention de stage PDF | ⛔ descoped permanently |
-| E29 | `/for-universities` landing | ⬜ |
+| E29 | `/for-universities` landing | ✅ *(2026-06-11 — shipped with the in-repo marketing site)* |
 | E30 | University auth + permissions | 🟡 built (firewall + per-student model) |
 | — | **Beyond roadmap:** multi-coordinator structure, encadrant assignment, pending-invite mgmt, typed livrables | 🟡/🔵 built |
 
@@ -228,12 +267,12 @@ Smaller polish + "yes-but-later" items that are worth doing but were deliberatel
 
 ## 7. Known gaps & limitations (be honest with partners)
 
-1. **🔴 Live PDF-download bug.** Logged-out people opening a shared **record** link can read the page but get an error downloading the PDF. The fix is written but sits on an unmerged branch — it needs to be rebased + shipped. Highest-priority fix.
+1. **🔴 Live PDF-download bug.** Logged-out people opening a shared **record** link can read the page but get an error downloading the PDF. *(2026-06-11: the fix is **merged and pushed** — it remains live in production only until the next deploy.)*
 2. **University product isn't live yet.** It's fully built and tested but undeployed — don't demo it from production until it's shipped.
 3. **Cold-start / empty marketplace.** ~9 seeded internships. A real first visitor sees a near-empty marketplace. Needs hand-curated launch supply.
 4. **Verification bottleneck.** Every company is verified manually by you — caps onboarding at roughly your personal capacity. Self-serve verification (Phase 5) isn't built.
 5. **No retention loop after the first internship.** No digests, alumni surface, or career-arc nudges yet.
-6. **Acquisition pages missing.** `/for-universities`, `/about`, `/contact` don't exist (footer no longer links to dead pages, but the pages aren't there).
+6. **Acquisition pages.** *(2026-06-11: mostly closed — the in-repo marketing site now has `/for-universities`, `/for-companies`, `/for-interns`, `/how-it-works`, `/virtual-internships`, `/verify`. Still missing: `/about` and `/contact` — university "Talk to us" CTAs are coming-soon until then.)*
 7. **Match score is heuristic** (skill overlap %), not semantic AI yet.
 8. **No Arabic** (FR/EN only) — limits the broad Tunisian-market reach.
 

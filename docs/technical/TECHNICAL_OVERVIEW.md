@@ -50,6 +50,13 @@ SprintsSection state resync, kanban `useOptimistic`, local-time check-in default
 404) are in `lib/`, `modules/`, and the relevant route folders. Rationale of record:
 `docs/superpowers/plans/2026-06-10-{audit-quick-wins,atelier-phase-1-tokens}.md`.
 
+**Module-map delta vs. the body:** two modules exist that postdate the snapshot — `modules/sprints`
+(company-side sprint planning + the workspace active-sprint resolver; tables `project_sprints` +
+`tasks.sprint_id`, migrations 0021–0022) and `modules/pulse` (the weekly-digest cron sweep behind
+`app/api/cron/pulse`, env-gated via `PULSE_ENABLED`). The empty `modules/marketplace` placeholder
+was deleted (marketplace logic lives in `modules/internships` + `lib/match.ts`, as the body says).
+Full current inventory: [`../product/PLATFORM_INVENTORY_AND_AXES.md`](../product/PLATFORM_INVENTORY_AND_AXES.md).
+
 > **Current "three states" (supersedes §0 below):** `main` now carries everything — the University
 > product, academic deliverables, project sprints, the audit fixes, the Atelier design layer, and
 > the in-repo marketing site (the `fix/audit-quick-wins` → `feat/atelier-tokens` stack was
