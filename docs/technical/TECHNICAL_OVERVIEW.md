@@ -14,6 +14,51 @@
 
 ---
 
+## ⓪.5 — 2026-06-11 update (read this first; the body below predates it)
+
+The body of this doc is the 2026-05-31 snapshot and is still accurate for the data model, auth,
+module convention, and deploy pipeline. Three things landed since that a new developer must know;
+they are additive and don't change anything described below.
+
+**1. The marketing site is now the platform's public front door (in-repo).**
+A new `(site)` route group — `app/[locale]/(site)/` — holds the home page plus `how-it-works`,
+`for-companies`, `for-interns`, `for-universities`, `virtual-internships`, and `verify`. Its
+components live in `components/landing/` (nav, hero, footer, marketing-effects, the section blocks,
+and six SVG explainer diagrams under `components/landing/diagrams/`). It is fully localized
+(`home.*` + `site.*` keys in `locales/{fr,en}.json`) and its CTAs link into the real product
+(sign-up, marketplace) — the `verify` page routes a pasted record link straight to
+`/records/[token]`. It was ported from a previously-standalone `inturn-web` app, which is now
+**superseded** (kept only as a source archive, outside this repo). Public routes are allow-listed in
+`lib/public-routes.ts` (extracted from `proxy.ts` and unit-tested).
+
+**2. `app/landing.css` — scoped marketing styles.** The site uses its own `.mk-*` class family and a
+token set that **reuses platform token names** (`--ink`, `--brand`, `--radius`…) with *different
+values*. To stop that clobbering the app, every rule is scoped under **`.mk-root`** (the wrapper in
+`app/[locale]/(site)/layout.tsx`) and tokens are declared on `.mk-root`, never `:root`. Don't add
+bare `html`/`body`/`a` rules to this file; keep the scope. (Reconciling these two token systems into
+one is a documented future step — see `docs/superpowers/plans/2026-06-10-atelier-phase-1-tokens.md`.)
+
+**3. The "Atelier" design layer.** The shadcn semantic tokens were rebound to the brand in
+`app/globals.css`: `--primary` = **ink** (near-black, inverts in dark), `--ring` = brand violet,
+`--input` = slate. The rule platform-wide is **violet only at value moments** (apply / publish /
+accept / approve / submit-a-deliverable / match signals); everything else is ink. There's a `brand`
+Button variant for those moments, one radius scale (4/6/8/12) and one elevation system
+(`--elev-*` → `shadow-card*` utilities), a `.ui-rise`/`@starting-style` entrance, and mono
+"eyebrow" section labels. The audit-driven correctness fixes that shipped alongside it (raw-body
+Clerk webhook verification, `lib/after-response.ts` for serverless-safe notification dispatch,
+SprintsSection state resync, kanban `useOptimistic`, local-time check-in default, branded localized
+404) are in `lib/`, `modules/`, and the relevant route folders. Rationale of record:
+`docs/superpowers/plans/2026-06-10-{audit-quick-wins,atelier-phase-1-tokens}.md`.
+
+> **Current "three states" (supersedes §0 below):** `main` now carries everything — the University
+> product, academic deliverables, project sprints, the audit fixes, the Atelier design layer, and
+> the in-repo marketing site (the `fix/audit-quick-wins` → `feat/atelier-tokens` stack was
+> fast-forward-merged in). `origin/main` is **behind** local `main` and **production runs an older
+> commit** — deploy is still manual `vercel --prod`. Verified at this update:
+> **635 tests pass / 2 skipped**, typecheck + lint + check:i18n + build all clean.
+
+---
+
 ## 0. The single most important thing to understand first
 
 There are **three different "current states"**, and confusing them causes real bugs:

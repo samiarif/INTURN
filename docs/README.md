@@ -12,8 +12,9 @@ companies, universities). The docs split into **authoritative references** (kept
 ## Start here — reading paths by role
 
 **New developer**
+0. [`../README.md`](../README.md) — repo root: how to install, run, and the env/branch/deploy state
 1. [`inturn-project-brief.md`](./inturn-project-brief.md) — what we're building & why
-2. [`technical/TECHNICAL_OVERVIEW.md`](./technical/TECHNICAL_OVERVIEW.md) — how it's built (as-built)
+2. [`technical/TECHNICAL_OVERVIEW.md`](./technical/TECHNICAL_OVERVIEW.md) — how it's built (as-built) *(read its 2026-06-11 update block at the top for the marketing-site + Atelier design layer)*
 3. [`technical/DIAGRAMS.md`](./technical/DIAGRAMS.md) — visual maps (ER, architecture, auth, flows)
 4. [`planning/HANDOFF.md`](./planning/HANDOFF.md) — where we are now *(pair with `git log`)*
 
@@ -36,14 +37,15 @@ companies, universities). The docs split into **authoritative references** (kept
 | [`inturn-project-brief.md`](./inturn-project-brief.md) | Founding product brief — the source of truth for what we're building | everyone | ✅ current (2026-05-23) |
 | [`product/PRODUCT_OVERVIEW.md`](./product/PRODUCT_OVERVIEW.md) | What the platform does, built-vs-deployed status, full backlog, known gaps | Sam / business | ✅ current (2026-05-31) |
 | [`product/PRODUCT_STRATEGY.md`](./product/PRODUCT_STRATEGY.md) | GTM strategy, gaps, 6-week plan, success metrics | Sam / business | ✅ current (2026-05-27) |
-| [`technical/TECHNICAL_OVERVIEW.md`](./technical/TECHNICAL_OVERVIEW.md) | Authoritative as-built architecture: stack, data model, auth, deploy | developers | ✅ current (2026-05-31) |
+| [`technical/TECHNICAL_OVERVIEW.md`](./technical/TECHNICAL_OVERVIEW.md) | Authoritative as-built architecture: stack, data model, auth, deploy | developers | ✅ current (2026-05-31 + 2026-06-11 update block covering the in-repo marketing site & Atelier design layer) |
 | [`technical/DIAGRAMS.md`](./technical/DIAGRAMS.md) | Visual maps: ER (22 tables), layered architecture, module anatomy, auth + university firewall, sequence flows | developers | ✅ current (2026-05-31) |
 | [`planning/DEV_ROADMAP.md`](./planning/DEV_ROADMAP.md) | The 12-week E1–E70 build roadmap | dev + product | ✅ current |
-| [`planning/HANDOFF.md`](./planning/HANDOFF.md) | Cold-resume session narrative + as-built record | resuming work | 🟡 not updated past the 2026-05-30 university snapshot — pair with `git log` + specs |
+| [`planning/HANDOFF.md`](./planning/HANDOFF.md) | Cold-resume session narrative + as-built record | resuming work | ✅ current (top TL;DR through 2026-06-11: audit fixes, Atelier, marketing site) |
 | [`archive/SPRINT_PLAN_COMPLETENESS.md`](./archive/SPRINT_PLAN_COMPLETENESS.md) | Original completeness-sprint plan (S1–S4) | reference | 🗄️ superseded — shipped; see HANDOFF |
 | [`superpowers/`](./superpowers/) | Dated brainstorm **plans** (18) + design **specs** (9) per milestone | deep design detail | 🗄️ append-only history |
 | [`design-bundle/`](./design-bundle/) | Claude-Design handoff: chat transcripts + HTML/CSS prototypes + brand foundations | implementing UI | 📥 raw input (has its own README) |
-| `../../inturn-web/` | The **marketing website** — separate Next.js app + git repo OUTSIDE this repo (port 3010; see `/Users/mac/code/inturn-hub/README.md`) | marketing | 📥 imported 2026-06-10 |
+| `app/[locale]/(site)/` + `components/landing/` + `app/landing.css` | The **marketing site**, now the platform's public front door (home + 6 pages), localized FR/EN | developers | ✅ current (ported in-repo 2026-06-10/11) |
+| `superpowers/plans/2026-06-10-*` | The audit-fixes plan + the Atelier design-direction/phase-1 plan | developers | 🗄️ append-only — the design rationale of record |
 
 **Legend:** ✅ authoritative & current · 🟡 current with a caveat · 🗄️ historical/superseded · 📥 raw input.
 
@@ -74,7 +76,8 @@ milestone. They are **historical snapshots** — accurate as of their date, not 
 - **The brief is duplicated on purpose.** [`inturn-project-brief.md`](./inturn-project-brief.md) (root)
   is the canonical working brief; `design-bundle/project/uploads/inturn-project-brief.md` is the
   original upload, frozen inside the immutable design bundle. Edit the root copy only.
-- **`README.md` at the repo root** (not this file) is stale create-next-app boilerplate — ignore it.
-  This index + `planning/HANDOFF.md` are the real entry points.
+- **`README.md` at the repo root** is the engineering entry point (install / run / env / branch &
+  deploy state). This index is the *documentation* map; the root README + `planning/HANDOFF.md` are
+  the practical starting points for a new developer.
 - **The code is the ultimate source of truth.** When a doc and the code in `db/schema/` or `modules/`
   disagree, trust the code and update the doc.

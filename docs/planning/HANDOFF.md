@@ -1,6 +1,29 @@
-# inturn — Session Handoff (updated 2026-06-10 — Full-repo audit + quick-wins fix sprint · marketing-site import · Sprint-aware workspaces · University product)
+# inturn — Session Handoff (updated 2026-06-11 — handoff to a new developer · audit fixes · Atelier design · marketing site)
 
 > Pick this up cold in a future session. Read top to bottom; everything you need is here or linked from here.
+
+## 👋 For the incoming developer (2026-06-11)
+
+Start with the repo-root [`../../README.md`](../../README.md) (install/run/env), then this file.
+
+- **`main` is the truth.** It now contains everything described in the TL;DR below — the audit
+  bug-fixes, the **Atelier** design system, and the **marketing site as the in-repo front door**.
+  The work was built on `fix/audit-quick-wins` → `feat/atelier-tokens` and **fast-forward-merged
+  into `main`** (those two branches were deleted post-merge; their commits live in `main`).
+- **`origin/main` is behind local `main`, and production runs an older commit.** Deploy is manual
+  (`vercel --prod`), never git-triggered — so pushing is safe (CI only). Whoever owns the Vercel
+  project decides when to ship. `curl https://inturn.vercel.app/api/health` shows the live commit.
+- **Parked branches — do NOT assume these are current:** `feat/i18n-exhaustive` (+`-pre-rebase`),
+  `fix/i18n-sweep`, `fix/ux-polish` hold older i18n/UX work that predates the design pass and is
+  **not merged**; some of it overlaps files the Atelier passes rewrote, so it needs a deliberate
+  rebase/reconcile (or to be dropped) — don't merge them blind.
+- **Green at handoff:** `pnpm typecheck && pnpm lint && pnpm test && pnpm check:i18n && pnpm build`
+  all pass (635 tests / 2 skipped, 2,622 locale keys aligned). The French marketing copy was
+  AI-written and is pending a native-speaker review (Sam).
+- **Known follow-ups (none blocking):** a `/contact` page (university CTAs are coming-soon spans);
+  the French-search gap (listings are English, so FR queries miss — options in the atelier plan);
+  long-tail CSS cleanup (the arbitrary-value codemod, dissolving the per-screen `.ph-/.db-/…`
+  families into primitives). All documented in `docs/superpowers/plans/2026-06-10-*`.
 
 ## TL;DR — Where we are (2026-06-10, LATEST — Audit + quick-wins fix sprint · marketing site)
 
